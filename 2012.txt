@@ -1,7 +1,7 @@
 ================================================================================
 [01] カーネルバージョンの調査
 [02] カーネルイメージの調査
-[03] カーネルモジュールの実体ファイル調査
+[03] カーネルモジュールの調査
 ================================================================================
 [01]
   カーネルバージョンの調査
@@ -111,7 +111,7 @@
   
 ================================================================================
 [03]
-  カーネルモジュールの実体ファイル調査
+  カーネルモジュールの調査
   
 [内容]
   ## 仮想マシン
@@ -121,7 +121,7 @@
     DNS  : 192.168.122.1
   
   ## 調査方法
-    パス(/lib/modules)から調査 -> サンプルとしてファイルシステム(xfs)のカーネルモジュールの実体ファイル調査
+    パス(/lib/modules)から調査 -> サンプルとしてファイルシステム(xfs)のカーネルモジュールの調査
   
 [確認]
   $ cd $HOME
@@ -161,7 +161,7 @@
   -rw-r--r--.  1 root root 1.4K 10月 20  2020 modules.block        // 不明
   -rw-r--r--.  1 root root 7.3K 10月 20  2020 modules.builtin      // 不明
   -rw-r--r--.  1 root root 9.3K 12月  1 19:40 modules.builtin.bin  // 不明
-  -rw-r--r--.  1 root root 267K 12月  1 19:40 modules.dep          // カーネルモジュール依存関係
+  -rw-r--r--.  1 root root 267K 12月  1 19:40 modules.dep          // カーネルモジュール依存関係 -> 後の方でも参照するので留意
   -rw-r--r--.  1 root root 374K 12月  1 19:40 modules.dep.bin
   -rw-r--r--.  1 root root  361 12月  1 19:40 modules.devname
   -rw-r--r--.  1 root root  140 10月 20  2020 modules.drm
@@ -185,7 +185,7 @@
   drwxr-xr-x.  3 root root   17 12月  1 19:31 arch     // アーキテクチャ
   drwxr-xr-x.  3 root root 4.0K 12月  1 19:31 crypto   // 暗号化
   drwxr-xr-x. 72 root root 4.0K 12月  1 19:31 drivers  // ドライバ
-  drwxr-xr-x. 26 root root 4.0K 12月  1 19:31 fs       // ファイルシステム -> ここからファイルシステム(xfs)の実体ファイル調査
+  drwxr-xr-x. 26 root root 4.0K 12月  1 19:31 fs       // ファイルシステム -> ここからファイルシステム(xfs)のカーネルモジュールの調査
   drwxr-xr-x.  3 root root   19 12月  1 19:31 kernel   // カーネル
   drwxr-xr-x.  4 root root  249 12月  1 19:31 lib      // ライブラリ
   drwxr-xr-x.  2 root root   35 12月  1 19:31 mm       // メモリ
@@ -207,7 +207,52 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--. 1 root root 328K 10月 20  2020 xfs.ko.xz -> カーネルモジュール実体ファイル判明
+  -rw-r--r--. 1 root root 328K 10月 20  2020 xfs.ko.xz -> カーネルモジュール名はそのままで「xfs」と判明
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ modinfo xfs(判明したモジュール名)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  filename:       /lib/modules/3.10.0-1160.el7.x86_64/kernel/fs/xfs/xfs.ko.xz  // 実体ファイルのパス
+  license:        GPL                                                          // ライセンス
+  description:    SGI XFS with ACLs, security attributes, no debug enabled     // 説明
+  author:         Silicon Graphics, Inc.                                       // 作者
+  alias:          fs-xfs                                                       // 別名
+  retpoline:      Y                                                            // 不明
+  rhelversion:    7.9                                                          // 不明
+  srcversion:     ACB9CF86C248DD09DC2B428                                      // 不明
+  depends:        libcrc32c                                                    // 依存関係(xfsはlibcrc32cに依存している)
+  intree:         Y
+  vermagic:       3.10.0-1160.el7.x86_64 SMP mod_unload modversions 
+  signer:         CentOS Linux kernel signing key
+  sig_key:        E1:FD:B0:E2:A7:E8:61:A1:D1:CA:80:A2:3D:CF:0D:BA:3A:A4:AD:F5
+  sig_hashalgo:   sha256
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsmod | grep xfs
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  xfs       997727  2 -> xfsを参照するモジュールはない
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsmod | grep libcrc32c(xfsが参照しているモジュール名)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  libcrc32c  12644  3  xfs,nf_nat,nf_conntrack -> xfsの他に2個のモジュールから参照されている
+  --------------------------------------------------
+  
+  vm12$ cd /lib/modules/3.10.0-1160.el7.x86_64
+  vm12$ grep xfs modules.dep
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  kernel/fs/xfs/xfs.ko.xz: kernel/lib/libcrc32c.ko.xz -> xfsはlibcrc32cに依存している
   --------------------------------------------------
   
   以下の確認に続く
