@@ -3,6 +3,8 @@
 [02] カーネルイメージの調査
 [03] カーネルモジュールの調査
 [04] ビルド練習
+[05] カーネルモジュールの作成 - 1 (カーネル 3.10.0)
+[06] カーネルモジュールの作成 - 2 (カーネル 3.10.0)
 ================================================================================
 [01]
   カーネルバージョンの調査
@@ -314,14 +316,14 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ mkdir hello
+  vm12$ mkdir HELLO
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ vi hello.h (ヘッダファイル作成)
   
   コマンドの実行結果
@@ -334,7 +336,7 @@
   #endif
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ vi hello.c (ソースファイル作成)
   
   コマンドの実行結果
@@ -347,7 +349,7 @@
   void Hello2(void) { printf("Hello2\n"); }
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ vi main.c (プログラム本体)
   
   コマンドの実行結果
@@ -368,7 +370,7 @@
   しかし今回は「Makefile」使用でビルドを行う。
   ==================================================
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ vi Makefile (Makefileを記述)
   
   コマンドの実行結果
@@ -397,7 +399,7 @@
     rm -f $(PROG) $(OBJ1) $(OBJ2)
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ make -n (実行処理をシミューレート)
   
   コマンドの実行結果
@@ -407,7 +409,7 @@
   gcc main.o hello.o -o HELLO
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ make -n main.o (実行処理をシミューレート)
   
   コマンドの実行結果
@@ -415,7 +417,7 @@
   gcc -c main.c
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ make -n hello.o (実行処理をシミューレート)
   
   コマンドの実行結果
@@ -423,8 +425,7 @@
   gcc -c hello.c
   --------------------------------------------------
   
-  実行処理をシミューレート
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ make -n clean (実行処理をシミューレート)
   
   コマンドの実行結果
@@ -432,7 +433,7 @@
   rm -f HELLO main.o hello.o
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ make (ビルド実行)
   
   コマンドの実行結果
@@ -442,21 +443,201 @@
   gcc main.o hello.o -o HELLO
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
+  vm12$ cd $HOME/HELLO
   vm12$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrwxr-x. 1 makoto makoto 8.3K 12月  3 22:15 HELLO    // ビルドで作成された実行ファイル
-  -rw-rw-r--. 1 makoto makoto  265 12月  3 22:04 Makefile
-  -rw-rw-r--. 1 makoto makoto  139 12月  3 22:01 hello.c
-  -rw-rw-r--. 1 makoto makoto   64 12月  3 22:00 hello.h
-  -rw-rw-r--. 1 makoto makoto 1.7K 12月  3 22:15 hello.o  // ビルドで作成された中間ファイル
-  -rw-rw-r--. 1 makoto makoto  109 12月  3 22:01 main.c
-  -rw-rw-r--. 1 makoto makoto 1.4K 12月  3 22:15 main.o   // ビルドで作成された中間ファイル
+  -rwxrwxr-x. 1 makoto makoto 8.3K 12月  3 22:15 HELLO     // ビルドで作成された実行ファイル
+  -rw-rw-r--. 1 makoto makoto  265 12月  3 22:04 Makefile  // Makefile
+  -rw-rw-r--. 1 makoto makoto  139 12月  3 22:01 hello.c   // ソースファイル
+  -rw-rw-r--. 1 makoto makoto   64 12月  3 22:00 hello.h   // ヘッダファイル
+  -rw-rw-r--. 1 makoto makoto 1.7K 12月  3 22:15 hello.o   // ビルドで作成された中間ファイル
+  -rw-rw-r--. 1 makoto makoto  109 12月  3 22:01 main.c    // ソースファイル
+  -rw-rw-r--. 1 makoto makoto 1.4K 12月  3 22:15 main.o    // ビルドで作成された中間ファイル
   --------------------------------------------------
   
   以下の確認に続く
+  
+================================================================================
+[05]
+  カーネルモジュールの作成 - 1 (カーネル 3.10.0)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 前提条件
+    前記録(04)と同様に開発ツールをインストール
+  
+  ## 作業内容
+    単純なカーネルモジュールを作成して、ロードとアンロード時の動作確認を行う
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd /lib/modules/$(uname -r)
+  vm12$ ls -lh | head -n 3
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx.  1 root root   39 12月  1 19:31 build -> /usr/src/kernels/3.10.0-1160.el7.x86_64  // リンク先が無いため修正が必要
+  drwxr-xr-x.  2 root root    6 10月 20  2020 extra
+  drwxr-xr-x. 12 root root  128 12月  1 19:31 kernel
+  --------------------------------------------------
+  
+  vm12$ cd /lib/modules/$(uname -r)
+  vm12$ sudo rm build
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> リンク先が存在しないので削除
+  --------------------------------------------------
+  
+  vm12$ cd /lib/modules/$(uname -r)
+  vm12$ sudo ln -s /usr/src/kernels/3.10.0-1160.49.1.el7.x86_64.debug build
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> リンクを張り直す
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkdir SAMP1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ vi SAMP1.c (ソースファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <linux/module.h>
+  #include <linux/kernel.h>
+  
+  // ライセンス情報
+  MODULE_LICENSE("GPL");
+  MODULE_AUTHOR("Makoto-Araki");
+  MODULE_DESCRIPTION("SAMP1");
+  
+  // ロード時
+  static int SAMP1_init(void)
+  {
+    printk( KERN_INFO "SAMP1 insmod\n" );
+    return 0;
+  }
+  
+  // アンロード時
+  static void SAMP1_exit(void)
+  {
+    printk( KERN_INFO "SAMP1 rmmod\n" );
+  }
+  
+  module_init( SAMP1_init );
+  module_exit( SAMP1_exit );
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ vi Makefile (Makefileを記述)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 既存ファイル(/lib/modules/3.10.0-1160.el7.x86_64/build/Makefile)のターゲットを利用している
+  obj-m := SAMP1.o
+  
+  all:
+    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
+  
+  clean:
+    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ make -n (実行処理をシミューレート)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  make -C /lib/modules/3.10.0-1160.el7.x86_64/build M=/home/makoto/SAMP1 modules
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ make -n clean (実行処理をシミューレート)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  make -C /lib/modules/3.10.0-1160.el7.x86_64/build M=/home/makoto/SAMP1 clean
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ make (ビルド実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  make -C /lib/modules/3.10.0-1160.el7.x86_64/build M=/home/makoto/SAMP1 modules
+  make[1]: ディレクトリ `/usr/src/kernels/3.10.0-1160.49.1.el7.x86_64.debug' に入ります
+    CC [M]  /home/makoto/SAMP1/SAMP1.o
+    Building modules, stage 2.
+    MODPOST 1 modules
+    CC      /home/makoto/SAMP1/SAMP1.mod.o
+    LD [M]  /home/makoto/SAMP1/SAMP1.ko
+  make[1]: ディレクトリ `/usr/src/kernels/3.10.0-1160.49.1.el7.x86_64.debug' から出ます
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto  167 12月  4 01:24 Makefile
+  -rw-rw-r--. 1 makoto makoto    0 12月  4 01:25 Module.symvers
+  -rw-rw-r--. 1 makoto makoto  412 12月  4 01:23 SAMP1.c
+  -rw-rw-r--. 1 makoto makoto 103K 12月  4 01:25 SAMP1.ko  // 作成したカーネルモジュール
+  -rw-rw-r--. 1 makoto makoto  907 12月  4 01:25 SAMP1.mod.c
+  -rw-rw-r--. 1 makoto makoto  60K 12月  4 01:25 SAMP1.mod.o
+  -rw-rw-r--. 1 makoto makoto  47K 12月  4 01:25 SAMP1.o
+  -rw-rw-r--. 1 makoto makoto   35 12月  4 01:25 modules.order
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ modinfo SAMP1.ko
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  filename:       /home/makoto/SAMP1/SAMP1.ko
+  description:    SAMP1
+  author:         Makoto-Araki
+  license:        GPL
+  retpoline:      Y
+  rhelversion:    7.9
+  srcversion:     0572C8074A39EE01460F758
+  depends:        (依存するモジュールなし)
+  vermagic:       3.10.0-1160.49.1.el7.x86_64.debug SMP mod_unload modversions
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ sudo insmod SAMP1.ko
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // ロード時にエラー
+  
+  [21067.298558] SAMP1: disagrees about version of symbol module_layout
+  insmod: ERROR: could not insert module SAMP1.ko: Invalid module format
+  --------------------------------------------------
+  
+  エラー出力の原因は不明、同じ作業内容で新カーネル(4.15.3)下では成功している、よって新カーネル時に再挑戦する
   
 ================================================================================
 
