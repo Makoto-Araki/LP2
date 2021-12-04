@@ -6,6 +6,7 @@
 [05] カーネルモジュールの作成 - 1 (カーネル 3.10.0)
 [06] カーネルモジュールの作成 - 2 (カーネル 3.10.0)
 [07] カーネルのコンパイル
+[08] カーネルモジュールの作成 - 3 (カーネル 4.15.3)
 ================================================================================
 [01]
   カーネルバージョンの調査
@@ -1039,8 +1040,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  menuentry 'CentOS Linux (4.15.3) 7 (Core)'  // 0
-  menuentry 'CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)'  // 1
+  menuentry 'CentOS Linux (4.15.3) 7 (Core)'                                     // 0
+  menuentry 'CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)'                     // 1
   menuentry 'CentOS Linux (0-rescue-5685550d34954a16aab7e36c1390eb86) 7 (Core)'  // 2
   --------------------------------------------------
   
@@ -1049,7 +1050,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> デフォルト起動されるカーネルは新カーネル(4.15.3)に変更
+  (省略) -> デフォルト起動されるカーネルを新カーネル(4.15.3)に変更
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1077,6 +1078,157 @@
   --------------------------------------------------
   
   以下の確認に続く
+  
+================================================================================
+[08]
+  カーネルモジュールの作成 - 3 (カーネル 4.15.3)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 前提条件
+    前記録(04)と同様に開発ツールをインストール
+  
+  ## 作業内容
+    単純なカーネルモジュールを作成して、ロードとアンロード時の動作確認を行う
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ vi SAMP1.c (ソースファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <linux/module.h>
+  #include <linux/kernel.h>
+  
+  // ライセンス情報
+  MODULE_LICENSE("GPL");
+  MODULE_AUTHOR("Makoto-Araki");
+  MODULE_DESCRIPTION("SAMP1");
+  
+  // ロード時
+  static int SAMP1_init(void)
+  {
+    printk( KERN_INFO "SAMP1 init\n" );
+    return 0;
+  }
+  
+  // アンロード時
+  static void SAMP1_exit(void)
+  {
+    printk( KERN_INFO "SAMP1 exit\n" );
+  }
+  
+  module_init( SAMP1_init );
+  module_exit( SAMP1_exit );
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ vi Makefile (Makefileを記述)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 既存ファイル(/lib/modules/4.15.3/build/Makefile)のターゲットを利用している
+  obj-m := SAMP1.o
+  
+  all:
+    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
+  
+  clean:
+    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ make -n (実行処理をシミューレート)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP1 modules
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ make -n clean (実行処理をシミューレート)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP1 clean
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ make (ビルド実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP1 modules
+  make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' に入ります
+    CC [M]  /home/makoto/SAMP1/SAMP1.o
+    Building modules, stage 2.
+    MODPOST 1 modules
+    CC      /home/makoto/SAMP1/SAMP1.mod.o
+    LD [M]  /home/makoto/SAMP1/SAMP1.ko
+  make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' から出ます
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto  167 12月  4 01:24 Makefile
+  -rw-rw-r--. 1 makoto makoto    0 12月  4 17:03 Module.symvers
+  -rw-rw-r--. 1 makoto makoto  412 12月  4 01:23 SAMP1.c
+  -rw-rw-r--. 1 makoto makoto 121K 12月  4 17:03 SAMP1.ko  // カーネルモジュール
+  -rw-rw-r--. 1 makoto makoto  853 12月  4 17:03 SAMP1.mod.c
+  -rw-rw-r--. 1 makoto makoto  70K 12月  4 17:03 SAMP1.mod.o
+  -rw-rw-r--. 1 makoto makoto  55K 12月  4 17:03 SAMP1.o
+  -rw-rw-r--. 1 makoto makoto   35 12月  4 17:03 modules.order
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ modinfo SAMP1.ko
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  filename:       /home/makoto/SAMP1/SAMP1.ko
+  description:    SAMP1
+  author:         Makoto-Araki
+  license:        GPL
+  srcversion:     0572C8074A39EE01460F758
+  depends:        (依存しているモジュールなし)
+  retpoline:      Y
+  name:           SAMP1
+  vermagic:       4.15.3 SMP mod_unload modversions 
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ sudo insmod SAMP1.ko (カーネルモジュールのロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 2232.313479] SAMP1 init
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/SAMP1
+  vm12$ sudo rmmod SAMP1.ko (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 2258.205023] SAMP1 exit
+  --------------------------------------------------
+  
+  新カーネル(4.15.3)下ではロード・アンロード時のメッセージ出力が上手くいった
   
 ================================================================================
 
