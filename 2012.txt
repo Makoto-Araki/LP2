@@ -1,6 +1,6 @@
 ================================================================================
-[01] カーネルバージョンの調査
-[02] カーネルイメージの調査
+[01] カーネルバージョン
+[02] カーネルイメージ
 [03] カーネルモジュールの調査
 [04] ビルド練習
 [05] カーネルモジュールの作成 - 1 (カーネル 3.10.0)
@@ -13,9 +13,12 @@
 [12] カーネルパラメータ - 1
 [13] カーネルパラメータ - 2
 [14] カーネルパラメータ - 3
+[15] 初期RAMディスク - 1 (既存)
+[16] 初期RAMディスク - 2 (作成)
+[17] 仮想ファイルシステム
 ================================================================================
 [01]
-  カーネルバージョンの調査
+  カーネルバージョン
   
 [内容]
   ## 仮想マシン
@@ -24,14 +27,10 @@
     GW   : 192.168.122.1
     DNS  : 192.168.122.1
   
-  ## 調査方法1
-    コマンド(uname)から調査
-  
-  ## 調査方法2
-    仮想ファイル(/proc/version)から調査
-  
-  ## 調査方法3
-    カーネルソースのファイル(Makefile)から調査
+  ## 作業内容
+    コマンド(uname)から調査する
+    仮想ファイル(/proc/version)から調査する
+    カーネルソースのファイル(Makefile)から調査する
   
 [確認]
   $ cd $HOME
@@ -81,7 +80,7 @@
   
 ================================================================================
 [02]
-  カーネルイメージの調査
+  カーネルイメージ
   
 [内容]
   ## 仮想マシン
@@ -90,8 +89,8 @@
     GW   : 192.168.122.1
     DNS  : 192.168.122.1
   
-  ## 調査方法
-    パス(/boot)から調査
+  ## 作業内容
+    パス(/boot)から調査する
   
 [確認]
   $ cd $HOME
@@ -131,8 +130,8 @@
     GW   : 192.168.122.1
     DNS  : 192.168.122.1
   
-  ## 調査方法
-    パス(/lib/modules)から調査 -> サンプルとしてファイルシステム(xfs)のカーネルモジュールの調査
+  ## 作業内容
+    パス(/lib/modules)から調査 -> サンプルとしてファイルシステム(xfs)のカーネルモジュールの調査する
   
 [確認]
   $ cd $HOME
@@ -303,7 +302,7 @@
     GW   : 192.168.122.1
     DNS  : 192.168.122.1
   
-  ## 実行内容
+  ## 作業内容
     簡単なプログラム作成後に、Makefileによるビルドを行う
   
 [確認]
@@ -2041,6 +2040,511 @@
   コマンドの実行結果
   --------------------------------------------------
   net.ipv4.ip_forward = 1 -> IPv4のパケット転送許可
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[15]
+  初期RAMディスク - 1 (既存)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 初期RAMディスクの役割
+    1. ファームウェア(BIOS)   // マスターブートレコードからブートローダー起動
+    2. ブートローダー(GRUB)   // カーネル起動
+    3. カーネル               // メモリに初期RAMディスクを展開
+    4. 初期RAMディスク        // ルートファイルシステムをマウントするためのコマンド群を持ちマウントを行う
+    5. ルートファイルシステム  // 初期RAMディスクはルートファイルシステムに置換される
+    6. プロセス               // init or systemd
+  
+  ## 作業内容
+    仮想マシン上のカーネルイメージと初期RAMディスクを確認する
+    初期RAMディスクの内容をコマンドで確認する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd /boot
+  vm12$ ls -lh | grep -E 'vmlinuz|initramfs' (仮想マシン上のカーネルイメージと初期RAMディスクを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 root root   20 12月  4 15:46 vmlinuz -> /boot/vmlinuz-4.15.3       // システムは新カーネル(4.15.3)を起動
+  -rw-------. 1 root root  21M 12月  1 19:41 initramfs-3.10.0-1160.el7.x86_64.img  // 初期RAMディスク(3.10.0)
+  -rw-------. 1 root root  41M 12月  4 15:53 initramfs-4.15.3.img                  // 初期RAMディスク(4.15.3)
+  -rwxr-xr-x. 1 root root 6.5M 10月 20  2020 vmlinuz-3.10.0-1160.el7.x86_64        // カーネルイメージ(3.10.0)
+  -rw-r--r--. 1 root root 7.2M 12月  4 15:46 vmlinuz-4.15.3                        // カーネルイメージ(4.15.3)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkdir RAM1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM1
+  vm12$ sudo cp -p /boot/initramfs-3.10.0-1160.el7.x86_64.img AAA.img (初期RAMディスクのコピー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM1
+  vm12$ sudo lsinitrd AAA.img (初期RAMディスクの内容をコマンドで確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 確認内容の初期RAMディスクとそのファイルサイズ
+  Image: AAA.img: 41M
+  Version: dracut-033-572.el7
+  
+  // 引数にファイル(AAA.img)を指定したためファイル指定のオプション(-f)指定の扱い
+  Arguments: -f
+  
+  // モジュール一覧
+  dracut modules:
+  bash
+  nss-softokn
+  i18n
+  network
+  ifcfg
+  drm
+  plymouth
+  dm
+  kernel-modules
+  lvm
+  qemu
+  qemu-net
+  resume
+  rootfs-block
+  terminfo
+  udev-rules
+  biosdevname
+  systemd
+  usrmount
+  base
+  fs-lib
+  microcode_ctl-fw_dir_override
+  shutdown
+  
+  // 初期RAMディスク内のファイル一覧 -> コマンド群の確認のため「bin」配下のみ抜粋
+  drwxr-xr-x  12 root     root            0 Dec  1 19:41 .
+  crw-r--r--   1 root     root       5,   1 Dec  1 19:40 dev/console
+  crw-r--r--   1 root     root       1,  11 Dec  1 19:40 dev/kmsg
+  crw-r--r--   1 root     root       1,   3 Dec  1 19:40 dev/null
+  lrwxrwxrwx   1 root     root            7 Dec  1 19:40 bin -> usr/bin
+    (省略)
+  drwxr-xr-x   2 root     root            0 Dec  1 19:41 usr/bin
+  lrwxrwxrwx   1 root     root            4 Dec  1 19:40 usr/bin/awk -> gawk
+  -rwxr-xr-x   1 root     root       964536 Dec  1 19:41 usr/bin/bash
+  -rwxr-xr-x   1 root     root        54080 Dec  1 19:41 usr/bin/cat
+  -rwxr-xr-x   1 root     root       155176 Dec  1 19:41 usr/bin/cp
+  -rwxr-xr-x   1 root     root        49680 Dec  1 19:41 usr/bin/dmesg
+  -rwxr-xr-x   1 root     root         2714 Oct  1  2020 usr/bin/dracut-cmdline
+  -rwxr-xr-x   1 root     root          422 Oct  1  2020 usr/bin/dracut-cmdline-ask
+  -rwxr-xr-x   1 root     root         1342 Oct  1  2020 usr/bin/dracut-emergency
+  -rwxr-xr-x   1 root     root         2223 Oct  1  2020 usr/bin/dracut-initqueue
+  -rwxr-xr-x   1 root     root         1170 Sep 12  2013 usr/bin/dracut-mount
+  -rwxr-xr-x   1 root     root          622 Oct  1  2020 usr/bin/dracut-pre-mount
+  -rwxr-xr-x   1 root     root         1175 Oct  1  2020 usr/bin/dracut-pre-pivot
+  -rwxr-xr-x   1 root     root          588 Oct  1  2020 usr/bin/dracut-pre-trigger
+  -rwxr-xr-x   1 root     root         1523 Sep 12  2013 usr/bin/dracut-pre-udev
+  -rwxr-xr-x   1 root     root        33088 Dec  1 19:41 usr/bin/echo
+  -rwxr-xr-x   1 root     root        59776 Dec  1 19:41 usr/bin/findmnt
+  -rwxr-xr-x   1 root     root        24448 Dec  1 19:41 usr/bin/flock
+  -rwxr-xr-x   1 root     root       428584 Dec  1 19:41 usr/bin/gawk
+  -rwxr-xr-x   1 root     root       159024 Dec  1 19:41 usr/bin/grep
+  -rwxr-xr-x   1 root     root       100800 Dec  1 19:41 usr/bin/gzip
+  -rwxr-xr-x   1 root     root       550808 Dec  1 19:41 usr/bin/journalctl
+  -rwxr-xr-x   1 root     root        11504 Dec  1 19:41 usr/bin/kbd_mode
+  -rwxr-xr-x   1 root     root       146680 Dec  1 19:41 usr/bin/kmod
+  -rwxr-xr-x   1 root     root       158240 Dec  1 19:41 usr/bin/less
+  -rwxr-xr-x   1 root     root        58592 Dec  1 19:41 usr/bin/ln
+  -rwxr-xr-x   1 root     root       113184 Dec  1 19:41 usr/bin/loadkeys
+  lrwxrwxrwx   1 root     root            4 Dec  1 19:41 usr/bin/loginctl -> true
+  -rwxr-xr-x   1 root     root       117608 Dec  1 19:41 usr/bin/ls
+  -rwxr-xr-x   1 root     root        79768 Dec  1 19:41 usr/bin/mkdir
+  -rwxr-xr-x   1 root     root        63056 Dec  1 19:41 usr/bin/mkfifo
+  -rwxr-xr-x   1 root     root        67184 Dec  1 19:41 usr/bin/mknod
+  -rwsr-xr-x   1 root     root        44264 Dec  1 19:41 usr/bin/mount
+  -rwxr-xr-x   1 root     root       130360 Dec  1 19:41 usr/bin/mv
+  -rwxr-xr-x   1 root     root        66176 Dec  1 19:41 usr/bin/ping
+  -rwxr-xr-x   1 root     root        40720 Dec  1 19:41 usr/bin/plymouth
+  -rwxr-xr-x   1 root     root       100112 Dec  1 19:41 usr/bin/ps
+  -rwxr-xr-x   1 root     root        41800 Dec  1 19:41 usr/bin/readlink
+  -rwxr-xr-x   1 root     root        62872 Dec  1 19:41 usr/bin/rm
+  -rwxr-xr-x   1 root     root        76072 Dec  1 19:41 usr/bin/sed
+  -rwxr-xr-x   1 root     root        41432 Dec  1 19:41 usr/bin/setfont
+  -rwxr-xr-x   1 root     root        11496 Dec  1 19:41 usr/bin/setsid
+  lrwxrwxrwx   1 root     root            4 Dec  1 19:40 usr/bin/sh -> bash
+  -rwxr-xr-x   1 root     root        33128 Dec  1 19:41 usr/bin/sleep
+  -rwxr-xr-x   1 root     root        79040 Dec  1 19:41 usr/bin/stat
+  -rwxr-xr-x   1 root     root        70256 Dec  1 19:41 usr/bin/stty
+  -rwxr-xr-x   1 root     root       721744 Dec  1 19:41 usr/bin/systemctl
+  -rwxr-xr-x   1 root     root       334120 Dec  1 19:41 usr/bin/systemd-cgls
+  -rwxr-xr-x   1 root     root        49344 Dec  1 19:41 usr/bin/systemd-escape
+  -rwxr-xr-x   1 root     root       396320 Dec  1 19:41 usr/bin/systemd-run
+  -rwxr-xr-x   1 root     root       145536 Dec  1 19:41 usr/bin/systemd-tmpfiles
+  -rwxr-xr-x   1 root     root       158808 Dec  1 19:41 usr/bin/teamd
+  -rwxr-xr-x   1 root     root        29672 Dec  1 19:41 usr/bin/teamdctl
+  -rwxr-xr-x   1 root     root        19552 Dec  1 19:41 usr/bin/teamnl
+  -rwxr-xr-x   1 root     root        45680 Dec  1 19:41 usr/bin/tr
+  -rwxr-xr-x   1 root     root        28936 Dec  1 19:41 usr/bin/true
+  -rwxr-xr-x   1 root     root       424216 Dec  1 19:41 usr/bin/udevadm
+  -rwsr-xr-x   1 root     root        31984 Dec  1 19:41 usr/bin/umount
+  -rwxr-xr-x   1 root     root        33080 Dec  1 19:41 usr/bin/uname
+  -rwxr-xr-x   1 root     root       928056 Dec  1 19:41 usr/bin/vi
+    (省略)
+  drwxr-xr-x   2 root     root            0 Dec  1 19:40 var
+  lrwxrwxrwx   1 root     root           11 Dec  1 19:40 var/lock -> ../run/lock
+  lrwxrwxrwx   1 root     root            6 Dec  1 19:40 var/run -> ../run
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[16]
+  初期RAMディスク - 2 (作成)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 初期RAMディスクの役割
+    1. ファームウェア(BIOS)   // マスターブートレコードからブートローダー起動
+    2. ブートローダー(GRUB)   // カーネル起動
+    3. カーネル               // メモリに初期RAMディスクを展開
+    4. 初期RAMディスク        // ルートファイルシステムをマウントするためのコマンド群を持ちマウントを行う
+    5. ルートファイルシステム  // 初期RAMディスクはルートファイルシステムに置換される
+    6. プロセス               // init or systemd
+  
+  ## 作業内容
+    初期RAMディスクをコマンド(mkinitrd)で作成する
+    初期RAMディスクを展開する
+    展開された初期RAMディスクのコマンド群を確認する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkdir RAM2
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM2
+  vm12$ sudo mkinitrd BBB.img $(uname -r) (初期RAMディスクをコマンドで作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 5分程かかる
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM2
+  vm12$ sudo lsinitrd BBB.img (初期RAMディスクの内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 前記録(15)を参照
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM2
+  vm12$ sudo zcat BBB.img | cpio -i (初期RAMディスクを展開)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コマンド(mknod)部分でエラー出力されたが続行
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM2
+  vm12$ ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-------.  1 root   root    40M 12月  6 10:14 BBB.img         // 初期RAMディスク
+  lrwxrwxrwx.  1 makoto makoto    7 12月  6 10:16 bin -> usr/bin  // コマンド群
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 dev
+  drwxr-xr-x. 12 makoto makoto 4.0K 12月  6 10:16 etc
+  lrwxrwxrwx.  1 makoto makoto   23 12月  6 10:16 init -> usr/lib/systemd/systemd
+  lrwxrwxrwx.  1 makoto makoto    7 12月  6 10:16 lib -> usr/lib
+  lrwxrwxrwx.  1 makoto makoto    9 12月  6 10:16 lib64 -> usr/lib64
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 proc
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 root
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 run
+  lrwxrwxrwx.  1 makoto makoto    8 12月  6 10:16 sbin -> usr/sbin
+  -rwxr-xr-x.  1 makoto makoto 3.1K 12月  6 10:16 shutdown
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 sys
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 sysroot
+  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 tmp
+  drwxr-xr-x.  7 makoto makoto   66 12月  6 10:16 usr
+  drwxr-xr-x.  2 makoto makoto   29 12月  6 10:16 var
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/RAM2/bin
+  vm12$ ls -lh (展開された初期RAMディスクのコマンド群を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 makoto makoto    4 12月  6 10:16 awk -> gawk
+  -rwxr-xr-x. 1 makoto makoto 942K 12月  6 10:16 bash
+  -rwxr-xr-x. 1 makoto makoto  53K 12月  6 10:16 cat
+  -rwxr-xr-x. 1 makoto makoto 152K 12月  6 10:16 cp
+  -rwxr-xr-x. 1 makoto makoto  49K 12月  6 10:16 dmesg
+  -rwxr-xr-x. 1 makoto makoto 2.7K 12月  6 10:16 dracut-cmdline
+  -rwxr-xr-x. 1 makoto makoto  422 12月  6 10:16 dracut-cmdline-ask
+  -rwxr-xr-x. 1 makoto makoto 1.4K 12月  6 10:16 dracut-emergency
+  -rwxr-xr-x. 1 makoto makoto 2.2K 12月  6 10:16 dracut-initqueue
+  -rwxr-xr-x. 1 makoto makoto 1.2K 12月  6 10:16 dracut-mount
+  -rwxr-xr-x. 1 makoto makoto  622 12月  6 10:16 dracut-pre-mount
+  -rwxr-xr-x. 1 makoto makoto 1.2K 12月  6 10:16 dracut-pre-pivot
+  -rwxr-xr-x. 1 makoto makoto  588 12月  6 10:16 dracut-pre-trigger
+  -rwxr-xr-x. 1 makoto makoto 1.5K 12月  6 10:16 dracut-pre-udev
+  -rwxr-xr-x. 1 makoto makoto  33K 12月  6 10:16 echo
+  -rwxr-xr-x. 1 makoto makoto  59K 12月  6 10:16 findmnt
+  -rwxr-xr-x. 1 makoto makoto  24K 12月  6 10:16 flock
+  -rwxr-xr-x. 1 makoto makoto 419K 12月  6 10:16 gawk
+  -rwxr-xr-x. 1 makoto makoto 156K 12月  6 10:16 grep
+  -rwxr-xr-x. 1 makoto makoto  99K 12月  6 10:16 gzip
+  -rwxr-xr-x. 1 makoto makoto 538K 12月  6 10:16 journalctl
+  -rwxr-xr-x. 1 makoto makoto  12K 12月  6 10:16 kbd_mode
+  -rwxr-xr-x. 1 makoto makoto 144K 12月  6 10:16 kmod
+  -rwxr-xr-x. 1 makoto makoto 155K 12月  6 10:16 less
+  -rwxr-xr-x. 1 makoto makoto  58K 12月  6 10:16 ln
+  -rwxr-xr-x. 1 makoto makoto 111K 12月  6 10:16 loadkeys
+  lrwxrwxrwx. 1 makoto makoto    4 12月  6 10:16 loginctl -> true
+  -rwxr-xr-x. 1 makoto makoto 115K 12月  6 10:16 ls
+  -rwxr-xr-x. 1 makoto makoto  78K 12月  6 10:16 mkdir
+  -rwxr-xr-x. 1 makoto makoto  62K 12月  6 10:16 mkfifo
+  -rwxr-xr-x. 1 makoto makoto  66K 12月  6 10:16 mknod
+  -rwsr-xr-x. 1 makoto makoto  44K 12月  6 10:16 mount
+  -rwxr-xr-x. 1 makoto makoto 128K 12月  6 10:16 mv
+  -rwxr-xr-x. 1 makoto makoto  65K 12月  6 10:16 ping
+  -rwxr-xr-x. 1 makoto makoto  40K 12月  6 10:16 plymouth
+  -rwxr-xr-x. 1 makoto makoto  98K 12月  6 10:16 ps
+  -rwxr-xr-x. 1 makoto makoto  41K 12月  6 10:16 readlink
+  -rwxr-xr-x. 1 makoto makoto  62K 12月  6 10:16 rm
+  -rwxr-xr-x. 1 makoto makoto  75K 12月  6 10:16 sed
+  -rwxr-xr-x. 1 makoto makoto  41K 12月  6 10:16 setfont
+  -rwxr-xr-x. 1 makoto makoto  12K 12月  6 10:16 setsid
+  lrwxrwxrwx. 1 makoto makoto    4 12月  6 10:16 sh -> bash
+  -rwxr-xr-x. 1 makoto makoto  33K 12月  6 10:16 sleep
+  -rwxr-xr-x. 1 makoto makoto  78K 12月  6 10:16 stat
+  -rwxr-xr-x. 1 makoto makoto  69K 12月  6 10:16 stty
+  -rwxr-xr-x. 1 makoto makoto 705K 12月  6 10:16 systemctl
+  -rwxr-xr-x. 1 makoto makoto 327K 12月  6 10:16 systemd-cgls
+  -rwxr-xr-x. 1 makoto makoto  49K 12月  6 10:16 systemd-escape
+  -rwxr-xr-x. 1 makoto makoto 388K 12月  6 10:16 systemd-run
+  -rwxr-xr-x. 1 makoto makoto 143K 12月  6 10:16 systemd-tmpfiles
+  -rwxr-xr-x. 1 makoto makoto 156K 12月  6 10:16 teamd
+  -rwxr-xr-x. 1 makoto makoto  29K 12月  6 10:16 teamdctl
+  -rwxr-xr-x. 1 makoto makoto  20K 12月  6 10:16 teamnl
+  -rwxr-xr-x. 1 makoto makoto  45K 12月  6 10:16 tr
+  -rwxr-xr-x. 1 makoto makoto  29K 12月  6 10:16 true
+  -rwxr-xr-x. 1 makoto makoto 415K 12月  6 10:16 udevadm
+  -rwsr-xr-x. 1 makoto makoto  32K 12月  6 10:16 umount
+  -rwxr-xr-x. 1 makoto makoto  33K 12月  6 10:16 uname
+  -rwxr-xr-x. 1 makoto makoto 907K 12月  6 10:16 vi
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[17]
+  仮想ファイルシステム
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    仮想ファイルシステム(/proc)配下の主要ファイルを確認する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd /proc
+  vm12$ ls -lh | grep -E '^-' (仮想ファイルシステム配下のファイルを一覧表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -r--r--r--.  1 root    root       0 12月  6 10:56 buddyinfo      // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 cgroups        // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 cmdline        // システム起動時のカーネル引数
+  -r--r--r--.  1 root    root       0 12月  6 10:56 consoles       // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 cpuinfo        // CPU情報
+  -r--r--r--.  1 root    root       0 12月  6 10:56 crypto         // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 devices        // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 diskstats      // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 dma            // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 execdomains    // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 fb             // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 filesystems    // ファイルシステム情報
+  -r--r--r--.  1 root    root       0 12月  6 10:56 interrupts     // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 iomem          // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 ioports        // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 kallsyms       // 不明
+  -r--------.  1 root    root    128T 12月  6 10:56 kcore          // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 key-users      // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 keys           // 不明
+  -r--------.  1 root    root       0 12月  6 10:56 kmsg           // カーネルログ
+  -r--------.  1 root    root       0 12月  6 10:56 kpagecgroup    // 不明
+  -r--------.  1 root    root       0 12月  6 10:56 kpagecount     // 不明
+  -r--------.  1 root    root       0 12月  6 10:56 kpageflags     // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 loadavg        // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 locks          // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 mdstat         // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 meminfo        // メモリ情報
+  -r--r--r--.  1 root    root       0 12月  6 10:56 misc           // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 modules        // カーネルモジュール一覧
+  -rw-r--r--.  1 root    root       0 12月  6 10:56 mtrr           // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 pagetypeinfo   // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 partitions     // パーティション情報
+  -r--r--r--.  1 root    root       0 12月  6 10:56 sched_debug    // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 schedstat      // 不明
+  -r--------.  1 root    root       0 12月  6 10:56 slabinfo       // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 softirqs       // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 stat           // 不明
+  -r--r--r--.  1 root    root       0 12月  6 09:11 swaps          // 使用中のスワップ領域
+  --w-------.  1 root    root       0 12月  6 10:56 sysrq-trigger  // 不明
+  -r--------.  1 root    root       0 12月  6 10:56 timer_list     // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 uptime         // システム起動からの経過時間
+  -r--r--r--.  1 root    root       0 12月  6 10:56 version        // バージョン情報
+  -r--------.  1 root    root       0 12月  6 10:56 vmallocinfo    // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 vmstat         // 不明
+  -r--r--r--.  1 root    root       0 12月  6 10:56 zoneinfo       // 不明
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/cmdline (システム起動時のカーネル引数)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  BOOT_IMAGE=/vmlinuz-4.15.3         // カーネルイメージ(/boot/vmlinuz-4.15.3)
+  root=/dev/mapper/centos_vm11-root  // 起動デバイス
+  ro                                 // 読取専用
+  crashkernel=auto                   // 不明
+  rd.lvm.lv=centos_vm11/root         // 不明
+  rd.lvm.lv=centos_vm11/swap         // 不明
+  console=ttyS0,115200n8             // 仮想マシン作成時にブートローダーに指定したコンソール接続のためのパラメータ
+  LANG=ja_JP.UTF-8                   // 言語・国・文字コード
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/cpuinfo (CPU情報)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  processor        : 0                                   // CPUのID
+  vendor_id        : GenuineIntel                        // ベンダーID
+  cpu family       : 6                                   // 不明
+  model            : 26                                  // 不明
+  model name       : Intel Core i7 9xx (Nehalem Core i7, IBRS update)
+  stepping         : 3                                   // 不明
+  microcode        : 0x1                                 // 不明
+  cpu MHz          : 2394.414                            // 不明
+  cache size       : 4096 KB                             // 不明
+  physical id      : 0                                   // 不明
+  siblings         : 1                                   // 不明
+  core id          : 0                                   // 不明
+  cpu cores        : 1                                   // CPU内のコア数
+  apicid           : 0                                   // 不明
+  initial apicid   : 0                                   // 不明
+  fpu              : yes                                 // 不明
+  fpu_exception    : yes                                 // 不明
+  cpuid level      : 11                                  // 不明
+  wp               : yes                                 // 不明
+  flags            : fpu de pse tsc msr pae ..           // vmx -> CPUがKVMに対応している
+  bugs             : cpu_meltdown spectre_v1 spectre_v2  // 不明
+  bogomips         : 4788.82                             // 不明
+  clflush size     : 64                                  // 不明
+  cache_alignment  : 64                                  // 不明
+  address sizes    : 36 bits physical, 48 bits virtual   // 不明
+  power management :                                     // 不明
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/filesystems (ファイルシステム情報)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nodev  sysfs       // 使用デバイスなし
+  nodev  rootfs      // 使用デバイスなし
+  nodev  ramfs       // 使用デバイスなし
+  nodev  bdev        // 使用デバイスなし
+  nodev  proc        // 使用デバイスなし
+  nodev  cpuset      // 使用デバイスなし
+  nodev  cgroup      // 使用デバイスなし
+  nodev  cgroup2     // 使用デバイスなし
+  nodev  tmpfs       // 使用デバイスなし
+  nodev  devtmpfs    // 使用デバイスなし
+  nodev  configfs    // 使用デバイスなし
+  nodev  debugfs     // 使用デバイスなし
+  nodev  tracefs     // 使用デバイスなし
+  nodev  securityfs  // 使用デバイスなし
+  nodev  sockfs      // 使用デバイスなし
+  nodev  dax         // 使用デバイスなし
+  nodev  bpf         // 使用デバイスなし
+  nodev  pipefs      // 使用デバイスなし
+  nodev  hugetlbfs   // 使用デバイスなし
+  nodev  devpts      // 使用デバイスなし
+  nodev  autofs      // 使用デバイスなし
+  nodev  pstore      // 使用デバイスなし
+  nodev  mqueue      // 使用デバイスなし
+  nodev  selinuxfs   // 使用デバイスなし
+         xfs         // ディスクで使用しているファイルシステムはxfsのみ
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/swaps (使用中のスワップ領域)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filename    Type         Size        Used     Priority
+  /dev/dm-1   partition    2097148     268      -2
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/version (バージョン情報)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC))
+  #1 SMP Sat Dec 4 10:54:37 JST 2021  // 不明
   --------------------------------------------------
   
   以下の確認に続く
