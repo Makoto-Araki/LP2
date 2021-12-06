@@ -22,6 +22,7 @@
 [21] ループバックデバイス
 [22] 動的デバイス管理 - 1 (ルール記述)
 [23] 動的デバイス管理 - 2 (udevadm info)
+[24] デバイス(USB)の自動検出
 ================================================================================
 [01]
   カーネルバージョン
@@ -3124,6 +3125,92 @@
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[24]
+  デバイス(USB)の自動検出
+  
+[内容]
+  ## 仮想マシン
+    なし
+  
+  ## 作業内容
+    デバイス(USB)の自動検出をモニタリング
+  
+[確認]
+  # cd $HOME
+  # systemctl is-active systemd-udevd (プロセスの稼働状況を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  active
+  --------------------------------------------------
+  
+  # cd $HOME
+  # lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sda               8:0    0   477G  0 disk 
+  ├─sda1            8:1    0     1G  0 part /boot
+  └─sda2            8:2    0   476G  0 part 
+    ├─centos-root 253:0    0    50G  0 lvm  /
+    ├─centos-swap 253:1    0   3.8G  0 lvm  [SWAP]
+    └─centos-home 253:2    0 422.2G  0 lvm  /home
+  --------------------------------------------------
+  
+  # cd $HOME
+  # udevadm monitor (デバイス接続のモニタリング開始)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  monitor will print the received events for:
+  UDEV   - the event which udev sends out after rule processing
+  KERNEL - the kernel uevent
+  
+  // ここでUSBメモリ接続
+  
+  KERNEL[27052.818517] add /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.1 (usb)
+  KERNEL[27052.819669] add /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.1/2-1.1:1.0 (usb)
+    (省略)
+  KERNEL[27058.610690] add /module/vfat (module)
+  UDEV  [27058.611319] add /module/vfat (module)
+  --------------------------------------------------
+  
+  # cd $HOME
+  # lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sda               8:0    0   477G  0 disk 
+  ├─sda1            8:1    0     1G  0 part /boot
+  └─sda2            8:2    0   476G  0 part 
+    ├─centos-root 253:0    0    50G  0 lvm  /
+    ├─centos-swap 253:1    0   3.8G  0 lvm  [SWAP]
+    └─centos-home 253:2    0 422.2G  0 lvm  /home
+  sdb               8:16   1    15G  0 disk (USBメモリ)
+  └─sdb1            8:17   1    15G  0 part /run/media/makoto/CentOS 7 x86_64
+  --------------------------------------------------
+  
+  # cd $HOME
+  # lsusb (デバイス(USB)をコマンドで調査)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Bus 002 Device 008: ID 056e:6042 Elecom Co., Ltd  (USBメモリ)
+  Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+  Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+  Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+  Bus 003 Device 002: ID 046d:c019 Logitech, Inc. Optical Tilt Wheel Mouse
+  Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+  Bus 001 Device 003: ID 8086:0186 Intel Corp. WiMAX Connection 2400m
+  Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+  Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
   --------------------------------------------------
   
   以下の確認に続く
