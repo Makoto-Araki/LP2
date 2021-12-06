@@ -16,6 +16,9 @@
 [15] 初期RAMディスク - 1 (既存)
 [16] 初期RAMディスク - 2 (作成)
 [17] 仮想ファイルシステム
+[18] デバイス(PCI)
+[19] デバイス(USB)
+[20] デバイスファイル
 ================================================================================
 [01]
   カーネルバージョン
@@ -2545,6 +2548,173 @@
   --------------------------------------------------
   Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC))
   #1 SMP Sat Dec 4 10:54:37 JST 2021  // 不明
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[18]
+  デバイス(PCI)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    カーネルが認識するデバイス(PCI)をコマンド(lspci)で調査する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install pciutils (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lspci (デバイス(PCI)をコマンドで調査)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
+  00:01.0 ISA bridge: Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
+  00:01.1 IDE interface: Intel Corporation 82371SB PIIX3 IDE [Natoma/Triton II]
+  00:01.3 Bridge: Intel Corporation 82371AB/EB/MB PIIX4 ACPI (rev 03)
+  00:03.0 Ethernet controller: Red Hat, Inc. Virtio network device
+  00:04.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1 (rev 03)
+  00:04.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2 (rev 03)
+  00:04.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3 (rev 03)
+  00:04.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1 (rev 03)
+  00:05.0 Communication controller: Red Hat, Inc. Virtio console
+  00:06.0 SCSI storage controller: Red Hat, Inc. Virtio block device
+  00:07.0 Unclassified device [00ff]: Red Hat, Inc. Virtio memory balloon
+  00:08.0 Unclassified device [00ff]: Red Hat, Inc. Virtio RNG
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lspci -s 00:01 -v -t (PCIバス(00)、スロット(01)、詳細情報、ツリー状で表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -[0000:00]-+-01.0  Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
+             +-01.1  Intel Corporation 82371SB PIIX3 IDE [Natoma/Triton II]
+             \-01.3  Intel Corporation 82371AB/EB/MB PIIX4 ACPI
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[19]
+  デバイス(USB)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    カーネルが認識するデバイス(USB)をコマンド(lsusb)で調査する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install usbutils (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsusb (デバイス(USB)をコマンドで調査)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+  Bus 004 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+  Bus 003 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+  Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lspci -s 001:001 (USBバス(001)、デバイス(001)で表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[20]
+  デバイスファイル
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    デバイスファイルの情報を追跡してみる
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ls -lh /dev | grep -E '^b' (ブロック型デバイスファイル)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  brw-rw----. 1 root   disk    253,   0 12月  6 09:11 dm-0
+  brw-rw----. 1 root   disk    253,   1 12月  6 09:11 dm-1
+  brw-rw----. 1 root   cdrom    11,   0 12月  6 09:11 sr0
+  brw-rw----. 1 root   disk    252,   0 12月  6 09:11 vda
+  brw-rw----. 1 root   disk    252,   1 12月  6 09:11 vda1
+  brw-rw----. 1 root   disk    252,   2 12月  6 09:11 vda2
+  
+  // 252 : メジャー番号
+  // 0   : マイナー番号
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/devices | grep -E '252|253' (メジャー番号252,253が何を意味するか調査)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  252 dax            // 不明 -> おそらく関係ない
+  253 tpm            // 不明 -> おそらく関係ない
+  252 virtblk        // 仮想ブロック(おそらく仮想マシン内の仮想ディスクを指す)
+  253 device-mapper  // 不明
   --------------------------------------------------
   
   以下の確認に続く
