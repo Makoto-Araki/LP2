@@ -5,6 +5,8 @@
 [04] SystemV - 4 (サービス管理 - コマンド)
 [05] SystemV - 5 (サービス管理 - 自動起動)
 [06] Systemd - 1 (ターゲットの追跡)
+[07] Systemd - 2 (サービスの追跡)
+[08] Systemd - 3 (サービスの検索)
 ================================================================================
 [01]
   SystemV - 1 (設定ファイルの確認)
@@ -379,14 +381,282 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  // ターゲット配下に多数のサービスが存在するためAAAやBBBといった概略で記述する
+  // ターゲット配下に多数のサービスが存在するためAAAやBBBといった表現で記述
   
   multi-user.target
-    AAA.service    // サービス(UNIT)
-    BBB.service    // サービス(UNIT)
-    basic.target   // ターゲット配下にターゲット -> basic.targetは他のターゲット(graphical-target)等からも呼び出される
-      CCC.service  // サービス(UNIT)
-      DDD.service  // サービス(UNIT)
+    AAA.service    // サービス
+    BBB.service    // サービス
+    basic.target   // ターゲット
+      CCC.service  // ターゲット配下のサービス
+      DDD.service  // ターゲット配下のサービス
+    EEE.service    // サービス
+    FFF.service    // サービス
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[07]
+  Systemd - 2 (サービスの追跡)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    サービスの起動・停止・再起動等を確認 -> サンプルとして「sshd」サービスを確認する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl status sshd (サービス状態を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ● sshd.service - OpenSSH server daemon
+      Loaded: loaded (/usr/lib/systemd/system/sshd.service)                 // UNITファイル
+      Active: active (running) since 火 2021-12-07 22:35:46 JST; 1h 48min ago  // サービス稼働中
+        Docs: man:sshd(8)                                                   // サービス本体のマニュアルは八章を参照
+              man:sshd_config(5)                                            // 設定ファイルのマニュアルは五章を参照
+    Main PID: 965 (sshd)                                                    // PID(965)
+      CGroup: /system.slice/sshd.service                                    // 不明
+              └─965 /usr/sbin/sshd -D                                       // 実行コマンド「sshd -D」
+  
+  12月 07 22:35:46 vm12 systemd[1]: Starting OpenSSH server daemon...         // 起動開始メッセージ
+  12月 07 22:35:46 vm12 sshd[965] : Server listening on 0.0.0.0 port 22.      // ポート22をリスニング中
+  12月 07 22:35:46 vm12 sshd[965] : Server listening on :: port 22.           // ポート22をリスニング中
+  12月 07 22:35:46 vm12 systemd[1]: Started OpenSSH server daemon.            // 起動完了メッセージ
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /usr/lib/systemd/system/sshd.service (UNITファイル参照)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [Unit]                                        // セクション
+  Description=OpenSSH server daemon             // 説明
+  Documentation=man:sshd(8) man:sshd_config(5)  // man 8 sshd, man 5 sshd
+  After=network.target sshd-keygen.service      // 指定したターゲットとサービスが起動開始するまで起動しない
+  Wants=sshd-keygen.service                     // 指定したサービスが起動失敗しても本サービスは起動開始する
+  
+  [Service]                                     // セクション
+  Type=notify                                   // simple(デフォルト値)
+  EnvironmentFile=/etc/sysconfig/sshd           // 設定ファイル
+  ExecStart=/usr/sbin/sshd -D $OPTIONS          // systemctl start
+  ExecReload=/bin/kill -HUP $MAINPID            // systemctl reload
+  KillMode=process                              // systemctl stop
+  Restart=on-failure                            // systemctl restart
+  RestartSec=42s                                // 不明
+  
+  [Install]                                     // セクション
+  WantedBy=multi-user.target                    // systemctl enable -> /etc/systemd/system/multi-user.target.wants
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl is-active sshd (サービス起動を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  active
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl stop sshd (サービス停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl start sshd (サービス開始)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl reload sshd (設定ファイル再読込)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl restart sshd (サービス再起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl is-enabled sshd (サービス自動起動を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  enabled -> 自動起動が有効
+  --------------------------------------------------
+  
+  vm12$ cd /etc/systemd/system/multi-user.target.wants
+  vm12$ ls -lh | grep sshd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 root root 36 12月  1 19:31 sshd.service -> /usr/lib/systemd/system/sshd.service
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl disable sshd (サービス自動起動を無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Removed symlink /etc/systemd/system/multi-user.target.wants/sshd.service.
+  --------------------------------------------------
+  
+  vm12$ cd /etc/systemd/system/multi-user.target.wants
+  vm12$ ls -lh | grep sshd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl enable sshd (サービス自動起動を有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Created symlink from /etc/systemd/system/multi-user.target.wants/sshd.service to /usr/lib/systemd/system/sshd.service.
+  --------------------------------------------------
+  
+  vm12$ cd /etc/systemd/system/multi-user.target.wants
+  vm12$ ls -lh | grep sshd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 root root 36 12月  8 16:52 sshd.service -> /usr/lib/systemd/system/sshd.service
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[08]
+  Systemd - 3 (サービスの検索)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    検索条件に合致するサービスの検索を行う
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl --no-pager list-units -t target | head -n 10 (ページャー不使用、起動済みサービス、タイプはターゲットのみを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  UNIT                   LOAD    ACTIVE  SUB    
+  basic.target           loaded  active  active Basic System
+  cryptsetup.target      loaded  active  active Local Encrypted Volumes
+  getty.target           loaded  active  active Login Prompts
+  local-fs-pre.target    loaded  active  active Local File Systems (Pre)
+  local-fs.target        loaded  active  active Local File Systems
+  multi-user.target      loaded  active  active Multi-User System
+  network-online.target  loaded  active  active Network is Online
+  network-pre.target     loaded  active  active Network (Pre)
+  network.target         loaded  active  active Network
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl --no-pager list-units -t service | head -n 10 (ページャー不使用、起動済みサービス、タイプはサービスのみを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  UNIT                       LOAD    ACTIVE  SUB      
+  auditd.service             loaded  active  running  Security Auditing Service
+  chronyd.service            loaded  active  running  NTP client/server
+  crond.service              loaded  active  running  Command Scheduler
+  dbus.service               loaded  active  running  D-Bus System Message Bus
+  firewalld.service          loaded  active  running  firewalld - dynamic firewall daemon
+  getty@tty1.service         loaded  active  running  Getty on tty1
+  kdump.service              loaded  failed  failed   Crash recovery kernel arming
+  kmod-static-nodes.service  loaded  active  exited   Create list of required static device ...
+  lvm2-lvmetad.service       loaded  active  running  LVM2 metadata daemon
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl --no-pager list-timers (ページャー不使用、起動済みタイマー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 次のタイマー起動時刻
+  NEXT
+  木 2021-12-09 14:35:54 JST
+  
+  // 次のタイマー起動時刻までに残された時間
+  LEFT
+  21h left
+  
+  // 前回にタイマーが起動した時刻
+  LAST
+  水 2021-12-08 14:35:54 JST
+  
+  // 前回にタイマーが起動してからの経過時間
+  PASSED
+  2h 27min ago
+  
+  // タイマーUNIT
+  UNIT
+  systemd-tmpfiles-clean.timer
+  
+  // タイマーUNITが呼び出すサービス
+  ACTIVATES
+  systemd-tmpfiles-clean.service
+  
+  // コマンド実行のサマリー
+  1 timers listed.
+  Pass --all to see loaded but inactive timers, too.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl --no-pager list-unit-files -t target | head -n 10 (ページャー不使用、全サービス、タイプはターゲットのみを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 表示内容は概ね「list-units」と同じ
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ systemctl --no-pager list-unit-files -t service | head -n 10 (ページャー不使用、全サービス、タイプはサービスのみを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 表示内容は概ね「list-units」と同じ
   --------------------------------------------------
   
   以下の確認に続く
