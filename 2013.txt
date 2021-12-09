@@ -10,6 +10,9 @@
 [09] Systemd - 4 (サービスの作成)
 [10] Journal - 1 (ジャーナルの表示)
 [11] Journal - 2 (ジャーナルの保持)
+[12] Grub Legacy - 1 (各ステージのファイル確認)
+[13] Grub Legacy - 2 (設定ファイルの確認)
+[14] Grub Legacy - 3 (シェル機能を使用)
 ================================================================================
 [01]
   SystemV - 1 (設定ファイルの確認)
@@ -151,7 +154,7 @@
   -rwxr-xr-x. 1 root root 3.5K  5月 11 15:17 2016 auditd
   -r-xr-xr-x. 1 root root 1.4K  5月 11 19:18 2016 blk-availability
   -rwxr-xr-x. 1 root root 2.8K 11月 10 19:14 2015 crond
-    (省略)
+    -- 省略 --
   -rwxr-xr-x. 1 root root  647  4月 12 18:14 2016 single
   -rwxr-xr-x. 1 root root 4.6K  5月 11 08:10 2016 sshd (このサービスで確認を行う)
   -rwxr-xr-x. 1 root root 2.3K  5月 11 17:55 2016 udev-post
@@ -299,7 +302,7 @@
   auditd             0:off    1:off    2:on     3:on     4:on     5:on     6:off
   blk-availability   0:off    1:on     2:on     3:on     4:on     5:on     6:off
   crond              0:off    1:off    2:on     3:on     4:on     5:on     6:off
-    (省略)
+    -- 省略 --
   saslauthd          0:off    1:off    2:off    3:off    4:off    5:off    6:off
   sshd               0:off    1:off    2:on     3:on     4:on     5:on     6:off
   udev-post          0:off    1:on     2:on     3:on     4:on     5:on     6:off
@@ -1024,6 +1027,245 @@
   コマンドの実行結果
   --------------------------------------------------
   -rw-r-----. 1 root root 8.0M 12月  9 12:43 system.journal -> このファイルに以後のジャーナルが永続的に保存
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[12]
+  Grub Legacy - 1 (各ステージのファイル確認)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm16 -> 現在はイメージファイル(ISO)がダウンロード不可、仮想マシンの作成ができないため昔の確認記録から引用
+    IPv4 : 192.168.122.16
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## システム起動(BIOS)
+    01. 起動デバイスのマスターブートレコード(MBR)を起動
+    02. マスターブートレコード(MBR)からブートローダー(GRUB)を起動
+      02-01. /boot/grub/stage1
+      02-02. /boot/grub/(ファイルシステム名)_stage1_5
+      02-03. /boot/grub/stage2
+    03. ブートローダー(GRUB)からカーネルを起動
+    04. カーネルから初期RAMディスクを起動
+    05. 初期RAMディスクからルートファイルシステムを起動
+    06. プロセス(init)を起動
+    07. 設定ファイルを読込 -> /etc/inittab
+    08. スクリプトを実行 -> /etc/rc.sysinit
+    09. ディレクトリ配下のスクリプト群を実行 -> /etc/rcXX.d/K(S)*
+  
+  ## 作業内容
+    ブートローダー(GRUB)の各ステージのファイルを確認する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm16 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm16$ cd /boot/grub
+  vm16$ ls -lh stage1 (ステージ1のファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 512  1月 24 17:07 2020 stage1
+  --------------------------------------------------
+  
+  vm16$ cd /boot/grub
+  vm16$ ls -lh *_stage1_5 (ステージ1.5のファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 14K  1月 24 17:07 2020 e2fs_stage1_5
+  -rw-r--r--. 1 root root 13K  1月 24 17:07 2020 fat_stage1_5
+  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 ffs_stage1_5
+  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 iso9660_stage1_5
+  -rw-r--r--. 1 root root 13K  1月 24 17:07 2020 jfs_stage1_5
+  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 minix_stage1_5
+  -rw-r--r--. 1 root root 15K  1月 24 17:07 2020 reiserfs_stage1_5
+  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 ufs2_stage1_5
+  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 vstafs_stage1_5
+  -rw-r--r--. 1 root root 14K  1月 24 17:07 2020 xfs_stage1_5
+  --------------------------------------------------
+  
+  vm16$ cd /boot/grub
+  vm16$ ls -lh stage2 (ステージ2のファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 124K  1月 24 17:07 2020 stage2
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[13]
+  Grub Legacy - 2 (設定ファイルの確認)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm16 -> 現在はイメージファイル(ISO)がダウンロード不可、仮想マシンの作成ができないため昔の確認記録から引用
+    IPv4 : 192.168.122.16
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    ブートローダー(GRUB)の設定ファイル(/boot/grub/menu.lst)を確認
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm16 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm16$ cd $HOME
+  vm16$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                       MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                         11:0    1 1024M  0 rom  
+  vda                        252:0    0    9G  0 disk 
+  ├─vda1                     252:1    0  500M  0 part /boot
+  └─vda2                     252:2    0  8.5G  0 part 
+    ├─vg_vm16-lv_root (dm-0) 253:0    0  7.6G  0 lvm  /
+    └─vg_vm16-lv_swap (dm-1) 253:1    0  920M  0 lvm  [SWAP]
+  --------------------------------------------------
+  
+  vm16$ cd /boot/grub
+  vm16$ grep -vE '^#' device.map (マッピングファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (hd0)  /dev/vda -> GRUB上では「/dev/vda」が「hd0」と表記
+  --------------------------------------------------
+  
+  vm16$ cd $HOME
+  vm16$ grep -vE '^#' /boot/grub/menu.lst (設定ファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  default=0                                        // デフォルト起動エントリ
+  timeout=5                                        // メニュー表示時間
+  splashimage=(hd0,0)/grub/splash.xpm.gz           // (hd0,0) = /dev/vda1 = /boot
+  hiddenmenu                                       // メニュー非表示
+  
+  title CentOS 6 (2.6.32-642.el6.x86_64)           // エントリ(0)
+    root (hd0,0)                                   // (hd0,0) = /dev/vda1 = /boot
+      kernel                                       // カーネルパラメータ -> 配下の設定は1行にまとめること
+        /vmlinuz-2.6.32-642.el6.x86_64             // カーネルイメージ
+        ro                                         // カーネル書き込み禁止
+        root=/dev/mapper/vg_vm16-lv_root           // ルートファイルシステム -> 配下の設定は1行にまとめること
+          rd_LVM_LV=vg_ch16/lv_swap                // 不明
+          rd_NO_LUKS                               // 不明
+          rd_NO_MD                                 // 不明
+          rd_LVM_LV=vg_ch16/lv_root                // 不明
+          crashkernel=auto                         // 不明
+          KEYBOARDTYPE=pc                          // 不明
+          KEYTABLE=jp106                           // 不明
+          LANG=ja_JP.UTF-8                         // 不明
+          rd_NO_DM                                 // 不明
+          rhgb                                     // 不明
+          quiet                                    // デバッグ情報非表示
+          console=tty0 console=ttyS0,115200n8      // コンソール接続(仮想マシン作成時に追加)
+      initrd /initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク → ルートパーティションをマウント
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[14]
+  Grub Legacy - 3 (シェル機能を使用)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm16 -> 現在はイメージファイル(ISO)がダウンロード不可、仮想マシンの作成ができないため昔の確認記録から引用
+    IPv4 : 192.168.122.16
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    ブートローダー(GRUB)に搭載されているシェル機能を使用してみる
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm16 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm16$ cd $HOME
+  vm16$ sudo grub (シェルを起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Probing devices to guess BIOS drives. This may take a long time.
+  GNU GRUB  version 0.97  (640K lower / 3072K upper memory)
+  
+    -- 省略 --
+  
+  grub> ■ (シェルのプロンプト表示)
+  --------------------------------------------------
+  
+  grub> 
+  grub> help (コマンド一覧を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  blocklist FILE                         boot                                   
+  cat FILE                               chainloader [--force] FILE             
+  clear                                  color NORMAL [HIGHLIGHT]               
+  configfile FILE                        device DRIVE DEVICE                    
+  displayapm                             displaymem                             
+  find FILENAME                          geometry DRIVE [CYLINDER HEAD SECTOR [ 
+  halt [--no-apm]                        help [--all] [PATTERN ...]             
+  hide PARTITION                         initrd FILE [ARG ...]                  
+  kernel [--no-mem-option] [--type=TYPE] makeactive                             
+  map TO_DRIVE FROM_DRIVE                md5crypt                               
+  module FILE [ARG ...]                  modulenounzip FILE [ARG ...]           
+  pager [FLAG]                           partnew PART TYPE START LEN            
+  parttype PART TYPE                     quit                                   
+  reboot                                 root [DEVICE [HDBIAS]]                 
+  rootnoverify [DEVICE [HDBIAS]]         serial [--unit=UNIT] [--port=PORT] [-- 
+  setkey [TO_KEY FROM_KEY]               setup [--prefix=DIR] [--stage2=STAGE2_ 
+  grub will attempt to avoid printing an terminal [--dumb] [--no-echo] [--no-ed 
+  terminfo [--name=NAME --cursor-address testvbe MODE                           
+  unhide PARTITION                       uppermem KBYTES                        
+  vbeprobe [MODE]                        
+  --------------------------------------------------
+  
+  grub> 
+  grub> root (hd0,0) (操作上の起点を設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem type is ext2fs, partition type 0x83
+  --------------------------------------------------
+  
+  grub> 
+  grub> cat (/boot)/grub/device.map (ファイル内容を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (hd0)  /dev/vda -> GRUB上では「/dev/vda」が「hd0」と表記
+  --------------------------------------------------
+  
+  grub> 
+  grub> quit (シェルを終了)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  quit -> OSに戻る
   --------------------------------------------------
   
   以下の確認に続く
