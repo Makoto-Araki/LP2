@@ -14,6 +14,7 @@
 [13] Grub Legacy - 2 (設定ファイルの確認)
 [14] Grub Legacy - 3 (シェル機能を使用)
 [15] Grub Legacy - 4 (シェル機能でカーネル手動起動)
+[16] Grub 2 - 1 (設定ファイルを生成)
 ================================================================================
 [01]
   SystemV - 1 (設定ファイルの確認)
@@ -806,7 +807,7 @@
   
 [確認]
   $ cd $HOME
-  $ sudo virsh start vm16 --console
+  $ sudo virsh start vm12 --console
   
   コマンドの実行結果
   --------------------------------------------------
@@ -964,7 +965,7 @@
   
 [確認]
   $ cd $HOME
-  $ sudo virsh start vm16 --console
+  $ sudo virsh start vm12 --console
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1374,6 +1375,98 @@
   コマンドの実行結果
   --------------------------------------------------
   (省略) → ログインプロンプトが表示
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[16]
+  Grub 2 - 1 (設定ファイルを生成)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    ブートローダー(GRUB2)のパラメータファイル(/boot/default/grub)から設定ファイル(grub.cfg)を生成
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo ls -lh /boot/grub2/grub.cfg (システム起動で使用される本来の設定ファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 5.0K 12月  4 15:53 /boot/grub2/grub.cfg
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /etc/default/grub (パラメータファイルの内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  GRUB_TIMEOUT=5
+  GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
+  GRUB_DEFAULT=saved
+  GRUB_DISABLE_SUBMENU=true
+  GRUB_TERMINAL="serial console"
+  GRUB_SERIAL_COMMAND="serial --speed=115200"
+  GRUB_CMDLINE_LINUX="          // 配下の設定は1行にまとめること
+    crashkernel=auto            // 不明
+    rd.lvm.lv=centos_vm11/root  // 不明
+    rd.lvm.lv=centos_vm11/swap  // 不明
+    console=ttyS0,115200n8"     // コンソール接続
+  GRUB_DISABLE_RECOVERY="true"
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo grub2-mkconfig -o grub.cfg (設定ファイルを生成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 指定するべき本来の生成場所は /boot/grub2/grub.cfg が正しい
+  
+  Generating grub configuration file ...                           // 処理開始のメッセージ
+  Found linux image  : /boot/vmlinuz-4.15.3                        // カーネルイメージ (4.15.3)
+  Found initrd image : /boot/initramfs-4.15.3.img                  // 初期RANディスク (4.15.3)
+  Found linux image  : /boot/vmlinuz-3.10.0-1160.el7.x86_64        // カーネルイメージ (3.10.0)
+  Found initrd image : /boot/initramfs-3.10.0-1160.el7.x86_64.img  // 初期RANディスク (3.10.0)
+  
+  [  885.871475] raid6: sse2x1   gen()  3300 MB/s
+  [  885.890455] raid6: sse2x1   xor()  2396 MB/s
+  [  885.910454] raid6: sse2x2   gen()  3453 MB/s
+  [  885.929433] raid6: sse2x2   xor()  2810 MB/s
+  [  885.947440] raid6: sse2x4   gen()  5015 MB/s
+  [  885.965444] raid6: sse2x4   xor()  4259 MB/s
+  [  885.967221] raid6: using algorithm sse2x4 gen() 5015 MB/s
+  [  885.969261] raid6: .... xor() 4259 MB/s, rmw enabled
+  [  885.971148] raid6: using ssse3x2 recovery algorithm
+  [  886.162355] xor: measuring software checksum speed
+  [  886.174443]    prefetch64-sse:  5052.000 MB/sec
+  [  886.186461]    generic_sse:  4700.000 MB/sec
+  [  886.189273] xor: using function: prefetch64-sse (5052.000 MB/sec)
+  [  887.342147] Btrfs loaded, crc32c=crc32c-intel
+  [  887.489127] fuse init (API version 7.26)
+  
+  done
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ls -lh | grep grub.cfg (設定ファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--.  1 root   root   4.9K 12月 10 15:35 grub.cfg
   --------------------------------------------------
   
   以下の確認に続く
