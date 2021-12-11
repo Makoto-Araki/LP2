@@ -3,6 +3,7 @@
 [02] Command - 2 (top)
 [03] Command - 3 (vmstat)
 [04] Command - 4 (iostat)
+[05] Command - 5 (iptop)
 ================================================================================
 [01]
   Command - 1 (stress)
@@ -377,6 +378,102 @@
   dm-0              0.00         0.00         0.00          0          0
   dm-1              0.00         0.00         0.00          0          0
   dm-2              0.00         0.00         0.00          0          0
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[05]
+  Command - 5 (iptop)
+  
+[内容]
+  ## コマンド ##
+    iotop -b     // 対話モードでなくバッチモード
+    iotop -d XX  // 更新間隔(XX 秒)
+    iotop -n XX  // 更新回数(XX 回)を越えた後で自動的に終了
+    iotop -u XX  // 指定ユーザーのプロセスのみ表示
+    iotop -p XX  // 指定PIDのプロセスのみ表示
+  
+  ## 作業内容
+    コマンドの動作確認を行う
+  
+[確認]
+  # cd $HOME
+  # iotop -> 対話モード
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 対話モードは各自で練習あるのみ！
+  --------------------------------------------------
+  
+  # cd $HOME
+  # vi sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  # HDD負荷1個、5秒後タイムアウト、バックグラウンド
+  stress -d 1 -t 5 &
+  
+  # バッチモード、更新間隔1秒、更新回数9回
+  iotop -b -d 1 -n 9 | grep stress
+  --------------------------------------------------
+  
+  # cd $HOME
+  # bash sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 負荷開始
+  stress: info: [23159] dispatching hogs: 0 cpu, 0 io, 0 vm, 1 hdd
+  
+  // 1回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23162  be/4  root     0.00 B/s   71.92 M/s   0.00 % 34.69 %    stress -d 1 -t 5
+  23159  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    stress -d 1 -t 5
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 2回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23162  be/4  root     0.00 B/s  271.63 M/s   0.00 % 82.34 %    stress -d 1 -t 5
+  23159  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    stress -d 1 -t 5
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 3回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23162  be/4  root     0.00 B/s  259.59 M/s   0.00 % 82.93 %    stress -d 1 -t 5
+  23159  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    stress -d 1 -t 5
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 4回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23162  be/4  root     0.00 B/s  246.01 M/s   0.00 % 63.73 %    stress -d 1 -t 5
+  23159  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    stress -d 1 -t 5
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 負荷終了
+  stress: info: [23159] successful run completed in 5s
+  
+  // 5回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 6回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 7回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 8回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
+  
+  // 9回目
+    TID  PRIO  USER     DISK READ  DISK WRITE  SWAPIN     IO>    COMMAND
+  23161  be/4  root     0.00 B/s    0.00 B/s   0.00 %  0.00 %    grep stress
   --------------------------------------------------
   
   以下の確認に続く
