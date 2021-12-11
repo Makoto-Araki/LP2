@@ -1,5 +1,6 @@
 ================================================================================
 [01] Command - 1 (stress)
+[02] Command - 2 (top)
 ================================================================================
 [01]
   Command - 1 (stress)
@@ -66,6 +67,135 @@
      0  0      117   1277      0    770    0     0      0   28    311    851     1  0 98  0  0
      0  0      117   1277      0    770    0     0      0    0    338    824     3  1 97  0  0
      0  0      117   1277      0    770    0     0      0  128    277    789     2  1 98  0  0
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[02]
+  Command - 2 (top)
+  
+[内容]
+  ## コマンド ##
+    top -b     // バッチモード
+    top -d XX  // 更新間隔(XX 秒)
+    top -n XX  // 更新回数(XX 回)を越えた後で自動的に終了
+    top -u XX  // 指定ユーザーのプロセスのみ表示
+    top -p XX  // 指定PIDのプロセスのみ表示
+    top -w XX  // 出力幅(XX 桁数)
+  
+  ## 作業内容
+    コマンドの動作確認を行う
+  
+[確認]
+  # cd $HOME
+  # top -> 対話モード
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 対話モードは各自で練習あるのみ！
+  --------------------------------------------------
+  
+  # cd $HOME
+  # vi sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  # CPU負荷1個、5秒後タイムアウト、バックグラウンド
+  stress -c 1 -t 5 &
+  
+  # バッチモード、更新間隔1秒、更新回数9回、出力幅100
+  top -b -d 1 -n 9 -w 100 | grep stress
+  --------------------------------------------------
+  
+  # cd $HOME
+  # bash sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 負荷開始
+  stress: info: [13104] dispatching hogs: 1 cpu, 0 io, 0 vm, 0 hdd
+  
+  // 1回目 -> 項目「%CPU」からCPU負荷を確認
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  13107 makoto    20   0    7312    100      0 R  94.1  0.0   0:00.18 stress
+  13104 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 2回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  13107 makoto    20   0    7312    100      0 R 100.0  0.0   0:01.19 stress
+  13104 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 3回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  13107 makoto    20   0    7312    100      0 R 100.0  0.0   0:02.20 stress
+  13104 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 4回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  13107 makoto    20   0    7312    100      0 R 100.0  0.0   0:03.21 stress
+  13104 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 5回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  13107 makoto    20   0    7312    100      0 R  99.0  0.0   0:04.22 stress
+  13104 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 負荷終了
+  stress: info: [13104] successful run completed in 5s
+  --------------------------------------------------
+  
+  # cd $HOME
+  # vi sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  # メモリ負荷1個、5秒後タイムアウト、バックグラウンド
+  stress -m 1 -t 5 &
+  
+  # バッチモード、更新間隔1秒、更新回数9回、出力幅100
+  top -b -d 1 -n 9 -w 100 | grep stress
+  --------------------------------------------------
+  
+  # cd $HOME
+  # bash sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 負荷開始
+  stress: info: [15517] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+  
+  // 1回目 -> 項目「%MEM」を見る限り、あまり負荷を掛けられていない
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  15520 makoto    20   0  269460 123708    128 R  80.0  3.3   0:00.19 stress
+  15517 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 2回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  15520 makoto    20   0  269460 259996    128 R 100.0  6.9   0:01.20 stress
+  15517 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 3回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  15520 makoto    20   0  269460  96320    128 R 100.0  2.6   0:02.21 stress
+  15517 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 4回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  15520 makoto    20   0  269460 228056    128 R 100.0  6.1   0:03.22 stress
+  15517 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 5回目
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+  15520 makoto    20   0  269460 262112    128 R 100.0  7.0   0:04.23 stress
+  15517 makoto    20   0    7312    432    348 S   0.0  0.0   0:00.00 stress
+  
+  // 負荷終了
+  stress: info: [15517] successful run completed in 5s
   --------------------------------------------------
   
   以下の確認に続く
