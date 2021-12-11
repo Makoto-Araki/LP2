@@ -434,18 +434,18 @@
   コマンドの実行結果
   --------------------------------------------------
   ● sshd.service - OpenSSH server daemon
-      Loaded: loaded (/usr/lib/systemd/system/sshd.service)                 // UNITファイル
+      Loaded: loaded (/usr/lib/systemd/system/sshd.service)                    // UNITファイル
       Active: active (running) since 火 2021-12-07 22:35:46 JST; 1h 48min ago  // サービス稼働中
-        Docs: man:sshd(8)                                                   // サービス本体のマニュアルは八章を参照
-              man:sshd_config(5)                                            // 設定ファイルのマニュアルは五章を参照
-    Main PID: 965 (sshd)                                                    // PID(965)
-      CGroup: /system.slice/sshd.service                                    // 不明
-              └─965 /usr/sbin/sshd -D                                       // 実行コマンド「sshd -D」
+        Docs: man:sshd(8)                                                      // サービス本体のマニュアルは八章を参照
+              man:sshd_config(5)                                               // 設定ファイルのマニュアルは五章を参照
+    Main PID: 965 (sshd)                                                       // PID(965)
+      CGroup: /system.slice/sshd.service                                       // 不明
+              └─965 /usr/sbin/sshd -D                                          // 実行コマンド「sshd -D」
   
-  12月 07 22:35:46 vm12 systemd[1]: Starting OpenSSH server daemon...         // 起動開始メッセージ
-  12月 07 22:35:46 vm12 sshd[965] : Server listening on 0.0.0.0 port 22.      // ポート22をリスニング中
-  12月 07 22:35:46 vm12 sshd[965] : Server listening on :: port 22.           // ポート22をリスニング中
-  12月 07 22:35:46 vm12 systemd[1]: Started OpenSSH server daemon.            // 起動完了メッセージ
+  12月 07 22:35:46 vm12 systemd[1]: Starting OpenSSH server daemon...          // 起動開始メッセージ
+  12月 07 22:35:46 vm12 sshd[965] : Server listening on 0.0.0.0 port 22.       // ポート22をリスニング中
+  12月 07 22:35:46 vm12 sshd[965] : Server listening on :: port 22.            // ポート22をリスニング中
+  12月 07 22:35:46 vm12 systemd[1]: Started OpenSSH server daemon.             // 起動完了メッセージ
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1046,19 +1046,10 @@
     GW   : 192.168.122.1
     DNS  : 192.168.122.1
   
-  ## システム起動(BIOS)
-    01. 起動デバイスのマスターブートレコード(MBR)を起動
-    02. マスターブートレコード(MBR)からブートローダー(GRUB)を起動
-      02-01. /boot/grub/stage1
-      02-02. /boot/grub/(ファイルシステム名)_stage1_5
-      02-03. /boot/grub/stage2
-    03. ブートローダー(GRUB)からカーネルを起動
-    04. カーネルから初期RAMディスクを起動
-    05. 初期RAMディスクからルートファイルシステムを起動
-    06. プロセス(init)を起動
-    07. 設定ファイルを読込 -> /etc/inittab
-    08. スクリプトを実行 -> /etc/rc.sysinit
-    09. ディレクトリ配下のスクリプト群を実行 -> /etc/rcXX.d/K(S)*
+  ## 各ステージのファイル
+    01. /boot/grub/stage1
+    02. /boot/grub/(ファイルシステム名)_stage1_5
+    03. /boot/grub/stage2
   
   ## 作業内容
     ブートローダー(GRUB)の各ステージのファイルを確認する
@@ -1793,69 +1784,61 @@
   -rw-rw-r--. 1 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-Testing-7
   -r--r--r--. 1 root root 2.9K 11月 26  2018 TRANS.TBL
   drwxr-xr-x. 3 root root 2.0K 11月 26  2018 images
-  drwxr-xr-x. 2 root root 2.0K 11月 26  2018 isolinux  // ブートローダー
+  drwxr-xr-x. 2 root root 2.0K 11月 26  2018 isolinux  // ブートローダー(SYSLINUX)のコンポーネントの一つ
   drwxr-xr-x. 2 root root 4.0K 11月 26  2018 repodata
   --------------------------------------------------
   
+  SYSLINUXとは
   ==================================================
-	・FATファイルシステム上のカーネルを起動できるブートローダー
-	・FATファイルシステムはWindowsやUSBメモリで使用されている
-	・前記録のレスキューモードで、インストールUSB内のカーネル起動も、SYSLINUXが担当した
-	・後述する各コンポーネントが存在する
+	・起動ディスクや起動USBメモリで使用されるブートローダー
+	・ISOLINUXはISO9660ファイルシステム(CD-ROM等)からカーネル起動を行う
   ==================================================
   
-	ISOLINUXのファイル確認
-	# cd /mnt/isolinux
-	# ls -lh
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	-r--r--r--. 1 root root 2.2K 11月 26  2018 TRANS.TBL
-	-r--r--r--. 1 root root 2.0K 11月 26  2018 boot.cat
-	-rw-r--r--. 1 root root   84 11月 26  2018 boot.msg
-	-rw-r--r--. 1 root root  281 11月 26  2018 grub.conf				// ブートローダー設定ファイル
-	-rw-r--r--. 1 root root  51M 11月 26  2018 initrd.img			// 初期RAMディスク
-	-rw-r--r--. 1 root root  24K 11月 26  2018 isolinux.bin
-	-rw-r--r--. 1 root root 3.0K 11月 26  2018 isolinux.cfg
-	-rw-r--r--. 1 root root 187K 11月  6  2016 memtest
-	-rw-r--r--. 1 root root  186 10月  1  2015 splash.png
-	-rw-r--r--. 1 root root 150K 10月 31  2018 vesamenu.c32
-	-rwxr-xr-x. 1 root root 6.4M 11月  9  2018 vmlinuz					// カーネルイメージ
-	--------------------------------------------------
-	
-	ブートローダー設定ファイルの確認
-	# cd /mnt/isolinux
-	# cat grub.conf
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	#debug --graphics
-	default=1
-	splashimage=@SPLASHPATH@
-	timeout 60
-	hiddenmenu
-	title Install CentOS 7
-		findiso
-		kernel @KERNELPATH@ @ROOT@ quiet									// カーネルイメージ
-		initrd @INITRDPATH@																	// 初期RAMディスク
-	title Test this media & install CentOS 7
-		findiso
-		kernel @KERNELPATH@ @ROOT@ rd.live.check quiet	// カーネルイメージ
-		initrd @INITRDPATH@																	// 初期RAMディスク
-	
-	// 先の「レスキューモード」時のメニューと同一
-	--------------------------------------------------
-	
-	インストールUSBをアンマウント
-	# cd $HOME
-	# umount /mnt
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	(出力なし)
-	
-	// これで「インストールUSBをシステムから外す」ことができる
-	--------------------------------------------------
+  # cd /mnt/isolinux
+  # ls -lh (ブートローダー内のファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -r--r--r--. 1 root root 2.2K 11月 26  2018 TRANS.TBL     // 不明
+  -r--r--r--. 1 root root 2.0K 11月 26  2018 boot.cat      // 不明
+  -rw-r--r--. 1 root root   84 11月 26  2018 boot.msg      // 不明
+  -rw-r--r--. 1 root root  281 11月 26  2018 grub.conf     // 設定ファイル
+  -rw-r--r--. 1 root root  51M 11月 26  2018 initrd.img    // 初期RAMディスク
+  -rw-r--r--. 1 root root  24K 11月 26  2018 isolinux.bin  // 不明
+  -rw-r--r--. 1 root root 3.0K 11月 26  2018 isolinux.cfg  // 不明
+  -rw-r--r--. 1 root root 187K 11月  6  2016 memtest       // 不明
+  -rw-r--r--. 1 root root  186 10月  1  2015 splash.png    // 不明
+  -rw-r--r--. 1 root root 150K 10月 31  2018 vesamenu.c32  // 不明
+  -rwxr-xr-x. 1 root root 6.4M 11月  9  2018 vmlinuz       // カーネルイメージ
+  --------------------------------------------------
+  
+  # cd /mnt/isolinux
+  # cat grub.conf (設定ファイルの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #debug --graphics
+  default=1
+  splashimage=@SPLASHPATH@
+  timeout 60
+  hiddenmenu
+  title Install CentOS 7
+    findiso                                         // 不明
+    kernel @KERNELPATH@ @ROOT@ quiet                // カーネルイメージ
+    initrd @INITRDPATH@                             // 初期RAMディスク
+  title Test this media & install CentOS 7
+    findiso                                         // 不明
+    kernel @KERNELPATH@ @ROOT@ rd.live.check quiet  // カーネルイメージ
+    initrd @INITRDPATH@                             // 初期RAMディスク
+  --------------------------------------------------
+  
+  # cd $HOME
+  # umount /mnt (USBメモリをアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> USBメモリをシステムから外すことが可能
+  --------------------------------------------------
   
   以下の確認に続く
   
