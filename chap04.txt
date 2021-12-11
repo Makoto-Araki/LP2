@@ -47,15 +47,15 @@
     noatime   : Iノードアクセス時刻更新  // 更新しない(ディスクアクセス高速化)
     auto      : コマンド「mount -a」の実行時の動作  // マウント
     noauto    : コマンド「mount -a」の実行時の動作  // マウントしない
-    exec      : バイナリ実行            // バイナリ実行を許可
-    noexec    : バイナリ実行            // バイナリ実行を禁止
-    suid      : SUID, SGID             // 有効
-    nosuid    : SUID, SGID             // 無効
-    ro        : 読み取り専用            // 読み取り専用でマウント
-    rw        : 読み取り専用            // 書き込み可能でマウント
-    user      : 一般ユーザーのマウント   // 一般ユーザーマウント許可、アンマウントはマウント操作したユーザーのみ
-    users     : 一般ユーザーのマウント   // 一般ユーザーマウント許可、アンマウントもマウント操作したユーザー以外で許可
-    nouser    : 一般ユーザーのマウント   // 一般ユーザーマウント禁止
+    exec      : バイナリ実行  // バイナリ実行を許可
+    noexec    : バイナリ実行  // バイナリ実行を禁止
+    suid      : SUID, SGID
+    nosuid    : SUID, SGID
+    ro        : 読み取り専用  // 読み取り専用でマウント
+    rw        : 読み取り専用  // 書き込み可能でマウント
+    user      : 一般ユーザーのマウント  // 一般ユーザーマウント許可、アンマウントはマウント操作したユーザーのみ
+    users     : 一般ユーザーのマウント  // 一般ユーザーマウント許可、アンマウントもマウント操作したユーザー以外で許可
+    nouser    : 一般ユーザーのマウント  // 一般ユーザーマウント禁止
     owner     : その他  // デバイスファイル所有者のマウント許可
     defaults  : その他  // async, auto, dev, exec, nouser, rw, suid
     dev       : その他  // ファイルシステム上のデバイスファイル使用可
@@ -122,10 +122,10 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  デバイス名(UUID名)/ラベル名                   マウントポイント   ファイルシステム   マウントオプション   DUMP   FSCK
-  /dev/mapper/centos_ch14-root                 /                xfs               defaults           0      0
-  /dev/mapper/centos_ch14-swap                 swap             swap              defaults           0      0
-  UUID=d1132ad2-d735-4f35-8c6a-0715344df07f    /boot            xfs               defaults           0      0
+  Device                                      MountPoint   FileSystem   MountOption   DUMP   FSCK
+  /dev/mapper/centos_ch14-root                /            xfs          defaults      0      0
+  /dev/mapper/centos_ch14-swap                swap         swap         defaults      0      0
+  UUID=d1132ad2-d735-4f35-8c6a-0715344df07f   /boot        xfs          defaults      0      0
   --------------------------------------------------
   
   以下の確認に続く
