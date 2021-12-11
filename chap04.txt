@@ -4,6 +4,7 @@
 [03] File System - 3 (UUID)
 [04] File System - 4 (カーネルサポートのファイルシステム)
 [05] File System - 5 (マウント済みのファイルシステム)
+[06] File System - 6 (マウント)
 ================================================================================
 [01]
   File System - 1 (設定ファイルの書式)
@@ -43,8 +44,8 @@
     cramfs    : 組込システム用
   
   マウントオプション
-    async     : 入出力同期              // 非同期
-    sync      : 入出力同期              // 同期
+    async     : 入出力同期  // 非同期
+    sync      : 入出力同期  // 同期
     atime     : Iノードアクセス時刻更新  // 更新
     relatime  : Iノードアクセス時刻更新  // 一定時間後に更新
     noatime   : Iノードアクセス時刻更新  // 更新しない(ディスクアクセス高速化)
@@ -108,27 +109,24 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  vdd                  252:48   0   10G  0 disk 
-  vdb                  252:16   0   10G  0 disk 
-  sr0                   11:0    1 1024M  0 rom  
-  vdc                  252:32   0   10G  0 disk 
-  vda                  252:0    0   40G  0 disk 
-  ├─vda2               252:2    0   39G  0 part 
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
   │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   37G  0 lvm  /
-  └─vda1               252:1    0    1G  0 part /boot
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo cat /etc/fstab (設定ファイルを確認)
+  vm12$ cat /etc/fstab | grep -vE '^#|^$' (設定ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
   Device                                      MountPoint   FileSystem   MountOption   DUMP   FSCK
-  /dev/mapper/centos_ch14-root                /            xfs          defaults      0      0
-  /dev/mapper/centos_ch14-swap                swap         swap         defaults      0      0
-  UUID=d1132ad2-d735-4f35-8c6a-0715344df07f   /boot        xfs          defaults      0      0
+  /dev/mapper/centos_vm11-root                /            xfs          defaults      0      0
+  /dev/mapper/centos_vm11-swap                swap         swap         defaults      0      0
+  UUID=1d5e0998-fe61-4a82-83be-96a01cfbbd31   /boot        xfs          defaults      0      0
   --------------------------------------------------
   
   以下の確認に続く
@@ -161,16 +159,13 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  vdd                  252:48   0   10G  0 disk 
-  vdb                  252:16   0   10G  0 disk 
-  sr0                   11:0    1 1024M  0 rom  
-  vdc                  252:32   0   10G  0 disk 
-  vda                  252:0    0   40G  0 disk 
-  ├─vda2               252:2    0   39G  0 part 
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
   │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   37G  0 lvm  /
-  └─vda1               252:1    0    1G  0 part /boot
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
   --------------------------------------------------
   
   UUID
@@ -185,10 +180,10 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/vda1: UUID="d1132ad2-d735-4f35-8c6a-0715344df07f" TYPE="xfs" 
-  /dev/vda2: UUID="LcMaCC-1lQU-j1hl-dw51-u6UQ-kH28-aZKghN" TYPE="LVM2_member" 
-  /dev/mapper/centos_ch14-root: UUID="984b5b4b-a7b3-4a6f-ab04-8ca199e2dec0" TYPE="xfs" 
-  /dev/mapper/centos_ch14-swap: UUID="96629976-4885-4ee3-8669-2c201f17a519" TYPE="swap" 
+  /dev/vda1: UUID="1d5e0998-fe61-4a82-83be-96a01cfbbd31" TYPE="xfs" 
+  /dev/vda2: UUID="FK1d1f-u6jH-Qd2L-OSNi-2gZL-os7w-fHojuw" TYPE="LVM2_member" 
+  /dev/mapper/centos_vm11-root: UUID="90cf6fa5-58ac-4e14-89d1-909a3f537aa6" TYPE="xfs" 
+  /dev/mapper/centos_vm11-swap: UUID="1475fefd-1dec-469a-b0c9-4f6be3f66ba9" TYPE="swap" 
   --------------------------------------------------
   
   以下の確認に続く
@@ -276,6 +271,35 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  sysfs /sys sysfs rw,seclabel,nosuid,nodev,noexec,relatime 0 0
+  proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+  pstore /sys/fs/pstore pstore rw,seclabel,nosuid,nodev,noexec,relatime 0 0
+  devtmpfs /dev devtmpfs rw,seclabel,nosuid,size=476688k,nr_inodes=119172,mode=755 0 0
+  securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
+  devpts /dev/pts devpts rw,seclabel,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+  cgroup /sys/fs/cgroup/systemd cgroup rw,seclabel,nosuid,nodev,noexec,relatime,xattr ... 0 0
+  cgroup /sys/fs/cgroup/cpu,cpuacct cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpu,cpuacct 0 0
+  cgroup /sys/fs/cgroup/net_cls cgroup rw,seclabel,nosuid,nodev,noexec,relatime,net_cls 0 0
+  cgroup /sys/fs/cgroup/devices cgroup rw,seclabel,nosuid,nodev,noexec,relatime,devices 0 0
+  cgroup /sys/fs/cgroup/freezer cgroup rw,seclabel,nosuid,nodev,noexec,relatime,freezer 0 0
+  cgroup /sys/fs/cgroup/pids cgroup rw,seclabel,nosuid,nodev,noexec,relatime,pids 0 0
+  cgroup /sys/fs/cgroup/cpuset cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuset 0 0
+  cgroup /sys/fs/cgroup/hugetlb cgroup rw,seclabel,nosuid,nodev,noexec,relatime,hugetlb 0 0
+  cgroup /sys/fs/cgroup/perf_event cgroup rw,seclabel,nosuid,nodev,noexec,relatime,perf_event 0 0
+  cgroup /sys/fs/cgroup/memory cgroup rw,seclabel,nosuid,nodev,noexec,relatime,memory 0 0
+  cgroup /sys/fs/cgroup/blkio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,blkio 0 0
+  configfs /sys/kernel/config configfs rw,relatime 0 0
+  selinuxfs /sys/fs/selinux selinuxfs rw,relatime 0 0
+  systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=26,pgrp=1,timeout=0,minproto=5,maxproto=5,direct 0 0
+  debugfs /sys/kernel/debug debugfs rw,seclabel,relatime 0 0
+  hugetlbfs /dev/hugepages hugetlbfs rw,seclabel,relatime,pagesize=2M 0 0
+  mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0
+  /dev/mapper/centos_vm11-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+  tmpfs /dev/shm tmpfs rw,seclabel,nosuid,nodev 0 0
+  tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0
+  tmpfs /sys/fs/cgroup tmpfs ro,seclabel,nosuid,nodev,noexec,mode=755 0 0
+  tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=100008k,mode=700,uid=1000,gid=1000 0 0
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -283,6 +307,108 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  sysfs /sys sysfs rw,seclabel,nosuid,nodev,noexec,relatime 0 0
+  proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+  pstore /sys/fs/pstore pstore rw,seclabel,nosuid,nodev,noexec,relatime 0 0
+  devpts /dev/pts devpts rw,seclabel,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+  devtmpfs /dev devtmpfs rw,seclabel,nosuid,size=476688k,nr_inodes=119172,mode=755 0 0
+  securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
+  cgroup /sys/fs/cgroup/systemd cgroup rw,seclabel,nosuid,nodev,noexec,relatime,xattr ... 0 0
+  cgroup /sys/fs/cgroup/cpu,cpuacct cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpu,cpuacct 0 0
+  cgroup /sys/fs/cgroup/net_cls cgroup rw,seclabel,nosuid,nodev,noexec,relatime,net_cls 0 0
+  cgroup /sys/fs/cgroup/devices cgroup rw,seclabel,nosuid,nodev,noexec,relatime,devices 0 0
+  cgroup /sys/fs/cgroup/freezer cgroup rw,seclabel,nosuid,nodev,noexec,relatime,freezer 0 0
+  cgroup /sys/fs/cgroup/pids cgroup rw,seclabel,nosuid,nodev,noexec,relatime,pids 0 0
+  cgroup /sys/fs/cgroup/cpuset cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuset 0 0
+  cgroup /sys/fs/cgroup/hugetlb cgroup rw,seclabel,nosuid,nodev,noexec,relatime,hugetlb 0 0
+  cgroup /sys/fs/cgroup/perf_event cgroup rw,seclabel,nosuid,nodev,noexec,relatime,perf_event 0 0
+  cgroup /sys/fs/cgroup/memory cgroup rw,seclabel,nosuid,nodev,noexec,relatime,memory 0 0
+  cgroup /sys/fs/cgroup/blkio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,blkio 0 0
+  configfs /sys/kernel/config configfs rw,relatime 0 0
+  selinuxfs /sys/fs/selinux selinuxfs rw,relatime 0 0
+  systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=26,pgrp=1,timeout=0,minproto=5,maxproto=5,direct 0 0
+  debugfs /sys/kernel/debug debugfs rw,seclabel,relatime 0 0
+  hugetlbfs /dev/hugepages hugetlbfs rw,seclabel,relatime,pagesize=2M 0 0
+  mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0
+  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+  /dev/mapper/centos_vm11-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+  tmpfs /dev/shm tmpfs rw,seclabel,nosuid,nodev 0 0
+  tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0
+  tmpfs /sys/fs/cgroup tmpfs ro,seclabel,nosuid,nodev,noexec,mode=755 0 0
+  tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=100008k,mode=700,uid=1000,gid=1000 0 0
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[06]
+  File System - 6 (マウント)
+  
+[内容]
+  ## コマンド
+    mount -a     // 設定ファイル(/etc/fstab)の全ファイルシステムをマウント
+    mount -o XX  // マウントオプション(XX)を指定
+    
+    stress -q     // 起動メッセージ非表示
+    stress -t XX  // タイムアウト(XX秒後)
+    stress -c XX  // CPU負荷の子プロセスの生成数(XX個)
+    stress -m XX  // メモリ負荷の子プロセスの生成数(XX個)
+    stress -d XX  // HDD負荷の子プロセスの生成数(XX個)
+    stress -t XX  // タイムアウト(XX秒後)
+  
+  ## 作業内容
+    コマンドの動作確認を行う
+  
+[確認]
+  # cd $HOME
+  # yum -y install stress
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> リポジトリ「EPEL」のインストールが必要
+  --------------------------------------------------
+  
+  # cd $HOME
+  # vi sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  # CPU負荷1個、メモリ負荷1個、5秒後タイムアウト
+  stress -c 1 -m 1 -t 5 &
+  
+  # 更新間隔1秒、更新回数9回、メガバイト単位
+  vmstat 1 9 -S m
+  --------------------------------------------------
+  
+  # cd $HOME
+  # bash sample.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 負荷開始
+  stress: info: [21295] dispatching hogs: 1 cpu, 0 io, 1 vm, 0 hdd
+  
+  // vmstat
+  ## PROC ##  ######## Memory #########  ## Swap ##  ### IO ###  ## System ##  ###### CPU ######
+     r  b     swpd   free   buff  cache   si    so     bi   bo     in     cs    us sy id wa st
+     1  0      117   1278      0    768    0     0     50  336    251    236     8  2 90  0  0
+     2  0      117   1185      0    770    0     0      0    0   2307    930    31 21 48  0  0
+     2  0      117   1126      0    770    0     0      0    0   2278    929    30 21 49  0  0
+     2  0      117   1102      0    770    0     0      0    0   2282   1037    30 21 49  0  0
+     2  0      117   1225      0    770    0     0      0    0   2272    955    30 22 49  0  0
+     1  0      117   1246      0    770    0     0      0    0   2265   1035    30 22 49  0  0
+ 
+  // 負荷終了
+  stress: info: [21295] successful run completed in 5s
+  
+  // vmstat -> PROC, CPU に変化あり
+  ## PROC ##  ######## Memory #########  ## Swap ##  ### IO ###  ## System ##  ###### CPU ######
+     r  b     swpd   free   buff  cache   si    so     bi   bo     in     cs    us sy id wa st
+     0  0      117   1277      0    770    0     0      0   28    311    851     1  0 98  0  0
+     0  0      117   1277      0    770    0     0      0    0    338    824     3  1 97  0  0
+     0  0      117   1277      0    770    0     0      0  128    277    789     2  1 98  0  0
   --------------------------------------------------
   
   以下の確認に続く
