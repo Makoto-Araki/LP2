@@ -221,28 +221,28 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  nodev		sysfs
-  nodev		tmpfs
-  nodev		bdev
-  nodev		proc
-  nodev		cgroup
-  nodev		cgroup2
-  nodev		cpuset
-  nodev		devtmpfs
-  nodev		configfs
-  nodev		debugfs
-  nodev		tracefs
-  nodev		securityfs
-  nodev		sockfs
-  nodev		bpf
-  nodev		pipefs
-  nodev		ramfs
-  nodev		hugetlbfs
-  nodev		devpts
-  nodev		autofs
-  nodev		mqueue
-  nodev		selinuxfs
-  nodev		pstore
+  nodev     sysfs
+  nodev     tmpfs
+  nodev     bdev
+  nodev     proc
+  nodev     cgroup
+  nodev     cgroup2
+  nodev     cpuset
+  nodev     devtmpfs
+  nodev     configfs
+  nodev     debugfs
+  nodev     tracefs
+  nodev     securityfs
+  nodev     sockfs
+  nodev     bpf
+  nodev     pipefs
+  nodev     ramfs
+  nodev     hugetlbfs
+  nodev     devpts
+  nodev     autofs
+  nodev     mqueue
+  nodev     selinuxfs
+  nodev     pstore
             xfs
   --------------------------------------------------
   
