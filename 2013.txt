@@ -16,6 +16,7 @@
 [15] Grub Legacy - 4 (シェル機能でカーネル手動起動)
 [16] Grub 2 - 1 (設定ファイルを生成)
 [17] Grub 2 - 2 (シェル機能でカーネル手動起動)
+[18] Install USB - 1 (インストールUSBの作成)
 ================================================================================
 [01]
   SystemV - 1 (設定ファイルの確認)
@@ -1530,8 +1531,8 @@
   -rw-r--r--. 1 root root 7.2M 12月  4 15:46 vmlinuz-4.15.3                        // カーネルイメージ (4.15.3)
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ lsblk (ブロックデバイス確認)
+  vm12$ cd $HOME
+  vm12$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1697,6 +1698,164 @@
   --------------------------------------------------
   (省略) → ログインプロンプトが表示
   --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[18]
+  Install USB - 1 (インストールUSBの作成)
+  
+[内容]
+  ## 作業内容
+    CentOS7のインストールUSBの作成を行う
+  
+[確認]
+  # cd /usr/local/src
+  # ls -lh (イメージファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 qemu qemu 918M 11月 26  2018 CentOS-7-x86_64-Minimal-1810.iso
+  --------------------------------------------------
+  
+  # cd $HOME
+  # lsblk (USBメモリを挿しシステム認識を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sda               8:0    0   477G  0 disk 
+  ├─sda1            8:1    0     1G  0 part /boot
+  └─sda2            8:2    0   476G  0 part 
+    ├─centos-root 253:0    0    50G  0 lvm  /
+    ├─centos-swap 253:1    0   3.8G  0 lvm  [SWAP]
+    └─centos-home 253:2    0 422.2G  0 lvm  /home
+  sdb               8:16   1    15G  0 disk 
+  └─sdb1            8:17   1    15G  0 part /run/media/makoto/CentOS 7 x86_64 (USBメモリ)
+  --------------------------------------------------
+  
+  # cd $HOME
+  # umount /dev/sdb1 (USBメモリをアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> アンマウントでシステム側からのアクセス排除
+  --------------------------------------------------
+  
+  # cd $HOME
+  # lsblk (USBメモリのシステム認識を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sda               8:0    0   477G  0 disk 
+  ├─sda1            8:1    0     1G  0 part /boot
+  └─sda2            8:2    0   476G  0 part 
+    ├─centos-root 253:0    0    50G  0 lvm  /
+    ├─centos-swap 253:1    0   3.8G  0 lvm  [SWAP]
+    └─centos-home 253:2    0 422.2G  0 lvm  /home
+  sdb               8:16   1    15G  0 disk 
+  └─sdb1            8:17   1    15G  0 part (USBメモリはデバイスとしての認識のみでシステム側からアクセス不可)
+  --------------------------------------------------
+  
+  # cd /usr/local/src
+  # dd if=CentOS-7-x86_64-Minimal-1810.iso of=/dev/sdb bs=512K && sync (インストールUSBの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // コマンド最後の「sync」でディスクバッファとディスク本体の同期を取る
+  
+  1836+0 レコード入力
+  1836+0 レコード出力
+  962592768 バイト (963 MB) コピーされました、 150.186 秒、 6.4 MB/秒
+  --------------------------------------------------
+  
+  # cd $HOME
+  # mount /dev/sdb /mnt (USBメモリを再マウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mount: /dev/sdb is write-protected, mounting read-only
+  --------------------------------------------------
+  
+  # cd /mnt
+  # ls -lh (インストールUSBのファイル構成を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 root root   14 11月 26  2018 CentOS_BuildTag
+  drwxr-xr-x. 3 root root 2.0K 11月 26  2018 EFI
+  -rw-rw-r--. 1 root root  227  8月 30  2017 EULA
+  -rw-rw-r--. 1 root root  18K 12月 10  2015 GPL
+  drwxr-xr-x. 2 root root 2.0K 11月 26  2018 LiveOS
+  drwxrwxr-x. 2 root root  70K 11月 26  2018 Packages
+  -rw-rw-r--. 1 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-7
+  -rw-rw-r--. 1 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-Testing-7
+  -r--r--r--. 1 root root 2.9K 11月 26  2018 TRANS.TBL
+  drwxr-xr-x. 3 root root 2.0K 11月 26  2018 images
+  drwxr-xr-x. 2 root root 2.0K 11月 26  2018 isolinux  // ブートローダー
+  drwxr-xr-x. 2 root root 4.0K 11月 26  2018 repodata
+  --------------------------------------------------
+  
+  ==================================================
+	・FATファイルシステム上のカーネルを起動できるブートローダー
+	・FATファイルシステムはWindowsやUSBメモリで使用されている
+	・前記録のレスキューモードで、インストールUSB内のカーネル起動も、SYSLINUXが担当した
+	・後述する各コンポーネントが存在する
+  ==================================================
+  
+	ISOLINUXのファイル確認
+	# cd /mnt/isolinux
+	# ls -lh
+	
+	コマンドの実行結果
+	--------------------------------------------------
+	-r--r--r--. 1 root root 2.2K 11月 26  2018 TRANS.TBL
+	-r--r--r--. 1 root root 2.0K 11月 26  2018 boot.cat
+	-rw-r--r--. 1 root root   84 11月 26  2018 boot.msg
+	-rw-r--r--. 1 root root  281 11月 26  2018 grub.conf				// ブートローダー設定ファイル
+	-rw-r--r--. 1 root root  51M 11月 26  2018 initrd.img			// 初期RAMディスク
+	-rw-r--r--. 1 root root  24K 11月 26  2018 isolinux.bin
+	-rw-r--r--. 1 root root 3.0K 11月 26  2018 isolinux.cfg
+	-rw-r--r--. 1 root root 187K 11月  6  2016 memtest
+	-rw-r--r--. 1 root root  186 10月  1  2015 splash.png
+	-rw-r--r--. 1 root root 150K 10月 31  2018 vesamenu.c32
+	-rwxr-xr-x. 1 root root 6.4M 11月  9  2018 vmlinuz					// カーネルイメージ
+	--------------------------------------------------
+	
+	ブートローダー設定ファイルの確認
+	# cd /mnt/isolinux
+	# cat grub.conf
+	
+	コマンドの実行結果
+	--------------------------------------------------
+	#debug --graphics
+	default=1
+	splashimage=@SPLASHPATH@
+	timeout 60
+	hiddenmenu
+	title Install CentOS 7
+		findiso
+		kernel @KERNELPATH@ @ROOT@ quiet									// カーネルイメージ
+		initrd @INITRDPATH@																	// 初期RAMディスク
+	title Test this media & install CentOS 7
+		findiso
+		kernel @KERNELPATH@ @ROOT@ rd.live.check quiet	// カーネルイメージ
+		initrd @INITRDPATH@																	// 初期RAMディスク
+	
+	// 先の「レスキューモード」時のメニューと同一
+	--------------------------------------------------
+	
+	インストールUSBをアンマウント
+	# cd $HOME
+	# umount /mnt
+	
+	コマンドの実行結果
+	--------------------------------------------------
+	(出力なし)
+	
+	// これで「インストールUSBをシステムから外す」ことができる
+	--------------------------------------------------
   
   以下の確認に続く
   
