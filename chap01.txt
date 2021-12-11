@@ -8,6 +8,7 @@
 [07] Command - 6 (sar)
 [08] Command - 7 (sadf)
 [09] Command - 8 (uptime)
+[10] Command - 9 (w)
 ================================================================================
 [01]
   Command - 1 (stress)
@@ -741,6 +742,62 @@
   // コマンド「top」の1行目と同一
   
   11:35:36 up 3:20, 2 users, load average: 0.42, 0.87, 1.00
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[10]
+  Command - 9 (w)
+  
+[内容]
+  ## コマンド ##
+    w     // ログインユーザーとプロセス情報を出力
+    w -h  // ヘッダを非表示
+    w -s  // ログイン時刻、JCPU、PCPUを非表示
+  
+  ## 項目説明 ##
+    TTY : 端末名
+    FROM : リモートホスト名
+    LOGIN@ : ログイン時刻
+    IDLE : アイドル時間
+    JCPU : 端末から実行されている全プロセスが消費したCPU時間
+    PCPU : WHAT欄のプロセスが消費したCPU時間
+    WHAT : 実行コマンド
+  
+  ## 作業内容
+    コマンドの動作確認を行う
+  
+[確認]
+  # cd $HOME
+  # w
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  12:18:01 up  4:03,  2 users,  load average: 0.74, 0.26, 0.20
+  USER    TTY    FROM  LOGIN@  IDLE   JCPU  PCPU   WHAT
+  makoto  tty1   :0    08:15   4:03m  5:31  0.54s  /usr/libexec/gnome-session-binary ...
+  makoto  pts/0  :0    08:15   1.00s  0.38s 11.14s /usr/libexec/gnome-terminal-server
+  --------------------------------------------------
+  
+  # cd $HOME
+  # w -h
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  makoto  tty1   :0    08:15   4:03m  5:32  0.54s  /usr/libexec/gnome-session-binary ...
+  makoto  pts/0  :0    08:15   0.00s  0.38s 11.26s /usr/libexec/gnome-terminal-server
+  --------------------------------------------------
+  
+  # cd $HOME
+  # w -s
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  12:30:05 up  4:15,  2 users,  load average: 0.33, 0.45, 0.40
+  USER    TTY    FROM  IDLE   WHAT
+  makoto  tty1   :0    4:15m  /usr/libexec/gnome-session-binary --session gnome-classic
+  makoto  pts/0  :0    5.00s  /usr/libexec/gnome-terminal-server
   --------------------------------------------------
   
   以下の確認に続く
