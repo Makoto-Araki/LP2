@@ -112,10 +112,10 @@
   NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
   sr0                      11:0    1 1024M  0 rom  
   vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  ├─vda2                  252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap    253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root    253:0    0   17G  0 lvm  /
+  └─vda1                  252:1    0    1G  0 part /boot
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -162,10 +162,10 @@
   NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
   sr0                      11:0    1 1024M  0 rom  
   vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  ├─vda2                  252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap    253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root    253:0    0   17G  0 lvm  /
+  └─vda1                  252:1    0    1G  0 part /boot
   --------------------------------------------------
   
   UUID
