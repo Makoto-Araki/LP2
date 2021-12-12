@@ -1,21 +1,25 @@
 ================================================================================
-[01] File System - 1 (設定ファイルの書式)
-[02] File System - 2 (設定ファイルの確認)
-[03] File System - 3 (UUID)
-[04] File System - 4 (カーネルサポートのファイルシステム)
-[05] File System - 5 (マウント済みのファイルシステム)
-[06] File System - 6 (デバイスをマウント)
-[07] File System - 7 (自動マウント)
+[01] File System - 01 (設定ファイルの書式)
+[02] File System - 02 (設定ファイルの確認)
+[03] File System - 03 (UUID)
+[04] File System - 04 (カーネルサポートのファイルシステム)
+[05] File System - 05 (マウント済みのファイルシステム)
+[06] File System - 06 (デバイスをマウント)
+[07] File System - 07 (自動マウント)
+[08] File System - 08 (スワップ領域)
+[09] File System - 09 (ファイルシステム作成)
+[10] File System - 10 (ISOイメージ作成)
+[11] File System - 11 (暗号化ファイルシステム)
 ================================================================================
 [01]
-  File System - 1 (設定ファイルの書式)
+  File System - 01 (設定ファイルの書式)
   
 [内容]
   ## 設定ファイル(/etc/fstab)の書式
   --------------------------------------------------
   デバイス名(UUID名)/ラベル名  マウントポイント  ファイルシステム  マウントオプション  DUMP対象  FSCK順序
   
-  (設定例)
+  -- 設定例 --
   /dev/sda1  /boot  ext2  defaults  0  2
   
   ファイルシステム
@@ -79,12 +83,12 @@
   
 [確認]
   なし
-
+  
   以下の確認に続く
   
 ================================================================================
 [02]
-  File System - 2 (設定ファイルの確認)
+  File System - 02 (設定ファイルの確認)
   
 [内容]
   ## 仮想マシン
@@ -110,13 +114,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                  252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap    253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root    253:0    0   17G  0 lvm  /
-  └─vda1                  252:1    0    1G  0 part /boot
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -124,17 +122,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Device                                      MountPoint   FileSystem   MountOption   DUMP   FSCK
-  /dev/mapper/centos_vm11-root                /            xfs          defaults      0      0
-  /dev/mapper/centos_vm11-swap                swap         swap         defaults      0      0
-  UUID=1d5e0998-fe61-4a82-83be-96a01cfbbd31   /boot        xfs          defaults      0      0
+  //
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [03]
-  File System - 3 (UUID)
+  File System - 03 (UUID)
   
 [内容]
   ## 仮想マシン
@@ -160,13 +155,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                  252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap    253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root    253:0    0   17G  0 lvm  /
-  └─vda1                  252:1    0    1G  0 part /boot
+  //
   --------------------------------------------------
   
   UUID
@@ -181,17 +170,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/vda1: UUID="1d5e0998-fe61-4a82-83be-96a01cfbbd31" TYPE="xfs" 
-  /dev/vda2: UUID="FK1d1f-u6jH-Qd2L-OSNi-2gZL-os7w-fHojuw" TYPE="LVM2_member" 
-  /dev/mapper/centos_vm11-root: UUID="90cf6fa5-58ac-4e14-89d1-909a3f537aa6" TYPE="xfs" 
-  /dev/mapper/centos_vm11-swap: UUID="1475fefd-1dec-469a-b0c9-4f6be3f66ba9" TYPE="swap" 
+  //
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [04]
-  File System - 4 (カーネルサポートのファイルシステム)
+  File System - 04 (カーネルサポートのファイルシステム)
   
 [内容]
   ## 仮想マシン
@@ -217,36 +203,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  nodev     sysfs
-  nodev     tmpfs
-  nodev     bdev
-  nodev     proc
-  nodev     cgroup
-  nodev     cgroup2
-  nodev     cpuset
-  nodev     devtmpfs
-  nodev     configfs
-  nodev     debugfs
-  nodev     tracefs
-  nodev     securityfs
-  nodev     sockfs
-  nodev     bpf
-  nodev     pipefs
-  nodev     ramfs
-  nodev     hugetlbfs
-  nodev     devpts
-  nodev     autofs
-  nodev     mqueue
-  nodev     selinuxfs
-  nodev     pstore
-            xfs
+  //
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [05]
-  File System - 5 (マウント済みのファイルシステム)
+  File System - 05 (マウント済みのファイルシステム)
   
 [内容]
   ## 仮想マシン
@@ -268,82 +232,26 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ cat /etc/mtab (マウント済みのファイルシステムを表示)
+  vm12$ cat /etc/mtab | head -n 3 (マウント済みのファイルシステムを表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  sysfs /sys sysfs rw,seclabel,nosuid,nodev,noexec,relatime 0 0
-  proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
-  pstore /sys/fs/pstore pstore rw,seclabel,nosuid,nodev,noexec,relatime 0 0
-  devtmpfs /dev devtmpfs rw,seclabel,nosuid,size=476688k,nr_inodes=119172,mode=755 0 0
-  securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
-  devpts /dev/pts devpts rw,seclabel,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
-  cgroup /sys/fs/cgroup/systemd cgroup rw,seclabel,nosuid,nodev,noexec,relatime,xattr ... 0 0
-  cgroup /sys/fs/cgroup/cpu,cpuacct cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpu,cpuacct 0 0
-  cgroup /sys/fs/cgroup/net_cls cgroup rw,seclabel,nosuid,nodev,noexec,relatime,net_cls 0 0
-  cgroup /sys/fs/cgroup/devices cgroup rw,seclabel,nosuid,nodev,noexec,relatime,devices 0 0
-  cgroup /sys/fs/cgroup/freezer cgroup rw,seclabel,nosuid,nodev,noexec,relatime,freezer 0 0
-  cgroup /sys/fs/cgroup/pids cgroup rw,seclabel,nosuid,nodev,noexec,relatime,pids 0 0
-  cgroup /sys/fs/cgroup/cpuset cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuset 0 0
-  cgroup /sys/fs/cgroup/hugetlb cgroup rw,seclabel,nosuid,nodev,noexec,relatime,hugetlb 0 0
-  cgroup /sys/fs/cgroup/perf_event cgroup rw,seclabel,nosuid,nodev,noexec,relatime,perf_event 0 0
-  cgroup /sys/fs/cgroup/memory cgroup rw,seclabel,nosuid,nodev,noexec,relatime,memory 0 0
-  cgroup /sys/fs/cgroup/blkio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,blkio 0 0
-  configfs /sys/kernel/config configfs rw,relatime 0 0
-  selinuxfs /sys/fs/selinux selinuxfs rw,relatime 0 0
-  systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=26,pgrp=1,timeout=0,minproto=5,maxproto=5,direct 0 0
-  debugfs /sys/kernel/debug debugfs rw,seclabel,relatime 0 0
-  hugetlbfs /dev/hugepages hugetlbfs rw,seclabel,relatime,pagesize=2M 0 0
-  mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0
-  /dev/mapper/centos_vm11-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  tmpfs /dev/shm tmpfs rw,seclabel,nosuid,nodev 0 0
-  tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0
-  tmpfs /sys/fs/cgroup tmpfs ro,seclabel,nosuid,nodev,noexec,mode=755 0 0
-  tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=100008k,mode=700,uid=1000,gid=1000 0 0
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ cat /proc/mounts (マウント済みのファイルシステムを表示)
+  vm12$ cat /proc/mounts | head -n 3 (マウント済みのファイルシステムを表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  sysfs /sys sysfs rw,seclabel,nosuid,nodev,noexec,relatime 0 0
-  proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
-  pstore /sys/fs/pstore pstore rw,seclabel,nosuid,nodev,noexec,relatime 0 0
-  devpts /dev/pts devpts rw,seclabel,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
-  devtmpfs /dev devtmpfs rw,seclabel,nosuid,size=476688k,nr_inodes=119172,mode=755 0 0
-  securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
-  cgroup /sys/fs/cgroup/systemd cgroup rw,seclabel,nosuid,nodev,noexec,relatime,xattr ... 0 0
-  cgroup /sys/fs/cgroup/cpu,cpuacct cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpu,cpuacct 0 0
-  cgroup /sys/fs/cgroup/net_cls cgroup rw,seclabel,nosuid,nodev,noexec,relatime,net_cls 0 0
-  cgroup /sys/fs/cgroup/devices cgroup rw,seclabel,nosuid,nodev,noexec,relatime,devices 0 0
-  cgroup /sys/fs/cgroup/freezer cgroup rw,seclabel,nosuid,nodev,noexec,relatime,freezer 0 0
-  cgroup /sys/fs/cgroup/pids cgroup rw,seclabel,nosuid,nodev,noexec,relatime,pids 0 0
-  cgroup /sys/fs/cgroup/cpuset cgroup rw,seclabel,nosuid,nodev,noexec,relatime,cpuset 0 0
-  cgroup /sys/fs/cgroup/hugetlb cgroup rw,seclabel,nosuid,nodev,noexec,relatime,hugetlb 0 0
-  cgroup /sys/fs/cgroup/perf_event cgroup rw,seclabel,nosuid,nodev,noexec,relatime,perf_event 0 0
-  cgroup /sys/fs/cgroup/memory cgroup rw,seclabel,nosuid,nodev,noexec,relatime,memory 0 0
-  cgroup /sys/fs/cgroup/blkio cgroup rw,seclabel,nosuid,nodev,noexec,relatime,blkio 0 0
-  configfs /sys/kernel/config configfs rw,relatime 0 0
-  selinuxfs /sys/fs/selinux selinuxfs rw,relatime 0 0
-  systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=26,pgrp=1,timeout=0,minproto=5,maxproto=5,direct 0 0
-  debugfs /sys/kernel/debug debugfs rw,seclabel,relatime 0 0
-  hugetlbfs /dev/hugepages hugetlbfs rw,seclabel,relatime,pagesize=2M 0 0
-  mqueue /dev/mqueue mqueue rw,seclabel,relatime 0 0
-  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  /dev/mapper/centos_vm11-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  tmpfs /dev/shm tmpfs rw,seclabel,nosuid,nodev 0 0
-  tmpfs /run tmpfs rw,seclabel,nosuid,nodev,mode=755 0 0
-  tmpfs /sys/fs/cgroup tmpfs ro,seclabel,nosuid,nodev,noexec,mode=755 0 0
-  tmpfs /run/user/1000 tmpfs rw,seclabel,nosuid,nodev,relatime,size=100008k,mode=700,uid=1000,gid=1000 0 0
+  //
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [06]
-  File System - 6 (デバイスをマウント)
+  File System - 06 (デバイスをマウント)
   
 [内容]
   ## コマンド(mount)
@@ -376,9 +284,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 レコード入力
-  10+0 レコード出力
-  10485760 バイト (10 MB) コピーされました、 0.0224628 秒、 467 MB/秒
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -386,7 +292,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 -> loop0, loop1, loop2 のように使用状況によってインクリメント
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -394,7 +300,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 6974.873458] loop: module loaded
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -402,15 +308,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt (デフォルト、ファイルシステム指定でマウント)
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt (マウントオプションはデフォルト、ファイルシステム指定でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 7066.252257] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -418,7 +324,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 on /mnt type ext4 (rw,relatime,seclabel,data=ordered)
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -426,7 +332,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 /mnt ext4 rw,seclabel,relatime,data=ordered 0 0
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -434,7 +340,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 /mnt ext4 rw,seclabel,relatime,data=ordered 0 0
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -442,14 +348,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                   11:0    1 1024M  0 rom  
-  loop0                  7:0    0   10M  0 loop /mnt (マウントしたループバックデバイス)
-  vda                  252:0    0   20G  0 disk 
-  ├─vda2               252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1               252:1    0    1G  0 part /boot
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -457,7 +356,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -465,7 +364,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -473,14 +372,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [07]
-  File System - 7 (自動マウント)
+  File System - 07 (自動マウント)
   
 [内容]
   ## 作業内容
@@ -500,9 +399,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 レコード入力
-  10+0 レコード出力
-  10485760 バイト (10 MB) コピーされました、 0.0224628 秒、 467 MB/秒
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -510,7 +407,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 -> loop0, loop1, loop2 のように使用状況によってインクリメント
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -518,7 +415,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 6974.873458] loop: module loaded
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -526,7 +423,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -538,7 +435,7 @@
   /net  -hosts
   +dir:/etc/auto.master.d
   +auto.master
-  /mnt/auto	/etc/auto.dir  // 追加
+  /mnt/auto	/etc/auto.dir  // 追加 -> ディレクトリ「/mnt/auto」移動時に設定ファイル「/etc/auto.dir」の内容でマウント
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -554,7 +451,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -562,14 +459,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                   11:0    1 1024M  0 rom  
-  loop0                  7:0    0   10M  0 loop (ループバックデバイス)
-  vda                  252:0    0   20G  0 disk 
-  ├─vda2               252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1               252:1    0    1G  0 part /boot
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -585,14 +475,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                   11:0    1 1024M  0 rom  
-  loop0                  7:0    0   10M  0 loop /mnt/auto/dir0 (ループバックデバイス)
-  vda                  252:0    0   20G  0 disk 
-  ├─vda2               252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1               252:1    0    1G  0 part /boot
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -608,7 +491,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -616,7 +499,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -631,16 +514,628 @@
   # /mnt/auto	/etc/auto.dir  // コメントアウト
   --------------------------------------------------
   
+  vm12$ cd /etc
+  vm12$ sudo rm auto.dir (追加した設定ファイル削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo rm -rf auto (マウントポイント削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
   vm12$ cd $HOME
   vm12$ sudo systemctl restart autofs (サービス再起動)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  //
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[08]
+  File System - 08 (スワップ領域)
+  
+[内容]
+  ## コマンド(mkswap)
+    mkswap XX     // スワップ領域(XX)を作成
+    mkswap -c     // 不良ブロックをチェック
+    mkswap -L XX  // ラベル(XX)を付与
+  
+  ## コマンド(swapon)
+    swapon XX     // スワップ領域(XX)を有効化
+    swapon -a     // 設定ファイル(/etc/fstab)の全スワップ領域を有効化
+    swapon -s     // 有効なスワップ領域を表示
+  
+  ## コマンド(swapoff)
+    swapoff XX    // スワップ領域(XX)を無効化
+    swapoff -a    // 設定ファイル(/etc/fstab)の全スワップ領域を無効化
+  
+  ## 作業内容
+    指定デバイスをスワップ領域化する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=loop0.img bs=1M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ losetup -f (使用可能なループバックデバイス名を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 loop0.img (ディスクイメージとループバックデバイスを紐づけ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkswap -c -L swap0 /dev/loop0 (不良ブロックのチェック、ラベル指定の条件でスワップ領域を作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo swapon /dev/loop0 (スワップ領域の有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ swapon -s (有効なスワップ領域を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/swaps (仮想ファイルで確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk (ブロックデバイスを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ swapoff /dev/loop0 (スワップ領域の無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo rm -f loop0.img (ディスクイメージ削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[09]
+  File System - 09 (ファイルシステム作成)
+  
+[内容]
+  ## コマンド(mkfs)
+    mkswap -c     // 不良ブロックをチェック
+    mkswap -t XX  // ファイルシステム(XX)を指定
+  
+  ## 作業内容
+    指定デバイスにファイルシステム作成を行う
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=loop0.img bs=1M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ losetup /dev/loop0 loop0.img (ディスクイメージとループバックデバイスを紐づけ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkfs -c -t ext3 /dev/loop0 (不良ブロックのチェック、ファイルシステム作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount -o defaults -t ext3 /dev/loop0 /mnt (マウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount | grep loop (マウント状況およびマウントオプションを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ blkid | grep loop (デバイスファイルからファイルシステムを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt (アンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f loop0.img (ディスクイメージ削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[10]
+  File System - 10 (ISOイメージ作成)
+  
+[内容]
+  ## コマンド(mkisofs)
+    mkisofs -b     // ブート可能CD
+    mkisofs -o XX  // CD(ISO9660)またはDVD(UDF)用イメージ(XX)を作成
+    mkisofs -J     // Microsoft用フォーマット
+    mkisofs -r(R)  // ロングネーム用フォーマット
+    mkisofs -udf   // DVD
+  
+  ## 作業内容
+    ISOイメージ作成を行う
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ yum -y install mkisofs (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkdir HISTORY (ISOイメージ化するディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HISTORY
+  vm12$ vi AAA.txt (ディレクトリ内部のファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1582年 本能寺の変
+  1600年 関ヶ原の戦い
+  1615年 大坂夏の陣
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HISTORY
+  vm12$ vi BBB.txt (ディレクトリ内部のファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1894年 日清戦争
+  1904年 日露戦争
+  1914年 第一次世界大戦
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HISTORY
+  vm12$ vi CCC.txt (ディレクトリ内部のファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1923年 関東大震災
+  1941年 太平洋戦争の開始
+  1945年 太平洋戦争の終了
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkisofs -o HISTORY-CDROM.iso -r(-R) HISTORY (CD用イメージ、ロングネーム対応でISOイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkisofs -udf -o HISTORY-DVD.iso -r(-R) HISTORY (DVD用イメージ、ロングネーム対応でISOイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ sudo rmdir auto (マウントポイント削除)
+  vm12$ sudo mkdir cdrom dvd (マウントポイント作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount -r -t iso9660 HISTORY-CDROM.iso /mnt/cdrom (CD用イメージを読取専用でマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd /mnt/cdrom
+  vm12$ ls -lh (CD用イメージを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount -r -t udf HISTORY-DVD.iso /mnt/dvd (DVD用イメージを読取専用でマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd /mnt/dvd
+  vm12$ ls -lh (DVD用イメージを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount | grep -E 'cdrom|dvd' (マウント状況およびマウントオプションを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ blkid | grep loop (デバイスファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ umount /mnt/cdrom /mnt/dvd (アンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo rmdir cdrom dvd (マウントポイント削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f *.iso (ISOイメージファイル削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[11]
+  File System - 11 (暗号化ファイルシステム)
+  
+[内容]
+  ## 仮想マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+    GW   : 192.168.122.1
+    DNS  : 192.168.122.1
+  
+  ## 作業内容
+    暗号化ファイルシステムを作成してみる
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh start vm12 --console
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 仮想マシンの起動
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ yum -y install cryptsetup (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=loop0.img bs=1M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  ディスクイメージとループバックデバイスを紐づけ
+  vm12$ cd $HOME
+  vm12$ losetup /dev/loop0 loop0.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  ループバックデバイスを暗号化デバイスに変換
+  vm12$ cd $HOME
+  vm12$ cryptsetup create sec0 /dev/loop0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter passphrase for /dev/loop0: (mikotoと入力)
+  --------------------------------------------------
+  
+  暗号化デバイス確認
+  vm12$ cd $HOME
+  vm12$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+  vdd                  252:48   0   10G  0 disk  
+  vdb                  252:16   0   10G  0 disk  
+  sr0                   11:0    1 1024M  0 rom   
+  loop0                  7:0    0   10M  0 loop  // ループバックデバイス
+  └─sec0               253:2    0   10M  0 crypt // 暗号化デバイス
+  vdc                  252:32   0   10G  0 disk  
+  vda                  252:0    0   40G  0 disk  
+  ├─vda2               252:2    0   39G  0 part  
+  │ ├─centos_ch14-swap 253:1    0    2G  0 lvm   [SWAP]
+  │ └─centos_ch14-root 253:0    0   37G  0 lvm   /
+  └─vda1               252:1    0    1G  0 part  /boot
+  --------------------------------------------------
+  
+  暗号化デバイスファイル確認
+  vm12$ cd /dev/mapper
+  vm12$ ls -lh | grep sec0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 root root       7  2月 11 14:06 sec0 -> ../dm-2
+  
+  // 実体ファイルが別にあり、シンボリックリンクとは初めて知った
+  --------------------------------------------------
+  
+  暗号化デバイスにファイルシステム「ext3」作成
+  vm12$ cd $HOME
+  vm12$ mkfs -t ext3 /dev/mapper/sec0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  暗号化デバイスファイルをマウント
+  vm12$ cd $HOME
+  vm12$ mount -o defaults -t ext3 /dev/mapper/sec0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 6501.152056] EXT4-fs (dm-2): mounting ext3 file system using the ext4 subsystem
+  [ 6501.175262] EXT4-fs (dm-2): mounted filesystem with ordered data mode. Opts: (null)
+  [ 6501.177157] ext3 filesystem being mounted at /mnt supports timestamps until 2038 (0x7fffffff)
+  --------------------------------------------------
+  
+  マウント状況およびマウントオプションを確認
+  vm12$ cd $HOME
+  vm12$ mount | grep sec0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/mapper/sec0 on /mnt type ext3 (rw,relatime,seclabel)
+  --------------------------------------------------
+  
+  デバイスファイル確認
+  vm12$ cd $HOME
+  vm12$ blkid | grep sec0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/mapper/sec0: UUID="27dc0f38-0dd4-47a8-9fcf-bed339f1dc47" TYPE="ext3"
+  --------------------------------------------------
+  
+  ブロックデバイス確認
+  vm12$ cd $HOME
+  vm12$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+  vdd                  252:48   0   10G  0 disk  
+  vdb                  252:16   0   10G  0 disk  
+  sr0                   11:0    1 1024M  0 rom   
+  loop0                  7:0    0   10M  0 loop  
+  └─sec0               253:2    0   10M  0 crypt /mnt	→ 暗号化デバイスがマウント
+  vdc                  252:32   0   10G  0 disk  
+  vda                  252:0    0   40G  0 disk  
+  ├─vda2               252:2    0   39G  0 part  
+  │ ├─centos_ch14-swap 253:1    0    2G  0 lvm   [SWAP]
+  │ └─centos_ch14-root 253:0    0   37G  0 lvm   /
+  └─vda1               252:1    0    1G  0 part  /boot
+  --------------------------------------------------
+  
+  ブロックデバイス確認
+  vm12$ cd $HOME
+  vm12$ df -lm
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ファイルシス                        1M-ブロック   使用   使用可  使用% マウント位置
+  devtmpfs                             466     0    466    0% /dev
+  tmpfs                                490     0    490    0% /dev/shm
+  tmpfs                                490     1    490    1% /run
+  tmpfs                                490     0    490    0% /sys/fs/cgroup
+  /dev/mapper/centos_ch14-root       37862 10022  27840   27% /
+  /dev/vda1                           1014   236    779   24% /boot
+  tmpfs                                 98     0     98    0% /run/user/0
+  /dev/mapper/sec0                       9     1      9    2% /mnt → 暗号化デバイスがマウント
+  --------------------------------------------------
+  
+  暗号化デバイスをアンマウント
+  vm12$ cd $HOME
+  vm12$ umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  暗号化デバイスからループバックデバイスに戻す
+  vm12$ cd $HOME
+  vm12$ cryptsetup remove sec0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  暗号化デバイスファイル確認
+  vm12$ cd /dev/mapper
+  vm12$ ls -lh | grep sec0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  
+  // シンボリックリンクが削除されることで紐づけが解除された
+  --------------------------------------------------
+  
+  ループバックデバイスとディスクイメージの紐づけ解除
+  vm12$ cd $HOME
+  vm12$ losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  ディスクイメージ削除
+  vm12$ cd $HOME
+  vm12$ rm -f loop0.img
   
   コマンドの実行結果
   --------------------------------------------------

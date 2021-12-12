@@ -713,7 +713,7 @@
   {
     printk(KERN_INFO "BASE exit\n");
   }
-	
+  
   // 他モジュールから実行
   void FUNC1(void)
   {
@@ -1364,7 +1364,7 @@
   {
     printk(KERN_INFO "BASE exit\n");
   }
-	
+  
   // 他モジュールから実行
   void FUNC1(void)
   {
