@@ -1958,13 +1958,13 @@
     コマンドの実行結果
     --------------------------------------------------
     MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 12866 AF_INET to 192.168.122.12 () port 12866 AF_INET
-
-    Recv   Send    Send                          
-    Socket Socket  Message  Elapsed              
-    Size   Size    Size     Time     Throughput  
-    bytes  bytes   bytes    secs.    10^6bits/sec  
     
-    87380  16384   16384    10.01    5197.63   
+    Recv    Send    Send
+    Socket  Socket  Message  Elapsed
+    Size    Size    Size     Time     Throughput
+    bytes   bytes   bytes    secs.    10^6bits/sec
+    
+    87380   16384   16384    10.01    5197.63  // およそ5200Mbps
     --------------------------------------------------
     
   vm12$ cd $HOME
