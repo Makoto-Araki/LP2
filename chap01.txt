@@ -22,8 +22,10 @@
 [21] CPU使用率の測定 - 02 (ps)
 [22] CPU使用率の測定 - 03 (pstree)
 [23] CPU使用率の測定 - 04 (lsof)
-[14] Command - 13 (free)
-[15] Command - 14 (df)
+[24] メモリおよびスワップ使用量の測定 - 01 (free)
+[25] メモリおよびスワップ使用量の測定 - 02 (cat /proc/meminfo)
+[26] ディスク使用量の測定 - 01 (df)
+[27] ディスク使用量の測定 - 02 (df)
 [16] Command - 15 (netstat)
 [17] Command - 16 (ss)
 ================================================================================
@@ -36,7 +38,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     stress -q     // 起動メッセージ非表示
@@ -111,7 +114,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     stress -q     // 起動メッセージ非表示
@@ -170,7 +174,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     stress -q     // 起動メッセージ非表示
@@ -279,7 +284,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     top -b     // バッチモード
@@ -342,7 +348,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     top -b     // バッチモード
@@ -405,7 +412,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     vmstat XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -425,7 +433,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     vmstat XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -445,7 +454,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     iostat -c     // CPU情報のみ出力
@@ -468,7 +478,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     iotop -b     // 対話モードでなくバッチモード
@@ -583,7 +594,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## 調査内容
     sysstat                 // パッケージ名
@@ -659,7 +671,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -709,7 +722,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -759,7 +773,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -809,7 +824,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -859,7 +875,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -913,7 +930,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
@@ -967,7 +985,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     sadf -j -- sarコマンド  // JSON形式 -> ログファイル指定時に「-f」を使用したらエラー
@@ -1004,7 +1023,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     uptime
@@ -1056,7 +1076,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     w XX     // ユーザー(XX)のプロセス情報を出力
@@ -1120,7 +1141,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     ps a      // 端末上の全プロセス表示
@@ -1172,49 +1194,49 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  // 1回目の出力
+  // 1回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
   makoto    2135  0.0  0.0   7308    92 ttyS0    R+   12:56   0:00 stress -c 1 -t 5 -q
   makoto    2134  0.0  0.0 112824   952 ttyS0    R+   12:56   0:00 grep stress
 
-  // 2回目の出力
+  // 2回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
   makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:01 stress -c 1 -t 5 -q
   makoto    2138  0.0  0.0 112824   948 ttyS0    R+   12:56   0:00 grep stress
 
-  // 3回目の出力
+  // 3回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
   makoto    2135  103  0.0   7308    92 ttyS0    R+   12:56   0:02 stress -c 1 -t 5 -q
   makoto    2141  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
 
-  // 4回目の出力
+  // 4回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
   makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:03 stress -c 1 -t 5 -q
   makoto    2144  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
 
-  // 5回目の出力
+  // 5回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
   makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:04 stress -c 1 -t 5 -q
   makoto    2147  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
 
-  // 6回目の出力
+  // 6回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2150  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
 
-  // 7回目の出力
+  // 7回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2153  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
 
-  // 8回目の出力
+  // 8回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2156  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
 
-  // 9回目の出力
+  // 9回目
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
   makoto    2159  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
   --------------------------------------------------
@@ -1231,7 +1253,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド
     ps a      // 端末上の全プロセス表示
@@ -1283,49 +1306,49 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  // 1回目の出力
+  // 1回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
   makoto    2197  2193  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
   makoto    2196  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 2回目の出力
+  // 2回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
   makoto    2197  2193 99 13:10 ttyS0    00:00:01 stress -c 1 -t 5 -q
   makoto    2200  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 3回目の出力
+  // 3回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
   makoto    2197  2193 99 13:10 ttyS0    00:00:02 stress -c 1 -t 5 -q
   makoto    2203  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 4回目の出力
+  // 4回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
   makoto    2197  2193 99 13:10 ttyS0    00:00:03 stress -c 1 -t 5 -q
   makoto    2206  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 5回目の出力
+  // 5回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
   makoto    2197  2193 82 13:10 ttyS0    00:00:04 stress -c 1 -t 5 -q
   makoto    2209  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 6回目の出力
+  // 6回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2212  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 7回目の出力
+  // 7回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2215  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 8回目の出力
+  // 8回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2218  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  // 9回目の出力
+  // 9回目
   UID        PID  PPID  C STIME TTY          TIME CMD
   makoto    2221  2192  0 13:10 ttyS0    00:00:00 grep stress
   --------------------------------------------------
@@ -1342,7 +1365,8 @@
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド ##
     pstree XX  // PID(XX)の親子関係をツリー状で表示
@@ -1392,13 +1416,14 @@
   
 [内容]
   ## 作業内容
-    CPU負荷をコマンド(lsof)で測定する
+    全てのHTTPS通信をコマンド(lsof)で測定する
   
   ## 使用マシン
-    HOST : vm12
-    IPv4 : 192.168.122.12
+    HOST : localhost
+    IPV4 : 192.168.1.3
+    MEMO : ホスト
   
-  ## コマンド ##
+  ## コマンド
     lsof        // プロセス情報をリスト表示
     lsof -c XX  // コマンド(XX)に一致するプロセスのみ表示
     lsof -i:XX  // ポート番号(XX)へ通信しているプロセスのみ表示
@@ -1407,142 +1432,201 @@
     lsof -u XX  // UID(XX)のプロセスのみ表示
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install lsof (コマンドのインストール)
+  $ cd $HOME
+  $ sudo yum -y install lsof (コマンドのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ stress -c 3 -q &
+  $ cd $HOME
+  $ lsof -i:https -n
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 2414 -> PID出力
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsof -u makoto | grep stress
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  stress(2414)─┬─stress(2415)
-                ├─stress(2416)
-                └─stress(2417)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ pkill -u makoto stress
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> Terminatedの出力があればOK
+  COMMAND   PID    USER    FD  TYPE  DEVICE  SIZE/OFF  NODE   NAME
+  code     3368  makoto   42u  IPV4  301529       0t0   TCP   192.168.1.3:38862 -> 40.77.226.250:https (SYN_SENT)
+  firefox  3563  makoto   49u  IPV4  301406       0t0   TCP   192.168.1.3:41428 -> 133.152.62.71:https (ESTABLISHED)
+  firefox  3563  makoto   53u  IPV4  263699       0t0   TCP   192.168.1.3:55368 -> 133.152.42.207:https (ESTABLISHED)
+  firefox  3563  makoto  103u  IPV4   46986       0t0   TCP   192.168.1.3:51332 -> 52.35.145.245:https (ESTABLISHED)
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[23]
-  CPU使用率の測定 - 04 (lsof)
+[24]
+  メモリおよびスワップ使用量の測定 - 01 (free)
   
 [内容]
   ## 作業内容
-    CPU負荷をコマンド(pstree)で測定する
+    メモリ負荷をコマンド(free)で測定する
   
   ## 使用マシン
     HOST : vm12
-    IPv4 : 192.168.122.12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
-  ## コマンド ##
-    lsof        // プロセス情報をリスト表示
-    lsof -c XX  // コマンド(XX)に一致するプロセスのみ表示
-    lsof -i:XX  // ポート番号(XX)へ通信しているプロセスのみ表示
-    lsof -n     // DNS名前解決を行わない
-    lsof -p XX  // PID(XX)のプロセスのみ表示
-    lsof -u XX  // UID(XX)のプロセスのみ表示
-  
-[確認]
-  # cd $HOME
-  # lsof -i:443 -n
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // ポート番号(443)へ通信しているプロセス一覧、DNS名前解決なし
-  
-  COMMAND  PID   USER   FD TYPE DEVICE SIZE/OFF NODE NAME
-  firefox 4050 makoto  96u IPv4 413257      0t0  TCP 192.168.1.4:55984->117.18.237.70:https (ESTABLISHED)
-  firefox 4050 makoto  97u IPv4 408349      0t0  TCP 192.168.1.4:54202->133.152.42.207:https (ESTABLISHED)
-  firefox 4050 makoto 107u IPv4 429081      0t0  TCP 192.168.1.4:42872->133.152.40.136:https (ESTABLISHED)
-  firefox 4050 makoto 125u IPv4  53136      0t0  TCP 192.168.1.4:38498->35.167.57.186:https (ESTABLISHED)
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[14]
-  Command - 13 (free)
-  
-[内容]
-  ## コマンド ##
+  ## コマンド
     free        // メモリとスワップの情報を表示
     free -b     // バイト単位で表示
     free -k     // キロバイト単位で表示
     free -m     // メガバイト単位で表示
     free -t     // 物理メモリとスワップの合計行も表示
     free -s XX  // 更新間隔(XX)を指定
-  
-  ## 項目説明 ##
-    Mem        : 物理メモリのサイズ(バッファキャッシュを考慮)
-    total      : 物理メモリのサイズ
-    used       : 使用サイズ(バッファキャッシュを含む)
-    free       : 空きメモリ(バッファキャッシュを含まない)
-    shared     : 共有メモリ
-    buff/cache : バッファキャッシュとページキャッシュ
-    available  : 新しいアプリケーション起動時に利用可能な物理メモリ
-    Swap       : スワップのサイズ
-    total      : スワップのサイズ
-    used       : 使用中のスワップ
-    free       : 空きスワップ
-  
-  ## 作業内容
-    コマンドの動作確認を行う
+    free -c XX  // 更新回数(XX)を指定
   
 [確認]
-  # cd $HOME
-  # free -m
+  vm12$ cd $HOME
+  vm12$ vi sample12.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  // メガバイト単位で表示
+  #!/bin/bash
   
-                total        used        free      shared  buff/cache   available
-  Mem:           3674        2204         183         388        1286         801
-  Swap:          3839          91        3748
+  # メモリ負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
+  stress -m 1 -t 5 -q &
+  
+  # 更新間隔1秒、更新回数9回、メガバイト単位
+  free -s 1 -c 9 -m
   --------------------------------------------------
   
-  # cd $HOME
-  # free -mt
+  vm12$ cd $HOME
+  vm12$ bash sample12.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  // メガバイト単位で表示、物理メモリとスワップの合計行も表示
-  
+  // 1回目 -> メモリ負荷で「available」が増減していく
                 total        used        free      shared  buff/cache   available
-  Mem:           3674        2244         119         389        1310         760
-  Swap:          3839          92        3747
-  Total:         7514        2336        3867
+  Mem:            991         146         526           6         318         700
+  Swap:          2047           0        2047
+  
+  // 2回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         237         435           6         318         609
+  Swap:          2047           0        2047
+  
+  // 3回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         333         339           6         318         513
+  Swap:          2047           0        2047
+  
+  // 4回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         371         301           6         318         475
+  Swap:          2047           0        2047
+  
+  // 5回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         197         475           6         318         649
+  Swap:          2047           0        2047
+  
+  // 6回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         146         526           6         318         700
+  Swap:          2047           0        2047
+  
+  // 7回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         146         526           6         318         700
+  Swap:          2047           0        2047
+  
+  // 8回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         146         526           6         318         700
+  Swap:          2047           0        2047
+  
+  // 9回目
+                total        used        free      shared  buff/cache   available
+  Mem:            991         146         526           6         318         700
+  Swap:          2047           0        2047
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[15]
-  Command - 14 (df)
+[25]
+  メモリおよびスワップ使用量の測定 - 02 (cat /proc/meminfo)
   
 [内容]
-  ## コマンド ##
+  ## 作業内容
+    メモリ容量をコマンド(cat /proc/meminfo)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ cat /proc/meminfo
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  MemTotal:        1014784 kB
+  MemFree:          539392 kB
+  MemAvailable:     717784 kB
+  Buffers:            2108 kB
+  Cached:           297992 kB
+  SwapCached:            0 kB
+  Active:           226876 kB
+  Inactive:         142096 kB
+  Active(anon):      69088 kB
+  Inactive(anon):     6576 kB
+  Active(file):     157788 kB
+  Inactive(file):   135520 kB
+  Unevictable:           0 kB
+  Mlocked:               0 kB
+  SwapTotal:       2097148 kB
+  SwapFree:        2097148 kB
+  Dirty:                 8 kB
+  Writeback:             0 kB
+  AnonPages:         68904 kB
+  Mapped:            22384 kB
+  Shmem:              6792 kB
+  Slab:              50140 kB
+  SReclaimable:      25720 kB
+  SUnreclaim:        24420 kB
+  KernelStack:        1664 kB
+  PageTables:         3568 kB
+  NFS_Unstable:          0 kB
+  Bounce:                0 kB
+  WritebackTmp:          0 kB
+  CommitLimit:     2604540 kB
+  Committed_AS:     271296 kB
+  VmallocTotal:   34359738367 kB
+  VmallocUsed:        5904 kB
+  VmallocChunk:   34359729920 kB
+  Percpu:              176 kB
+  HardwareCorrupted:     0 kB
+  AnonHugePages:     12288 kB
+  CmaTotal:              0 kB
+  CmaFree:               0 kB
+  HugePages_Total:       0
+  HugePages_Free:        0
+  HugePages_Rsvd:        0
+  HugePages_Surp:        0
+  Hugepagesize:       2048 kB
+  DirectMap4k:       45020 kB
+  DirectMap2M:     1003520 kB
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[26]
+  ディスク使用量の測定 - 01 (df)
+  
+[内容]
+  ## 作業内容
+    ディスク使用量をコマンド(df)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド
     df     // ディスク使用量の表示
     df -a  // 全ファイルシステムのディスク使用量を表示
     df -h  // 1MB=1024KB
@@ -1551,44 +1635,60 @@
     df -m  // メガバイト単位で表示
     df -T  // ファイルシステムタイプを表示
   
+[確認]
+  vm12$ cd $HOME
+  vm12$ df -mT (メガバイト単位、ファイルシステムタイプ表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
+  devtmpfs                     devtmpfs         484     0    484    0% /dev
+  tmpfs                        tmpfs            496     0    496    0% /dev/shm
+  tmpfs                        tmpfs            496     7    489    2% /run
+  tmpfs                        tmpfs            496     0    496    0% /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root xfs            17394  1575  15820   10% /
+  /dev/vda1                    xfs             1014   137    878   14% /boot
+  tmpfs                        tmpfs            100     0    100    0% /run/user/1000
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[27]
+  ディスク使用量の測定 - 02 (df)
+  
+[内容]
   ## 作業内容
-    コマンドの動作確認を行う
+    ディスク使用量をコマンド(df)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド
+    df     // ディスク使用量の表示
+    df -a  // 全ファイルシステムのディスク使用量を表示
+    df -h  // 1MB=1024KB
+    df -H  // 1MB=1000KB
+    df -i  // iノードの使用状況
+    df -m  // メガバイト単位で表示
+    df -T  // ファイルシステムタイプを表示
   
 [確認]
-  # cd $HOME
-  # df -hmT
+  vm12$ cd $HOME
+  vm12$ df -iT (iノードの使用状況、ファイルシステムタイプ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  // 1MB=1024KB、メガバイト単位、ファイルシステムタイプを表示
-  
-  ファイルシステム         タイプ     1M-ブロック  使用  使用可 使用% マウント位置
-  devtmpfs                devtmpfs        1821     0   1821    0% /dev
-  tmpfs                   tmpfs           1838     7   1832    1% /dev/shm
-  tmpfs                   tmpfs           1838    10   1828    1% /run
-  tmpfs                   tmpfs           1838     0   1838    0% /sys/fs/cgroup
-  /dev/mapper/centos-root xfs            51175 41570   9606   82% /
-  /dev/sda1               xfs             1014   406    609   40% /boot
-  /dev/mapper/centos-home xfs           432105 15821 416284    4% /home
-  tmpfs                   tmpfs            368     1    368    1% /run/user/1000
-  --------------------------------------------------
-  
-  # cd $HOME
-  # df -iT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // iノードの使用状況、ファイルシステムタイプを表示
-  
-  ファイルシステム         タイプ       Iノード  I使用     I残り I使用% マウント位置
-  devtmpfs                devtmpfs    465996    440    465556     1% /dev
-  tmpfs                   tmpfs       470356     10    470346     1% /dev/shm
-  tmpfs                   tmpfs       470356    835    469521     1% /run
-  tmpfs                   tmpfs       470356     16    470340     1% /sys/fs/cgroup
-  /dev/mapper/centos-root xfs       20154648 467291  19687357     3% /
-  /dev/sda1               xfs         524288    415    523873     1% /boot
-  /dev/mapper/centos-home xfs      221345792 142030 221203762     1% /home
-  tmpfs                   tmpfs       470356     21    470335     1% /run/user/1000
+  ファイルシス                 タイプ   Iノード I使用   I残り I使用% マウント位置
+  devtmpfs                     devtmpfs  123900   349  123551     1% /dev
+  tmpfs                        tmpfs     126848     1  126847     1% /dev/shm
+  tmpfs                        tmpfs     126848   427  126421     1% /run
+  tmpfs                        tmpfs     126848    16  126832     1% /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root xfs      8910848 27645 8883203     1% /
+  /dev/vda1                    xfs       524288   326  523962     1% /boot
+  tmpfs                        tmpfs     126848     1  126847     1% /run/user/1000
   --------------------------------------------------
   
   以下の確認に続く
