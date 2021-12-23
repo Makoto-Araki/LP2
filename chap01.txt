@@ -17,8 +17,9 @@
 [16] 総合的なリソース使用率の測定 - 13 (sar)
 [17] 総合的なリソース使用率の測定 - 14 (sadf)
 [18] 総合的なリソース使用率の測定 - 15 (uptime)
-[10] Command - 09 (w)
-[11] Command - 10 (ps)
+[19] 総合的なリソース使用率の測定 - 16 (w)
+[20] CPU使用率の測定 - 01 (ps)
+[21] CPU使用率の測定 - 02 (ps)
 [12] Command - 11 (pstree)
 [13] Command - 12 (lsof)
 [14] Command - 13 (free)
@@ -998,36 +999,71 @@
   総合的なリソース使用率の測定 - 15 (uptime)
   
 [内容]
-  ## コマンド ##
-    uptime  // システム稼働時間、ログインユーザー数、CPU負荷を出力
-  
   ## 作業内容
-    コマンドの動作確認を行う
+    システム稼働時間、ログインユーザー数、CPU負荷を出力
+  
+  ## 使用マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+  
+  ## コマンド
+    uptime
   
 [確認]
-  # cd $HOME
-  # uptime
+  vm12$ cd $HOME
+  vm12$ vi sample07.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  // コマンド「top」の1行目と同一
+  #!/bin/bash
   
-  11:35:36 up 3:20, 2 users, load average: 0.42, 0.87, 1.00
+  # HDD負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
+  stress -d 1 -t 5 -q &
+  
+  # コマンドをループ処理で複数回実行
+  for i in $(seq 1 9)
+  do
+    uptime
+    sleep 1
+  done
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ bash sample07.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  12:22:09 up  3:50,  1 user,  load average: 0.00, 0.01, 0.05  // CPU負荷よりもHDD負荷の方が効果的
+  12:22:10 up  3:50,  1 user,  load average: 0.08, 0.03, 0.05
+  12:22:12 up  3:50,  1 user,  load average: 0.08, 0.03, 0.05
+  12:22:14 up  3:50,  1 user,  load average: 0.08, 0.03, 0.05
+  12:22:15 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
+  12:22:16 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
+  12:22:17 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
+  12:22:18 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
+  12:22:19 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[10]
-  Command - 09 (w)
+[19]
+  総合的なリソース使用率の測定 - 16 (w)
   
 [内容]
-  ## コマンド ##
-    w      // ログインユーザーとプロセス情報を出力
-    w -h   // ヘッダを非表示
-    w -s   // ログイン時刻、JCPU、PCPUを非表示
+  ## 作業内容
+    指定ユーザー(makoto)のプロセス情報を出力
   
-  ## 項目説明 ##
+  ## 使用マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+  
+  ## コマンド
+    w XX     // ユーザー(XX)のプロセス情報を出力
+    w -h XX  // ヘッダを非表示
+    w -s XX  // ログイン時刻、JCPU、PCPUを非表示
+  
+  ## 項目説明
     TTY    : 端末名
     FROM   : リモートホスト名
     LOGIN@ : ログイン時刻
@@ -1036,49 +1072,57 @@
     PCPU   : WHAT欄のプロセスが消費したCPU時間
     WHAT   : 実行コマンド
   
-  ## 作業内容
-    コマンドの動作確認を行う
-  
 [確認]
-  # cd $HOME
-  # w
+  vm12$ cd $HOME
+  vm12$ vi sample08.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  12:18:01 up  4:03,  2 users,  load average: 0.74, 0.26, 0.20
-  USER    TTY    FROM  LOGIN@  IDLE   JCPU  PCPU   WHAT
-  makoto  tty1   :0    08:15   4:03m  5:31  0.54s  /usr/libexec/gnome-session-binary ...
-  makoto  pts/0  :0    08:15   1.00s  0.38s 11.14s /usr/libexec/gnome-terminal-server
+  #!/bin/bash
+  
+  # CPU負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
+  stress -c 1 -t 5 -q &
+  
+  # コマンドをループ処理で複数回実行
+  for i in $(seq 1 9)
+  do
+    w -h makoto
+    sleep 1
+  done
   --------------------------------------------------
   
-  # cd $HOME
-  # w -h
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  makoto  tty1   :0    08:15   4:03m  5:32  0.54s  /usr/libexec/gnome-session-binary ...
-  makoto  pts/0  :0    08:15   0.00s  0.38s 11.26s /usr/libexec/gnome-terminal-server
-  --------------------------------------------------
-  
-  # cd $HOME
-  # w -s
+  vm12$ cd $HOME
+  vm12$ bash sample08.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  12:30:05 up  4:15,  2 users,  load average: 0.33, 0.45, 0.40
-  USER    TTY    FROM  IDLE   WHAT
-  makoto  tty1   :0    4:15m  /usr/libexec/gnome-session-binary --session gnome-classic
-  makoto  pts/0  :0    5.00s  /usr/libexec/gnome-terminal-server
+  USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU   WHAT
+  makoto   ttyS0                     08:32    2.00s  0.99s  0.00s  stress -c 1 -t 5 -q
+  makoto   ttyS0                     08:32    4.00s  2.02s  0.00s  w -h makoto
+  makoto   ttyS0                     08:32    5.00s  3.04s  0.00s  w -h makoto
+  makoto   ttyS0                     08:32    6.00s  4.07s  0.00s  w -h makoto
+  makoto   ttyS0                     08:32    7.00s  5.09s  0.00s  w -h makoto
+  makoto   ttyS0                     08:32    8.00s  0.98s  0.00s  w -h makoto
+  makoto   ttyS0                     08:32    9.00s  0.99s  0.01s  w -h makoto
+  makoto   ttyS0                     08:32   10.00s  0.99s  0.01s  w -h makoto
+  makoto   ttyS0                     08:32   11.00s  0.98s  0.00s  w -h makoto
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[11]
-  Command - 10 (ps)
+[20]
+  CPU使用率の測定 - 01 (ps)
   
 [内容]
-  ## コマンド ##
+  ## 作業内容
+    CPU負荷をコマンド(ps)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+  
+  ## コマンド
     ps a      // 端末上の全プロセス表示
     ps u      // 実行ユーザー表示
     ps x      // 制御端末を持たないプロセスも表示
@@ -1091,7 +1135,7 @@
     ps -p XX  // XX(PID)を指定
     ps -u XX  // XX(UID)を指定
   
-  ## 項目説明 ##
+  ## 項目説明
     PID     : プロセスID
     PPID    : 親プロセスのPID
     %CPU    : CPU使用率
@@ -1104,36 +1148,186 @@
     TIME    : 消費したCPU時間
     COMMAND : 実行コマンド
   
+[確認]
+  vm12$ cd $HOME
+  vm12$ vi sample09.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  # CPU負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
+  stress -c 1 -t 5 -q &
+  
+  # CPU負荷プロセスを全て抽出
+  for i in $(seq 1 9)
+  do
+    ps aux | grep stress
+    sleep 1
+  done
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ bash sample09.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 1回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
+  makoto    2135  0.0  0.0   7308    92 ttyS0    R+   12:56   0:00 stress -c 1 -t 5 -q
+  makoto    2134  0.0  0.0 112824   952 ttyS0    R+   12:56   0:00 grep stress
+
+  // 2回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
+  makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:01 stress -c 1 -t 5 -q
+  makoto    2138  0.0  0.0 112824   948 ttyS0    R+   12:56   0:00 grep stress
+
+  // 3回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
+  makoto    2135  103  0.0   7308    92 ttyS0    R+   12:56   0:02 stress -c 1 -t 5 -q
+  makoto    2141  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
+
+  // 4回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
+  makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:03 stress -c 1 -t 5 -q
+  makoto    2144  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
+
+  // 5回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
+  makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:04 stress -c 1 -t 5 -q
+  makoto    2147  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
+
+  // 6回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2150  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
+
+  // 7回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2153  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
+
+  // 8回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2156  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
+
+  // 9回目の出力
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  makoto    2159  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[21]
+  CPU使用率の測定 - 02 (ps)
+  
+[内容]
   ## 作業内容
-    コマンドの動作確認を行う
+    CPU負荷をコマンド(ps)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPv4 : 192.168.122.12
+  
+  ## コマンド
+    ps a      // 端末上の全プロセス表示
+    ps u      // 実行ユーザー表示
+    ps x      // 制御端末を持たないプロセスも表示
+    ps e      // 環境変数も表示
+    ps r      // 実行中プロセスのみ表示
+    ps l      // 長フォーマット
+    ps -e     // 全プロセス表示
+    ps -f     // 引数も含めた完全フォーマットで表示
+    ps -l     // 長フォーマット
+    ps -p XX  // XX(PID)を指定
+    ps -u XX  // XX(UID)を指定
+  
+  ## 項目説明
+    PID     : プロセスID
+    PPID    : 親プロセスのPID
+    %CPU    : CPU使用率
+    %MEM    : メモリ使用率
+    VSZ     : プロセスが使用するメモリ量
+    RSS     : 現時点で使用中のメモリ量
+    TTY     : 制御端末名
+    STAT    : プロセス状態(S:スリープ、D:割込不可、R:実行状態、T:トレースまたは停止、Z:消滅状態、W:スワップアウト)
+    START   : 実行開始時刻
+    TIME    : 消費したCPU時間
+    COMMAND : 実行コマンド
   
 [確認]
-  # cd $HOME
-  # ps aux
+  vm12$ cd $HOME
+  vm12$ vi sample10.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  // システムで実行されている全プロセス
+  #!/bin/bash
   
-  USER  PID  %CPU  %MEM     VSZ   RSS  TTY  STAT  START  TIME  COMMAND
-  root    1   0.0   0.1  193988  6040    ?    Ss  08:14  0:08  /usr/lib/systemd/systemd ...
-  root    2   0.0   0.0       0     0    ?     S  08:14  0:00  [kthreadd]
+  # CPU負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
+  stress -c 1 -t 5 -q &
   
-  -- 省略 --
+  # CPU負荷プロセスを全て抽出
+  for i in $(seq 1 9)
+  do
+    ps -ef | grep stress
+    sleep 1
+  done
   --------------------------------------------------
   
-  # cd $HOME
-  # ps -ef
+  vm12$ cd $HOME
+  vm12$ bash sample10.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  // システムで実行されている全プロセス
+  // 1回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
+  makoto    2197  2193  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
+  makoto    2196  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  USER  PID  %CPU  %MEM     VSZ   RSS  TTY  STAT  START  TIME  COMMAND
-  root    1   0.0   0.1  193988  6040    ?    Ss  08:14  0:08  /usr/lib/systemd/systemd ...
-  root    2   0.0   0.0       0     0    ?     S  08:14  0:00  [kthreadd]
+  // 2回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
+  makoto    2197  2193 99 13:10 ttyS0    00:00:01 stress -c 1 -t 5 -q
+  makoto    2200  2192  0 13:10 ttyS0    00:00:00 grep stress
   
-  -- 省略 --
+  // 3回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
+  makoto    2197  2193 99 13:10 ttyS0    00:00:02 stress -c 1 -t 5 -q
+  makoto    2203  2192  0 13:10 ttyS0    00:00:00 grep stress
+  
+  // 4回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
+  makoto    2197  2193 99 13:10 ttyS0    00:00:03 stress -c 1 -t 5 -q
+  makoto    2206  2192  0 13:10 ttyS0    00:00:00 grep stress
+  
+  // 5回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
+  makoto    2197  2193 82 13:10 ttyS0    00:00:04 stress -c 1 -t 5 -q
+  makoto    2209  2192  0 13:10 ttyS0    00:00:00 grep stress
+  
+  // 6回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2212  2192  0 13:10 ttyS0    00:00:00 grep stress
+  
+  // 7回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2215  2192  0 13:10 ttyS0    00:00:00 grep stress
+  
+  // 8回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2218  2192  0 13:10 ttyS0    00:00:00 grep stress
+  
+  // 9回目の出力
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2221  2192  0 13:10 ttyS0    00:00:00 grep stress
   --------------------------------------------------
   
   以下の確認に続く
