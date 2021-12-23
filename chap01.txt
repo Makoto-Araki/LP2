@@ -26,7 +26,7 @@
 [25] メモリおよびスワップ使用量の測定 - 02 (cat /proc/meminfo)
 [26] ディスク使用量の測定 - 01 (df)
 [27] ディスク使用量の測定 - 02 (df)
-[16] Command - 15 (netstat)
+[28] ネットワークトラフィックの測定 - 01 (netstat)
 [17] Command - 16 (ss)
 ================================================================================
 [01]
@@ -1694,52 +1694,80 @@
   以下の確認に続く
   
 ================================================================================
-[16]
-  Command - 15 (netstat)
+[28]
+  ネットワークトラフィックの測定 - 01 (netstat)
   
 [内容]
-  ## コマンド ##
-    netstat -i  // NIC情報を出力
-    netstat -s  // プロトコル毎の統計情報
-  
   ## 作業内容
-    コマンドの動作確認を行う
+    NIC情報をコマンド(netstat)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド
+    netstat -i     // 全NIC情報を出力
+    netstat -I=XX  // NIC(XX)の情報を出力
+    netstat -s     // プロトコル毎の統計情報
   
 [確認]
-  # cd $HOME
-  # netstat -i
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install net-tools (コマンドのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
-  // NIC情報を出力
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
   
+  vm12$ cd $HOME
+  vm12$ netstat -i
+  
+  コマンドの実行結果
+  --------------------------------------------------
   Kernel Interface table
-  Iface             MTU    RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg
-  br-34da5207ff16  1500  2304190      0  18718 0        413290      0      0      0 BMU
-  br-6ba5137bcb72  1500  2304190      0  18718 0        413290      0      0      0 BMU
-  br-889b2be5929d  1500        0      0      0 0             0      0      0      0 BMU
-  br-c84c0f06b423  1500  2304190      0  18718 0        413290      0      0      0 BMU
-  br-fbe4fd9c28f2  1500        0      0      0 0             0      0      0      0 BMU
-  docker0          1500        0      0      0 0             0      0      0      0 BMU
-  enp0s25          1500  2304190      0  18718 0        413290      0      0      0 BMRU
-  lo              65536    11937      0      0 0         11937      0      0      0 LRU
-  virbr0           1500        0      0      0 0             0      0      0      0 BMU
+  Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
+  eth0      1500    19378         0        13         0     1235         0         0         0    BMRU
+  lo       65536       32         0         0         0       32         0         0         0     LRU
   --------------------------------------------------
   
-  # cd $HOME
-  # netstat -s
+  vm12$ cd $HOME
+  vm12$ netstat -I=eth0
   
   コマンドの実行結果
   --------------------------------------------------
-  // プロトコル毎の統計情報 -> IPのみ記載
+  Kernel Interface table
+  Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
+  eth0      1500    19706         0        13         0     1239         0         0         0    BMRU
+  --------------------------------------------------
   
-  Ip:
-    639758 total packets received
-    0 forwarded
-    0 incoming packets discarded
-    636236 incoming packets delivered
-    428907 requests sent out
-    16 outgoing packets dropped
+  以下の確認に続く
+  
+================================================================================
+[29]
+  ネットワークトラフィックの測定 - 02 (netstat)
+  
+[内容]
+  ## 作業内容
+    プロトコル毎の統計情報をコマンド(netstat)で測定する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド
+    netstat -i     // 全NIC情報を出力
+    netstat -I=XX  // NIC(XX)の情報を出力
+    netstat -s     // プロトコル毎の統計情報
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ netstat -s
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> IP, ICMP, TCP, UDP ... の統計情報を確認した
   --------------------------------------------------
   
   以下の確認に続く
