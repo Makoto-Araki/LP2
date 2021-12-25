@@ -24,9 +24,10 @@
 [23] 仮想ファイルシステム(/proc) - 01 (cat /proc/cmdline)
 [24] 仮想ファイルシステム(/proc) - 02 (cat /proc/cpuinfo)
 [25] 仮想ファイルシステム(/proc) - 03 (cat /proc/filesystems)
-[26] 
-[18] デバイス(PCI)
-[19] デバイス(USB)
+[26] 仮想ファイルシステム(/proc) - 04 (cat /proc/swaps)
+[27] 仮想ファイルシステム(/proc) - 05 (cat /proc/version)
+[28] 仮想ファイルシステム(/proc) - 06 (ls -lh /proc/bus/pci)
+[29] 仮想ファイルシステム(/proc) - 07 (ls -lh /proc/bus/usb)
 [20] デバイスファイル
 [21] ループバックデバイス
 [22] 動的デバイス管理 - 1 (ルール記述)
@@ -1546,26 +1547,6 @@
   LANG=ja_JP.UTF-8                   // 言語・国・文字コード
   --------------------------------------------------
   
-  
-  
-  vm12$ cd $HOME
-  vm12$ cat /proc/swaps (使用中のスワップ領域)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filename    Type         Size        Used     Priority
-  /dev/dm-1   partition    2097148     268      -2
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ cat /proc/version (バージョン情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC))
-  #1 SMP Sat Dec 4 10:54:37 JST 2021  // 不明
-  --------------------------------------------------
-  
   以下の確認に続く
   
 ================================================================================
@@ -1666,12 +1647,12 @@
   以下の確認に続く
 
 ================================================================================
-[13]
-  カーネルモジュール - 06 (modinfo)
+[26]
+  仮想ファイルシステム(/proc) - 04 (cat /proc/swaps)
   
 [内容]
   ## 作業内容
-    作成したカーネルモジュールの詳細情報をコマンド(modinfo)で表示する
+    使用中のスワップ領域を確認する
   
   ## 使用マシン
     HOST : vm12
@@ -1679,29 +1660,91 @@
     MEMO : 仮想マシン(サーバー用途)
   
 [確認]
-  上記の「09」を参照
-  
-================================================================================
-[18]
-  デバイス(PCI)
-  
-[内容]
-  ## 仮想マシン
-    HOST : vm12
-    IPv4 : 192.168.122.12
-    GW   : 192.168.122.1
-    DNS  : 192.168.122.1
-  
-  ## 作業内容
-    カーネルが認識するデバイス(PCI)をコマンド(lspci)で調査する
-  
-[確認]
-  $ cd $HOME
-  $ sudo virsh start vm12 --console
+  vm12$ cd $HOME
+  vm12$ cat /proc/swaps (使用中のスワップ領域)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 仮想マシンの起動
+  Filename    Type         Size        Used     Priority
+  /dev/dm-1   partition    2097148     268      -2
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[27]
+  仮想ファイルシステム(/proc) - 05 (cat /proc/version)
+  
+[内容]
+  ## 作業内容
+    バージョン情報を確認する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ cat /proc/version (バージョン情報)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC))
+  #1 SMP Sat Dec 4 10:54:37 JST 2021
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[28]
+  仮想ファイルシステム(/proc) - 06 (ls -lh /proc/bus/pci)
+  
+[内容]
+  ## 作業内容
+    PCIバス情報を確認する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ ls -lh /proc/bus/pci (PCIバス情報を確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  dr-xr-xr-x. 2 root root 0 12月 25 20:19 00       // PCIバス「00」
+  -r--r--r--. 1 root root 0 12月 25 20:19 devices  // 不明
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ls -lh /proc/bus/pci/00 (PCIバス「00」のデバイスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 256 12月 25 20:26 00.0  // スロット「00」、デバイス「0」
+  -rw-r--r--. 1 root root 256 12月 25 20:26 01.0  // スロット「01」、デバイス「0」
+  -rw-r--r--. 1 root root 256 12月 25 20:26 01.1  // スロット「01」、デバイス「1」
+  -rw-r--r--. 1 root root 256 12月 25 20:26 01.3
+  -rw-r--r--. 1 root root 256 12月 25 20:26 03.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.1
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.2
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.7
+  -rw-r--r--. 1 root root 256 12月 25 20:26 05.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 06.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 07.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 08.0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ file /proc/bus/pci/00/00.0 (PCIバス「00」、スロット「00」のデバイス情報)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /proc/bus/pci/00/00.0: data -> エディタで閲覧不可
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1713,52 +1756,74 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ lspci (デバイス(PCI)をコマンドで調査)
+  vm12$ lspci | grep 00:00 (PCIバス「00」、スロット「00」のデバイス情報)
   
   コマンドの実行結果
   --------------------------------------------------
   00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
-  00:01.0 ISA bridge: Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
-  00:01.1 IDE interface: Intel Corporation 82371SB PIIX3 IDE [Natoma/Triton II]
-  00:01.3 Bridge: Intel Corporation 82371AB/EB/MB PIIX4 ACPI (rev 03)
-  00:03.0 Ethernet controller: Red Hat, Inc. Virtio network device
-  00:04.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #1 (rev 03)
-  00:04.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #2 (rev 03)
-  00:04.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI Controller #3 (rev 03)
-  00:04.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI Controller #1 (rev 03)
-  00:05.0 Communication controller: Red Hat, Inc. Virtio console
-  00:06.0 SCSI storage controller: Red Hat, Inc. Virtio block device
-  00:07.0 Unclassified device [00ff]: Red Hat, Inc. Virtio memory balloon
-  00:08.0 Unclassified device [00ff]: Red Hat, Inc. Virtio RNG
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ lspci -s 00:01 -v -t (PCIバス(00)、スロット(01)、詳細情報、ツリー状で表示)
+  vm12$ lspci -s 00:00 (PCIバス「00」、スロット「00」のデバイス情報)
   
   コマンドの実行結果
   --------------------------------------------------
-  -[0000:00]-+-01.0  Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
-             +-01.1  Intel Corporation 82371SB PIIX3 IDE [Natoma/Triton II]
-             \-01.3  Intel Corporation 82371AB/EB/MB PIIX4 ACPI
+  00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[19]
-  デバイス(USB)
+[29]
+  仮想ファイルシステム(/proc) - 07 (ls -lh /proc/bus/usb)
   
 [内容]
-  ## 仮想マシン
-    HOST : vm12
-    IPv4 : 192.168.122.12
-    GW   : 192.168.122.1
-    DNS  : 192.168.122.1
-  
   ## 作業内容
-    カーネルが認識するデバイス(USB)をコマンド(lsusb)で調査する
+    USBバス情報を確認する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
   
 [確認]
+  vm12$ cd $HOME
+  vm12$ ls -lh /proc/bus/usb (USBバス情報を確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  dr-xr-xr-x. 2 root root 0 12月 25 20:19 00       // PCIバス「00」
+  -r--r--r--. 1 root root 0 12月 25 20:19 devices  // 不明
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ls -lh /proc/bus/pci/00 (PCIバス「00」のデバイスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 256 12月 25 20:26 00.0  // スロット「00」、デバイス「0」
+  -rw-r--r--. 1 root root 256 12月 25 20:26 01.0  // スロット「01」、デバイス「0」
+  -rw-r--r--. 1 root root 256 12月 25 20:26 01.1  // スロット「01」、デバイス「1」
+  -rw-r--r--. 1 root root 256 12月 25 20:26 01.3
+  -rw-r--r--. 1 root root 256 12月 25 20:26 03.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.1
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.2
+  -rw-r--r--. 1 root root 256 12月 25 20:26 04.7
+  -rw-r--r--. 1 root root 256 12月 25 20:26 05.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 06.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 07.0
+  -rw-r--r--. 1 root root 256 12月 25 20:26 08.0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ file /proc/bus/pci/00/00.0 (PCIバス「00」、スロット「00」のデバイス情報)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /proc/bus/pci/00/00.0: data -> エディタで閲覧不可
+  --------------------------------------------------
+  
   $ cd $HOME
   $ sudo virsh start vm12 --console
   
