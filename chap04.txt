@@ -14,6 +14,8 @@
 [13] ファイルシステム作成 - 03 (ext4)
 [14] ファイルシステム作成 - 04 (ext3 -> ext4)
 [15] ファイルシステム作成 - 05 (xfs)
+[16] ファイルシステム作成 - 06 (btrfs)
+
 [07] File System - 07 (自動マウント)
 [09] File System - 09 (ファイルシステム作成)
 [10] File System - 10 (ISOイメージ作成)
@@ -1232,13 +1234,13 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=1M count=10 (ディスクイメージ作成)
+  vm12$ dd if=/dev/zero of=image0.img bs=5M count=10 (ディスクイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
   10+0 レコード入力
   10+0 レコード出力
-  10485760 バイト (10 MB) コピーされました、 0.0214758 秒、 488 MB/秒
+  52428800 バイト (52 MB) コピーされました、 0.171478 秒、 306 MB/秒
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1262,7 +1264,16 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> ファイルシステム(xfs)が作成された
+  Discarding blocks...Done.
+  meta-data=/dev/loop0             isize=512    agcount=2, agsize=6400 blks
+           =                       sectsz=512   attr=2, projid32bit=1
+           =                       crc=1        finobt=0, sparse=0
+  data     =                       bsize=4096   blocks=12800, imaxpct=25
+           =                       sunit=0      swidth=0 blks
+  naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+  log      =internal log           bsize=4096   blocks=855, version=2
+           =                       sectsz=512   sunit=0 blks, lazy-count=1
+  realtime =none                   extsz=4096   blocks=0, rtextents=0
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1270,7 +1281,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [42438.927982] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
+  [45187.631185] XFS (loop0): Mounting V5 Filesystem
+  [45187.639209] XFS (loop0): Ending clean mount
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1293,7 +1305,149 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 on /mnt type ext4 (rw,relatime,seclabel,data=ordered)
+  /dev/loop0 on /mnt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt (ループバックデバイスをアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [45249.926775] XFS (loop0): Unmounting Filesystem
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image0.img (ディスクイメージ削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[16]
+  ファイルシステム作成 - 06 (btrfs)
+  
+[内容]
+  ## 作業内容
+    デバイスにファイルシステム(btrfs)を作成後にマウントする
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.333105 秒、 315 MB/秒
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ losetup -f (使用可能なループバックデバイス名を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/loop0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkfs.btrfs /dev/loop0 (ファイルシステム作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  btrfs-progs v4.9.1
+  See http://btrfs.wiki.kernel.org for more information.
+  
+  Performing full device TRIM /dev/loop0 (100.00MiB) ...
+  Label:              (null)
+  UUID:               bf621404-8dd1-4b9c-99ba-e74565ccc233
+  Node size:          16384
+  Sector size:        4096
+  Filesystem size:    100.00MiB
+  Block group profiles:
+    Data:             single            8.00MiB
+    Metadata:         DUP              32.00MiB
+    System:           DUP               8.00MiB
+  SSD detected:       no
+  Incompat features:  extref, skinny-metadata
+  Number of devices:  1
+  Devices:
+    ID        SIZE  PATH
+    1    100.00MiB  /dev/loop0 // ループバックデバイス
+  
+  [50949.337981] raid6: sse2x1   gen()  3410 MB/s
+  [50949.356966] raid6: sse2x1   xor()  3376 MB/s
+  [50949.375930] raid6: sse2x2   gen()  5789 MB/s
+  [50949.393917] raid6: sse2x2   xor()  5460 MB/s
+  [50949.411923] raid6: sse2x4   gen()  6171 MB/s
+  [50949.429939] raid6: sse2x4   xor()  3714 MB/s
+  [50949.438023] raid6: using algorithm sse2x4 gen() 6171 MB/s
+  [50949.441282] raid6: .... xor() 3714 MB/s, rmw enabled
+  [50949.443605] raid6: using ssse3x2 recovery algorithm
+  [50949.606774] xor: measuring software checksum speed
+  [50949.620941]    prefetch64-sse: 10788.000 MB/sec
+  [50949.637917]    generic_sse:  9552.000 MB/sec
+  [50949.640479] xor: using function: prefetch64-sse (10788.000 MB/sec)
+  [50951.296426] Btrfs loaded, crc32c=crc32c-intel
+  [50951.299034] BTRFS: device fsid bf621404-8dd1-4b9c-99ba-e74565ccc233 devid 1 transid 5 /dev/loop0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt (マウントオプションはデフォルト、ファイルシステム指定でマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [51118.886280] BTRFS info (device loop0): disk space caching is enabled
+  [51118.888872] BTRFS info (device loop0): has skinny extents
+  [51118.890939] BTRFS info (device loop0): flagging fs with big metadata feature
+  [51118.898333] BTRFS info (device loop0): creating UUID tree
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0   10M  0 loop /mnt (マウントされたループバックデバイス)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount | grep loop0 (マウント状況およびマウントオプションを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/loop0 on /mnt type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
   --------------------------------------------------
   
   vm12$ cd $HOME
