@@ -15,7 +15,7 @@
 [14] ファイルシステム作成 - 04 (ext3 -> ext4)
 [15] ファイルシステム作成 - 05 (xfs)
 [16] ファイルシステム作成 - 06 (btrfs)
-
+[17] コマンド(mkfs)
 [07] File System - 07 (自動マウント)
 [09] File System - 09 (ファイルシステム作成)
 [10] File System - 10 (ISOイメージ作成)
@@ -1468,6 +1468,133 @@
   
   vm12$ cd $HOME
   vm12$ rm -f image0.img (ディスクイメージ削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[17]
+  コマンド(mkfs)
+  
+[内容]
+  ## 作業内容
+    デバイスに指定ファイルシステムをコマンド(mkfs)で作成後にマウントする
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド(mkfs)
+    mkfs -t XX  // ファイルシステム(XX)を作成
+    mkfs -c     // 不良ブロックをチェック
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image3.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image4.img bs=10M count=10
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  vm12$ sudo losetup /dev/loop1 image1.img
+  vm12$ sudo losetup /dev/loop2 image2.img
+  vm12$ sudo losetup /dev/loop3 image3.img
+  vm12$ sudo losetup /dev/loop4 image4.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkfs -t ext2 /dev/loop0
+  vm12$ sudo mkfs -t ext3 /dev/loop1
+  vm12$ sudo mkfs -t ext4 /dev/loop2
+  vm12$ sudo mkfs -t xfs /dev/loop3
+  vm12$ sudo mkfs -t btrfs /dev/loop4
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo mkdir mp[0-4]
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t ext2 /dev/loop0 /mnt/mp0
+  vm12$ sudo mount -o defaults -t ext3 /dev/loop1 /mnt/mp1
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop2 /mnt/mp2
+  vm12$ sudo mount -o defaults -t xfs /dev/loop3 /mnt/mp3
+  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt/mp4
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0   10M  0 loop /mnt (マウントされたループバックデバイス)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mount | grep -E 'loop[0-4]' (マウント状況およびマウントオプションを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/loop0 on /mnt type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt/mp0
+  vm12$ sudo umount /mnt/mp1
+  vm12$ sudo umount /mnt/mp2
+  vm12$ sudo umount /mnt/mp3
+  vm12$ sudo umount /mnt/mp4
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image[0-4].img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
