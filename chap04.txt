@@ -2694,7 +2694,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.39185 秒、 268 MB/秒
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2702,7 +2704,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (出力なし)
+  [  374.253452] loop: module loaded
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2714,11 +2716,11 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ mount -o defaults -t ext4 /dev/loop0 /mnt
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  [  446.666095] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2726,143 +2728,83 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─sec0                253:2    0  100M  0 crypt /mnt (暗号化デバイス)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0  100M  0 loop /mnt (マウントしたデバイス)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ df -mT (ブロックデバイス確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5500  11895   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/mapper/sec0             xfs               97     6     92    6% /mnt (暗号化デバイス)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ cp -pr HISTORY /mnt
+  vm12$ sudo cp -pr HISTORY /mnt
 
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ debugfs -w /dev/loop0 (書込可能モードで実行)
+  vm12$ sudo debugfs -w /dev/loop0 (書込可能モードで実行)
   
   コマンドの実行結果
   --------------------------------------------------
   debugfs 1.42.9 (28-Dec-2013)
   
-  ## サブコマンド「open」
-  debugfs:  open /dev/loop0
+  ## サブコマンド「ls」
+  debugfs:  ls
+  2  (12) .    2  (12) ..    11  (20) lost+found    12  (980) HISTORY
   
+  ## サブコマンド「cd」
+  debugfs:  cd HISTORY
   (出力なし)
   
   ## サブコマンド「ls」
-  debugfs:  ls -l
-  
-        2   40755 (2)      0      0    1024 28-Jan-2020 10:15 .
-        2   40755 (2)      0      0    1024 28-Jan-2020 10:15 ..
-       11   40700 (2)      0      0   12288 28-Jan-2020 10:01 lost+found
-       15  100644 (1)      0      0      95 28-Jan-2020 10:15 file1
-       13  100644 (1)      0      0       0 28-Jan-2020 10:02 file2
-     1281   40755 (2)      0      0    1024 28-Jan-2020 10:02 dir1
-     1282   40755 (2)      0      0    1024 28-Jan-2020 10:02 dir2
-  
-  ## サブコマンド「stat」
-  debugfs:  stat file1
-  
-  Inode: 15   Type: regular    Mode:  0644   Flags: 0x0
-  Generation: 491304123    Version: 0x00000001
-  User:     0   Group:     0   Size: 95
-  File ACL: 1247    Directory ACL: 0
-  Links: 1   Blockcount: 4
-  Fragment:  Address: 0    Number: 0    Size: 0
-  ctime: 0x5e2f8b40 -- Tue Jan 28 10:15:44 2020
-  atime: 0x5e2f8b53 -- Tue Jan 28 10:16:03 2020
-  mtime: 0x5e2f8b40 -- Tue Jan 28 10:15:44 2020
-  BLOCKS:
-  (0):1549
-  TOTAL: 1
+  debugfs:  ls
+  12  (12) .    2  (12) ..    13  (16) AAA.txt    14  (984) BBB.txt
   
   ## サブコマンド「cat」
-  debugfs:  cat file1
+  debugfs:  cat AAA.txt
   
-  710 平城京に遷都
-  784 長岡京に遷都
-  794 平安京に遷都
+  1582年 本能寺の変
+  1600年 関ヶ原の戦い
+  1615年 大坂夏の陣
   
   ## サブコマンド「mkdir」
-  debugfs:  mkdir dir3
-  
-  mkdir: Filesystem opened read/only → 再マウント後に確認したが未反映、読取専用でオープン
-  
-  ## サブコマンド「rmdir」
-  debugfs:  rmdir dir2
-  
-  mkdir: Filesystem opened read/only → 再マウント後に確認したが未反映、読取専用でオープン
-  
-  ## サブコマンド「cd」
-  debugfs:  cd dir1
-  
+  debugfs:  mkdir CCC
   (出力なし)
-  
-  // サブコマンド「ls」
-  debugfs:  ls -l
-  
-     1281   40755 (2)      0      0    1024 28-Jan-2020 10:02 .
-        2   40755 (2)      0      0    1024 28-Jan-2020 10:15 ..
-     1283  100644 (1)      0      0       0 28-Jan-2020 10:02 file3
-     1284  100644 (1)      0      0       0 28-Jan-2020 10:02 file4
-  
-  // サブコマンド「pwd」
-  debugfs:  pwd
-  
-  [pwd]   INODE:   1281  PATH: /dir1
-  [root]  INODE:      2  PATH: /
-  
-  // サブコマンド「close」
-  debugfs:  close
-  
-  (出力なし)
-  
-  // サブコマンド「quit」
+
+  ## サブコマンド「quit」
   debugfs:  quit
-  
   (OSプロンプトに戻る)
   --------------------------------------------------
   
-  ループバックデバイスをアンマウント
+  vm12$ cd /mnt/HISTORY
+  vm12$ ls -lh
+
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto   75 12月 28 11:10 AAA.txt
+  -rw-rw-r--. 1 makoto makoto   72 12月 28 11:11 BBB.txt
+  drwxr-xr-x. 2 root   root   1.0K 12月 29 08:02 CCC (コマンド内部で作成されたディレクトリ)
+  --------------------------------------------------
+  
   vm12$ cd $HOME
-  vm12$ umount /mnt
+  vm12$ sudo umount /mnt
   
   コマンドの実行結果
   --------------------------------------------------
-  (出力なし)
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  ループバックデバイスとディスクイメージの紐づけ解除
   vm12$ cd $HOME
-  vm12$ losetup -D
+  vm12$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
-  (出力なし)
+  (省略) -> 出力なし
   --------------------------------------------------
   
   ディスクイメージ削除
