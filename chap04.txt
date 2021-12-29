@@ -27,6 +27,8 @@
 [26] ファイルシステム管理(ext2,ext3,ext4) - 02 (badblocks)
 [27] ファイルシステム管理(ext2,ext3,ext4) - 03 (debugfs)
 [28] S.M.A.R.T
+[29] ファイルシステム管理(xfs) - 01 (xfs_admin)
+[30] ファイルシステム管理(xfs) - 02 (xfs_info)
 
 [07] File System - 07 (自動マウント)
 ================================================================================
@@ -2886,8 +2888,10 @@
     MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド(xfs_admin)
-    debugfs -w     // 書込可能モードでファイルシステムを開く(デフォルトは読取専用)
-    debugfs -s XX  // スーパーブロック(XX)を指定
+    xfs_admin -u     // UUID表示
+    xfs_admin -U XX  // UUID(XX)を設定
+    xfs_admin -l     // ラベル表示
+    xfs_admin -L XX  // ラベル(XX)を設定
   
 [確認]
   vm12$ cd $HOME
@@ -2897,7 +2901,7 @@
   --------------------------------------------------
   10+0 レコード入力
   10+0 レコード出力
-  104857600 バイト (105 MB) コピーされました、 0.39185 秒、 268 MB/秒
+  104857600 バイト (105 MB) コピーされました、 0.316274 秒、 332 MB/秒
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2905,11 +2909,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [  374.253452] loop: module loaded
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0
+  vm12$ sudo mkfs -t xfs /dev/loop0
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2917,11 +2921,12 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  vm12$ sudo mount -o defaults -t xfs /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
-  [  446.666095] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
+  [12827.378007] XFS (loop0): Mounting V5 Filesystem
+  [12827.392257] XFS (loop0): Ending clean mount
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2940,56 +2945,35 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo cp -pr HISTORY /mnt
-
+  vm12$ sudo xfs_info /dev/loop0 (ファイルシステムの情報)
+  
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  meta-data=/dev/loop0             isize=512    agcount=4, agsize=6400 blks
+           =                       sectsz=512   attr=2, projid32bit=1
+           =                       crc=1        finobt=0 spinodes=0
+  data     =                       bsize=4096   blocks=25600, imaxpct=25
+           =                       sunit=0      swidth=0 blks
+  naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+  log      =internal               bsize=4096   blocks=855, version=2
+           =                       sectsz=512   sunit=0 blks, lazy-count=1
+  realtime =none                   extsz=4096   blocks=0, rtextents=0
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo debugfs -w /dev/loop0 (書込可能モードで実行)
+  vm12$ sudo xfs_admin -u /dev/loop0 (UUID表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  debugfs 1.42.9 (28-Dec-2013)
-  
-  ## サブコマンド「ls」
-  debugfs:  ls
-  2  (12) .    2  (12) ..    11  (20) lost+found    12  (980) HISTORY
-  
-  ## サブコマンド「cd」
-  debugfs:  cd HISTORY
-  (出力なし)
-  
-  ## サブコマンド「ls」
-  debugfs:  ls
-  12  (12) .    2  (12) ..    13  (16) AAA.txt    14  (984) BBB.txt
-  
-  ## サブコマンド「cat」
-  debugfs:  cat AAA.txt
-  
-  1582年 本能寺の変
-  1600年 関ヶ原の戦い
-  1615年 大坂夏の陣
-  
-  ## サブコマンド「mkdir」
-  debugfs:  mkdir CCC
-  (出力なし)
-
-  ## サブコマンド「quit」
-  debugfs:  quit
-  (OSプロンプトに戻る)
+  UUID  = c8a1b744-d0c4-47e0-85bf-410e46e371d4
   --------------------------------------------------
   
-  vm12$ cd /mnt/HISTORY
-  vm12$ ls -lh
-
+  vm12$ cd $HOME
+  vm12$ sudo xfs_admin -l /dev/loop0 (ラベル表示)
+  
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto   75 12月 28 11:10 AAA.txt
-  -rw-rw-r--. 1 makoto makoto   72 12月 28 11:11 BBB.txt
-  drwxr-xr-x. 2 root   root   1.0K 12月 29 08:02 CCC (コマンド内部で作成されたディレクトリ)
+  label = ""
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -3010,7 +2994,7 @@
   
   ディスクイメージ削除
   vm12$ cd $HOME
-  vm12$ rm -f loop0.img
+  vm12$ rm -f image0.img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3018,6 +3002,22 @@
   --------------------------------------------------
   
   以下の確認に続く
+  
+================================================================================
+[30]
+  ファイルシステム管理(xfs) - 02 (xfs_info)
+  
+[内容]
+  ## 作業内容
+    ファイルシステム管理を行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  上記の「29」を参照
   
 ================================================================================
 [07]
