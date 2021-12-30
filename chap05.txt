@@ -6,36 +6,124 @@
   
 [内容]
   ## 作業内容
-    システムのファイルシステムの情報をコマンド(cat /etc/fstab)から確認
+    RAIDアレイ(RAID 0)の作成
   
   ## 使用マシン
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
   
+  ## コマンド(mdadm)
+    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
+    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
+    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
+    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
+    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
+    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
+  
 [確認]
   vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス表示)
+  vm12$ sudo yum -y install mdadm
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ cat /etc/fstab | grep -vE '^#|^$' (設定ファイルを確認)
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  UUID=1d5e0998-fe61-4a82-83be-96a01cfbbd31  /boot   xfs    defaults   0 0
-  /dev/mapper/centos_vm11-root               /       xfs    defaults   0 0
-  /dev/mapper/centos_vm11-swap               swap    swap   defaults   0 0
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  vm12$ sudo losetup /dev/loop1 image1.img
+  vm12$ sudo losetup /dev/loop2 image2.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm -C /dev/md0 -l 0 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mdadm: Defaulting to version 1.2 metadata
+  [12747.208212] md0: detected capacity change from 0 to 205520896
+  mdadm: array /dev/md0 started.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom   
+  loop0                     7:0    0  100M  0 loop  
+  └─md0                   9:0    0  196M  0 raid0 (RAID0)
+  loop1                     7:1    0  100M  0 loop  
+  └─md0                   9:0    0  196M  0 raid0 (RAID0)
+  vda                     252:0    0   20G  0 disk  
+  ├─vda2                252:2    0   19G  0 part  
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
+  └─vda1                252:1    0    1G  0 part  /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ df -mT
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
+  devtmpfs                     devtmpfs         466     0    466    0% /dev
+  tmpfs                        tmpfs            489     0    489    0% /dev/shm
+  tmpfs                        tmpfs            489     7    482    2% /run
+  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
+  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
+  /dev/mapper/centos_vm11-root xfs            17394  5413  11982   32% /
+  /dev/vda1                    xfs             1014   188    827   19% /boot
+  /dev/loop0                   btrfs            100    24     56   30% /mnt (マウントしたデバイス)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image0.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
