@@ -4,6 +4,8 @@
 [03] RAIDの構築と運用 - 03
 [04] RAIDの構築と運用 - 04
 [05] RAIDの構築と運用 - 05
+[06] RAIDの構築と運用 - 06
+[07] LVMの作成
 ================================================================================
 [01]
   RAIDの構築と運用 - 01
@@ -756,6 +758,407 @@
   
   vm12$ cd $HOME
   vm12$ rm -f image[0-2].img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[06]
+  RAIDの構築と運用 - 06
+  
+[内容]
+  ## 作業内容
+    RAIDアレイ(RAID 5)に対して「--manage」で予備デバイス操作
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド(mdadm) - 01
+    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
+    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
+    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
+    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
+    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
+    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
+  
+  ## コマンド(mdadm) - 02
+    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
+    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
+    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
+    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
+  
+  ## コマンド(mdadm) - 03
+    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
+    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
+    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
+    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
+    mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
+    mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
+    mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
+    mdadm --misc --stop --scan XX // 全てのRAIDアレイを停止する
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image3.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image4.img bs=10M count=10
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  vm12$ sudo losetup /dev/loop1 image1.img
+  vm12$ sudo losetup /dev/loop2 image2.img
+  vm12$ sudo losetup /dev/loop3 image3.img
+  vm12$ sudo losetup /dev/loop4 image4.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm -C /dev/md0 -l 5 -n 3 -x 1 /dev/loop0 /dev/loop1 /dev/loop2 /dev/loop3 (RAIDアレイの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Personalities : [raid0] [raid1] [raid6] [raid5] [raid4] 
+
+  md0 : active raid5 loop2[4] loop3[3](S) loop1[1] loop0[0]
+        200704 blocks super 1.2 level 5, 512k chunk, algorithm 2 [3/3] [UUU]
+  
+  unused devices: <none>
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --misc -Q(--query) /dev/md0 (RAIDアレイの状態)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/md0: 196.00MiB raid5 3 devices, 1 spare. Use mdadm --detail for more detail.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/md0:
+             Version : 1.2
+       Creation Time : Thu Dec 30 20:48:01 2021
+          Raid Level : raid5
+          Array Size : 200704 (196.00 MiB 205.52 MB)
+       Used Dev Size : 100352 (98.00 MiB 102.76 MB)
+        Raid Devices : 3
+       Total Devices : 4
+         Persistence : Superblock is persistent
+         Update Time : Thu Dec 30 20:48:10 2021
+               State : clean 
+      Active Devices : 3
+     Working Devices : 4
+      Failed Devices : 0
+       Spare Devices : 1
+              Layout : left-symmetric
+          Chunk Size : 512K
+  Consistency Policy : resync
+                Name : vm12:0  (local to host vm12)
+                UUID : c2269194:66d72976:c85295a5:285702c8
+              Events : 18
+  
+  Number   Major   Minor   RaidDevice State
+     0       7        0        0      active sync   /dev/loop0
+     1       7        1        1      active sync   /dev/loop1
+     4       7        2        2      active sync   /dev/loop2
+     3       7        3        -      spare         /dev/loop3
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --manage /dev/md0 -f(--fail) /dev/loop0 (RAIDアレイの構成デバイスに不良マーク)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/md0:
+             Version : 1.2
+       Creation Time : Thu Dec 30 20:48:01 2021
+          Raid Level : raid5
+          Array Size : 200704 (196.00 MiB 205.52 MB)
+       Used Dev Size : 100352 (98.00 MiB 102.76 MB)
+        Raid Devices : 3
+       Total Devices : 4
+         Persistence : Superblock is persistent
+         Update Time : Thu Dec 30 20:55:29 2021
+               State : clean 
+      Active Devices : 3
+     Working Devices : 3
+      Failed Devices : 1
+       Spare Devices : 0
+              Layout : left-symmetric
+          Chunk Size : 512K
+  Consistency Policy : resync
+                Name : vm12:0  (local to host vm12)
+                UUID : c2269194:66d72976:c85295a5:285702c8
+              Events : 37
+  
+  Number   Major   Minor   RaidDevice State
+     3       7        3        0      active sync   /dev/loop3
+     1       7        1        1      active sync   /dev/loop1
+     4       7        2        2      active sync   /dev/loop2
+     0       7        0        -      faulty        /dev/loop0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --manage /dev/md0 -r(--remove) /dev/loop0 (RAIDアレイの構成デバイスから不良デバイスを削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mdadm: hot removed /dev/loop0 from /dev/md0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/md0:
+             Version : 1.2
+       Creation Time : Thu Dec 30 20:48:01 2021
+          Raid Level : raid5
+          Array Size : 200704 (196.00 MiB 205.52 MB)
+       Used Dev Size : 100352 (98.00 MiB 102.76 MB)
+        Raid Devices : 3
+       Total Devices : 3
+         Persistence : Superblock is persistent
+         Update Time : Thu Dec 30 21:02:54 2021
+               State : clean 
+      Active Devices : 3
+     Working Devices : 3
+      Failed Devices : 0
+       Spare Devices : 0
+              Layout : left-symmetric
+          Chunk Size : 512K
+  Consistency Policy : resync
+                Name : vm12:0  (local to host vm12)
+                UUID : c2269194:66d72976:c85295a5:285702c8
+              Events : 38
+  
+  Number   Major   Minor   RaidDevice State
+     3       7        3        0      active sync   /dev/loop3
+     1       7        1        1      active sync   /dev/loop1
+     4       7        2        2      active sync   /dev/loop2
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --manage /dev/md0 -a(--add) /dev/loop4 (RAIDアレイの構成デバイスに新デバイスを追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mdadm: added /dev/loop4
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/md0:
+             Version : 1.2
+       Creation Time : Thu Dec 30 20:48:01 2021
+          Raid Level : raid5
+          Array Size : 200704 (196.00 MiB 205.52 MB)
+       Used Dev Size : 100352 (98.00 MiB 102.76 MB)
+        Raid Devices : 3
+       Total Devices : 4
+         Persistence : Superblock is persistent
+         Update Time : Thu Dec 30 21:06:01 2021
+               State : clean 
+      Active Devices : 3
+     Working Devices : 4
+      Failed Devices : 0
+       Spare Devices : 1
+              Layout : left-symmetric
+          Chunk Size : 512K
+  Consistency Policy : resync
+                Name : vm12:0  (local to host vm12)
+                UUID : c2269194:66d72976:c85295a5:285702c8
+              Events : 39
+  
+  Number   Major   Minor   RaidDevice State
+     3       7        3        0      active sync   /dev/loop3
+     1       7        1        1      active sync   /dev/loop1
+     4       7        2        2      active sync   /dev/loop2
+     5       7        4        -      spare         /dev/loop4
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [41681.078697] md0: detected capacity change from 205520896 to 0
+  [41681.081032] md: md0 stopped.
+  mdadm: stopped /dev/md0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image[0-4].img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[07]
+  LVMの作成
+  
+[内容]
+  ## 作業内容
+    LVMの作成後にマウントする
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  vm12$ sudo losetup /dev/loop1 image1.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm -C /dev/md0 -l 0 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Personalities : [raid0]
+  
+  md0 : active raid0 loop1[1] loop0[0]
+        200704 blocks super 1.2 512k chunks
+  
+  unused devices: <none>
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom   
+  loop0                     7:0    0  100M  0 loop  
+  └─md0                   9:0    0  196M  0 raid0 /mnt (RAIDアレイ)
+  loop1                     7:1    0  100M  0 loop  
+  └─md0                   9:0    0  196M  0 raid0 /mnt (RAIDアレイ)
+  vda                     252:0    0   20G  0 disk  
+  ├─vda2                252:2    0   19G  0 part  
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
+  └─vda1                252:1    0    1G  0 part  /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt (RAIDアレイのアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [31071.056750] md0: detected capacity change from 205520896 to 0
+  [31071.059426] md: md0 stopped.
+  mdadm: stopped /dev/md0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
