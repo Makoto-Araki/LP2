@@ -1081,7 +1081,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Physical volume "/dev/loop0" successfully created.
+  Physical volume "/dev/loop1" successfully created.
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1089,7 +1090,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Volume group "vg0" successfully created
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1099,7 +1100,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Rounding up size to full physical extent 52.00 MiB
+  Logical volume "lv0(lv1,lv2)" created.
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1107,7 +1109,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  ACTIVE            '/dev/vg0/lv0' [52.00 MiB] inherit
+  ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
+  ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
+  ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
+  ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1117,7 +1123,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1127,7 +1133,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1135,37 +1141,39 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid0 /mnt (RAIDアレイ)
-  loop1                     7:1    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid0 /mnt (RAIDアレイ)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0  100M  0 loop 
+  ├─vg0-lv0             253:2    0   52M  0 lvm  /mnt/mp0 (論理ボリューム)
+  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
+  loop1                     7:1    0  100M  0 loop 
+  ├─vg0-lv1             253:3    0   52M  0 lvm  /mnt/mp1 (論理ボリューム)
+  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo umount /mnt/mo0 (論理ボリュームのアンマウント)
-  vm12$ sudo umount /mnt/mo1 (論理ボリュームのアンマウント)
-  vm12$ sudo umount /mnt/mo2 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp0 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp1 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp2 (論理ボリュームのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo lvremove lv0 (論理ボリュームの削除)
-  vm12$ sudo lvremove lv1 (論理ボリュームの削除)
-  vm12$ sudo lvremove lv2 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv0 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv1 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv2 (論理ボリュームの削除)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1173,7 +1181,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Volume group "vg0" successfully removed
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1181,7 +1189,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Labels on physical volume "/dev/loop0" successfully wiped.
+  Labels on physical volume "/dev/loop1" successfully wiped.
   --------------------------------------------------
   
   vm12$ cd $HOME
