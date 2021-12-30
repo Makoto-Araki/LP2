@@ -34,10 +34,10 @@
     mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
   
   ## コマンド(mdadm) - 03
-    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
+    mdadm --misc XX             // RAIDアレイ(XX)を問合せ
+    mdadm --misc -Q XX          // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
+    mdadm --misc -D XX          // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
+    mdadm --misc -E XX          // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
     mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
     mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
     mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
@@ -174,30 +174,6 @@
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
   
-  ## コマンド(mdadm) - 01
-    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
-    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
-    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
-    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
-    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
-    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
-  
-  ## コマンド(mdadm) - 02
-    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
-    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
-    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
-    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
-  
-  ## コマンド(mdadm) - 03
-    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
-    mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
-    mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
-    mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
-    mdadm --misc --stop --scan XX // 全てのRAIDアレイを停止する
-  
 [確認]
   vm12$ cd $HOME
   vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
@@ -320,30 +296,6 @@
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
-  
-  ## コマンド(mdadm) - 01
-    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
-    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
-    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
-    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
-    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
-    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
-  
-  ## コマンド(mdadm) - 02
-    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
-    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
-    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
-    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
-  
-  ## コマンド(mdadm) - 03
-    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
-    mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
-    mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
-    mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
-    mdadm --misc --stop --scan XX // 全てのRAIDアレイを停止する
   
 [確認]
   vm12$ cd $HOME
@@ -472,30 +424,6 @@
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
   
-  ## コマンド(mdadm) - 01
-    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
-    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
-    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
-    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
-    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
-    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
-  
-  ## コマンド(mdadm) - 02
-    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
-    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
-    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
-    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
-  
-  ## コマンド(mdadm) - 03
-    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
-    mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
-    mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
-    mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
-    mdadm --misc --stop --scan XX // 全てのRAIDアレイを停止する
-  
 [確認]
   vm12$ cd $HOME
   vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
@@ -622,30 +550,6 @@
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
-  
-  ## コマンド(mdadm) - 01
-    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
-    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
-    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
-    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
-    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
-    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
-  
-  ## コマンド(mdadm) - 02
-    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
-    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
-    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
-    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
-  
-  ## コマンド(mdadm) - 03
-    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
-    mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
-    mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
-    mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
-    mdadm --misc --stop --scan XX // 全てのRAIDアレイを停止する
   
 [確認]
   vm12$ cd $HOME
@@ -778,30 +682,6 @@
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
-  
-  ## コマンド(mdadm) - 01
-    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
-    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
-    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
-    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
-    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
-    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
-  
-  ## コマンド(mdadm) - 02
-    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
-    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
-    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
-    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
-  
-  ## コマンド(mdadm) - 03
-    mdadm --misc XX     // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX  // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX  // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
-    mdadm --misc --readonly XX  // RAIDアレイ(XX)を読み取り専用にする
-    mdadm --misc --readwrite XX // RAIDアレイ(XX)を書き込み可能にする
-    mdadm --misc --stop XX      // RAIDアレイ(XX)を停止する
-    mdadm --misc --stop --scan XX // 全てのRAIDアレイを停止する
   
 [確認]
   vm12$ cd $HOME
@@ -1050,7 +930,7 @@
   
 [内容]
   ## 作業内容
-    LVMの作成後にマウントする
+    論理ボリュームの作成後にマウントする
   
   ## 使用マシン
     HOST : vm12
@@ -1101,7 +981,7 @@
   コマンドの実行結果
   --------------------------------------------------
   Rounding up size to full physical extent 52.00 MiB
-  Logical volume "lv0(lv1,lv2)" created.
+  Logical volume "lv[0-2])" created.
   --------------------------------------------------
   
   vm12$ cd $HOME
