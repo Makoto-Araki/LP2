@@ -6,7 +6,7 @@
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 0)の作成
+    RAIDアレイ(RAID 0)の作成後にマウントする
   
   ## 使用マシン
     HOST : vm12
@@ -51,13 +51,21 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 0 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
+  vm12$ sudo mdadm -C /dev/md0 -l 0 -n 2 -x 1 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
   mdadm: Defaulting to version 1.2 metadata
   [12747.208212] md0: detected capacity change from 0 to 205520896
   mdadm: array /dev/md0 started.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -79,31 +87,17 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
+  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [15573.309688] md0: detected capacity change from 205520896 to 0
+  [15573.312946] md: md0 stopped.
+  mdadm: stopped /dev/md0
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ df -mT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5413  11982   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/loop0                   btrfs            100    24     56   30% /mnt (マウントしたデバイス)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt
+  vm12$ sudo mdadm --misc --zero-superblock /dev/md0
   
   コマンドの実行結果
   --------------------------------------------------
