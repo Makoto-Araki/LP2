@@ -1,14 +1,15 @@
 ================================================================================
-[01] RAIDの構築と運用 - 01
-[02] RAIDの構築と運用 - 02
-[03] RAIDの構築と運用 - 03
-[04] RAIDの構築と運用 - 04
+[01] RAIDの構築と運用 - 01 (RAID 0)
+[02] RAIDの構築と運用 - 02 (RAID 1)
+[03] RAIDの構築と運用 - 03 (RAID 4)
+[04] RAIDの構築と運用 - 04 (RAID 5)
 [05] RAIDの構築と運用 - 05
 [06] RAIDの構築と運用 - 06
 [07] LVMの作成
+[08] LVMの管理
 ================================================================================
 [01]
-  RAIDの構築と運用 - 01
+  RAIDの構築と運用 - 01 (RAID 0)
   
 [内容]
   ## 作業内容
@@ -163,7 +164,7 @@
   
 ================================================================================
 [02]
-  RAIDの構築と運用 - 02
+  RAIDの構築と運用 - 02 (RAID 1)
   
 [内容]
   ## 作業内容
@@ -286,7 +287,7 @@
   
 ================================================================================
 [03]
-  RAIDの構築と運用 - 03
+  RAIDの構築と運用 - 03 (RAID 4)
   
 [内容]
   ## 作業内容
@@ -413,7 +414,7 @@
   
 ================================================================================
 [04]
-  RAIDの構築と運用 - 04
+  RAIDの構築と運用 - 04 (RAID 5)
   
 [内容]
   ## 作業内容
@@ -985,18 +986,6 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo lvscan (論理ボリュームの状態)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ACTIVE            '/dev/vg0/lv0' [52.00 MiB] inherit
-  ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
-  ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
-  ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
-  ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
   vm12$ sudo mkfs -t xfs /dev/vg0/lv0 (ファイルシステム作成)
   vm12$ sudo mkfs -t xfs /dev/vg0/lv1 (ファイルシステム作成)
   vm12$ sudo mkfs -t xfs /dev/vg0/lv2 (ファイルシステム作成)
@@ -1034,6 +1023,169 @@
   │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
   │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
   └─vda1                252:1    0    1G  0 part /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvscan (物理ボリュームの表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  PV /dev/loop0   VG vg0             lvm2 [96.00 MiB / 0         free]
+  PV /dev/loop1   VG vg0             lvm2 [96.00 MiB / 36.00 MiB free]
+  PV /dev/vda2    VG centos_vm11     lvm2 [<19.00 GiB / 0    free]
+  Total: 3 [19.18 GiB] / in use: 3 [19.18 GiB] / in no VG: 0 [0   ]
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvdisplay /dev/loop0 (物理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Physical volume ---
+  PV Name               /dev/loop0
+  VG Name               vg0
+  PV Size               100.00 MiB / not usable 4.00 MiB
+  Allocatable           yes (but full)
+  PE Size               4.00 MiB
+  Total PE              24
+  Free PE               0
+  Allocated PE          24
+  PV UUID               IJ29N4-unyT-oNyf-asMk-eMqu-Pggt-ybN2hA
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvdisplay /dev/loop1 (物理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Physical volume ---
+  PV Name               /dev/loop1
+  VG Name               vg0
+  PV Size               100.00 MiB / not usable 4.00 MiB
+  Allocatable           yes 
+  PE Size               4.00 MiB
+  Total PE              24
+  Free PE               9
+  Allocated PE          15
+  PV UUID               LHjwwp-oI0Q-QJYi-9Dk1-1fuH-4QqG-lPzPWi
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgscan (ボリュームグループの表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Reading volume groups from cache.
+  Found volume group "vg0" using metadata type lvm2
+  Found volume group "centos_vm11" using metadata type lvm2
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgdisplay vg0 (ボリュームグループの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Volume group ---
+  VG Name               vg0
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  4
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                3
+  Open LV               3
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               192.00 MiB
+  PE Size               4.00 MiB
+  Total PE              48
+  Alloc PE / Size       39 / 156.00 MiB
+  Free  PE / Size       9 / 36.00 MiB
+  VG UUID               cJyLdQ-mgAW-gL45-g8at-N9Wk-ygWM-zC2mJh
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvscan (論理ボリュームの表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ACTIVE            '/dev/vg0/lv0' [52.00 MiB] inherit
+  ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
+  ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
+  ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
+  ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvdisplay /dev/vg0/lv0 (論理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv0
+  LV Name                lv0
+  VG Name                vg0
+  LV UUID                TPNFXd-lFc3-dQUy-l4uf-F3CD-jHHg-pOIdqV
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 07:41:20 +0900
+  LV Status              available
+  # open                 1
+  LV Size                52.00 MiB
+  Current LE             13
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:2
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvdisplay /dev/vg0/lv1 (論理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv1
+  LV Name                lv1
+  VG Name                vg0
+  LV UUID                JyFnhh-H72W-VlJ2-x8aK-OmMJ-a6WE-oG9iEI
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 07:41:35 +0900
+  LV Status              available
+  # open                 1
+  LV Size                52.00 MiB
+  Current LE             13
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:3
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvdisplay /dev/vg0/lv2 (論理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv2
+  LV Name                lv2
+  VG Name                vg0
+  LV UUID                2Ygyop-ciIa-4wgD-ns1T-mSTz-L0JK-vqDevD
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 07:41:48 +0900
+  LV Status              available
+  # open                 1
+  LV Size                52.00 MiB
+  Current LE             13
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:4
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1088,6 +1240,23 @@
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[08]
+  LVMの管理 - 01 ()
+  
+[内容]
+  ## 作業内容
+    //
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
   
   以下の確認に続く
   
