@@ -1782,7 +1782,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1790,7 +1790,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Logical volume "sp0" created.
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1798,7 +1798,12 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  ACTIVE   Original '/dev/vg0/lv0' [52.00 MiB] inherit (論理ボリューム)
+  ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
+  ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
+  ACTIVE   Snapshot '/dev/vg0/sp0' [20.00 MiB] inherit (スナップショット)
+  ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
+  ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1806,7 +1811,24 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv0
+  LV Name                lv0
+  VG Name                vg0
+  LV UUID                MmnyQX-cxHc-wkPH-zJXX-XaEy-QVae-j9fSOJ
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 18:26:19 +0900
+  LV snapshot status     source of
+                         sp0 [active]
+  LV Status              available
+  # open                 1
+  LV Size                52.00 MiB
+  Current LE             13
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:2
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1814,7 +1836,27 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  --- Logical volume ---
+  LV Path                /dev/vg0/sp0
+  LV Name                sp0
+  VG Name                vg0
+  LV UUID                h9ZVqx-axhE-kL7v-k8vi-rZgn-B1u7-MRmEeF
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 18:30:05 +0900
+  LV snapshot status     active destination for lv0
+  LV Status              available
+  # open                 0
+  LV Size                52.00 MiB
+  Current LE             13
+  COW-table size         20.00 MiB
+  COW-table LE           5
+  Allocated to snapshot  0.10%
+  Snapshot chunk size    4.00 KiB
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:7
   --------------------------------------------------
   
   vm12$ cd /mnt/mp0
@@ -1822,7 +1864,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd /mnt/mp0
@@ -1830,7 +1872,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 0 12月 31 18:29 sample1.txt
+  -rw-r--r--. 1 root root 0 12月 31 18:29 sample3.txt
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1838,7 +1881,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1846,7 +1889,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Merging of volume vg0/sp0 started.
+  vg0/lv0: Merged: 100.00%
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1854,7 +1898,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd /mnt/mp0
@@ -1862,7 +1906,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 0 12月 31 18:29 sample1.txt
+  -rw-r--r--. 1 root root 0 12月 31 18:29 sample2.txt  // 削除したファイルが復元
+  -rw-r--r--. 1 root root 0 12月 31 18:29 sample3.txt
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1870,7 +1916,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  ACTIVE            '/dev/vg0/lv0' [52.00 MiB] inherit  // スナップショットは復元作業に使用され無くなっている
+  ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
+  ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
+  ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
+  ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
   --------------------------------------------------
   
   vm12$ cd $HOME
