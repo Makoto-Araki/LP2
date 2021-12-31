@@ -6,7 +6,8 @@
 [05] RAIDの構築と運用 - 05
 [06] RAIDの構築と運用 - 06
 [07] LVMの作成
-[08] LVMの管理
+[08] LVMの管理 - 01 (ボリュームグループの拡張・縮小)
+[09] LVMの管理 - 02 (論理ボリュームの拡張・縮小)
 ================================================================================
 [01]
   RAIDの構築と運用 - 01 (RAID 0)
@@ -1245,11 +1246,11 @@
   
 ================================================================================
 [08]
-  LVMの管理 - 01 ()
+  LVMの管理 - 01 (ボリュームグループの拡張・縮小)
   
 [内容]
   ## 作業内容
-    //
+    論理ボリュームがマウント状態での、ボリュームグループの拡張・縮小を試してみる
   
   ## 使用マシン
     HOST : vm12
@@ -1257,6 +1258,417 @@
     MEMO : 仮想マシン(サーバー用途)
   
 [確認]
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  vm12$ sudo losetup /dev/loop1 image1.img
+  vm12$ sudo losetup /dev/loop2 image2.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2 (物理ボリュームの初期化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Physical volume "/dev/loop0" successfully created.
+  Physical volume "/dev/loop1" successfully created.
+  Physical volume "/dev/loop2" successfully created.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 (ボリュームグループの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Volume group "vg0" successfully created
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvcreate -L 50M -n lv0 vg0 (論理ボリュームの作成)
+  vm12$ sudo lvcreate -L 50M -n lv1 vg0 (論理ボリュームの作成)
+  vm12$ sudo lvcreate -L 50M -n lv2 vg0 (論理ボリュームの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Rounding up size to full physical extent 52.00 MiB
+  Logical volume "lv[0-2])" created.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkfs -t xfs /dev/vg0/lv0 (ファイルシステム作成)
+  vm12$ sudo mkfs -t xfs /dev/vg0/lv1 (ファイルシステム作成)
+  vm12$ sudo mkfs -t xfs /dev/vg0/lv2 (ファイルシステム作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/mp0 (論理ボリュームをマウント)
+  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/mp1 (論理ボリュームをマウント)
+  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/mp2 (論理ボリュームをマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0  100M  0 loop 
+  ├─vg0-lv0             253:2    0   52M  0 lvm  /mnt/mp0 (論理ボリューム)
+  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
+  loop1                     7:1    0  100M  0 loop 
+  ├─vg0-lv1             253:3    0   52M  0 lvm  /mnt/mp1 (論理ボリューム)
+  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgreduce vg0 /dev/loop0 (ボリュームグループの縮小)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Physical volume "/dev/loop0" still in use -> 使用中の物理ボリュームは削除不可
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgextend vg0 /dev/loop2 (ボリュームグループの拡張)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Volume group "vg0" successfully extended
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgdisplay vg0 (ボリュームグループの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Volume group ---
+  VG Name               vg0
+  System ID             
+  Format                lvm2
+  Metadata Areas        3
+  Metadata Sequence No  5
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                3
+  Open LV               3
+  Max PV                0
+  Cur PV                3 -> /dev/loop0, /dev/loop1, /dev/loop2
+  Act PV                3 -> /dev/loop0, /dev/loop1, /dev/loop2
+  VG Size               288.00 MiB
+  PE Size               4.00 MiB
+  Total PE              72
+  Alloc PE / Size       39 / 156.00 MiB
+  Free  PE / Size       33 / 132.00 MiB
+  VG UUID               lSbGFy-N0fQ-apEE-uXDy-LE9y-APQx-kqB10O
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt/mp0 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp1 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp2 (論理ボリュームのアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvremove /dev/vg0/lv0 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv1 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv2 (論理ボリュームの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgremove vg0 (ボリュームグループの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Volume group "vg0" successfully removed
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2 (物理ボリュームの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Labels on physical volume "/dev/loop0" successfully wiped.
+  Labels on physical volume "/dev/loop1" successfully wiped.
+  Labels on physical volume "/dev/loop2" successfully wiped.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image[0-2].img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[09]
+  LVMの管理 - 02 (論理ボリュームの拡張・縮小)
+  
+[内容]
+  ## 作業内容
+    論理ボリュームがマウント状態での、論理ボリュームの拡張・縮小を試してみる
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  vm12$ sudo losetup /dev/loop1 image1.img
+  vm12$ sudo losetup /dev/loop2 image2.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2 (物理ボリュームの初期化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Physical volume "/dev/loop0" successfully created.
+  Physical volume "/dev/loop1" successfully created.
+  Physical volume "/dev/loop2" successfully created.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 /dev/loop2 (ボリュームグループの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Volume group "vg0" successfully created
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvcreate -L 50M -n lv0 vg0 (論理ボリュームの作成)
+  vm12$ sudo lvcreate -L 50M -n lv1 vg0 (論理ボリュームの作成)
+  vm12$ sudo lvcreate -L 50M -n lv2 vg0 (論理ボリュームの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Rounding up size to full physical extent 52.00 MiB
+  Logical volume "lv[0-2])" created.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkfs -t xfs /dev/vg0/lv0 (ファイルシステム作成)
+  vm12$ sudo mkfs -t xfs /dev/vg0/lv1 (ファイルシステム作成)
+  vm12$ sudo mkfs -t xfs /dev/vg0/lv2 (ファイルシステム作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/mp0 (論理ボリュームをマウント)
+  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/mp1 (論理ボリュームをマウント)
+  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/mp2 (論理ボリュームをマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0  100M  0 loop 
+  └─vg0-lv0             253:2    0   52M  0 lvm  /mnt/mp0 (論理ボリューム)
+  loop1                     7:1    0  100M  0 loop 
+  └─vg0-lv1             253:3    0   52M  0 lvm  /mnt/mp1 (論理ボリューム)
+  loop2                     7:2    0  100M  0 loop 
+  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvreduce -L 20M /dev/vg0/lv0 (論理ボリュームの縮小)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  WARNING: Reducing active and open logical volume to 20.00 MiB.
+  THIS MAY DESTROY YOUR DATA (filesystem etc.)
+  Do you really want to reduce vg0/lv0? [y/n]: y  (マウント状態でも論理ボリュームのサイズ縮小は可能)
+  Size of logical volume vg0/lv0 changed from 52.00 MiB (13 extents) to 20.00 MiB (5 extents).
+  Logical volume vg0/lv0 successfully resized.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvdisplay /dev/vg0/lv0 (論理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv0
+  LV Name                lv0
+  VG Name                vg0
+  LV UUID                n6zkj9-Rszr-cSjk-ViSI-ZFst-by7L-KCwhea
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 12:05:25 +0900
+  LV Status              available
+  # open                 1
+  LV Size                20.00 MiB (指定したサイズに縮小)
+  Current LE             5
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:2
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvextend -L 60M /dev/vg0/lv0 (論理ボリュームの拡張)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Size of logical volume vg0/lv0 changed from 20.00 MiB (5 extents) to 60.00 MiB (15 extents).
+  Logical volume vg0/lv0 successfully resized.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvdisplay /dev/vg0/lv0 (論理ボリュームの詳細を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- Logical volume ---
+  LV Path                /dev/vg0/lv0
+  LV Name                lv0
+  VG Name                vg0
+  LV UUID                n6zkj9-Rszr-cSjk-ViSI-ZFst-by7L-KCwhea
+  LV Write Access        read/write
+  LV Creation host, time vm12, 2021-12-31 12:05:25 +0900
+  LV Status              available
+  # open                 1
+  LV Size                60.00 MiB (指定したサイズに拡張)
+  Current LE             15
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:2
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt/mp0 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp1 (論理ボリュームのアンマウント)
+  vm12$ sudo umount /mnt/mp2 (論理ボリュームのアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo lvremove /dev/vg0/lv0 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv1 (論理ボリュームの削除)
+  vm12$ sudo lvremove /dev/vg0/lv2 (論理ボリュームの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vgremove vg0 (ボリュームグループの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Volume group "vg0" successfully removed
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2 (物理ボリュームの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Labels on physical volume "/dev/loop0" successfully wiped.
+  Labels on physical volume "/dev/loop1" successfully wiped.
+  Labels on physical volume "/dev/loop2" successfully wiped.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ rm -f image[0-2].img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
   
   以下の確認に続く
   
