@@ -1999,7 +1999,7 @@
   ## コマンド(sdparm)
     sdparm -q                        // 冒頭のプロファイル非表示
     sdparm -a(--all) XX              // ハードディスク(XX)の全情報表示
-		sdparm -C=CMD(--command=CMD) XX  // ハードディスク(XX)にコマンド(CMD)実行
+    sdparm -C=CMD(--command=CMD) XX  // ハードディスク(XX)にコマンド(CMD)実行
   
 [確認]
   $ cd $HOME
@@ -2259,8 +2259,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo lvcreate -L 50M -n lv0 vg0 (論理ボリュームの作成)
-  vm12$ sudo lvcreate -L 50M -n lv1 vg0 (論理ボリュームの作成)
+  vm12$ sudo lvcreate -L 150M -n lv0 vg0 (論理ボリュームの作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2270,7 +2269,6 @@
   
   vm12$ cd $HOME
   vm12$ sudo mkfs -t xfs /dev/vg0/lv0 (ファイルシステム作成)
-  vm12$ sudo mkfs -t xfs /dev/vg0/lv1 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2279,7 +2277,6 @@
   
   vm12$ cd $HOME
   vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/mp0 (論理ボリュームをマウント)
-  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/mp1 (論理ボリュームをマウント)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2295,8 +2292,6 @@
   sr0                      11:0    1 1024M  0 rom  
   loop0                     7:0    0  100M  0 loop 
   └─vg0-lv0             253:2    0   52M  0 lvm  /mnt/mp0 (論理ボリューム) -> ターゲットで公開
-  loop1                     7:1    0  100M  0 loop 
-  └─vg0-lv1             253:3    0   52M  0 lvm  /mnt/mp1 (論理ボリューム) -> ターゲットで公開
   vda                     252:0    0   20G  0 disk 
   ├─vda2                252:2    0   19G  0 part 
   │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
@@ -2304,185 +2299,94 @@
   └─vda1                252:1    0    1G  0 part /boot
   --------------------------------------------------
   
-	iSCSIターゲット設定項目確認
-	ch14# cd $HOME
-	ch14# targetcli ls
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	o- /  [...]
-	  o- backstores  [...]
-	  | o- block  [Storage Objects: 0]
-	  | o- fileio  [Storage Objects: 0]
-	  | o- pscsi  [Storage Objects: 0]
-	  | o- ramdisk  [Storage Objects: 0]
-	  o- iscsi  [Targets: 0]
-	  o- loopback  [Targets: 0]
-	--------------------------------------------------
-	
-	設定項目
+  vm12$ cd $HOME
+  vm12$ targetcli ls (ターゲット設定項目を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  o- /  [...]
+    o- backstores  [...]
+    | o- block  [Storage Objects: 0]    // 公開ディスク -> 論理ボリュームを指定
+    | o- fileio  [Storage Objects: 0]   // 不明
+    | o- pscsi  [Storage Objects: 0]    // 不明
+    | o- ramdisk  [Storage Objects: 0]  // 不明
+    o- iscsi  [Targets: 0]              // ターゲット識別名(IQN)
+    o- loopback  [Targets: 0]
+  --------------------------------------------------
+  
+  設定項目
   ==================================================
-	/backstores/block       // 公開ディスク
-	/iscsi                  // ターゲット識別名(IQN)
-	/iscsi/(IQN)/tpg1/luns  // IQNと公開ディスクの紐づけ
-	/iscsi/(IQN)/tpg1/acls  // ACL
+  /backstores/block       // 公開ディスク
+  /iscsi                  // ターゲット識別名(IQN)
+  /iscsi/(IQN)/tpg1/luns  // IQNと公開ディスクの紐づけ
+  /iscsi/(IQN)/tpg1/acls  // ACL
   ==================================================
-	
-	iSCSI公開ディスクを指定
-	ch14# cd $HOME
-	ch14# targetcli /backstores/block create name=ch14-lv01 dev=/dev/vol01/lv01
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	[25153.361867] Rounding down aligned max_sectors from 4294967295 to 4294967288
-	Created block storage object ch14-lv01 using /dev/vol01/lv01.
-	--------------------------------------------------
-	
-	iSCSIターゲット識別名(IQN)を指定
-	ch14# cd $HOME
-	ch14# targetcli /iscsi create iqn.2020-01.com.example:ch14-share01
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	Created target iqn.2020-01.com.example:ch14-share01.
-	Created TPG 1.
-	Global pref auto_add_default_portal=true
-	Created default portal listening on all IPs (0.0.0.0), port 3260.
-	--------------------------------------------------
-	
-	IQNとiSCSI公開ディスクの紐づけ
-	ch14# cd $HOME
-	ch14# targetcli /iscsi/(IQN)/tpg1/luns create /backstores/block/ch14-lv01
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	Created LUN 0.
-	--------------------------------------------------
-	
-	アクセス可能なiSCSIイニシエータ名を登録
-	ch14# cd $HOME
-	ch14# targetcli /iscsi/(IQN)/tpg1/acls create iqn.1994-05.com.redhat:ccf4fc62ff4d
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	Created Node ACL for iqn.1994-05.com.redhat:ccf4fc62ff4d
-	Created mapped LUN 0.
-	--------------------------------------------------
-	
-	iSCSIターゲット設定項目確認
-	ch14# cd $HOME
-	ch14# targetcli ls
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	o- /  [...]
-	  o- backstores  [...]
-	  | o- block  [Storage Objects: 1]
-	  | | o- ch14-lv01  [/dev/vol01/lv01 (1.0GiB) write-thru activated]
-	  | |   o- alua  [ALUA Groups: 1]
-	  | |     o- default_tg_pt_gp  [ALUA state: Active/optimized]
-	  | o- fileio  [Storage Objects: 0]
-	  | o- pscsi  [Storage Objects: 0]
-	  | o- ramdisk  [Storage Objects: 0]
-	  o- iscsi  [Targets: 1]
-	  | o- iqn.2020-01.com.example:ch14-share01  [TPGs: 1]
-	  |   o- tpg1  [no-gen-acls, no-auth]
-	  |     o- acls  [ACLs: 1]
-	  |     | o- iqn.1994-05.com.redhat:ccf4fc62ff4d  [Mapped LUNs: 1]
-	  |     |   o- mapped_lun0  [lun0 block/ch14-lv01 (rw)]
-	  |     o- luns  [LUNs: 1]
-	  |     | o- lun0  [block/ch14-lv01 (/dev/vol01/lv01) (default_tg_pt_gp)]
-	  |     o- portals  [Portals: 1]
-	  |       o- 0.0.0.0:3260  [OK]
-	  o- loopback  [Targets: 0]
-	--------------------------------------------------
-	
-	設定を保存
-	ch14# cd $HOME
-	ch14# targetcli saveconfig
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	Configuration saved to /etc/target/saveconfig.json
-	--------------------------------------------------
-	
-	サービスの起動
-	ch14# cd $HOME
-	ch14# systemctl start target
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	[25749.420567] Rounding down aligned max_sectors from 4294967295 to 4294967288
-	[25749.425295] ignoring deprecated emulate_dpo attribute
-	[25749.427323] ignoring deprecated emulate_fua_read attribute
-	
-	// 自動起動設定はOFF
-	--------------------------------------------------
-	
-	ファイアーウォールの確認
-	ch14# cd $HOME
-	ch14# firewall-cmd --list-all
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	public (active)
-	  target: default
-	  icmp-block-inversion: no
-	  interfaces: eth0
-	  sources: 
-	  services: ssh dhcpv6-client tftp		// iSCSIターゲットが未登録
-	  ports: 
-	  protocols: 
-	  masquerade: no
-	  forward-ports: 
-	  source-ports: 
-	  icmp-blocks: 
-	  rich rules: 
-	--------------------------------------------------
-	
-	ファイアーウォールに追加可能なサービス一覧
-	ch14# cd $HOME
-	ch14# firewall-cmd --get-service
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	RH-Satellite-6 amanda-client amanda-k5-client bacula bacula-client bgp \
-	bitcoin bitcoin-rpc bitcoin-testnet bitcoin-testnet-rpc ceph ceph-mon \
-	cfengine condor-collector ctdb dhcp dhcpv6 dhcpv6-client dns docker-registry \
-	docker-swarm dropbox-lansync elasticsearch freeipa-ldap freeipa-ldaps \
-	freeipa-replication freeipa-trust ftp ganglia-client ganglia-master git \
-	gre high-availability http https imap imaps ipp ipp-client ipsec irc ircs \
-	iscsi-target jenkins kadmin kerberos kibana klogin kpasswd kprop kshell \
-	ldap ldaps libvirt libvirt-tls managesieve mdns minidlna mongodb mosh mountd \
-	ms-wbt mssql murmur mysql nfs nfs3 nmea-0183 nrpe ntp openvpn ovirt-imageio \
-	ovirt-storageconsole ovirt-vmconsole pmcd pmproxy pmwebapi pmwebapis pop3 \
-	pop3s postgresql privoxy proxy-dhcp ptp pulseaudio puppetmaster quassel \
-	radius redis rpc-bind rsh rsyncd samba samba-client sane sip sips smtp \
-	smtp-submission smtps snmp snmptrap spideroak-lansync squid ssh syncthing \
-	syncthing-gui synergy syslog syslog-tls telnet tftp tftp-client tinc tor-socks \
-	transmission-client upnp-client vdsm vnc-server wbem-https xmpp-bosh xmpp-client \
-	xmpp-local xmpp-server zabbix-agent zabbix-server
-	
-	// 見辛いが「iscsi-target」が存在
-	--------------------------------------------------
-	
-	ファイアーウォールにサービス追加
-	ch14# cd $HOME
-	ch14# firewall-cmd --add-service=iscsi-target --permanent
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	success
-	--------------------------------------------------
-	
-	ファイアーウォールに設定反映
-	ch14# cd $HOME
-	ch14# firewall-cmd --reload
-	
-	コマンドの実行結果
-	--------------------------------------------------
-	success
-	--------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ targetcli /backstores/block create name=vm12-lv0 dev=/dev/vg0/lv0 (公開ディスクに論理ボリュームを指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ targetcli /iscsi create iqn.2022-01.com.test:vm12-share01 (ターゲット識別名(IQN)を指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME (公開ディスクとターゲット識別名(IQN)を紐付け)
+  vm12$ targetcli /iscsi/iqn.2022-01.com.test:vm12-share01(IQN)/tpg1/luns create /backstores/block/vm12-lv0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  //アクセス可能なiSCSIイニシエータ名を登録
+  //vm12$ cd $HOME
+  //vm12$ targetcli /iscsi/(IQN)/tpg1/acls create iqn.1994-05.com.redhat:ccf4fc62ff4d
+  //
+  //コマンドの実行結果
+  //--------------------------------------------------
+  //Created Node ACL for iqn.1994-05.com.redhat:ccf4fc62ff4d
+  //Created mapped LUN 0.
+  //--------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ targetcli ls (設定を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ targetcli saveconfig (設定を保存)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ firewall-cmd --add-service=iscsi-target --permanent (ファイアーウォールにサービス追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ firewall-cmd --reload (ファイアーウォールに設定反映)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
 
   vm12$ cd $HOME
   vm12$ sudo systemctl start target (サービスの起動)
@@ -2491,10 +2395,11 @@
   --------------------------------------------------
   (省略)
   --------------------------------------------------
-  
+    
+    //
+    
   vm12$ cd $HOME
   vm12$ sudo umount /mnt/mp0 (論理ボリュームのアンマウント)
-  vm12$ sudo umount /mnt/mp1 (論理ボリュームのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2503,7 +2408,6 @@
   
   vm12$ cd $HOME
   vm12$ sudo lvremove /dev/vg0/lv0 (論理ボリュームの削除)
-  vm12$ sudo lvremove /dev/vg0/lv1 (論理ボリュームの削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2519,13 +2423,12 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2 (物理ボリュームの削除)
+  vm12$ sudo pvremove /dev/loop0 /dev/loop1 (物理ボリュームの削除)
   
   コマンドの実行結果
   --------------------------------------------------
   Labels on physical volume "/dev/loop0" successfully wiped.
   Labels on physical volume "/dev/loop1" successfully wiped.
-  Labels on physical volume "/dev/loop2" successfully wiped.
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2537,7 +2440,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ rm -f image[0-2].img
+  vm12$ rm -f image[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
