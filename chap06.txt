@@ -6,6 +6,8 @@
 [05] ネットワーク管理コマンド - 01 (ping)
 [06] ネットワーク管理コマンド - 02 (ping6)
 [07] ネットワーク管理コマンド - 03 (traceroute)
+[08] ネットワーク管理コマンド - 04 (traceroute6)
+[09] ネットワーク管理コマンド - 05 (tcpdump)
 ================================================================================
 [01]
   ネットワークデバイス - 01
@@ -377,14 +379,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  PING localhost(::1) 56 data bytes
-  64 bytes from ::1: icmp_seq=1 ttl=64 time=0.195 ms
-  64 bytes from ::1: icmp_seq=2 ttl=64 time=0.114 ms
-  64 bytes from ::1: icmp_seq=3 ttl=64 time=0.118 ms
-  
-  --- localhost ping statistics ---
-  3 packets transmitted, 3 received, 0% packet loss, time 2002ms
-  rtt min/avg/max/mdev = 0.114/0.142/0.195/0.038 ms
+  (省略)
   --------------------------------------------------
   
   以下の確認に続く
@@ -422,6 +417,7 @@
   コマンドの実行結果
   --------------------------------------------------
   traceroute to www.yahoo.co.jp (183.79.250.123), 30 hops max, 60 byte packets
+
   01  192.168.122.1    5.458 ms  5.338 ms  5.049 ms
   02  192.168.1.1      4.785 ms  4.647 ms  4.407 ms
   03  118.23.5.241     8.984 ms  8.870 ms  8.989 ms
@@ -435,14 +431,129 @@
   11  153.149.219.154  9.309 ms  9.876 ms  4.490 ms
   12  211.0.206.166    9.366 ms  6.359 ms  2.957 ms
   13  * * *
-    
-    -- 省略 --
-    
+  -- 省略 --
   28  * * *
   29  * * *
   30  * * *
   --------------------------------------------------
   
+  以下の確認に続く
+  
+================================================================================
+[08]
+  ネットワーク管理コマンド - 04 (traceroute6)
+  
+[内容]
+  ## 作業内容
+    ネットワーク管理をコマンド(traceroute6)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド(traceroute6)
+    traceroute6 XX        // 指定ホスト(XX)への通信経路を表示
+    traceroute6 -n XX     // 指定ホスト(XX)への通信経路を表示、ホスト名の名前解決を行わない
+    traceroute6 -i NN XX  // 指定ホスト(XX)への通信経路を表示、NIC(NN)を指定
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ traceroute6 -n localhost (ホスト名の名前解決は行わないで通信経路を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[09]
+  ネットワーク管理コマンド - 05 (tcpdump)
+  
+[内容]
+  ## 作業内容
+    ネットワーク管理をコマンド(tcpdump)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## 使用マシン
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : 仮想マシン(クライアント用途)
+  
+  ## コマンド(tcpdump)
+    tcpdump -i XX  // NIC(XX)を指定
+    tcpdump -n     // ホストの名前解決を行わない
+    tcpdump -N     // ホストのドメイン名を表示しない
+    tcpdump -p     // 自分宛のパケット以外はキャプチャしない(非プロミスキャスモード)
+    tcpdump -t     // 時刻を表示しない
+    tcpdump -v     // 詳細に表示
+    tcpdump -l     // 標準出力をバッファリング
+    tcpdump -s XX  // パケットからの抽出バイト数(XX)を指定
+    tcpdump -X     // 16進数とASCII文字で表示
+    tcpdump -w XX  // キャプチャ内容をファイル(XX)に保存
+    tcpdump src host XX  // 送信元ホスト(XX)を指定
+    tcpdump dst host XX  // 送信先ホスト(XX)を指定
+    tcpdump host XX      // 送信元または送信先ホスト(XX)を指定
+    tcpdump src net XX mask YY  // 送信元ネットワーク(XX)とそのネットマスク(YY)を指定
+    tcpdump dst net XX mask YY  // 送信先ネットワーク(XX)とそのネットマスク(YY)を指定
+    tcpdump net XX mask YY      // 送信元または送信先ネットワーク(XX)とそのネットマスク(YY)を指定
+    tcpdump src port XX  // 送信元ポート(XX)を指定
+    tcpdump dst port XX  // 送信先ポート(XX)を指定
+    tcpdump port XX      // ポート(XX)を指定
+
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install tcpdump (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo tcpdump -n -l -i eth0 src host vm13 (名前解決なし、バッファリング、NIC指定、送信元(vm13)のトラフィック監視)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [29214.472802] device eth0 entered promiscuous mode
+  tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+  listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+
+  // ここでホスト(vm13)からトラフィック送信
+
+  20:26:35.927583 ARP, Request who-has 192.168.122.12 tell 192.168.122.13, length 28
+  20:26:35.927957 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 1, length 64
+  20:26:36.929333 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 2, length 64
+  20:26:37.931282 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 3, length 64
+  20:26:41.234037 ARP, Reply 192.168.122.13 is-at 52:54:00:01:99:8f, length 28
+  
+  5 packets captured
+  5 packets received by filter
+  0 packets dropped by kernel
+  [29236.335926] device eth0 left promiscuous mode
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ ping -c 3 -i 1 vm12
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING vm12 (192.168.122.12) 56(84) bytes of data.
+    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=1.00 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.711 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.765 ms
+    
+    --- vm12 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+    rtt min/avg/max/mdev = 0.711/0.826/1.003/0.129 ms
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
