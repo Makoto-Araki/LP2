@@ -1,6 +1,7 @@
 ================================================================================
 [01] ネットワークデバイス - 01
 [02] ネットワークデバイス - 02
+[03] ネットワークデバイス - 03 (ifconfig)
 ================================================================================
 [01]
   ネットワークデバイス - 01
@@ -82,6 +83,120 @@
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[03]
+  ネットワークデバイス - 03 (ifconfig)
+  
+[内容]
+  ## 作業内容
+    ネットワークデバイスの設定をコマンド(ifconfig)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド(ifconfig)
+    ifconfig -a                // 全ネットワークデバイスを表示
+    ifconfig XX                // ネットワークデバイス(XX)を表示
+    ifconfig XX YY netmask ZZ  // ネットワークデバイス(XX)にIPアドレス(YY)、ネットマスク(ZZ)を設定する
+    ifconfig XX up             // ネットワークデバイス(XX)を起動
+    ifconfig XX down           // ネットワークデバイス(XX)を停止
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ ifconfig (-a) (全てのネットワークデバイスを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.122.12  netmask 255.255.255.0  broadcast 192.168.122.255
+        inet6 fe80::5054:ff:fe70:e23b  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:70:e2:3b  txqueuelen 1000  (Ethernet)
+        RX packets 102  bytes 7029 (6.8 KiB)
+        RX errors 0  dropped 20  overruns 0  frame 0
+        TX packets 44  bytes 3496 (3.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+  
+  lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 32  bytes 2592 (2.5 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 32  bytes 2592 (2.5 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ifconfig eth0 (ネットワークデバイス(eth0)を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.122.12  netmask 255.255.255.0  broadcast 192.168.122.255
+        inet6 fe80::5054:ff:fe70:e23b  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:70:e2:3b  txqueuelen 1000  (Ethernet)
+        RX packets 239  bytes 14549 (14.2 KiB)
+        RX errors 0  dropped 20  overruns 0  frame 0
+        TX packets 64  bytes 4968 (4.8 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo ifconfig eth0:0 192.168.122.22 netmask 255.255.255.0 (ネットワークデバイス(eth0)に仮想IPアドレスを付与する)
+  vm12$ sudo ifconfig eth0:1 192.168.122.32 netmask 255.255.255.0 (ネットワークデバイス(eth0)に仮想IPアドレスを付与する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ifconfig eth0:0 up
+  vm12$ ifconfig eth0:1 up
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ifconfig (-a) (全てのネットワークデバイスを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.122.12  netmask 255.255.255.0  broadcast 192.168.122.255
+        inet6 fe80::5054:ff:fe70:e23b  prefixlen 64  scopeid 0x20<link>
+        ether 52:54:00:70:e2:3b  txqueuelen 1000  (Ethernet)
+        RX packets 912  bytes 51533 (50.3 KiB)
+        RX errors 0  dropped 20  overruns 0  frame 0
+        TX packets 160  bytes 11984 (11.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+  
+  // 再起動でクリア
+  eth0:0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.122.22  netmask 255.255.255.0  broadcast 192.168.122.255
+        ether 52:54:00:70:e2:3b  txqueuelen 1000  (Ethernet)
+  
+  // 再起動でクリア
+  eth0:1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.122.32  netmask 255.255.255.0  broadcast 192.168.122.255
+        ether 52:54:00:70:e2:3b  txqueuelen 1000  (Ethernet)
+  
+  lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 32  bytes 2592 (2.5 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 32  bytes 2592 (2.5 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
   --------------------------------------------------
   
   以下の確認に続く
