@@ -557,3 +557,102 @@
   以下の確認に続く
   
 ================================================================================
+[10]
+  ネットワーク管理コマンド - 06 (netstat)
+  
+[内容]
+  ## 作業内容
+    ネットワーク管理をコマンド(netstat)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## 使用マシン
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : 仮想マシン(クライアント用途)
+  
+  ## コマンド(netstat)
+		-a 		// 全ソケット情報を表示
+		-l 		// 接続待ちソケットのみ表示
+		-c 		// 一秒毎にリアルタイム表示更新
+		-i 		// NICの状態を表示
+		-n 		// アドレスやポートを数値で表示
+		-p 		// PIDとプロセスも表示
+		-r 		// ルーティングテーブルを表示
+		-t 		// TCPポートのみ表示
+		-u 		// UDPポートのみ表示
+
+
+    tcpdump -i XX  // NIC(XX)を指定
+    tcpdump -n     // ホストの名前解決を行わない
+    tcpdump -N     // ホストのドメイン名を表示しない
+    tcpdump -p     // 自分宛のパケット以外はキャプチャしない(非プロミスキャスモード)
+    tcpdump -t     // 時刻を表示しない
+    tcpdump -v     // 詳細に表示
+    tcpdump -l     // 標準出力をバッファリング
+    tcpdump -s XX  // パケットからの抽出バイト数(XX)を指定
+    tcpdump -X     // 16進数とASCII文字で表示
+    tcpdump -w XX  // キャプチャ内容をファイル(XX)に保存
+    tcpdump src host XX  // 送信元ホスト(XX)を指定
+    tcpdump dst host XX  // 送信先ホスト(XX)を指定
+    tcpdump host XX      // 送信元または送信先ホスト(XX)を指定
+    tcpdump src net XX mask YY  // 送信元ネットワーク(XX)とそのネットマスク(YY)を指定
+    tcpdump dst net XX mask YY  // 送信先ネットワーク(XX)とそのネットマスク(YY)を指定
+    tcpdump net XX mask YY      // 送信元または送信先ネットワーク(XX)とそのネットマスク(YY)を指定
+    tcpdump src port XX  // 送信元ポート(XX)を指定
+    tcpdump dst port XX  // 送信先ポート(XX)を指定
+    tcpdump port XX      // ポート(XX)を指定
+
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install tcpdump (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo tcpdump -n -l -i eth0 src host vm13 (名前解決なし、バッファリング、NIC指定、送信元(vm13)のトラフィック監視)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [29214.472802] device eth0 entered promiscuous mode
+  tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+  listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+
+  // ここでホスト(vm13)からトラフィック送信
+
+  20:26:35.927583 ARP, Request who-has 192.168.122.12 tell 192.168.122.13, length 28
+  20:26:35.927957 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 1, length 64
+  20:26:36.929333 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 2, length 64
+  20:26:37.931282 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 3, length 64
+  20:26:41.234037 ARP, Reply 192.168.122.13 is-at 52:54:00:01:99:8f, length 28
+  
+  5 packets captured
+  5 packets received by filter
+  0 packets dropped by kernel
+  [29236.335926] device eth0 left promiscuous mode
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ ping -c 3 -i 1 vm12
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING vm12 (192.168.122.12) 56(84) bytes of data.
+    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=1.00 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.711 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.765 ms
+    
+    --- vm12 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+    rtt min/avg/max/mdev = 0.711/0.826/1.003/0.129 ms
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
