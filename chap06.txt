@@ -8,6 +8,7 @@
 [07] ネットワーク管理コマンド - 03 (traceroute)
 [08] ネットワーク管理コマンド - 04 (traceroute6)
 [09] ネットワーク管理コマンド - 05 (tcpdump)
+[10] ネットワーク管理コマンド - 06 (netstat)
 ================================================================================
 [01]
   ネットワークデバイス - 01
@@ -48,7 +49,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
@@ -88,7 +89,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
@@ -159,7 +160,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -168,7 +169,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -251,7 +252,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -268,7 +269,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -304,7 +305,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -312,7 +313,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -- 省略 -- -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
@@ -379,7 +380,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  -- 省略 --
   --------------------------------------------------
   
   以下の確認に続く
@@ -408,7 +409,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  -- 省略 -- -> エラー出力が無ければOK
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -431,7 +432,7 @@
   11  153.149.219.154  9.309 ms  9.876 ms  4.490 ms
   12  211.0.206.166    9.366 ms  6.359 ms  2.957 ms
   13  * * *
-  -- 省略 --
+  -- -- 省略 -- --
   28  * * *
   29  * * *
   30  * * *
@@ -463,7 +464,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  -- 省略 --
   --------------------------------------------------
   
   以下の確認に続く
@@ -513,7 +514,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  -- 省略 -- -> エラー出力が無ければOK
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -569,89 +570,90 @@
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン(サーバー用途)
   
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン(クライアント用途)
-  
   ## コマンド(netstat)
-		-a 		// 全ソケット情報を表示
-		-l 		// 接続待ちソケットのみ表示
-		-c 		// 一秒毎にリアルタイム表示更新
-		-i 		// NICの状態を表示
-		-n 		// アドレスやポートを数値で表示
-		-p 		// PIDとプロセスも表示
-		-r 		// ルーティングテーブルを表示
-		-t 		// TCPポートのみ表示
-		-u 		// UDPポートのみ表示
-
-
-    tcpdump -i XX  // NIC(XX)を指定
-    tcpdump -n     // ホストの名前解決を行わない
-    tcpdump -N     // ホストのドメイン名を表示しない
-    tcpdump -p     // 自分宛のパケット以外はキャプチャしない(非プロミスキャスモード)
-    tcpdump -t     // 時刻を表示しない
-    tcpdump -v     // 詳細に表示
-    tcpdump -l     // 標準出力をバッファリング
-    tcpdump -s XX  // パケットからの抽出バイト数(XX)を指定
-    tcpdump -X     // 16進数とASCII文字で表示
-    tcpdump -w XX  // キャプチャ内容をファイル(XX)に保存
-    tcpdump src host XX  // 送信元ホスト(XX)を指定
-    tcpdump dst host XX  // 送信先ホスト(XX)を指定
-    tcpdump host XX      // 送信元または送信先ホスト(XX)を指定
-    tcpdump src net XX mask YY  // 送信元ネットワーク(XX)とそのネットマスク(YY)を指定
-    tcpdump dst net XX mask YY  // 送信先ネットワーク(XX)とそのネットマスク(YY)を指定
-    tcpdump net XX mask YY      // 送信元または送信先ネットワーク(XX)とそのネットマスク(YY)を指定
-    tcpdump src port XX  // 送信元ポート(XX)を指定
-    tcpdump dst port XX  // 送信先ポート(XX)を指定
-    tcpdump port XX      // ポート(XX)を指定
+    netstat -a  // 全ソケット情報を表示
+    netstat -l  // 接続待ちソケットのみ表示
+    netstat -c  // 一秒毎にリアルタイム表示更新
+    netstat -i  // ネットワークデバイスの状態を表示
+    netstat -n  // 名前解決なし
+    netstat -p  // プロセスとPIDも表示
+    netstat -r  // ルーティングテーブルを表示
+    netstat -t  // TCPポートのみ表示
+    netstat -u  // UDPポートのみ表示
 
 [確認]
   vm12$ cd $HOME
-  vm12$ sudo yum -y install tcpdump (パッケージ追加)
+  vm12$ netstat -i (ネットワークデバイスの状態を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Kernel Interface table
+  Iface    MTU    RX-OK  RX-ERR  RX-DRP  RX-OVR  TX-OK  TX-ERR  TX-DRP  TX-OVR   Flg
+  eth0    1500      548       0      17       0    117       0       0       0   BMRU
+  lo     65536       32       0       0       0     32       0       0       0   LRU
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo tcpdump -n -l -i eth0 src host vm13 (名前解決なし、バッファリング、NIC指定、送信元(vm13)のトラフィック監視)
+  vm12$ netstat -a -p (全ソケット情報、プロセス名を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  [29214.472802] device eth0 entered promiscuous mode
-  tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-  listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
-
-  // ここでホスト(vm13)からトラフィック送信
-
-  20:26:35.927583 ARP, Request who-has 192.168.122.12 tell 192.168.122.13, length 28
-  20:26:35.927957 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 1, length 64
-  20:26:36.929333 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 2, length 64
-  20:26:37.931282 IP 192.168.122.13 > 192.168.122.12: ICMP echo request, id 1210, seq 3, length 64
-  20:26:41.234037 ARP, Reply 192.168.122.13 is-at 52:54:00:01:99:8f, length 28
+  // インターネット接続
+  Active Internet connections (servers and established)
+  Proto   Recv-Q   Send-Q   Local Address    Foreign Address   State    PID/Program name    
+  tcp          0        0   0.0.0.0:ssh      0.0.0.0:*         LISTEN   3167/sshd           
+  tcp          0        0   localhost:smtp   0.0.0.0:*         LISTEN   3412/master         
+  tcp6         0        0   [::]:ssh         [::]:*            LISTEN   3167/sshd           
+  tcp6         0        0   localhost:smtp   [::]:*            LISTEN   3412/master         
+  udp          0        0   localhost:323    0.0.0.0:*                  2636/chronyd        
+  udp6         0        0   localhost:323    [::]:*                     2636/chronyd        
   
-  5 packets captured
-  5 packets received by filter
-  0 packets dropped by kernel
-  [29236.335926] device eth0 left promiscuous mode
+  // ソケット
+  Active UNIX domain sockets (servers and established)
+  Proto  RefCnt  Flags    Type    State      I-Node  PID/Program name  Path
+  unix   2       [ ACC ]  STREAM  LISTENING  24736   3412/master       private/trace
+  unix   3       [ ]      DGRAM              7456    1/systemd         /run/systemd/notify
+  unix   2       [ ]      DGRAM              7458    1/systemd         /run/systemd/cgroups-agent
+  unix   2       [ ACC ]  STREAM  LISTENING  24717   3412/master       public/cleanup
+  unix   2       [ ACC ]  STREAM  LISTENING  24720   3412/master       public/qmgr
+  unix   2       [ ACC ]  STREAM  LISTENING  24742   3412/master       public/flush
+  
+  -- 省略 --
   --------------------------------------------------
-    
-    vm13$ cd $HOME
-    vm13$ ping -c 3 -i 1 vm12
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    PING vm12 (192.168.122.12) 56(84) bytes of data.
-    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=1.00 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.711 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.765 ms
-    
-    --- vm12 ping statistics ---
-    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-    rtt min/avg/max/mdev = 0.711/0.826/1.003/0.129 ms
-    --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ netstat -a -t -n (全ソケット情報、TCPポート、名前解決なし)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // インターネット接続
+  Active Internet connections (servers and established)
+  Proto   Recv-Q   Send-Q   Local Address    Foreign Address   State
+  tcp          0        0   0.0.0.0:22       0.0.0.0:*         LISTEN
+  tcp          0        0   127.0.0.1:25     0.0.0.0:*         LISTEN
+  tcp6         0        0   :::22            :::*              LISTEN
+  tcp6         0        0   ::1:25           :::*              LISTEN
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ netstat -r (ルーティングテーブル)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Kernel IP routing table
+  Destination     Gateway   Genmask         Flags   MSS   Window   irtt   Iface
+  default         gateway   0.0.0.0         UG        0        0      0   eth0
+  192.168.122.0   0.0.0.0   255.255.255.0   U         0        0      0   eth0
+  
+  Destination  : 宛先ネットワークまたは宛先ホスト
+  Gateway      : ゲートウェイアドレス(*は未設定)
+  Genmask      : 宛先サブネットマスク(0.0.0.0=デフォルトゲートウェイ、255.255.255.0=ネットワーク、255.255.255.255=ホスト)
+  Flags        : U(有効な経路), H(ホスト), G(ゲートウェイ使用), !(無効な経路)
+  MSS          : 不明
+  Window       : 不明
+  irtt         : 不明
+  Iface        : 経路を使用するNIC
+  --------------------------------------------------
     
   以下の確認に続く
   
