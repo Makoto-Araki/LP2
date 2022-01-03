@@ -733,6 +733,201 @@
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
+  vm12$ cd $HOME
+  vm12$ nc -4 -vz localhost 15000 (ポートスキャン)
+  vm12$ nc -4 -vz localhost 15001 (ポートスキャン)
+  vm12$ nc -4 -vz localhost 15002 (ポートスキャン)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 15000
+  Ncat: Version 7.50 ( https://nmap.org/ncat )
+  Ncat: Connection to 127.0.0.1 failed: Connection refused.
+  Ncat: Trying next address...
+  Ncat: Connection refused.
+  
+  // 15001
+  Ncat: Version 7.50 ( https://nmap.org/ncat )
+  Ncat: Connection to 127.0.0.1 failed: Connection refused.
+  Ncat: Trying next address...
+  Ncat: Connection refused.
+  
+  // 15002
+  Ncat: Version 7.50 ( https://nmap.org/ncat )
+  Ncat: Connection to 127.0.0.1 failed: Connection refused.
+  Ncat: Trying next address...
+  Ncat: Connection refused.
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo yum -y install nmap-ncat (パッケージ追加)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ nc -4 -vz vm12 15000 (ポートスキャン)
+    vm13$ nc -4 -vz vm12 15001 (ポートスキャン)
+    vm13$ nc -4 -vz vm12 15002 (ポートスキャン)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 15000
+    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: No route to host.
+
+    // 15001
+    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: No route to host.
+    
+    // 15002
+    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: No route to host.
+    --------------------------------------------------
+    
+  vm12$ cd $HOME
+  vm12$ sudo firewall-cmd --add-port=15001/tcp --permanent (ポート開放)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nc -k -4 -l 15001 & (複数接続サポート、IPv4通信、リスニング開始、バックグラウンド実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [1] 1804 -> PID
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ netstat -l -t -4 -p (リスニング状態、TCP、IPv4、PIDを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Active Internet connections (only servers)
+  Proto  Recv-Q  Send-Q  Local-Address   Foreign-Address  State   PID/Program-name    
+  tcp         0       0  0.0.0.0:ssh     0.0.0.0:*        LISTEN  -                   
+  tcp         0       0  0.0.0.0:15001   0.0.0.0:*        LISTEN  1804/nc             
+  tcp         0       0  localhost:smtp  0.0.0.0:*        LISTEN  -                   
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ss -l -t -4 (リスニング状態、TCP、IPv4、PIDを表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  State   Recv-Q  Send-Q  Local-Address:Port  Peer-Address:Port  (PID/Program-name)          
+  LISTEN       0     128  *:ssh               *:*                -                           
+  LISTEN       0      10  *:15001             *:*                users:(("nc",pid=1804,fd=3))
+  LISTEN       0     100  127.0.0.1:smtp      *:*                -                           
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nc -4 -vz localhost 15000 (ポートスキャン)
+  vm12$ nc -4 -vz localhost 15001 (ポートスキャン)
+  vm12$ nc -4 -vz localhost 15002 (ポートスキャン)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 15000
+  Ncat: Version 7.50 ( https://nmap.org/ncat )
+  Ncat: Connection to 127.0.0.1 failed: Connection refused.
+  Ncat: Trying next address...
+  Ncat: Connection refused.
+  
+  // 15001
+  Ncat: Version 7.50 ( https://nmap.org/ncat )
+  Ncat: Connected to 127.0.0.1:15001.
+  Ncat: 0 bytes sent, 0 bytes received in 0.04 seconds. (ポート15001の開放)
+  
+  // 15002
+  Ncat: Version 7.50 ( https://nmap.org/ncat )
+  Ncat: Connection to 127.0.0.1 failed: Connection refused.
+  Ncat: Trying next address...
+  Ncat: Connection refused.
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ nc -4 -vz vm12 15000 (ポートスキャン)
+    vm13$ nc -4 -vz vm12 15001 (ポートスキャン)
+    vm13$ nc -4 -vz vm12 15002 (ポートスキャン)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 15000
+    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: No route to host.
+    
+    // 15001
+    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: Connected to 192.168.122.12:15001.
+    Ncat: 0 bytes sent, 0 bytes received in 0.04 seconds. (ポート15001の開放)
+    
+    // 15002
+    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: No route to host.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ echo AAA | nc vm12 15001 (ポート15001へデータ送信)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+  vm12$ 
+  vm12$ AAA (入力プロンプトに送信データを確認)
+
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> EnterでOSに戻る
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ pgrep nc (バックグラウンド実行したプロセスのPIDを調査)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1804
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ kill -TERM 1804 (バックグラウンド実行したプロセスの終了)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [1]+  Terminated   nc -k -4 -l 15001
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo firewall-cmd --remove-port=15001/tcp --permanent (ポート閉鎖)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
