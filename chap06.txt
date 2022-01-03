@@ -950,11 +950,11 @@
     ip -s             // 詳細表示
     ip -r             // 名前解決して表示
     ip -f inet|inet6  // inet(IPv4), inet6(IPv6)
-    ip link	show      // データリンク層の情報を表示
+    ip link show      // データリンク層の情報を表示
     ip neigh show     // ARPキャッシュの情報を表示
     ip addr show      // IPアドレスの情報を表示
     ip route show     // ルーティングテーブルの情報を表示
-	  ip addr add XX dev YY   // ネットワークデバイス(YY)にIPアドレス(XX)を追加
+    ip addr add XX dev YY   // ネットワークデバイス(YY)にIPアドレス(XX)を追加
     ip addr del XX dev YY   // ネットワークデバイス(YY)のIPアドレス(XX)を削除
     ip route add XX dev YY  // ネットワークデバイス(YY)にルート(XX)を追加
     ip route del XX dev YY  // ネットワークデバイス(YY)のルート(XX)を削除
@@ -1252,7 +1252,7 @@
   
 [内容]
   ## 作業内容
-    システムの無線LANのネットワークデバイスを使用して無線LAN接続を行う
+    システムのLANケーブルを外し、無線LANのネットワークデバイスで無線LAN接続を行う
   
   ## 使用マシン
     HOST : localhost
@@ -1260,6 +1260,7 @@
     MEMO : ホスト
   
   ## アクセスポイント(家庭用ルーター)
+    IPV4 : 192.168.1.1
     SSID1 : pr400n-43f0db-1 
     SSID2 : pr400n-43f0db-2
   
@@ -1270,14 +1271,6 @@
   コマンドの実行結果
   --------------------------------------------------
   [   56.995670] IPv6: ADDRCONF(NETDEV_UP): wlp2s0: link is not ready -> ネットワークデバイス名は「wlp2s0」
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ dmesg | grep wlo (オンボードの無線LANネットワークデバイスを調査)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
@@ -1303,8 +1296,67 @@
   コマンドの実行結果
   --------------------------------------------------
   DEVICE          TYPE      STATE     CONNECTION
-  wlp2s0          wifi      切断済み  --  (利用不可から切断済みに変化)
-  p2p-dev-wlp2s0  wifi-p2p  切断済み  --  (不明)
+  wlp2s0          wifi      切断済み  --          -> (利用不可から切断済みに変化)
+  p2p-dev-wlp2s0  wifi-p2p  切断済み  --          -> (不明)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ nmcli device wifi list | grep pr400n-43f0db (Network-ManagerからアクセスポイントのSSIDを検索)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  IN-USE  SSID             MODE      CHAN  RATE        SIGNAL  BARS  SECURITY  
+          pr400n-43f0db-1  インフラ    13  130 Mbit/s  100     ▂▄▆█  WPA1 WPA2 (こちらを使用する)
+          pr400n-43f0db-2  インフラ    13  54 Mbit/s   100     ▂▄▆█  WEP       (暗号化に脆弱性ありで使用しない)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ nmcli --ask device wifi connect pr400n-43f0db-1 (Network-Managerからアクセスポイントに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  パスワード: •••••••••••••
+  デバイス 'wlp2s0' が 'ce04b348-6d4f-44d7-930a-934986e99cc7' で正常にアクティベートされました。
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ nmcli device | grep wifi (Network-Managerから無線LANネットワークデバイスを調査)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  DEVICE          TYPE      STATE     CONNECTION
+  wlp2s0          wifi      接続済み  pr400n-43f0db-1 (アクセスポイントに接続済み)
+  p2p-dev-wlp2s0  wifi-p2p  切断済み  --              
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ping -c 3 -i 1 192.168.1.1 (無線LANでアクセスポイントに導通テスト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+  64 bytes from 192.168.1.1: icmp_seq=1 ttl=255 time=2.45 ms
+  64 bytes from 192.168.1.1: icmp_seq=2 ttl=255 time=2.06 ms
+  64 bytes from 192.168.1.1: icmp_seq=3 ttl=255 time=2.16 ms
+  
+  --- 192.168.1.1 ping statistics ---
+  3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+  rtt min/avg/max/mdev = 2.066/2.229/2.458/0.175 ms
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ping -c 3 -i 1 www.yahoo.co.jp (無線LANでインターネットに導通テスト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  PING edge12.g.yimg.jp (182.22.28.252) 56(84) bytes of data.
+  64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=1 ttl=55 time=8.06 ms
+  64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=2 ttl=55 time=8.94 ms
+  64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=3 ttl=55 time=14.1 ms
+  
+  --- edge12.g.yimg.jp ping statistics ---
+  3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+  rtt min/avg/max/mdev = 8.064/10.390/14.166/2.694 ms
   --------------------------------------------------
   
   以下の確認に続く
