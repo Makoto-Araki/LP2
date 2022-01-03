@@ -11,6 +11,7 @@
 [10] ネットワーク管理コマンド - 06 (netstat)
 [11] ネットワーク管理コマンド - 07 (ss)
 [12] ネットワーク管理コマンド - 08 (nc)
+[13] ネットワーク管理コマンド - 09 (ip)
 ================================================================================
 [01]
   ネットワークデバイス - 01
@@ -926,6 +927,199 @@
   コマンドの実行結果
   --------------------------------------------------
   success
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[13]
+  ネットワーク管理コマンド - 09 (ip)
+  
+[内容]
+  ## 作業内容
+    ネットワーク管理をコマンド(ip)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド(ip)
+    ip -s             // 詳細表示
+    ip -r             // 名前解決して表示
+    ip -f inet|inet6  // inet(IPv4), inet6(IPv6)
+    ip link	show      // データリンク層の情報を表示
+    ip neigh show     // ARPキャッシュを表示
+    ip addr show      // IPアドレスを表示
+    ip route show     // ルーティングテーブルを表示
+	  ip addr add XX dev YY   // ネットワークデバイス(YY)にIPアドレス(XX)を追加
+    ip addr del XX dev YY   // ネットワークデバイス(YY)のIPアドレス(XX)を削除
+    ip route add XX dev YY  // ネットワークデバイス(YY)にルート(XX)を追加
+    ip route del XX dev YY  // ネットワークデバイス(YY)のルート(XX)を削除
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ ip link show (データリンク層の情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+     link/ether 52:54:00:70:e2:3b brd ff:ff:ff:ff:ff:ff
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip -s link show (詳細表示、データリンク層の情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+     RX: bytes  packets  errors  dropped overrun mcast   
+     7972       137      0       0       0       0       
+     TX: bytes  packets  errors  dropped carrier collsns 
+     7972       137      0       0       0       0       
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+     link/ether 52:54:00:70:e2:3b brd ff:ff:ff:ff:ff:ff
+     RX: bytes  packets  errors  dropped overrun mcast   
+     1785021    29153    0       17      0       0       
+     TX: bytes  packets  errors  dropped carrier collsns 
+     184979     2968     0       0       0       0       
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip neigh show (ARPキャッシュの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.13 dev eth0 lladdr 52:54:00:01:99:8f STALE
+  192.168.122.1  dev eth0 lladdr 52:54:00:13:d6:dc STALE
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip -s neigh show (詳細表示、ARPキャッシュの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.13 dev eth0 lladdr 52:54:00:01:99:8f used 33214/33183/33140 probes 1 STALE
+  192.168.122.1  dev eth0 lladdr 52:54:00:13:d6:dc used 54/49/6 probes 1 STALE
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip -f inet addr show (IPv4のみ、IPアドレスの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+     inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+     inet 192.168.122.12/24 brd 192.168.122.255 scope global noprefixroute eth0
+       valid_lft forever preferred_lft forever
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip -s -f inet addr show (詳細表示、IPv4のみ、IPアドレスの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+     inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+     RX: bytes  packets  errors  dropped overrun mcast   
+     7972       137      0       0       0       0       
+     TX: bytes  packets  errors  dropped carrier collsns 
+     7972       137      0       0       0       0       
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+     inet 192.168.122.12/24 brd 192.168.122.255 scope global noprefixroute eth0
+       valid_lft forever preferred_lft forever
+     RX: bytes  packets  errors  dropped overrun mcast   
+     1800117    29440    0       17      0       0       
+     TX: bytes  packets  errors  dropped carrier collsns 
+     186503     2994     0       0       0       0       
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo ip addr add 192.168.122.22/24 dev eth0:0 (デバイスに仮想IPアドレスを付与)
+  vm12$ sudo ip addr add 192.168.122.32/24 dev eth0:1 (デバイスに仮想IPアドレスを付与)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip -f inet addr show (IPv4のみ、IPアドレスの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+     inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+     inet 192.168.122.12/24 brd 192.168.122.255 scope global noprefixroute eth0
+       valid_lft forever preferred_lft forever
+     inet 192.168.122.22/24 scope global secondary eth0 (仮想IPアドレス)
+       valid_lft forever preferred_lft forever
+     inet 192.168.122.32/24 scope global secondary eth0 (仮想IPアドレス)
+       valid_lft forever preferred_lft forever
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo ip addr del 192.168.122.22/24 dev eth0:0 (デバイスの仮想IPアドレスを削除)
+  vm12$ sudo ip addr del 192.168.122.32/24 dev eth0:1 (デバイスの仮想IPアドレスを削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip route show (ルーティングテーブルの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  default via 192.168.122.1 dev eth0 proto static metric 100 
+  192.168.122.0/24 dev eth0 proto kernel scope link src 192.168.122.12 metric 100 
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip -s route show (詳細表示、ルーティングテーブルの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  default via 192.168.122.1 dev eth0 proto static metric 100 
+  192.168.122.0/24 dev eth0 proto kernel scope link src 192.168.122.12 metric 100 
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo ip route add 192.168.122.22/32 via 192.168.122.1 dev eth0 (ルート情報を追加)
+  vm12$ sudo ip route add 192.168.122.32/32 via 192.168.122.1 dev eth0 (ルート情報を追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ip route show (ルーティングテーブルの情報を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  default via 192.168.122.1 dev eth0 proto static metric 100 
+  192.168.122.0/24 dev eth0 proto kernel scope link src 192.168.122.12 metric 100 
+  192.168.122.22 via 192.168.122.1 dev eth0 (追加ルート)
+  192.168.122.32 via 192.168.122.1 dev eth0 (追加ルート)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo ip route del 192.168.122.22/32 via 192.168.122.1 dev eth0 (ルート情報を削除)
+  vm12$ sudo ip route del 192.168.122.32/32 via 192.168.122.1 dev eth0 (ルート情報を削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
