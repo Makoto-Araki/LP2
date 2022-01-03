@@ -1139,29 +1139,108 @@
     MEMO : 仮想マシン(サーバー用途)
   
   ## コマンド(route)
-    en(イーサネット) + p0(PCIバスの0番目) + s0(スロット0)
-    en(イーサネット) + p0(PCIバスの0番目) + s1(スロット1)
+    route -n  // 名前解決しない
+    route -F  // ルーティングテーブル表示
+    route -C  // ルーティングキャッシュ表示
+    route add -host XX dev ZZ  // ホスト(XX)へはデバイス(ZZ)へ送出というルート情報を追加
+    route del -host XX dev ZZ  // ホスト(XX)へはデバイス(ZZ)へ送出というルート情報を削除
+    route add -net XX  netmask YY dev ZZ  // ネットワーク(XX)へはデバイス(ZZ)へ送出というルート情報を追加
+    route del -net XX  netmask YY dev ZZ  // ネットワーク(XX)へはデバイス(ZZ)へ送出というルート情報を削除
   
 [確認]
-  $ cd $HOME
-  $ dmesg | grep enp (PCIバス)
+  vm12$ cd $HOME
+  vm12$ route (ルーティングテーブル表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  [   56.978724] IPv6: ADDRCONF(NETDEV_UP): enp1s0: link is not ready
-  [   56.990397] IPv6: ADDRCONF(NETDEV_UP): enp1s0: link is not ready
-  [   57.991210] tg3 0000:01:00.0 enp1s0: Link is down
-  [   61.003359] tg3 0000:01:00.0 enp1s0: Link is up at 1000 Mbps, full duplex
-  [   61.003365] tg3 0000:01:00.0 enp1s0: Flow control is off for TX and off for RX
-  [   61.003383] IPv6: ADDRCONF(NETDEV_CHANGE): enp1s0: link becomes ready
+  Kernel IP routing table
+  Destination     Gateway   Genmask        Flags  Metric  Ref  Use  Iface
+  default         gateway   0.0.0.0        UG        100    0    0  eth0 
+  192.168.122.0   0.0.0.0   255.255.255.0  U         100    0    0  eth0 
   --------------------------------------------------
   
-  $ cd $HOME
-  $ dmesg | grep eno (オンボード)
+  vm12$ cd $HOME
+  vm12$ sudo route add -host 192.168.122.22 dev eth0 (ルート情報を追加)
+  vm12$ sudo route add -host 192.168.122.32 dev eth0 (ルート情報を追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ route (ルーティングテーブル表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Kernel IP routing table
+  Destination     Gateway   Genmask         Flags Metric  Ref  Use  Iface
+  default         gateway   0.0.0.0         UG    100       0    0  eth0
+  192.168.122.0   0.0.0.0   255.255.255.0   U     100       0    0  eth0
+  192.168.122.22  0.0.0.0   255.255.255.255 UH    0         0    0  eth0
+  192.168.122.32  0.0.0.0   255.255.255.255 UH    0         0    0  eth0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo route del -host 192.168.122.22 dev eth0 (ルート情報を削除)
+  vm12$ sudo route del -host 192.168.122.32 dev eth0 (ルート情報を削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ route (ルーティングテーブル表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Kernel IP routing table
+  Destination     Gateway   Genmask        Flags  Metric  Ref  Use  Iface
+  default         gateway   0.0.0.0        UG        100    0    0  eth0 
+  192.168.122.0   0.0.0.0   255.255.255.0  U         100    0    0  eth0 
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo route add -net 192.168.130.0 netmask 255.255.255.0 dev eth0 (ルート情報を追加)
+  vm12$ sudo route add -net 192.168.140.0 netmask 255.255.255.0 dev eth0 (ルート情報を追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ route (ルーティングテーブル表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Kernel IP routing table
+  Destination     Gateway   Genmask        Flags  Metric  Ref  Use  Iface
+  default         gateway   0.0.0.0        UG        100    0    0  eth0
+  192.168.122.0   0.0.0.0   255.255.255.0  U         100    0    0  eth0
+  192.168.130.0   0.0.0.0   255.255.255.0  U           0    0    0  eth0
+  192.168.140.0   0.0.0.0   255.255.255.0  U           0    0    0  eth0
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo route del -net 192.168.130.0 netmask 255.255.255.0 dev eth0 (ルート情報を削除)
+  vm12$ sudo route del -net 192.168.140.0 netmask 255.255.255.0 dev eth0 (ルート情報を削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ route (ルーティングテーブル表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Kernel IP routing table
+  Destination     Gateway   Genmask        Flags  Metric  Ref  Use  Iface
+  default         gateway   0.0.0.0        UG        100    0    0  eth0 
+  192.168.122.0   0.0.0.0   255.255.255.0  U         100    0    0  eth0 
   --------------------------------------------------
   
   以下の確認に続く
