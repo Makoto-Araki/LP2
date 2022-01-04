@@ -3,6 +3,7 @@
 [02] ソースの展開 - 02 (tar-bzip2)
 [03] ソースの展開 - 03 (tar-xz)
 [04] ソースの展開 - 04 (patch)
+[05] //
 ================================================================================
 [01]
   ソースの展開 - 01 (tar-gzip)
@@ -190,6 +191,696 @@
   
   void Hello1(void) { printf("Hello1\n"); }  // 関数実装
   void Hello2(void) { printf("Hello2\n"); }  // 関数実装(追加)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ diff -u hello.h patch/hello.h > patch/patch01 (パッチファイル作成)
+  vm12$ diff -u hello.c patch/hello.c > patch/patch02 (パッチファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat patch/patch01 (パッチファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- hello.h	2022-01-04 18:38:51.842473496 +0900
+  +++ patch/hello.h	2022-01-04 18:45:40.066991609 +0900  // 注意 : p0 = patch/hello.h, p1 = hello.h
+  @@ -1,5 +1,6 @@
+   #ifndef HELLO_H_
+   
+   void Hello1(void);  // 関数プロトタイプ宣言
+  +void Hello2(void);  // 関数プロトタイプ宣言
+   
+   #endif
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat patch/patch02 (パッチファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  --- hello.c	2022-01-04 18:27:59.875437267 +0900
+  +++ patch/hello.c	2022-01-04 18:46:06.446831227 +0900  // 注意 : p0 = patch/hello.c, p1 = hello.c
+  @@ -2,3 +2,4 @@
+   #include "hello.h"
+   
+   void Hello1(void) { printf("Hello1\n"); }  // 関数実装
+  +void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO/patch
+  vm12$ rm -f hello.h hello.c
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ patch -p0 hello.h < patch/patch01 (パッチ適用)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  patching file hello.h
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ patch -p0 hello.c < patch/patch02 (パッチ適用)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  patching file hello.c
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat hello.h
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #ifndef HELLO_H_
+  
+  void Hello1(void);  // 関数プロトタイプ宣言
+  void Hello2(void);  // 関数プロトタイプ宣言
+  
+  #endif
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat hello.c
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <stdio.h>
+  #include "hello.h"
+  
+  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
+  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ patch -R -p0 hello.h < patch/patch01 (パッチ適用の取消)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  patching file hello.h
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ patch -R -p0 hello.c < patch/patch02 (パッチ適用の取消)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  patching file hello.c
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat hello.h
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #ifndef HELLO_H_
+  
+  void Hello1(void);  // 関数プロトタイプ宣言
+  
+  #endif
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat hello.c
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <stdio.h>
+  #include "hello.h"
+  
+  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cp -p patch/patch[0-1] .(カレントディレクトリ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto 157  1月  4 19:03 hello.c
+  -rw-rw-r--. 1 makoto makoto 134  1月  4 19:03 hello.h
+  drwxrwxr-x. 2 makoto makoto  36  1月  4 18:49 patch
+  -rw-rw-r--. 1 makoto makoto 258  1月  4 19:02 patch01 (コピーしてきたパッチファイル)
+  -rw-rw-r--. 1 makoto makoto 260  1月  4 19:02 patch02 (コピーしてきたパッチファイル)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ patch -p1 hello.h < patch01 (パッチ適用)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  patching file hello.h
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ patch -p1 hello.c < patch02 (パッチ適用)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  patching file hello.c
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat hello.h
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #ifndef HELLO_H_
+  
+  void Hello1(void);  // 関数プロトタイプ宣言
+  void Hello2(void);  // 関数プロトタイプ宣言
+  
+  #endif
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ cat hello.c
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <stdio.h>
+  #include "hello.h"
+  
+  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
+  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[05]
+  コンパイルとインストール
+  
+[内容]
+  ## 作業内容
+    サンプル(GNU-Hello)のソース取得・Makefile作成・コンパイル・インストール・実行までを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ wget --no-check-certificate https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz (ソース取得)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 相手の証明書が期限切れだったのでリスクはあるが…証明書チェックをせずに続行した
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ tar zxf hello-2.10.tar.gz (ソースの解凍・展開)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/hello-2.10
+  vm12$ ls
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ABOUT-NLS      GNUmakefile    README         aclocal.m4     contrib        maint.mk
+  AUTHORS        INSTALL        README-dev     build-aux      doc            man
+  COPYING        Makefile.am    README-release config.in      hello.1        po
+  ChangeLog      Makefile.in    THANKS         configure      lib            src
+  ChangeLog.O    NEWS           TODO           configure.ac   m4             tests
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/hello-2.10
+  vm12$ cat README
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  This is the README file for the GNU Hello distribution.
+  Hello prints a friendly greeting.  It also serves as a sample GNU
+  package, showing practices that may be useful for GNU projects.
+  
+  Copyright (C) 1992, 1993, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+  2002, 2004, 2005, 2006, 2010, 2013, 2014 Free Software Foundation,
+  Inc.
+  
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+  
+  // コンパイルとインストールはファイル(INSTALL*)を参照
+  See the files ./INSTALL* for building and installation instructions.
+  
+  Primary distribution point: ftp://ftp.gnu.org/gnu/hello/
+  automatic redirection: http://ftpmirror.gnu.org/hello
+  list of mirrors for manual selection: http://www.gnu.org/prep/ftp.html
+  
+  // GNU-Hello のホームページ
+  Home page: http://www.gnu.org/software/hello/
+
+  Developer page: http://savannah.gnu.org/projects/hello/
+  - please file bug reports, patches and feature requests here if
+    possible (otherwise, feel free to use the mailing list)
+  - significant contributions require a copyright assignment to the Free
+    Software Foundation. The maintainer will be happy to answer
+    questions about the process.
+  
+  Mailing list: bug-hello@gnu.org
+  - please use this list for all discussion
+  - archived at: http://lists.gnu.org/pipermail/bug-hello
+  - anyone is welcome to join the list; to do so, visit
+    http://lists.gnu.org/mailman/listinfo/bug-hello
+  
+  Bug reports:
+    Please include enough information for the maintainers to reproduce the
+    problem.  Generally speaking, that means:
+    - the contents of any input files necessary to reproduce the bug
+      and command line invocations of the program(s) involved (crucial!).
+    - a description of the problem and any samples of the erroneous output.
+    - the version number of the program(s) involved (use --version).
+    - hardware, operating system, and compiler versions (uname -a).
+    - unusual options you gave to configure, if any (see config.status).
+    - anything else that you think would be helpful.
+  
+  Patching process:
+    - All changes must be sent to mailing list.
+    - Changes are reviewed by maintainers.
+    - Maintainer does not review own changes.
+      * In case of single maintainer, or unresponsive co-maintainer, mailing list subscribers may perform the review.
+    - Review means either a patch approval, comments to author, or a reject.
+      * Approved patches are taken to upstream git.
+      * Commented patches will require work before they can be approved.
+        Comments can be untechnical, such as a change author must submit a copyright assignment to FSF.
+      * Authors are encouraged to discontinue work with rejected changes, as the reject is permanent.
+    - Maintainers keep track of rejected changes so that developers can avoid proposing the same in future.
+  
+  Patches are most welcome; if possible, please make them in git-am
+  format, and include a suitable commit message.
+  
+  See README-dev for information on the development environment -- any
+  interested parties are welcome.  If you're a programmer and wish to
+  contribute, this should get you started.  If you're not a programmer,
+  your help in writing test cases, checking the documentation against the
+  implementation, translating the program strings to other languages,
+  etc., would still be very much appreciated.
+
+  The basic Hello algorithm was described by B.W. Kernighan and
+  D.M. Ritchie.  The GNU implementation is substantially more complex, in
+  order to be a canonical example of a GNU package.  Many people have
+  contributed; please see the AUTHORS and ChangeLog files.
+  
+  GNU Hello is free software.  See the file COPYING for copying conditions.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/hello-2.10
+  vm12$ cat INSTALL
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Installation Instructions
+  *************************
+  
+  Copyright (C) 1994-1996, 1999-2002, 2004-2013 Free Software Foundation,
+  Inc.
+  
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.  This file is offered as-is,
+  without warranty of any kind.
+  
+  Basic Installation
+  ==================
+  
+  Briefly, the shell command `./configure && make && make install'
+  should configure, build, and install this package.  The following
+more-detailed instructions are generic; see the `README' file for
+instructions specific to this package.  Some packages provide this
+`INSTALL' file but do not implement all of the features documented
+below.  The lack of an optional feature in a given package is not
+necessarily a bug.  More recommendations for GNU packages can be found
+in *note Makefile Conventions: (standards)Makefile Conventions.
+
+   The `configure' shell script attempts to guess correct values for
+various system-dependent variables used during compilation.  It uses
+those values to create a `Makefile' in each directory of the package.
+It may also create one or more `.h' files containing system-dependent
+definitions.  Finally, it creates a shell script `config.status' that
+you can run in the future to recreate the current configuration, and a
+file `config.log' containing compiler output (useful mainly for
+debugging `configure').
+
+   It can also use an optional file (typically called `config.cache'
+and enabled with `--cache-file=config.cache' or simply `-C') that saves
+the results of its tests to speed up reconfiguring.  Caching is
+disabled by default to prevent problems with accidental use of stale
+cache files.
+
+   If you need to do unusual things to compile the package, please try
+to figure out how `configure' could check whether to do them, and mail
+diffs or instructions to the address given in the `README' so they can
+be considered for the next release.  If you are using the cache, and at
+some point `config.cache' contains results you don't want to keep, you
+may remove or edit it.
+
+   The file `configure.ac' (or `configure.in') is used to create
+`configure' by a program called `autoconf'.  You need `configure.ac' if
+you want to change it or regenerate `configure' using a newer version
+of `autoconf'.
+
+   The simplest way to compile this package is:
+
+  1. `cd' to the directory containing the package's source code and type
+     `./configure' to configure the package for your system.
+
+     Running `configure' might take a while.  While running, it prints
+     some messages telling which features it is checking for.
+
+  2. Type `make' to compile the package.
+
+  3. Optionally, type `make check' to run any self-tests that come with
+     the package, generally using the just-built uninstalled binaries.
+
+  4. Type `make install' to install the programs and any data files and
+     documentation.  When installing into a prefix owned by root, it is
+     recommended that the package be configured and built as a regular
+     user, and only the `make install' phase executed with root
+     privileges.
+
+  5. Optionally, type `make installcheck' to repeat any self-tests, but
+     this time using the binaries in their final installed location.
+     This target does not install anything.  Running this target as a
+     regular user, particularly if the prior `make install' required
+     root privileges, verifies that the installation completed
+     correctly.
+
+  6. You can remove the program binaries and object files from the
+     source code directory by typing `make clean'.  To also remove the
+     files that `configure' created (so you can compile the package for
+     a different kind of computer), type `make distclean'.  There is
+     also a `make maintainer-clean' target, but that is intended mainly
+     for the package's developers.  If you use it, you may have to get
+     all sorts of other programs in order to regenerate files that came
+     with the distribution.
+
+  7. Often, you can also type `make uninstall' to remove the installed
+     files again.  In practice, not all packages have tested that
+     uninstallation works correctly, even though it is required by the
+     GNU Coding Standards.
+
+  8. Some packages, particularly those that use Automake, provide `make
+     distcheck', which can by used by developers to test that all other
+     targets like `make install' and `make uninstall' work correctly.
+     This target is generally not run by end users.
+
+Compilers and Options
+=====================
+
+   Some systems require unusual options for compilation or linking that
+the `configure' script does not know about.  Run `./configure --help'
+for details on some of the pertinent environment variables.
+
+   You can give `configure' initial values for configuration parameters
+by setting variables in the command line or in the environment.  Here
+is an example:
+
+     ./configure CC=c99 CFLAGS=-g LIBS=-lposix
+
+   *Note Defining Variables::, for more details.
+
+Compiling For Multiple Architectures
+====================================
+
+   You can compile the package for more than one kind of computer at the
+same time, by placing the object files for each architecture in their
+own directory.  To do this, you can use GNU `make'.  `cd' to the
+directory where you want the object files and executables to go and run
+the `configure' script.  `configure' automatically checks for the
+source code in the directory that `configure' is in and in `..'.  This
+is known as a "VPATH" build.
+
+   With a non-GNU `make', it is safer to compile the package for one
+architecture at a time in the source code directory.  After you have
+installed the package for one architecture, use `make distclean' before
+reconfiguring for another architecture.
+
+   On MacOS X 10.5 and later systems, you can create libraries and
+executables that work on multiple system types--known as "fat" or
+"universal" binaries--by specifying multiple `-arch' options to the
+compiler but only a single `-arch' option to the preprocessor.  Like
+this:
+
+     ./configure CC="gcc -arch i386 -arch x86_64 -arch ppc -arch ppc64" \
+                 CXX="g++ -arch i386 -arch x86_64 -arch ppc -arch ppc64" \
+                 CPP="gcc -E" CXXCPP="g++ -E"
+
+   This is not guaranteed to produce working output in all cases, you
+may have to build one architecture at a time and combine the results
+using the `lipo' tool if you have problems.
+
+Installation Names
+==================
+
+   By default, `make install' installs the package's commands under
+`/usr/local/bin', include files under `/usr/local/include', etc.  You
+can specify an installation prefix other than `/usr/local' by giving
+`configure' the option `--prefix=PREFIX', where PREFIX must be an
+absolute file name.
+
+   You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files.  If you
+pass the option `--exec-prefix=PREFIX' to `configure', the package uses
+PREFIX as the prefix for installing programs and libraries.
+Documentation and other data files still use the regular prefix.
+
+   In addition, if you use an unusual directory layout you can give
+options like `--bindir=DIR' to specify different values for particular
+kinds of files.  Run `configure --help' for a list of the directories
+you can set and what kinds of files go in them.  In general, the
+default for these options is expressed in terms of `${prefix}', so that
+specifying just `--prefix' will affect all of the other directory
+specifications that were not explicitly provided.
+
+   The most portable way to affect installation locations is to pass the
+correct locations to `configure'; however, many packages provide one or
+both of the following shortcuts of passing variable assignments to the
+`make install' command line to change installation locations without
+having to reconfigure or recompile.
+
+   The first method involves providing an override variable for each
+affected directory.  For example, `make install
+prefix=/alternate/directory' will choose an alternate location for all
+directory configuration variables that were expressed in terms of
+`${prefix}'.  Any directories that were specified during `configure',
+but not in terms of `${prefix}', must each be overridden at install
+time for the entire installation to be relocated.  The approach of
+makefile variable overrides for each directory variable is required by
+the GNU Coding Standards, and ideally causes no recompilation.
+However, some platforms have known limitations with the semantics of
+shared libraries that end up requiring recompilation when using this
+method, particularly noticeable in packages that use GNU Libtool.
+
+   The second method involves providing the `DESTDIR' variable.  For
+example, `make install DESTDIR=/alternate/directory' will prepend
+`/alternate/directory' before all installation names.  The approach of
+`DESTDIR' overrides is not required by the GNU Coding Standards, and
+does not work on platforms that have drive letters.  On the other hand,
+it does better at avoiding recompilation issues, and works well even
+when some directory options were not specified in terms of `${prefix}'
+at `configure' time.
+
+Optional Features
+=================
+
+   If the package supports it, you can cause programs to be installed
+with an extra prefix or suffix on their names by giving `configure' the
+option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+
+   Some packages pay attention to `--enable-FEATURE' options to
+`configure', where FEATURE indicates an optional part of the package.
+They may also pay attention to `--with-PACKAGE' options, where PACKAGE
+is something like `gnu-as' or `x' (for the X Window System).  The
+`README' should mention any `--enable-' and `--with-' options that the
+package recognizes.
+
+   For packages that use the X Window System, `configure' can usually
+find the X include and library files automatically, but if it doesn't,
+you can use the `configure' options `--x-includes=DIR' and
+`--x-libraries=DIR' to specify their locations.
+
+   Some packages offer the ability to configure how verbose the
+execution of `make' will be.  For these packages, running `./configure
+--enable-silent-rules' sets the default to minimal output, which can be
+overridden with `make V=1'; while running `./configure
+--disable-silent-rules' sets the default to verbose, which can be
+overridden with `make V=0'.
+
+Particular systems
+==================
+
+   On HP-UX, the default C compiler is not ANSI C compatible.  If GNU
+CC is not installed, it is recommended to use the following options in
+order to use an ANSI C compiler:
+
+     ./configure CC="cc -Ae -D_XOPEN_SOURCE=500"
+
+and if that doesn't work, install pre-built binaries of GCC for HP-UX.
+
+   HP-UX `make' updates targets which have the same time stamps as
+their prerequisites, which makes it generally unusable when shipped
+generated files such as `configure' are involved.  Use GNU `make'
+instead.
+
+   On OSF/1 a.k.a. Tru64, some versions of the default C compiler cannot
+parse its `<wchar.h>' header file.  The option `-nodtk' can be used as
+a workaround.  If GNU CC is not installed, it is therefore recommended
+to try
+
+     ./configure CC="cc"
+
+and if that doesn't work, try
+
+     ./configure CC="cc -nodtk"
+
+   On Solaris, don't put `/usr/ucb' early in your `PATH'.  This
+directory contains several dysfunctional programs; working variants of
+these programs are available in `/usr/bin'.  So, if you need `/usr/ucb'
+in your `PATH', put it _after_ `/usr/bin'.
+
+   On Haiku, software installed for all users goes in `/boot/common',
+not `/usr/local'.  It is recommended to use the following options:
+
+     ./configure --prefix=/boot/common
+
+Specifying the System Type
+==========================
+
+   There may be some features `configure' cannot figure out
+automatically, but needs to determine by the type of machine the package
+will run on.  Usually, assuming the package is built to be run on the
+_same_ architectures, `configure' can figure that out, but if it prints
+a message saying it cannot guess the machine type, give it the
+`--build=TYPE' option.  TYPE can either be a short name for the system
+type, such as `sun4', or a canonical name which has the form:
+
+     CPU-COMPANY-SYSTEM
+
+where SYSTEM can have one of these forms:
+
+     OS
+     KERNEL-OS
+
+   See the file `config.sub' for the possible values of each field.  If
+`config.sub' isn't included in this package, then this package doesn't
+need to know the machine type.
+
+   If you are _building_ compiler tools for cross-compiling, you should
+use the option `--target=TYPE' to select the type of system they will
+produce code for.
+
+   If you want to _use_ a cross compiler, that generates code for a
+platform different from the build platform, you should specify the
+"host" platform (i.e., that on which the generated programs will
+eventually be run) with `--host=TYPE'.
+
+Sharing Defaults
+================
+
+   If you want to set default values for `configure' scripts to share,
+you can create a site shell script called `config.site' that gives
+default values for variables like `CC', `cache_file', and `prefix'.
+`configure' looks for `PREFIX/share/config.site' if it exists, then
+`PREFIX/etc/config.site' if it exists.  Or, you can set the
+`CONFIG_SITE' environment variable to the location of the site script.
+A warning: not all `configure' scripts look for a site script.
+
+Defining Variables
+==================
+
+   Variables not defined in a site shell script can be set in the
+environment passed to `configure'.  However, some packages may run
+configure again during the build, and the customized values of these
+variables may be lost.  In order to avoid this problem, you should set
+them in the `configure' command line, using `VAR=value'.  For example:
+
+     ./configure CC=/usr/local2/bin/gcc
+
+causes the specified `gcc' to be used as the C compiler (unless it is
+overridden in the site shell script).
+
+Unfortunately, this technique does not work for `CONFIG_SHELL' due to
+an Autoconf limitation.  Until the limitation is lifted, you can use
+this workaround:
+
+     CONFIG_SHELL=/bin/bash ./configure CONFIG_SHELL=/bin/bash
+
+`configure' Invocation
+======================
+
+   `configure' recognizes the following options to control how it
+operates.
+
+`--help'
+`-h'
+     Print a summary of all of the options to `configure', and exit.
+
+`--help=short'
+`--help=recursive'
+     Print a summary of the options unique to this package's
+     `configure', and exit.  The `short' variant lists options used
+     only in the top level, while the `recursive' variant lists options
+     also present in any nested packages.
+
+`--version'
+`-V'
+     Print the version of Autoconf used to generate the `configure'
+     script, and exit.
+
+`--cache-file=FILE'
+     Enable the cache: use and save the results of the tests in FILE,
+     traditionally `config.cache'.  FILE defaults to `/dev/null' to
+     disable caching.
+
+`--config-cache'
+`-C'
+     Alias for `--cache-file=config.cache'.
+
+`--quiet'
+`--silent'
+`-q'
+     Do not print messages saying which checks are being made.  To
+     suppress all normal output, redirect it to `/dev/null' (any error
+     messages will still be shown).
+
+`--srcdir=DIR'
+     Look for the package's source code in directory DIR.  Usually
+     `configure' can determine that directory automatically.
+
+`--prefix=DIR'
+     Use DIR as the installation prefix.  *note Installation Names::
+     for more details, including other options available for fine-tuning
+     the installation locations.
+
+`--no-create'
+`-n'
+     Run the configure checks, but stop before creating any output
+     files.
+
+`configure' also accepts some other, not widely useful, options.  Run
+`configure --help' for more details.
   --------------------------------------------------
   
   vm12$ cd $HOME/HELLO
