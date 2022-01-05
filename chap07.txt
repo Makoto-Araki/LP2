@@ -1120,7 +1120,331 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  restore: ./lost+found: File exists -> 余計なメッセージだが消す方法が分からない
+  restore: ./lost+found: File exists -> 初回だけ出力される模様
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ ls -lh | grep sample (レストア状況を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo restore -r -f /home/makoto/DUMP1.dump (増分バックアップをレストア)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ ls -lh | grep sample (レストア状況を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
+  -rw-r--r--. 1 root root   0  1月  5 17:04 sample2.txt
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo restore -r -f /home/makoto/DUMP2.dump (増分バックアップをレストア)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ ls -lh | grep sample (レストア状況を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
+  -rw-r--r--. 1 root root   0  1月  5 17:04 sample2.txt
+  -rw-r--r--. 1 root root   0  1月  5 17:06 sample3.txt
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ディスクイメージ削除
+  vm12$ cd $HOME
+  vm12$ rm -f image0.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[10]
+  ローカルでのバックアップ - 05 (mt)
+  
+[内容]
+  ## 作業内容
+    バックアップをコマンド(mt)で行う
+  
+  ## 使用マシン
+    テープドライブを自宅導入した人のブログ内容を記述
+
+  ## コマンド(mt)
+    mt -f XX status  // テープ(XX)の状態表示
+    mt -f XX tell    // テープ(XX)の現在位置表示
+    mt -f XX rewind  // テープ(XX)を先頭に巻き戻し
+    mt -f XX fsf YY  // テープ(XX)をYY個先のデータの先頭位置まで早送り
+    mt -f XX bsf YY  // テープ(XX)をYY個先のデータの末尾位置まで巻き戻し
+    mt -f XX compression 1  // ハードウェア圧縮
+    mt -f XX compression 0  // ハードウェア圧縮を使用しない
+  
+  ## テープの構造
+    
+    File-Number=0         File-Number=1           File-Number=2           File-Number=3
+      |                     |                       |                       |
+      +-------------------+---+-------------------+---+-------------------+---+---------------
+      |     tar 0         |   |     tar 1         |   |     tar 2         |   |     empty
+      +-------------------+---+-------------------+---+-------------------+---+---------------
+      |                     |                       |                       |
+    BOT(Begin of Tape)    EOF(End of File)        EOF(End of File)        EOT(End of Tape)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install dump (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dd if=/dev/zero of=image0.img bs=10M count=5
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo losetup /dev/loop0 image0.img
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mkfs -t ext4 /dev/loop0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+  sr0                      11:0    1 1024M  0 rom  
+  loop0                     7:0    0  100M  0 loop /mnt (マウントしたデバイス)
+  vda                     252:0    0   20G  0 disk 
+  ├─vda2                252:2    0   19G  0 part 
+  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
+  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
+  └─vda1                252:1    0    1G  0 part /boot
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo touch sample1.txt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dump -0 -u -f DUMP0.dump /dev/loop0 (全体バックアップ - レベル0)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  DUMP: Date of this level 0 dump: Wed Jan  5 17:02:32 2022
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP0.dump
+  DUMP: Label: none
+  DUMP: Writing 10 Kilobyte records
+  DUMP: mapping (Pass I) [regular files]
+  DUMP: mapping (Pass II) [directories]
+  DUMP: estimated 26 blocks.
+  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:02:32 2022
+  DUMP: dumping (Pass III) [directories]
+  DUMP: dumping (Pass IV) [regular files]
+  DUMP: Closing DUMP0.dump
+  DUMP: Volume 1 completed at: Wed Jan  5 17:02:32 2022
+  DUMP: Volume 1 20 blocks (0.02MB)
+  DUMP: 20 blocks (0.02MB) on 1 volume(s)
+  DUMP: finished in less than a second
+  DUMP: Date of this level 0 dump: Wed Jan  5 17:02:32 2022
+  DUMP: Date this dump completed:  Wed Jan  5 17:02:32 2022
+  DUMP: Average transfer rate: 0 kB/s
+  DUMP: DUMP IS DONE
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo touch sample2.txt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dump -1 -u -f DUMP1.dump /dev/loop0 (増分バックアップ - レベル1)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  DUMP: Date of this level 1 dump: Wed Jan  5 17:04:54 2022
+  DUMP: Date of last level 0 dump: Wed Jan  5 17:02:32 2022
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP1.dump
+  DUMP: Label: none
+  DUMP: Writing 10 Kilobyte records
+  DUMP: mapping (Pass I) [regular files]
+  DUMP: mapping (Pass II) [directories]
+  DUMP: estimated 19 blocks.
+  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:04:54 2022
+  DUMP: dumping (Pass III) [directories]
+  DUMP: dumping (Pass IV) [regular files]
+  DUMP: Closing DUMP1.dump
+  DUMP: Volume 1 completed at: Wed Jan  5 17:04:54 2022
+  DUMP: Volume 1 20 blocks (0.02MB)
+  DUMP: 20 blocks (0.02MB) on 1 volume(s)
+  DUMP: finished in less than a second
+  DUMP: Date of this level 1 dump: Wed Jan  5 17:04:54 2022
+  DUMP: Date this dump completed:  Wed Jan  5 17:04:54 2022
+  DUMP: Average transfer rate: 0 kB/s
+  DUMP: DUMP IS DONE
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo touch sample3.txt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dump -2 -u -f DUMP2.dump /dev/loop0 (増分バックアップ - レベル2)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  DUMP: Date of this level 2 dump: Wed Jan  5 17:07:08 2022
+  DUMP: Date of last level 1 dump: Wed Jan  5 17:04:54 2022
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP2.dump
+  DUMP: Label: none
+  DUMP: Writing 10 Kilobyte records
+  DUMP: mapping (Pass I) [regular files]
+  DUMP: mapping (Pass II) [directories]
+  DUMP: estimated 19 blocks.
+  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:07:08 2022
+  DUMP: dumping (Pass III) [directories]
+  DUMP: dumping (Pass IV) [regular files]
+  DUMP: Closing DUMP2.dump
+  DUMP: Volume 1 completed at: Wed Jan  5 17:07:08 2022
+  DUMP: Volume 1 20 blocks (0.02MB)
+  DUMP: 20 blocks (0.02MB) on 1 volume(s)
+  DUMP: finished in less than a second
+  DUMP: Date of this level 2 dump: Wed Jan  5 17:07:08 2022
+  DUMP: Date this dump completed:  Wed Jan  5 17:07:08 2022
+  DUMP: Average transfer rate: 0 kB/s
+  DUMP: DUMP IS DONE
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo rm sample[1-3].txt (誤ってファイルを全て削除した設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd /mnt
+  vm12$ sudo restore -r -f /home/makoto/DUMP0.dump (全体バックアップをレストア)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  restore: ./lost+found: File exists -> 初回だけ出力される模様
   --------------------------------------------------
   
   vm12$ cd /mnt
