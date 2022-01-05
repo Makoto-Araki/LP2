@@ -1246,7 +1246,7 @@
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=0, block number=0, partition=0.  // データ未保存のためファイル番号は「0」
+  File number=0, block number=0, partition=0.  // データ未保存のため次のファイル番号は「0」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (41010000):
@@ -1267,201 +1267,167 @@
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=1, block number=0, partition=0.  // 次のファイル番号は「0」
+  File number=1, block number=0, partition=0.  // 次のファイル番号は「1」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
   EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar0」のEOF
   --------------------------------------------------
   
-  ファイルをテープに書込
   # cd $HOME
-  # tar cvf /dev/nst0 file1
+  # tar cvf /dev/nst0 file1 (ファイルをテープに書込)
   
   コマンドの実行結果
   --------------------------------------------------
   file1
   --------------------------------------------------
   
-  書込完了後にテープ状態を確認
   # cd $HOME
-  # mt -f /dev/nst0 status
+  # mt -f /dev/nst0 status (書込完了後にテープ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=2, block number=0, partition=0.
+  File number=2, block number=0, partition=0.  // 次のファイル番号は「2」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
-    EOF ONLINE IM_REP_EN
-  
-  // File number = 2 → 現在のファイルは「tar2」
-  // EOF ONLINE → ヘッダ位置が「tar1」のEOF
+  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar1」のEOF
   --------------------------------------------------
   
-  テープの巻き戻し
   # cd $HOME
-  # mt -f /dev/nst0 rewind
+  # mt -f /dev/nst0 rewind (テープの巻き戻し)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  テープ状態を確認
   # cd $HOME
-  # mt -f /dev/nst0 status
+  # mt -f /dev/nst0 status (テープ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=0, block number=0, partition=0.
+  File number=0, block number=0, partition=0.  // 次のファイル番号は「0」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (41010000):
-    BOT ONLINE IM_REP_EN
-  
-  // File number = 0 → 現在のファイルは「tar0」
-  // BOT ONLINE → ヘッダ位置がBOT
+  BOT ONLINE IM_REP_EN  // ヘッダ位置がBOT
   --------------------------------------------------
   
-  テープを一つ先のEOFへ早送り
   # cd $HOME
-  # mt -f /dev/nst0 fsf 1
+  # mt -f /dev/nst0 fsf 1 (テープを一つ先のEOFへ早送り)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  テープ状態を確認
   # cd $HOME
-  # mt -f /dev/nst0 status
+  # mt -f /dev/nst0 status (テープ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=1, block number=0, partition=0.
+  File number=1, block number=0, partition=0.  // 次のファイル番号は「1」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
-    EOF ONLINE IM_REP_EN
-  
-  // File number = 1 → 現在のファイルは「tar1」
-  // EOF ONLINE → ヘッダ位置が「tar0」のEOF
+  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar0」のEOF
   --------------------------------------------------
   
-  テープ末尾のEOFへ早送り
   # cd $HOME
-  # mt -f /dev/nst0 eod
+  # mt -f /dev/nst0 eod (テープ末尾のEOFへ早送り)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  テープ状態を確認
   # cd $HOME
-  # mt -f /dev/nst0 status
+  # mt -f /dev/nst0 status (テープ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=2, block number=-1, partition=0.
+  File number=2, block number=-1, partition=0.  // 次のファイル番号は「2」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (9010000):
-    EOD ONLINE IM_REP_EN
-  
-  // File number = 2 → 現在のファイルは「tar2」
-  // EOD ONLINE → ヘッダ位置がテープ末尾のEOF
+  EOD ONLINE IM_REP_EN  // ヘッダ位置がテープ末尾のEOF
   --------------------------------------------------
   
-  テープを一つ前のEOFに移動後、アーカイブファイルの末尾にヘッダ位置をセット
   # cd $HOME
-  # mt -f /dev/nst0 bsf 1
+  # mt -f /dev/nst0 bsf 1 (ヘッダ位置を一つ前のEOFに移動後、アーカイブファイルの末尾にセット)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  テープ状態を確認
   # cd $HOME
-  # mt -f /dev/nst0 status
+  # mt -f /dev/nst0 status (テープ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=1, block number=-1, partition=0.
+  File number=1, block number=-1, partition=0.  // 次のファイル番号は「1」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (9010000):
-    ONLINE IM_REP_EN
-  
-  // File number = 1 → 現在のファイルは「tar1」
-  // ONLINE → ヘッダ位置がアーカイブファイルの末尾
+  ONLINE IM_REP_EN  // ヘッダ位置がアーカイブファイルの末尾
   --------------------------------------------------
   
-  テープを指定した「File number」に移動
   # cd $HOME
-  # mt -f /dev/nst0 asf 0
+  # mt -f /dev/nst0 asf 0 (テープを指定した「File number」に移動)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  テープ状態を確認
   # cd $HOME
-  # mt -f /dev/nst0 status
+  # mt -f /dev/nst0 status (テープ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=0, block number=0, partition=0.
+  File number=0, block number=0, partition=0.  // 次のファイル番号は「0」
   Tape block size 0 bytes. Density code 0x58 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
-    EOF ONLINE IM_REP_EN
-  
-  // File number = 0 → 現在のファイルは「tar0」
-  // EOF ONLINE → ヘッダ位置が「tar0」のEOF
+  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar0」のEOF
   --------------------------------------------------
   
-  テープ内容を表示
   # cd $HOME
-  # tar tvf /dev/nst0
+  # tar tvf /dev/nst0 (テープ内容を表示)
   
   コマンドの実行結果
   --------------------------------------------------
   -rw-r--r-- 1001/1001 3773378080 2014-01-12 19:41 file1
   
-  // 直前のヘッダ位置がファイル「tar0」のEOF → ファイル「tar1」の先頭のため
+  // 直前のヘッダ位置がファイル「tar0」のEOF -> つまりファイル「tar1」の先頭のため
   --------------------------------------------------
   
-  テープ内のデータ復元
   # cd $HOME
-  # tar xvf /dev/nst0
+  # tar xvf /dev/nst0 (テープ内のデータ復元)
   
   コマンドの実行結果
   --------------------------------------------------
   file1
   --------------------------------------------------
   
-  テープ内容の全消去
   # cd $HOME
-  # mt -f /dev/nst0 erase
+  # mt -f /dev/nst0 erase (テープ内容の全消去)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) → 数時間はかかる処理らしい
   --------------------------------------------------
   
-  テープドライブからテープ取出
   # cd $HOME
-  # mt -f /dev/nst0 eject
+  # mt -f /dev/nst0 eject (テープドライブからテープ取出)
   
   コマンドの実行結果
   --------------------------------------------------
