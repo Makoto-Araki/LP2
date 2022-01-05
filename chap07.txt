@@ -913,7 +913,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -921,7 +921,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [  374.253452] loop: module loaded
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -937,7 +937,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -960,7 +960,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -968,7 +968,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -976,7 +976,25 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  DUMP: Date of this level 0 dump: Wed Jan  5 17:02:32 2022
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP0.dump
+  DUMP: Label: none
+  DUMP: Writing 10 Kilobyte records
+  DUMP: mapping (Pass I) [regular files]
+  DUMP: mapping (Pass II) [directories]
+  DUMP: estimated 26 blocks.
+  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:02:32 2022
+  DUMP: dumping (Pass III) [directories]
+  DUMP: dumping (Pass IV) [regular files]
+  DUMP: Closing DUMP0.dump
+  DUMP: Volume 1 completed at: Wed Jan  5 17:02:32 2022
+  DUMP: Volume 1 20 blocks (0.02MB)
+  DUMP: 20 blocks (0.02MB) on 1 volume(s)
+  DUMP: finished in less than a second
+  DUMP: Date of this level 0 dump: Wed Jan  5 17:02:32 2022
+  DUMP: Date this dump completed:  Wed Jan  5 17:02:32 2022
+  DUMP: Average transfer rate: 0 kB/s
+  DUMP: DUMP IS DONE
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -984,7 +1002,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd /mnt
@@ -992,7 +1010,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1000,7 +1018,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1008,7 +1026,26 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  DUMP: Date of this level 1 dump: Wed Jan  5 17:04:54 2022
+  DUMP: Date of last level 0 dump: Wed Jan  5 17:02:32 2022
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP1.dump
+  DUMP: Label: none
+  DUMP: Writing 10 Kilobyte records
+  DUMP: mapping (Pass I) [regular files]
+  DUMP: mapping (Pass II) [directories]
+  DUMP: estimated 19 blocks.
+  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:04:54 2022
+  DUMP: dumping (Pass III) [directories]
+  DUMP: dumping (Pass IV) [regular files]
+  DUMP: Closing DUMP1.dump
+  DUMP: Volume 1 completed at: Wed Jan  5 17:04:54 2022
+  DUMP: Volume 1 20 blocks (0.02MB)
+  DUMP: 20 blocks (0.02MB) on 1 volume(s)
+  DUMP: finished in less than a second
+  DUMP: Date of this level 1 dump: Wed Jan  5 17:04:54 2022
+  DUMP: Date this dump completed:  Wed Jan  5 17:04:54 2022
+  DUMP: Average transfer rate: 0 kB/s
+  DUMP: DUMP IS DONE
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1016,7 +1053,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd /mnt
@@ -1024,7 +1061,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1032,7 +1069,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1040,7 +1077,26 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  DUMP: Date of this level 2 dump: Wed Jan  5 17:07:08 2022
+  DUMP: Date of last level 1 dump: Wed Jan  5 17:04:54 2022
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP2.dump
+  DUMP: Label: none
+  DUMP: Writing 10 Kilobyte records
+  DUMP: mapping (Pass I) [regular files]
+  DUMP: mapping (Pass II) [directories]
+  DUMP: estimated 19 blocks.
+  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:07:08 2022
+  DUMP: dumping (Pass III) [directories]
+  DUMP: dumping (Pass IV) [regular files]
+  DUMP: Closing DUMP2.dump
+  DUMP: Volume 1 completed at: Wed Jan  5 17:07:08 2022
+  DUMP: Volume 1 20 blocks (0.02MB)
+  DUMP: 20 blocks (0.02MB) on 1 volume(s)
+  DUMP: finished in less than a second
+  DUMP: Date of this level 2 dump: Wed Jan  5 17:07:08 2022
+  DUMP: Date this dump completed:  Wed Jan  5 17:07:08 2022
+  DUMP: Average transfer rate: 0 kB/s
+  DUMP: DUMP IS DONE
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1048,7 +1104,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略)
   --------------------------------------------------
   
   vm12$ cd /mnt
@@ -1056,7 +1112,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd /mnt
@@ -1064,47 +1120,50 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  restore: ./lost+found: File exists -> 余計なメッセージだが消す方法が分からない
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ ls -lh (レストア状況を確認)
+  vm12$ ls -lh | grep sample (レストア状況を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ sudo restore -r -f /home/makoto/DUMP1.dump (全体バックアップをレストア)
+  vm12$ sudo restore -r -f /home/makoto/DUMP1.dump (増分バックアップをレストア)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ ls -lh (レストア状況を確認)
+  vm12$ ls -lh | grep sample (レストア状況を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
+  -rw-r--r--. 1 root root   0  1月  5 17:04 sample2.txt
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ sudo restore -r -f /home/makoto/DUMP2.dump (全体バックアップをレストア)
+  vm12$ sudo restore -r -f /home/makoto/DUMP2.dump (増分バックアップをレストア)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ ls -lh (レストア状況を確認)
+  vm12$ ls -lh | grep sample (レストア状況を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
+  -rw-r--r--. 1 root root   0  1月  5 17:04 sample2.txt
+  -rw-r--r--. 1 root root   0  1月  5 17:06 sample3.txt
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1125,7 +1184,7 @@
   
   ディスクイメージ削除
   vm12$ cd $HOME
-  vm12$ rm -f loop0.img
+  vm12$ rm -f image0.img
   
   コマンドの実行結果
   --------------------------------------------------
