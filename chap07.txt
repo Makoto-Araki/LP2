@@ -6,6 +6,8 @@
 [05] コンパイルとインストール
 [06] ローカルでのバックアップ - 01 (tar)
 [07] ローカルでのバックアップ - 02 (cpio)
+[08] ローカルでのバックアップ - 03 (dd)
+[09] ローカルでのバックアップ - 04 (dump-restore)
 ================================================================================
 [01]
   ソースの展開 - 01 (tar-gzip)
@@ -475,7 +477,7 @@
   checking where the gettext function comes from... libc
   checking that generated files are newer than configure... done
   configure: creating ./config.status
-  config.status: creating Makefile (Makefile作成)
+  config.status: creating Makefile  // Makefile作成
   config.status: creating po/Makefile.in
   config.status: creating config.h
   config.status: executing depfiles commands
@@ -485,7 +487,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME/hello-2.10
-  vm12$ grep -E '^clean:' (ターゲット検索)
+  vm12$ grep -E '^clean:' Makefile (ターゲット検索)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -493,7 +495,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME/hello-2.10
-  vm12$ grep -E '^uninstall:' (ターゲット検索)
+  vm12$ grep -E '^uninstall:' Makefile (ターゲット検索)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -529,7 +531,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  世界よ、こんにちは！ -> 日本語出力に改良された模様
+  世界よ、こんにちは！ -> システム言語に合わせて日本語出力に改良された模様
   --------------------------------------------------
   
   vm12$ cd $HOME/hello-2.10
@@ -823,6 +825,79 @@
     dd of=XX  // 出力側ファイル(XX : デフォルトは標準出力)
     dd bs=XX  // 入出力ブロックサイズ(XX)
     dd count=XX  // 回数(XX)分のブロックをコピー
+  
+[確認]
+  vm12$ cd $HOME/HELLO -> 先にディレクトリ作成
+  vm12$ vi hello.h
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #ifndef HELLO_H_
+  
+  void Hello1(void);  // 関数プロトタイプ宣言
+  void Hello2(void);  // 関数プロトタイプ宣言
+  
+  #endif
+  --------------------------------------------------
+  
+  vm12$ cd $HOME/HELLO
+  vm12$ vi hello.c
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <stdio.h>
+  #include "hello.h"
+  
+  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
+  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dd if=HELLO/hello.c of=DD1 (ファイル単位でコピー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  0+1 レコード入力
+  0+1 レコード出力
+  157 バイト (157 B) コピーされました、 0.00806405 秒、 19.5 kB/秒
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat DD1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #include <stdio.h>
+  #include "hello.h"
+  
+  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
+  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[09]
+  ローカルでのバックアップ - 04 (dump-restore)
+  
+[内容]
+  ## 作業内容
+    バックアップをコマンド(dump)で行い、リストアをコマンド(restore)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン(サーバー用途)
+  
+  ## コマンド(dump)
+    dump -(0-9)  // ダンプレベル
+    dump -u      // バックアップ時にファイル「/etc/dumpdates」更新
+    dump -f XX   // バックアップデバイス(XX)を指定
+  
+  ## コマンド(restore)
+    restore -r     // 全ファイルを取り出す
+    restore -i     // 対話的にファイルを取り出す
+    restore -f XX  // バックアップデバイス(XX)を指定
   
 [確認]
   vm12$ cd $HOME/HELLO -> 先にディレクトリ作成
