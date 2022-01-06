@@ -209,8 +209,9 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11  // 追加 - 仮想マシンの複製元
-  192.168.122.12 vm12  // 追加 - サーバー用途
-  192.168.122.13 vm13  // 追加 - クライアント用途
+  192.168.122.12 vm12  // 追加
+  192.168.122.13 vm13  // 追加
+  192.168.122.14 vm14  // 追加
   --------------------------------------------------
   
   vm11$ cd $HOME
