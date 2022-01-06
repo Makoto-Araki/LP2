@@ -1,12 +1,12 @@
 ================================================================================
-[01] ソースの展開 - 01 (tar-gzip)
+[01] DNSサーバ - 01 (マスター)
 ================================================================================
 [01]
-  ログイン前後のメッセージ - 02 (/etc/motd)
+  DNSサーバ - 01 (マスター)
   
 [内容]
   ## 作業内容
-    ログイン後のメッセージをファイル(/etc/motd)で設定する
+    DNSサーバ(マスター)を構築する
   
   ## 使用マシン
     HOST : vm12
@@ -15,26 +15,255 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ sudo vi /etc/motd (ファイル編集)
+  vm12$ sudo yum -y install bind bind-chroot bind-utils (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
-  This machine is for LPIC 201.
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd /usr/libexec
+  vm12$ ./setup-named-chroot.sh /var/named/chroot on (スクリプト実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> chroot有効化
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo systemctl reboot (システム再起動)
+  vm12$ (TSIG用の鍵ファイル作成のコマンドを1行で指定)
+    dnssec-keygen  // コマンド本体
+    -a HMAC-MD5    // アルゴリズム
+    -b 128         // 鍵長
+    -n HOST        // 所有者のタイプ
+    tsig-key       // 鍵の名前
   
   コマンドの実行結果
   --------------------------------------------------
-  System is CentOS Linux 7 (Core)
-  Kernel is 4.15.3
-  Architecture is x86_64
-  Host is vm12
-  vm12 login: makoto (ユーザー名を入力)
-  パスワード: (パスワードを入力)
-  最終ログイン: Thu Jan  6 11:07:52  ttyS0 上
-  This machine is for LPIC 201.  // ログイン後のメッセージ
+  Ktsig-key.+157+58442
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ls -lh Ktsig-key* (TSIG用の鍵ファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-------. 1 root root  52  2月 18 09:52 Ktsig-key.+157+58442.key      // 公開鍵
+  -rw-------. 1 root root 165  2月 18 09:52 Ktsig-key.+157+58442.private  // 秘密鍵
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat Ktsig-key.+157+58442.key (TSIG用の鍵ファイルのうち公開鍵を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tsig-key. IN KEY 512 3 157 eXe3yrnmV8lmt5wU66KtTA==
+  
+  // 生成された共有秘密鍵は「eXe3yrnmV8lmt5wU66KtTA==」
+  --------------------------------------------------
+  
+  TSIG用の鍵ファイルのうち秘密鍵を確認
+  vm12$ cd $HOME
+  vm12$ cat Ktsig-key.+157+58442.private
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Private-key-format: v1.3
+  Algorithm: 157 (HMAC_MD5)
+  Key: eXe3yrnmV8lmt5wU66KtTA==    // 生成された共有秘密鍵は「eXe3yrnmV8lmt5wU66KtTA==」
+  Bits: AAA=
+  Created: 20200218005204
+  Publish: 20200218005204
+  Activate: 20200218005204
+  
+  // DNSゾーン転送に共有秘密鍵は使用される
+  --------------------------------------------------
+  
+  設定ファイル修正
+  vm12$ cd /var/named/chroot/etc
+  vm12$ vi named.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  # コンテンツサーバー(DNSマスター)
+  
+  controls
+  {
+    inet 127.0.0.1 allow { localhost; };
+    inet 192.168.122.11 allow { 192.168.122.0/24; };
+  };
+  
+  options
+  {
+    directory          "/var/named";
+    listen-on-v6        { none; };
+    allow-transfer    { 192.168.122.12; };
+    notify              yes;
+    recursion          no;
+    version            "unknown";
+  };
+  
+  key tsig-key
+  {
+    algorithm          hmac-md5;
+    secret              eXe3yrnmV8lmt5wU66KtTA==;
+  };
+  
+  zone "example.com" IN
+  {
+    type                master;
+    file                "example.com.zone";
+    allow-transfer    { key tsig-key; };
+  };
+  
+  zone "122.168.192.in-addr.arpa" IN
+  {
+    type                master;
+    file                "example.com.rev.zone";
+    allow-transfer    { key tsig-key; };
+  };
+  --------------------------------------------------
+  
+  文法チェック
+  vm12$ cd $HOME
+  vm12$ named-checkconf -t /var/named/chroot /etc/named.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  正引きファイル作成
+  vm12$ cd /var/named/chroot/var/named
+  vm12$ vi example.com.zone
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  $ORIGIN example.com.
+  $TTL 1D
+  example.com. IN SOA ds11.example.com. root.example.com. (
+    2020021801  ; シリアル(年月日＋2桁)
+    20M          ; スレーブがマスターをチェックする間隔(20分)
+    10M          ; スレーブがマスターにアクセス不能時に再試行までの時間(10分)
+    1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(1日)
+    1D          ; ネガティブキャッシュ有効期限(1日)
+  )
+  
+  example.com.            IN  NS    ds11.example.com.
+  ds11.example.com.      IN  A      192.168.122.11
+  ds12.example.com.      IN  A      192.168.122.12
+  ds13.example.com.      IN  A      192.168.122.13
+  ch14.example.com.      IN  A      192.168.122.14
+  ca15.example.com.      IN  A      192.168.122.15
+  ww16.example.com.      IN  A      192.168.122.16
+  ww17.example.com.      IN  A      192.168.122.17
+  --------------------------------------------------
+  
+  正引きファイルの文法チェック
+  vm12$ cd $HOME
+  vm12$ named-checkzone -t /var/named/chroot -w /var/named example.com example.com.zone
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  zone example.com/IN: loaded serial 2020021801
+  OK
+  --------------------------------------------------
+  
+  逆引きファイルの作成
+  vm12$ cd /var/named/chroot/var/named
+  vm12$ vi example.com.rev.zone
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  $ORIGIN example.com.
+  $TTL 1D
+  122.168.192.in-addr.arpa. IN SOA ds11.example.com. root.example.com. (
+    2020021801  ; シリアル(年月日＋2桁)
+    20M          ; スレーブがマスターをチェックする間隔(秒)
+    10M          ; スレーブがマスターにアクセス不能時に再試行までの時間(秒)
+    1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(秒)
+    1D          ; ネガティブキャッシュ有効期限(秒)
+  )
+  
+  122.168.192.in-addr.arpa.        IN  NS    ds11.example.com.
+  11.122.168.192.in-addr.arpa.    IN  PTR    ds11.example.com.
+  12.122.168.192.in-addr.arpa.    IN  PTR    ds12.example.com.
+  13.122.168.192.in-addr.arpa.    IN  PTR    ds13.example.com.
+  14.122.168.192.in-addr.arpa.    IN  PTR    ch14.example.com.
+  15.122.168.192.in-addr.arpa.    IN  PTR    ca15.example.com.
+  16.122.168.192.in-addr.arpa.    IN  PTR    ww16.example.com.
+  17.122.168.192.in-addr.arpa.    IN  PTR    ww17.example.com.
+  --------------------------------------------------
+  
+  逆引きファイルの文法チェック
+  vm12$ cd $HOME
+  vm12$ named-checkzone -t /var/named/chroot -w /var/named 122.168.192.in-addr.arpa example.com.rev.zone
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  zone 122.168.192.in-addr.arpa/IN: loaded serial 2020021801
+  OK
+  --------------------------------------------------
+  
+  参照先DNSサーバーの確認
+  vm12$ cd $HOME
+  vm12$ nmcli -f ipv4 connection show eth0 | grep dns
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ipv4.dns:                               192.168.122.1  // 参照先DNSサーバー(変更の必要なし)
+  ipv4.dns-search:                        --
+  ipv4.dns-options:                       ""
+  ipv4.dns-priority:                      0
+  ipv4.ignore-auto-dns:                   no
+  --------------------------------------------------
+  
+  DNSサービスの起動設定
+  vm12$ cd $HOME
+  vm12$ systemctl disable named
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  
+  // chroot有効化でDNSサービス名は「named-chroot」に変更
+  --------------------------------------------------
+  
+  DNSサービスの起動設定
+  vm12$ cd $HOME
+  vm12$ systemctl enable named-chroot
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service 
+  to /usr/lib/systemd/system/named-chroot.service.
+  --------------------------------------------------
+  
+  DNSサービスの起動
+  vm12$ cd $HOME
+  vm12$ systemctl start named-chroot
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  ファイアーウォールの設定
+  vm12$ cd $HOME
+  vm12$ firewall-cmd --add-service=dns --permanent
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  ファイアーウォールの設定を反映
+  vm12$ cd $HOME
+  vm12$ firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
   --------------------------------------------------
   
   以下の確認に続く
