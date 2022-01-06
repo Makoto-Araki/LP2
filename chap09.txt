@@ -62,15 +62,14 @@
   // 生成された共有秘密鍵は「eXe3yrnmV8lmt5wU66KtTA==」
   --------------------------------------------------
   
-  TSIG用の鍵ファイルのうち秘密鍵を確認
   vm12$ cd $HOME
-  vm12$ cat Ktsig-key.+157+58442.private
+  vm12$ cat Ktsig-key.+157+58442.private (TSIG用の鍵ファイルのうち秘密鍵を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   Private-key-format: v1.3
   Algorithm: 157 (HMAC_MD5)
-  Key: eXe3yrnmV8lmt5wU66KtTA==    // 生成された共有秘密鍵は「eXe3yrnmV8lmt5wU66KtTA==」
+  Key: eXe3yrnmV8lmt5wU66KtTA==  // 生成された共有秘密鍵は「eXe3yrnmV8lmt5wU66KtTA==」
   Bits: AAA=
   Created: 20200218005204
   Publish: 20200218005204
@@ -79,58 +78,51 @@
   // DNSゾーン転送に共有秘密鍵は使用される
   --------------------------------------------------
   
-  設定ファイル修正
   vm12$ cd /var/named/chroot/etc
-  vm12$ vi named.conf
+  vm12$ vi named.conf (設定ファイル修正)
   
   コマンドの実行結果
   --------------------------------------------------
   # コンテンツサーバー(DNSマスター)
   
-  controls
-  {
-    inet 127.0.0.1 allow { localhost; };
-    inet 192.168.122.11 allow { 192.168.122.0/24; };
+  controls {
+    inet 127.0.0.1 allow { localhost; };              // ローカルホストからのアクセス許可
+    inet 192.168.122.12 allow { 192.168.122.0/24; };  // ネットワーク(192.168.122.0)からのアクセス許可
   };
   
-  options
-  {
-    directory          "/var/named";
-    listen-on-v6        { none; };
-    allow-transfer    { 192.168.122.12; };
-    notify              yes;
-    recursion          no;
-    version            "unknown";
+  options {
+    directory /var/named;
+    listen-on-v6 { none; };
+    allow-transfer { 192.168.122.12; };  // 
+    notify yes;
+    recursion no;
+    version unknown;
   };
   
-  key tsig-key
-  {
-    algorithm          hmac-md5;
-    secret              eXe3yrnmV8lmt5wU66KtTA==;
+  key tsig-key {
+    algorithm hmac-md5;
+    secret eXe3yrnmV8lmt5wU66KtTA==;
   };
   
-  zone "example.com" IN
-  {
-    type                master;
-    file                "example.com.zone";
-    allow-transfer    { key tsig-key; };
+  zone example.com IN {
+    type master;
+    file example.com.zone;
+    allow-transfer { key tsig-key; };
   };
   
-  zone "122.168.192.in-addr.arpa" IN
-  {
-    type                master;
-    file                "example.com.rev.zone";
-    allow-transfer    { key tsig-key; };
+  zone 122.168.192.in-addr.arpa IN {
+    type master;
+    file example.com.rev.zone;
+    allow-transfer { key tsig-key; };
   };
   --------------------------------------------------
   
-  文法チェック
   vm12$ cd $HOME
-  vm12$ named-checkconf -t /var/named/chroot /etc/named.conf
+  vm12$ named-checkconf -t /var/named/chroot /etc/named.conf (文法チェック)
   
   コマンドの実行結果
   --------------------------------------------------
-  (出力なし)
+  (省略) -> 出力なし
   --------------------------------------------------
   
   正引きファイル作成
@@ -143,13 +135,13 @@
   $TTL 1D
   example.com. IN SOA ds11.example.com. root.example.com. (
     2020021801  ; シリアル(年月日＋2桁)
-    20M          ; スレーブがマスターをチェックする間隔(20分)
-    10M          ; スレーブがマスターにアクセス不能時に再試行までの時間(10分)
+    5M          ; スレーブがマスターをチェックする間隔(20分)
+    5M          ; スレーブがマスターにアクセス不能時に再試行までの時間(10分)
     1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(1日)
     1D          ; ネガティブキャッシュ有効期限(1日)
   )
   
-  example.com.            IN  NS    ds11.example.com.
+  example.com.           IN  NS     ds11.example.com.
   ds11.example.com.      IN  A      192.168.122.11
   ds12.example.com.      IN  A      192.168.122.12
   ds13.example.com.      IN  A      192.168.122.13
