@@ -1,17 +1,298 @@
 ================================================================================
-[01] DNSサーバ - 01 (マスター)
+[01] DNSクライアントコマンド - 01 (nslookup)
+[02] DNSクライアントコマンド - 02 (host)
+[03] DNSクライアントコマンド - 03 (dig)
+[XX] DNSサーバ - 01 (マスター)
 ================================================================================
 [01]
-  DNSサーバ - 01 (マスター)
+  DNSクライアントコマンド - 01 (nslookup)
   
 [内容]
   ## 作業内容
-    DNSサーバ(マスター)を構築する
+    コマンド(nslookup)でDNSサーバーに名前解決を依頼する
   
   ## 使用マシン
     HOST : vm12
     IPV4 : 192.168.122.12
-    MEMO : 仮想マシン -> kvm.txtを参照に再作成
+    MEMO : 仮想マシン
+  
+  ## コマンド(nslookup)
+    nslookup -type=XX    // レコードタイプ(XX)を指定
+    nslookup -norecurse  // 再帰問合せをしない
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo yum -y bind-utils (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup -type=soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: 192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:
+  yahoo.co.jp
+    origin    = yahoo.co.jp
+    mail addr = postmaster.yahoo.co.jp
+    serial    = 2201070009
+    refresh   = 1800
+    retry     = 900
+    expire    = 86400
+    minimum   = 900
+  
+  Authoritative answers can be found from:
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup -type=ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server:  192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:
+  yahoo.co.jp  nameserver = ns02.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns11.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns12.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns01.yahoo.co.jp.
+  
+  Authoritative answers can be found from:
+  ns02.yahoo.co.jp  internet address = 118.151.254.149
+  ns11.yahoo.co.jp  internet address = 124.83.255.37
+  ns12.yahoo.co.jp  internet address = 124.83.255.101
+  ns01.yahoo.co.jp  internet address = 118.151.254.133
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup -type=mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: 192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:
+  yahoo.co.jp  mail exchanger = 10 mx5.mail.yahoo.co.jp.
+  yahoo.co.jp  mail exchanger = 10 mx3.mail.yahoo.co.jp.
+  yahoo.co.jp  mail exchanger = 10 mx2.mail.yahoo.co.jp.
+  yahoo.co.jp  mail exchanger = 10 mx1.mail.yahoo.co.jp.
+  
+  Authoritative answers can be found from:
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup ns02.yahoo.co.jp (正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: 192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:  // ドメイン「yahoo.co.jp」の権威サーバーからの回答ではない
+  Name: ns02.yahoo.co.jp
+  Address: 118.151.254.149
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup 118.151.254.149 (逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  149.254.151.118.in-addr.arpa  name = ns02.yahoo.co.jp.
+  
+  Authoritative answers can be found from:
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[02]
+  DNSクライアントコマンド - 02 (host)
+  
+[内容]
+  ## 作業内容
+    コマンド(host)でDNSサーバーに名前解決を依頼する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## コマンド(host)
+    host -t XX  // レコードタイプ(XX)を指定
+    host -v     // 詳細情報を表示
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ host -t soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp has SOA record yahoo.co.jp. postmaster.yahoo.co.jp. 2201070009 1800 900 86400 900
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ host -t ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp name server ns11.yahoo.co.jp.
+  yahoo.co.jp name server ns01.yahoo.co.jp.
+  yahoo.co.jp name server ns02.yahoo.co.jp.
+  yahoo.co.jp name server ns12.yahoo.co.jp.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ host -t mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp mail is handled by 10 mx2.mail.yahoo.co.jp.
+  yahoo.co.jp mail is handled by 10 mx3.mail.yahoo.co.jp.
+  yahoo.co.jp mail is handled by 10 mx5.mail.yahoo.co.jp.
+  yahoo.co.jp mail is handled by 10 mx1.mail.yahoo.co.jp.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ host ns02.yahoo.co.jp (正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ns02.yahoo.co.jp has address 118.151.254.149
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ host 118.151.254.149 (逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  149.254.151.118.in-addr.arpa domain name pointer ns02.yahoo.co.jp.
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[03]
+  DNSクライアントコマンド - 03 (dig)
+  
+[内容]
+  ## 作業内容
+    コマンド(dig)でDNSサーバーに名前解決を依頼する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## コマンド(dig)
+    dig -x      // 逆引き名前解決を行う
+    dig -p XX   // 問合先ポート(XX)を指定
+    dig +norec  // 再帰問合せをしない
+    dig +rec    // 再帰問合せをする
+    dig +noall  // 全セクション非表示
+    dig +all    // 全セクション表示
+    dig +noquestion  // 質問セクション非表示
+    dig +question    // 質問セクション表示
+    dig +noanswer    // 回答セクション非表示
+    dig +answer      // 回答セクション表示
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ dig +noall +answer yahoo.co.jp soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp.  900 IN  SOA yahoo.co.jp. postmaster.yahoo.co.jp. 2201070009 1800 900 86400 900
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig +noall +answer yahoo.co.jp ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp.  900 IN  NS  ns11.yahoo.co.jp.
+  yahoo.co.jp.  900 IN  NS  ns12.yahoo.co.jp.
+  yahoo.co.jp.  900 IN  NS  ns01.yahoo.co.jp.
+  yahoo.co.jp.  900 IN  NS  ns02.yahoo.co.jp.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig +noall +answer yahoo.co.jp mx (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(MX)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp.  900 IN  MX  10 mx1.mail.yahoo.co.jp.
+  yahoo.co.jp.  900 IN  MX  10 mx3.mail.yahoo.co.jp.
+  yahoo.co.jp.  900 IN  MX  10 mx5.mail.yahoo.co.jp.
+  yahoo.co.jp.  900 IN  MX  10 mx2.mail.yahoo.co.jp.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig ns11.yahoo.co.jp (オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> ns11.yahoo.co.jp
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 20753
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 512
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;ns11.yahoo.co.jp. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  ns11.yahoo.co.jp. 599 IN A 124.83.255.37
+  
+  ;; Query time: 23 msec
+  ;; SERVER: 192.168.122.1#53(192.168.122.1)
+  ;; WHEN: 金  1月 07 22:46:35 JST 2022
+  ;; MSG SIZE  rcvd: 61
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig +noall +answer ns11.yahoo.co.jp (全セクション非表示、回答セクション表示、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ns11.yahoo.co.jp. 498 IN A 124.83.255.37
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig +noall +answer -x 124.83.255.37 (全セクション非表示、回答セクション表示、逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  37.255.83.124.in-addr.arpa. 900 IN  PTR ns11.yahoo.co.jp.
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[XX]
+  DNSサーバ - 01 (マスター)
+  
+[内容]
+  ## 作業内容
+    コンテンツサーバー(マスター)を構築する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
   vm12$ cd $HOME
@@ -83,14 +364,16 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  # コンテンツサーバー(DNSマスター)
+  # コンテンツサーバー(マスター)
   
-  controls {
+  controls
+  {
     inet 127.0.0.1 allow { localhost; };              // ローカルホストからのアクセス許可
     inet 192.168.122.12 allow { 192.168.122.0/24; };  // ネットワーク(192.168.122.0)からのアクセス許可
   };
   
-  options {
+  options
+  {
     directory /var/named;
     listen-on-v6 { none; };
     allow-transfer { 192.168.122.12; };  // 
@@ -99,18 +382,21 @@
     version unknown;
   };
   
-  key tsig-key {
+  key tsig-key
+  {
     algorithm hmac-md5;
     secret eXe3yrnmV8lmt5wU66KtTA==;
   };
   
-  zone example.com IN {
+  zone example.com IN
+  {
     type master;
     file example.com.zone;
     allow-transfer { key tsig-key; };
   };
   
-  zone 122.168.192.in-addr.arpa IN {
+  zone 122.168.192.in-addr.arpa IN
+  {
     type master;
     file example.com.rev.zone;
     allow-transfer { key tsig-key; };
@@ -133,7 +419,8 @@
   --------------------------------------------------
   $ORIGIN example.com.
   $TTL 1D
-  example.com. IN SOA ds11.example.com. root.example.com. (
+  example.com. IN SOA ds11.example.com. root.example.com.
+  (
     2020021801  ; シリアル(年月日＋2桁)
     5M          ; スレーブがマスターをチェックする間隔(20分)
     5M          ; スレーブがマスターにアクセス不能時に再試行までの時間(10分)

@@ -212,7 +212,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月22日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月22日  _x86_64_ (1 CPU)
   
   Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn  // HDD負荷
   vda             378.72         0.00    171617.02          0     161320  // HDD負荷
@@ -666,13 +666,13 @@
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
     sar -o XX       // 出力ファイル(XX)を指定
     sar -u          // CPU
-    sar	-r          // メモリ
-    sar	-W          // スワップ
-    sar	-b          // ディスクIO
-    sar	-n DEV      // NIC
+    sar -r          // メモリ
+    sar -W          // スワップ
+    sar -b          // ディスクIO
+    sar -n DEV      // NIC
     sar -n EDEV     // NICエラー
-    sar	-f XX       // ログファイル(XX)を指定
-    sar	-s XX -e YY	// 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar -f XX       // ログファイル(XX)を指定
+    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm12$ cd /var/log/sa
@@ -689,7 +689,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月23日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月23日  _x86_64_ (1 CPU)
   
   08時40分01秒     CPU     %user     %nice   %system   %iowait    %steal     %idle
   08時50分01秒     all      0.46      0.00      0.56      1.51      0.04     97.44
@@ -717,13 +717,13 @@
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
     sar -o XX       // 出力ファイル(XX)を指定
     sar -u          // CPU
-    sar	-r          // メモリ
-    sar	-W          // スワップ
-    sar	-b          // ディスクIO
-    sar	-n DEV      // NIC
+    sar -r          // メモリ
+    sar -W          // スワップ
+    sar -b          // ディスクIO
+    sar -n DEV      // NIC
     sar -n EDEV     // NICエラー
-    sar	-f XX       // ログファイル(XX)を指定
-    sar	-s XX -e YY	// 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar -f XX       // ログファイル(XX)を指定
+    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm12$ cd /var/log/sa
@@ -740,7 +740,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月23日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月23日  _x86_64_ (1 CPU)
   
   08時40分01秒 kbmemfree kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit  kbactive   kbinact   kbdirty
   08時50分01秒    281308    733476     72.28      2108    547396    279272      8.97    153020    470900     51844
@@ -768,13 +768,13 @@
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
     sar -o XX       // 出力ファイル(XX)を指定
     sar -u          // CPU
-    sar	-r          // メモリ
-    sar	-W          // スワップ
-    sar	-b          // ディスクIO
-    sar	-n DEV      // NIC
+    sar -r          // メモリ
+    sar -W          // スワップ
+    sar -b          // ディスクIO
+    sar -n DEV      // NIC
     sar -n EDEV     // NICエラー
-    sar	-f XX       // ログファイル(XX)を指定
-    sar	-s XX -e YY	// 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar -f XX       // ログファイル(XX)を指定
+    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm12$ cd /var/log/sa
@@ -791,7 +791,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月23日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月23日  _x86_64_ (1 CPU)
   
   08時40分01秒  pswpin/s pswpout/s
   08時50分01秒      0.00      0.00
@@ -819,13 +819,13 @@
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
     sar -o XX       // 出力ファイル(XX)を指定
     sar -u          // CPU
-    sar	-r          // メモリ
-    sar	-W          // スワップ
-    sar	-b          // ディスクIO
-    sar	-n DEV      // NIC
+    sar -r          // メモリ
+    sar -W          // スワップ
+    sar -b          // ディスクIO
+    sar -n DEV      // NIC
     sar -n EDEV     // NICエラー
-    sar	-f XX       // ログファイル(XX)を指定
-    sar	-s XX -e YY	// 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar -f XX       // ログファイル(XX)を指定
+    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm12$ cd /var/log/sa
@@ -842,7 +842,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月23日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月23日  _x86_64_ (1 CPU)
   
   08時40分01秒       tps      rtps      wtps     bread/s     bwrtn/s
   08時50分01秒      4.47      2.30      2.17      399.32     1663.80
@@ -870,13 +870,13 @@
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
     sar -o XX       // 出力ファイル(XX)を指定
     sar -u          // CPU
-    sar	-r          // メモリ
-    sar	-W          // スワップ
-    sar	-b          // ディスクIO
-    sar	-n DEV      // NIC
+    sar -r          // メモリ
+    sar -W          // スワップ
+    sar -b          // ディスクIO
+    sar -n DEV      // NIC
     sar -n EDEV     // NICエラー
-    sar	-f XX       // ログファイル(XX)を指定
-    sar	-s XX -e YY	// 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar -f XX       // ログファイル(XX)を指定
+    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm12$ cd /var/log/sa
@@ -893,7 +893,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月23日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月23日  _x86_64_ (1 CPU)
   
   08時40分01秒     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
   08時50分01秒      eth0      0.75      0.30      0.17      0.02      0.00      0.00      0.00
@@ -925,13 +925,13 @@
     sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
     sar -o XX       // 出力ファイル(XX)を指定
     sar -u          // CPU
-    sar	-r          // メモリ
-    sar	-W          // スワップ
-    sar	-b          // ディスクIO
-    sar	-n DEV      // NIC
+    sar -r          // メモリ
+    sar -W          // スワップ
+    sar -b          // ディスクIO
+    sar -n DEV      // NIC
     sar -n EDEV     // NICエラー
-    sar	-f XX       // ログファイル(XX)を指定
-    sar	-s XX -e YY	// 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar -f XX       // ログファイル(XX)を指定
+    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm12$ cd /var/log/sa
@@ -948,7 +948,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm12) 	2021年12月23日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm12)  2021年12月23日  _x86_64_ (1 CPU)
   
   08時40分01秒     IFACE   rxerr/s   txerr/s    coll/s  rxdrop/s  txdrop/s  txcarr/s  rxfram/s  rxfifo/s  txfifo/s
   08時50分01秒      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
@@ -1827,7 +1827,7 @@
   *           0         -         -        
   RAW         1         0         1        
   UDP         11        8         3        
-  TCP	        12        8         4        
+  TCP         12        8         4        
   INET        24        16        8        
   FRAG        0         0         0        
   --------------------------------------------------

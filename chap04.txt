@@ -1102,15 +1102,15 @@
     MEMO : 仮想マシン
   
   ## コマンド(tune2fs)
-    tune2fs -c XX		// 最大マウント回数(XX)に達したらファイルシステムチェック -> 0の場合はチェックしない
-    tune2fs -C XX		// 現在のマウント回数を設定
-    tune2fs -i XX		// ファイルシステムチェック間隔(XX日) -> 0の場合はチェックしない
-    tune2fs -j			// ext2 -> ext3
+    tune2fs -c XX  // 最大マウント回数(XX)に達したらファイルシステムチェック -> 0の場合はチェックしない
+    tune2fs -C XX  // 現在のマウント回数を設定
+    tune2fs -i XX  // ファイルシステムチェック間隔(XX日) -> 0の場合はチェックしない
+    tune2fs -j   // ext2 -> ext3
     tune2fs -O      // ext3 -> ext4
-    tune2fs -m XX		// root用予約領域(XX%)
-    tune2fs -l			// スーパーブロック内容を表示
-    tune2fs -L XX		// ファイルシステムのボリュームラベル(XX)
-    tune2fs -U XX		// UUID(XX)
+    tune2fs -m XX  // root用予約領域(XX%)
+    tune2fs -l   // スーパーブロック内容を表示
+    tune2fs -L XX  // ファイルシステムのボリュームラベル(XX)
+    tune2fs -U XX  // UUID(XX)
   
 [確認]
   vm12$ cd $HOME
@@ -2112,7 +2112,7 @@
   8192 blocks per group, 8192 fragments per group
   1976 inodes per group
   Superblock backups stored on blocks: 
-	  8193, 24577, 40961, 57345, 73729  // スーパーブロックのバックアップ
+   8193, 24577, 40961, 57345, 73729  // スーパーブロックのバックアップ
   
   Allocating group tables: done                            
   Writing inode tables: done                            
@@ -2544,7 +2544,7 @@
   Reserved blocks uid:      0 (user root)
   Reserved blocks gid:      0 (group root)
   First inode:              11
-  Inode size:	              128
+  Inode size:               128
   Journal inode:            8
   Default directory hash:   half_md4
   Directory Hash Seed:      0a04640e-5731-47c5-b94a-ee342dc76647
@@ -3803,11 +3803,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /misc	/etc/auto.misc
+  /misc /etc/auto.misc
   /net  -hosts
   +dir:/etc/auto.master.d
   +auto.master
-  /mnt/auto	/etc/auto.dir  // 追加 -> ディレクトリ「/mnt/auto」移動時に設定ファイル「/etc/auto.dir」の内容でマウント
+  /mnt/auto /etc/auto.dir  // 追加 -> ディレクトリ「/mnt/auto」移動時に設定ファイル「/etc/auto.dir」の内容でマウント
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -3899,11 +3899,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  /misc	/etc/auto.misc
+  /misc /etc/auto.misc
   /net  -hosts
   +dir:/etc/auto.master.d
   +auto.master
-  # /mnt/auto	/etc/auto.dir  // コメントアウト
+  # /mnt/auto /etc/auto.dir  // コメントアウト
   --------------------------------------------------
   
   vm12$ cd /etc
