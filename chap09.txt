@@ -4,6 +4,7 @@
 [03] DNSクライアントコマンド - 03 (dig)
 [04] 設定ファイル(/etc/named.conf) - 01 (コンテンツサーバー)
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
+[06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
 ================================================================================
 [01]
   DNSクライアントコマンド - 01 (nslookup)
@@ -726,6 +727,157 @@
   14.122.168.192.in-addr.arpa.       86400 IN PTR  vm14.example.com.
   15.122.168.192.in-addr.arpa.       86400 IN PTR  vm15.example.com.
   OK
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[06]
+  設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
+  
+[内容]
+  ## 作業内容
+    設定ファイル(/etc/named.conf)を編集してキャッシュサーバーを構築する
+  
+  ## 使用マシン
+    HOST : vm14
+    IPV4 : 192.168.122.14
+    MEMO : 仮想マシン
+  
+[確認]
+  vm14$ cd $HOME
+  vm14$ sudo yum -y install bind bind-chroot bind-utils (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm14$ cd /usr/libexec
+  vm14$ sudo ./setup-named-chroot.sh /var/named/chroot on (スクリプト実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> chroot有効化
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo vi /var/named/chroot/etc/named.conf (設定ファイル修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## プログラム(named)の操作可能ホスト
+  controls
+  {
+    inet 127.0.0.1 allow { localhost; };              # ローカルホストからのアクセス許可
+    inet 192.168.122.14 allow { 192.168.122.0/24; };  # ネットワーク(192.168.122.0)からのアクセス許可
+  };
+  
+  ## プログラム(named)の詳細オプション
+  options
+  {
+    directory "/var/named";                            # ゾーンファイル格納先 -> /var/named/chroot/var/named
+    listen-on-v6 { none; };                            # 不使用(IPv6)
+    recursion yes;                                     # 再帰問合わせを受付
+    recursive-clients 300;                             # 再帰問合わせを受付可能なクライアント数
+    allow-query { 192.168.122.0/24; localhost; };      # 問合わせの受付ホスト
+    allow-recursion { 192.168.122.0/24; localhost; };  # 再帰問合わせの受付ホスト
+    forward only;                                      # フォワードのみ
+    forwarders { 192.168.122.1; };                     # フォワード先(192.168.122.14 -> 192.168.122.1 -> プロバイダDNS)
+    version "unknown";                                 # バージョン表示
+  };
+  
+  ## ルートサーバー情報
+  zone "." IN
+  {
+    type hint;
+    file "named.ca";
+  };
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo named-checkconf -t /var/named/chroot /etc/named.conf (文法チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo systemctl disable named (自動起動設定を無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> chroot有効化でDNSサービス名は「named-chroot」に変更されたため出力なし
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo systemctl enable named-chroot (自動起動設定を有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service
+  to /usr/lib/systemd/system/named-chroot.service.
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo systemctl start named-chroot (プログラム起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo firewall-cmd --add-service=dns --permanent (ファイアーウォールの設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo firewall-cmd --reload (ファイアーウォールの設定を反映)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 ns11.yahoo.co.jp (問合せサーバー指定、オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> ns11.yahoo.co.jp
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 20753
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 512
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;ns11.yahoo.co.jp. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  ns11.yahoo.co.jp. 599 IN A 124.83.255.37
+  
+  ;; Query time: 23 msec
+  ;; SERVER: 192.168.122.1#53(192.168.122.1)
+  ;; WHEN: 金  1月 07 22:46:35 JST 2022
+  ;; MSG SIZE  rcvd: 61
   --------------------------------------------------
   
   以下の確認に続く
