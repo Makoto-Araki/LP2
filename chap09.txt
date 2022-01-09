@@ -857,26 +857,27 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> ns11.yahoo.co.jp
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm14 ns11.yahoo.co.jp
+  ; (1 server found)
   ;; global options: +cmd
   ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 20753
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41323
   ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
   
   ;; OPT PSEUDOSECTION:
-  ; EDNS: version: 0, flags:; udp: 512
-  
+  ; EDNS: version: 0, flags:; udp: 4096
+
   -- 質問セクション
   ;; QUESTION SECTION:
   ;ns11.yahoo.co.jp. IN A
   
   -- 回答セクション
   ;; ANSWER SECTION:
-  ns11.yahoo.co.jp. 599 IN A 124.83.255.37
+  ns11.yahoo.co.jp. 632 IN A 124.83.255.37
   
-  ;; Query time: 23 msec
-  ;; SERVER: 192.168.122.1#53(192.168.122.1)
-  ;; WHEN: 金  1月 07 22:46:35 JST 2022
+  ;; Query time: 26 msec
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 指定したキャッシュサーバーに問合せ
+  ;; WHEN: 日  1月 09 22:07:22 JST 2022
   ;; MSG SIZE  rcvd: 61
   --------------------------------------------------
   
