@@ -798,8 +798,8 @@
   ## ルートサーバー情報
   zone "." IN
   {
-    type hint;
-    file "named.ca";
+    type hint;        # 不明
+    file "named.ca";  # ファイル格納先 -> /var/named/chroot/var/named/named.ca
   };
   --------------------------------------------------
   
@@ -866,7 +866,7 @@
   
   ;; OPT PSEUDOSECTION:
   ; EDNS: version: 0, flags:; udp: 4096
-
+  
   -- 質問セクション
   ;; QUESTION SECTION:
   ;ns11.yahoo.co.jp. IN A
