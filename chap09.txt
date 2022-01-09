@@ -355,7 +355,13 @@
   Activate: 20220109093130
   --------------------------------------------------
   
-  //
+  vm12$ cd $HOME
+  vm12$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
   
   vm12$ cd $HOME
   vm12$ sudo vi /var/named/chroot/etc/named.conf (設定ファイル修正)
@@ -372,26 +378,26 @@
   ## プログラム(named)の詳細オプション
   options
   {
-    directory /var/named;                # ゾーンファイル格納先 -> /var/named/chroot/var/named
+    directory "/var/named";              # ゾーンファイル格納先 -> /var/named/chroot/var/named
     listen-on-v6 { none; };              # 不使用(IPv6)
     allow-transfer { 192.168.122.13; };  # ゾーン転送許可ホスト
     notify yes;                          # ゾーン更新をスレーブに通知
     recursion no;                        # 再帰問合わせを受付
-    version unknown;                     # バージョン表示
+    version "unknown";                   # バージョン表示
   };
   
   ## ゾーン転送のセキュリティ対策(TSIG)
   key tsig-key
   {
     algorithm hmac-md5;                # ゾーン転送の暗号化アルゴリズム
-    secret eXe3yrnmV8lmt5wU66KtTA==;   # 共有秘密鍵
+    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
   };
   
   ## ゾーンファイル(正引き)
   zone example.com IN
   {
     type master;                       # マスター
-    file example.com.zone;             # ファイル名
+    file "example.com.zone";           # ファイル名
     allow-transfer { key tsig-key; };  # ゾーン転送時の共有鍵情報
   };
   
@@ -399,29 +405,28 @@
   zone 122.168.192.in-addr.arpa IN
   {
     type master;                       # マスター
-    file example.com.rev.zone;         # ファイル名
+    file "example.com.rev.zone";       # ファイル名
     allow-transfer { key tsig-key; };  # ゾーン転送時の共有鍵情報
   };
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ named-checkconf -t /var/named/chroot /etc/named.conf (文法チェック)
+  vm12$ sudo named-checkconf -t /var/named/chroot /etc/named.conf (文法チェック)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /var/named/chroot/var/named
-  vm12$ vi example.com.zone (正引きファイル作成)
+  vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/var/named/example.com.zone (正引きファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
   $ORIGIN example.com.
   $TTL 1D
-  example.com. IN SOA vm12.example.com. makoto.example.com.
-  (
-    2022011001  ; シリアル(年月日＋2桁)
+  example.com. IN SOA vm12.example.com. makoto.example.com. (
+    2022010901  ; シリアル(年月日＋2桁)
     5M          ; スレーブがマスターをチェックする間隔(5分)
     5M          ; スレーブがマスターにアクセス不能時に再試行までの時間(5分)
     1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(1日)
@@ -436,23 +441,23 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ named-checkzone -t /var/named/chroot -w /var/named example.com example.com.zone (正引きファイルの文法チェック)
+  vm12$ sudo named-checkzone -t /var/named/chroot -w /var/named example.com example.com.zone (正引きファイルの文法チェック)
   
   コマンドの実行結果
   --------------------------------------------------
-  zone example.com/IN: loaded serial 2020021801
+  zone example.com/IN: loaded serial 2022010901
   OK
   --------------------------------------------------
   
-  vm12$ cd /var/named/chroot/var/named
-  vm12$ vi example.com.rev.zone (逆引きファイルの作成)
+  vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/var/named/example.com.rev.zone (逆引きファイルの作成)
   
   コマンドの実行結果
   --------------------------------------------------
   $ORIGIN example.com.
   $TTL 1D
   122.168.192.in-addr.arpa. IN SOA vm12.example.com. makoto.example.com. (
-    2022011001  ; シリアル(年月日＋2桁)
+    2022010901  ; シリアル(年月日＋2桁)
     5M          ; スレーブがマスターをチェックする間隔(5分)
     5M          ; スレーブがマスターにアクセス不能時に再試行までの時間(5分)
     1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(1日)
@@ -467,28 +472,16 @@
   --------------------------------------------------
   
   vm12$ cd $HOME (逆引きファイルの文法チェック)
-  vm12$ named-checkzone -t /var/named/chroot -w /var/named 122.168.192.in-addr.arpa example.com.rev.zone
+  vm12$ sudo named-checkzone -t /var/named/chroot -w /var/named 122.168.192.in-addr.arpa example.com.rev.zone
   
   コマンドの実行結果
   --------------------------------------------------
-  zone 122.168.192.in-addr.arpa/IN: loaded serial 2020021801
+  zone 122.168.192.in-addr.arpa/IN: loaded serial 2022010901
   OK
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ nmcli -f ipv4 connection show eth0 | grep dns (参照先DNSサーバーの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ipv4.dns:                               192.168.122.1  // 参照先DNSサーバー(変更の必要なし)
-  ipv4.dns-search:                        --
-  ipv4.dns-options:                       ""
-  ipv4.dns-priority:                      0
-  ipv4.ignore-auto-dns:                   no
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ systemctl disable named (自動起動設定)
+  vm12$ sudo systemctl disable named (自動起動設定を無効化)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -496,16 +489,16 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ systemctl enable named-chroot (自動起動設定)
+  vm12$ sudo systemctl enable named-chroot (自動起動設定を有効化)
   
   コマンドの実行結果
   --------------------------------------------------
-  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service 
+  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service
   to /usr/lib/systemd/system/named-chroot.service.
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ systemctl start named-chroot (プログラム起動)
+  vm12$ sudo systemctl start named-chroot (プログラム起動)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -513,7 +506,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ firewall-cmd --add-service=dns --permanent (ファイアーウォールの設定)
+  vm12$ sudo firewall-cmd --add-service=dns --permanent (ファイアーウォールの設定)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -521,7 +514,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ firewall-cmd --reload (ファイアーウォールの設定を反映)
+  vm12$ sudo firewall-cmd --reload (ファイアーウォールの設定を反映)
   
   コマンドの実行結果
   --------------------------------------------------
