@@ -1375,3 +1375,201 @@
   以下の確認に続く
   
 ================================================================================
+[08]
+  コマンド(rndc) - 02 (ゾーン転送をスレーブからマスターに依頼する)
+  
+[内容]
+  ## 作業内容
+    コマンド(rndc)でDNSサーバーを制御する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : マスター
+  
+  ## 使用マシン
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : スレーブ
+  
+  ## コマンド(rndc)
+    rndc -b XX  // IPアドレス(XX)を指定
+    rndc -c XX  // 設定ファイル(XX)を指定
+    rndc -s XX  // ホスト名(XX)を指定
+    rndc -p XX  // ポート番号(XX)を指定
+    rndc -k XX  // 設定ファイル(XX)を指定
+    rndc -y XX  // RNDCキー(XX)を指定
+    rndc <上記オプション> reload         // 設定ファイルとゾーン情報をリロード (シリアル番号更新時のみ)
+    rndc <上記オプション> reload XX      // ゾーン情報(XX)のみリロード (シリアル番号更新時のみ)
+    rndc <上記オプション> reconfig       // 設定ファイル(named.conf)と新規追加のゾーン情報のみリロード
+    rndc <上記オプション> stats          // 統計情報をファイル出力
+    rndc <上記オプション> status         // ステータス表示
+    rndc <上記オプション> dumpdb -all    // ゾーン情報をファイルにダンプ、ゾーンとキャッシュ両方
+    rndc <上記オプション> dumpdb -zones  // ゾーン情報をファイルにダンプ、ゾーンのみ
+    rndc <上記オプション> dumpdb -cache  // ゾーン情報をファイルにダンプ、キャッシュのみ
+    rndc <上記オプション> flush          // 全キャッシュを消去
+    rndc <上記オプション> flushname XX   // キャッシュレコード(XX)を消去
+    rndc <上記オプション> notify         // マスターからスレーブにゾーン更新を通知 (シリアル番号更新時のみ)
+    rndc <上記オプション> retransfer     // スレーブからマスターにゾーン情報の転送依頼 (シリアル番号を無視)
+    rndc <上記オプション> refresh        // スレーブからマスターにゾーン情報の転送強制 (シリアル番号を無視)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo rndc -k /etc/rndc.key (-y rndc-key) status (ファイル指定、ステータス表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  version                     : BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 (Extended Support Version) <id:7107deb> (unknown)
+  running on vm12             : Linux x86_64 3.10.0-1160.el7.x86_64 #1 SMP Mon Oct 19 16:18:59 UTC 2020
+  boot time                   : Tue, 11 Jan 2022 04:34:28 GMT
+  last configured             : Tue, 11 Jan 2022 04:34:28 GMT
+  configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+  CPUs found                  : 1
+  worker threads              : 1
+  UDP listeners per interface : 1
+  number of zones             : 3 (0 automatic)
+  debug level                 : 0
+  xfers running               : 0
+  xfers deferred              : 0
+  soa queries in progress     : 0
+  query logging is OFF
+  recursive clients           : 0/900/1000
+  tcp clients                 : 2/150
+  server is up and running
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dig @vm12 +noall +authority example.com (シリアル番号を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+
+  // シリアル番号は「2022011101」
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dig @vm12 +noall +authority 122.168.192.in-addr.arpa (シリアル番号を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+
+  // シリアル番号は「2022011101」
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo rndc -k /etc/rndc.key (-y rndc-key) status (ファイル指定、ステータス表示)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    version                     : BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 (Extended Support Version) <id:7107deb> (unknown)
+    running on vm13             : Linux x86_64 3.10.0-1160.el7.x86_64 #1 SMP Mon Oct 19 16:18:59 UTC 2020
+    boot time                   : Tue, 11 Jan 2022 06:11:45 GMT
+    last configured             : Tue, 11 Jan 2022 06:11:45 GMT
+    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+    CPUs found                  : 1
+    worker threads              : 1
+    UDP listeners per interface : 1
+    number of zones             : 3 (0 automatic)
+    debug level                 : 0
+    xfers running               : 0
+    xfers deferred              : 0
+    soa queries in progress     : 0
+    query logging is OFF
+    recursive clients           : 0/900/1000
+    tcp clients                 : 2/150
+    server is up and running
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dig @vm13 +noall +authority example.com (シリアル番号を確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+
+    // シリアル番号は「2022011101」
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dig @vm13 +noall +authority 122.168.192.in-addr.arpa (シリアル番号を確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+
+    // シリアル番号は「2022011101」
+    --------------------------------------------------
+    
+  vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/var/named/example.com.zone (シリアル番号更新)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  2022011101 -> 2022011102
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/var/named/example.com.rev.zone (シリアル番号更新)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  2022011101 -> 2022011102
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo rndc -k /etc/rndc.key (-y rndc-key) reload example.com (ファイル指定、ゾーン情報リロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  zone reload queued
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo rndc -k /etc/rndc.key (-y rndc-key) reload 122.168.192.in-addr.arpa (ファイル指定、ゾーン情報リロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  zone reload queued
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo rndc -k /etc/rndc.key (-y rndc-key) retransfer example.com (ファイル指定、マスターへ転送依頼)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo rndc -k /etc/rndc.key (-y rndc-key) retransfer 122.168.192.in-addr.arpa (ファイル指定、マスターへ転送依頼)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dig @vm13 +noall +authority example.com (シリアル番号を確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011102 300 300 86400 86400
+
+    // シリアル番号は「2022011101 -> 2022011102」
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dig @vm13 +noall +authority 122.168.192.in-addr.arpa (シリアル番号を確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011102 300 300 86400 86400
+
+    // シリアル番号は「2022011101 -> 2022011102」
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
