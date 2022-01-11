@@ -358,6 +358,19 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/etc/rndc.key
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## コマンド(rndc)用の共有鍵
+  key rndc-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
+  };
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
   vm12$ (TSIG用の鍵ファイル作成のコマンドを1行で指定)
     dnssec-keygen  // コマンド本体
     -a HMAC-MD5    // アルゴリズム
@@ -402,6 +415,19 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/etc/tsig.key
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## ゾーン転送のセキュリティ対策(TSIG)
+  key tsig-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
+  };
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
   vm12$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org (設定ファイルのバックアップ)
   
   コマンドの実行結果
@@ -414,19 +440,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## コマンド(rndc)用の共有鍵
-  key rndc-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
-  };
-  
-  ## ゾーン転送のセキュリティ対策(TSIG)
-  key tsig-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
-  };
+  ## 追加設定をロード
+  include "/etc/rndc.key";
+  include "/etc/tsig.key";
   
   ## プログラム(named)の操作可能ホスト
   controls
@@ -449,17 +465,17 @@
   ## ゾーンファイル(正引き)
   zone example.com IN
   {
-    type master;                       # マスター
-    file "example.com.zone";           # ファイル名
-    allow-transfer { key tsig-key; };  # ゾーン転送時の共有鍵情報
+    type master;                         # マスター
+    file "example.com.zone";             # ファイル名
+    allow-transfer { key "tsig-key"; };  # ゾーン転送時の共有鍵情報
   };
   
   ## ゾーンファイル(逆引き)
   zone 122.168.192.in-addr.arpa IN
   {
-    type master;                       # マスター
-    file "example.com.rev.zone";       # ファイル名
-    allow-transfer { key tsig-key; };  # ゾーン転送時の共有鍵情報
+    type master;                         # マスター
+    file "example.com.rev.zone";         # ファイル名
+    allow-transfer { key "tsig-key"; };  # ゾーン転送時の共有鍵情報
   };
   --------------------------------------------------
   
@@ -673,6 +689,32 @@
   --------------------------------------------------
   
   vm13$ cd $HOME
+  vm13$ sudo vi /var/named/chroot/etc/rndc.key
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## コマンド(rndc)用の共有鍵
+  key rndc-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
+  };
+  --------------------------------------------------
+  
+  vm13$ cd $HOME
+  vm13$ sudo vi /var/named/chroot/etc/tsig.key
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## ゾーン転送のセキュリティ対策(TSIG)
+  key tsig-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
+  };
+  --------------------------------------------------
+  
+  vm13$ cd $HOME
   vm13$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org (設定ファイルのバックアップ)
   
   コマンドの実行結果
@@ -685,19 +727,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## コマンド(rndc)用の共有鍵
-  key rndc-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
-  };
-  
-  ## ゾーン転送のセキュリティ対策(TSIG)
-  key tsig-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
-  };
+  ## 追加設定をロード
+  include "/etc/rndc.key";
+  include "/etc/tsig.key";
   
   ## プログラム(named)の操作可能ホスト
   controls
@@ -718,7 +750,7 @@
   ## コンテンツサーバー(マスター)
   server 192.168.122.12
   {
-    keys { tsig-key; };                  # 前述の共有鍵(tsig-key)を使用
+    keys { "tsig-key"; };                # 前述の共有鍵(tsig-key)を使用
   };
   
   ## ゾーンファイル(正引き)
@@ -952,6 +984,19 @@
   --------------------------------------------------
   
   vm14$ cd $HOME
+  vm14$ sudo vi /var/named/chroot/etc/rndc.key
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## コマンド(rndc)用の共有鍵
+  key rndc-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
+  };
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
   vm14$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org (設定ファイルのバックアップ)
   
   コマンドの実行結果
@@ -964,12 +1009,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## コマンド(rndc)用の共有鍵
-  key rndc-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
-  };
+  ## 追加設定をロード
+  include "/etc/rndc.key";
   
   ## プログラム(named)の操作可能ホスト
   controls
@@ -1023,6 +1064,214 @@
   --------------------------------------------------
   Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service
   to /usr/lib/systemd/system/named-chroot.service.
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo systemctl start named-chroot (プログラム起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo firewall-cmd --add-service=dns --permanent (ファイアーウォールの設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ sudo firewall-cmd --reload (ファイアーウォールの設定を反映)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 vm12.example.com (オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm14 vm12.example.com
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 18155
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 4096
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;vm12.example.com. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  vm12.example.com. 86400 IN A 192.168.122.12
+  
+  -- 権威セクション
+  ;; AUTHORITY SECTION:
+  example.com. 86369 IN NS vm12.example.com.
+  
+  ;; Query time: 3 msec
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 回答元はキャッシュ
+  ;; WHEN: 火  1月 11 10:54:42 JST 2022
+  ;; MSG SIZE  rcvd: 75
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 ns11.yahoo.co.jp (問合せサーバー指定、オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm14 ns11.yahoo.co.jp
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41323
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 4096
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;ns11.yahoo.co.jp. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  ns11.yahoo.co.jp. 632 IN A 124.83.255.37
+  
+  ;; Query time: 26 msec
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 回答元はキャッシュ
+  ;; WHEN: 日  1月 09 22:07:22 JST 2022
+  ;; MSG SIZE  rcvd: 61
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[07]
+  コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
+  
+[内容]
+  ## 作業内容
+    コマンド(rndc)でDNSサーバーをリモート制御する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : マスター
+  
+  ## 使用マシン
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : スレーブ
+  
+  ## コマンド(rndc)
+    rndc -b XX  // IPアドレス(XX)を指定
+    rndc -c XX  // 設定ファイル(XX)を指定
+    rndc -s XX  // ホスト名(XX)を指定
+    rndc -p XX  // ポート番号(XX)を指定
+    rndc -k XX  // 設定ファイル(XX)を指定
+    rndc -y XX  // RNDCキー(XX)を指定
+    rndc <上記オプション> reload         // 設定ファイルとゾーン情報をリロード (シリアル番号更新時のみ)
+    rndc <上記オプション> reload XX      // ゾーン情報(XX)のみリロード (シリアル番号更新時のみ)
+    rndc <上記オプション> reconfig       // 設定ファイル(named.conf)と新規追加のゾーン情報のみリロード
+    rndc <上記オプション> stats          // 統計情報をファイル出力
+    rndc <上記オプション> status         // ステータス表示
+    rndc <上記オプション> dumpdb -all    // ゾーン情報をファイルにダンプ、ゾーンとキャッシュ両方
+    rndc <上記オプション> dumpdb -zones  // ゾーン情報をファイルにダンプ、ゾーンのみ
+    rndc <上記オプション> dumpdb -cache  // ゾーン情報をファイルにダンプ、キャッシュのみ
+    rndc <上記オプション> flush          // 全キャッシュを消去
+    rndc <上記オプション> flushname XX   // キャッシュレコード(XX)を消去
+    rndc <上記オプション> notify         // マスターからスレーブにゾーン更新を通知 (シリアル番号更新時のみ)
+    rndc <上記オプション> retransfer     // スレーブからマスターにゾーン情報の転送依頼 (シリアル番号を無視)
+    rndc <上記オプション> refresh        // スレーブからマスターにゾーン情報の転送強制 (シリアル番号を無視)
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo rndc -s vm12 -k /etc/rndc.key (-y rndc-key) status (ホスト名指定、ファイル指定、ステータス表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  version                     : BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 (Extended Support Version) <id:7107deb> (unknown)
+  running on vm12             : Linux x86_64 3.10.0-1160.el7.x86_64 #1 SMP Mon Oct 19 16:18:59 UTC 2020
+  boot time                   : Tue, 11 Jan 2022 04:34:28 GMT
+  last configured             : Tue, 11 Jan 2022 04:34:28 GMT
+  configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+  CPUs found                  : 1
+  worker threads              : 1
+  UDP listeners per interface : 1
+  number of zones             : 3 (0 automatic)
+  debug level                 : 0
+  xfers running               : 0
+  xfers deferred              : 0
+  soa queries in progress     : 0
+  query logging is OFF
+  recursive clients           : 0/900/1000
+  tcp clients                 : 2/150
+  server is up and running
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dig @vm12 +noall +authority example.com (ゾーン情報のシリアル番号を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dig @vm12 +noall +authority 122.168.192.in-addr.arpa (ゾーン情報のシリアル番号を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/var/named/example.com.zone (シリアル番号更新)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  2022010901 -> 2022011101
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vi /var/named/chroot/var/named/example.com.rev.zone (シリアル番号更新)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  2022010901 -> 2022011101
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo rndc -s vm12 -k /etc/rndc.key (-y rndc-key) reload example.com (ホスト名指定、ファイル指定、ゾーン情報リロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo dig +noall +answer example.com soa (ゾーン情報のシリアル番号を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo rndc -s vm12 -k /etc/rndc.key (-y rndc-key) notify example.com (ホスト名指定、ファイル指定、スレーブへ通知)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
   --------------------------------------------------
   
   vm14$ cd $HOME
@@ -1157,7 +1406,7 @@
   ns11.yahoo.co.jp. 632 IN A 124.83.255.37
   
   ;; Query time: 26 msec
-  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 指定したキャッシュサーバーに問合せ
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 回答元はキャッシュ
   ;; WHEN: 日  1月 09 22:07:22 JST 2022
   ;; MSG SIZE  rcvd: 61
   --------------------------------------------------
