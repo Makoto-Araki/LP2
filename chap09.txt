@@ -314,6 +314,50 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
+  vm12$ (RNDC用の鍵ファイル作成のコマンドを1行で指定)
+    dnssec-keygen  // コマンド本体
+    -a HMAC-MD5    // アルゴリズム
+    -b 128         // 鍵長
+    -n USER        // 所有者のタイプ
+    rndc-key       // 鍵の名前
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Krndc-key.+157+26344
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ls -lh Krndc-key* (RNDC用の鍵ファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-------. 1 makoto makoto  50  1月 11 09:42 Krndc-key.+157+26344.key      // 公開鍵
+  -rw-------. 1 makoto makoto 165  1月 11 09:42 Krndc-key.+157+26344.private  // 秘密鍵
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat Krndc-key.+157+26344.key (RNDC用の鍵ファイルのうち公開鍵を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rndc-key. IN KEY 0 3 157 ANS+aCoEL4oFLqfrtk7nFw== -> 共有鍵「ANS+aCoEL4oFLqfrtk7nFw==」
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat Krndc-key.+157+26344.private (RNDC用の鍵ファイルのうち秘密鍵を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Private-key-format: v1.3
+  Algorithm: 157 (HMAC_MD5)
+  Key: ANS+aCoEL4oFLqfrtk7nFw==  // 共有鍵は「ANS+aCoEL4oFLqfrtk7nFw==」-> コマンド(rndc)によるリモート制御に使用
+  Bits: AAA=
+  Created: 20220111004214
+  Publish: 20220111004214
+  Activate: 20220111004214
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
   vm12$ (TSIG用の鍵ファイル作成のコマンドを1行で指定)
     dnssec-keygen  // コマンド本体
     -a HMAC-MD5    // アルゴリズム
@@ -370,11 +414,25 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  ## コマンド(rndc)用の共有鍵
+  key rndc-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
+  };
+  
+  ## ゾーン転送のセキュリティ対策(TSIG)
+  key tsig-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
+  };
+  
   ## プログラム(named)の操作可能ホスト
   controls
   {
-    inet 127.0.0.1 allow { localhost; };              # ローカルホストからのアクセス許可
-    inet 192.168.122.12 allow { 192.168.122.0/24; };  # ネットワーク(192.168.122.0)からのアクセス許可
+    inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };              # ローカルホストからのアクセス許可
+    inet 192.168.122.12 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
   };
   
   ## プログラム(named)の詳細オプション
@@ -386,13 +444,6 @@
     notify yes;                          # ゾーン更新をスレーブに通知
     recursion no;                        # 再帰問合わせを受付
     version "unknown";                   # バージョン表示
-  };
-  
-  ## ゾーン転送のセキュリティ対策(TSIG)
-  key tsig-key
-  {
-    algorithm hmac-md5;                # ゾーン転送の暗号化アルゴリズム
-    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
   };
   
   ## ゾーンファイル(正引き)
@@ -523,6 +574,72 @@
   success
   --------------------------------------------------
   
+  vm12$ cd $HOME
+  vm12$ dig @vm12 +noall +answer example.com soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig @vm12 +noall +answer example.com ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN NS vm12.example.com.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig @vm12 vm12.example.com (オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm12 vm12.example.com
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 36376
+  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  ;; WARNING: recursion requested but not available
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 4096
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;vm12.example.com. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  vm12.example.com. 86400 IN A 192.168.122.12
+  
+  -- 権威セクション
+  ;; AUTHORITY SECTION:
+  example.com. 86400 IN NS vm12.example.com.
+  
+  ;; Query time: 0 msec
+  ;; SERVER: 192.168.122.12#53(192.168.122.12)
+  ;; WHEN: 火  1月 11 10:10:34 JST 2022
+  ;; MSG SIZE  rcvd: 75
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig @vm12 +noall +answer vm12.example.com (全セクション非表示、回答セクション表示、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm12.example.com. 86400 IN A 192.168.122.12
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig @vm12 +noall +answer -x 192.168.122.12 (全セクション非表示、回答セクション表示、逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  12.122.168.192.in-addr.arpa. 86400 IN PTR vm12.example.com.
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -568,11 +685,25 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  ## コマンド(rndc)用の共有鍵
+  key rndc-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
+  };
+  
+  ## ゾーン転送のセキュリティ対策(TSIG)
+  key tsig-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret CBwbqLAX24F7NjFVo3BYeQ==;   # 共有秘密鍵
+  };
+  
   ## プログラム(named)の操作可能ホスト
   controls
   {
-    inet 127.0.0.1 allow { localhost; };              # ローカルホストからのアクセス許可
-    inet 192.168.122.13 allow { 192.168.122.0/24; };  # ネットワーク(192.168.122.0)からのアクセス許可
+    inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };              # ローカルホストからのアクセス許可
+    inet 192.168.122.12 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
   };
   
   ## プログラム(named)の詳細オプション
@@ -582,13 +713,6 @@
     listen-on-v6 { none; };              # 不使用(IPv6)
     recursion no;                        # 再帰問合わせを受付
     version "unknown";                   # バージョン表示
-  };
-  
-  ## ゾーン転送のセキュリティ対策(TSIG)
-  key tsig-key
-  {
-    algorithm hmac-md5;                  # ゾーン転送の暗号化アルゴリズム
-    secret CBwbqLAX24F7NjFVo3BYeQ==;     # 共有鍵
   };
   
   ## コンテンツサーバー(マスター)
@@ -729,6 +853,72 @@
   OK
   --------------------------------------------------
   
+  vm13$ cd $HOME
+  vm13$ dig @vm13 +noall +answer example.com soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  --------------------------------------------------
+  
+  vm13$ cd $HOME
+  vm13$ dig @vm13 +noall +answer example.com ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN NS vm12.example.com.
+  --------------------------------------------------
+  
+  vm13$ cd $HOME
+  vm13$ dig @vm13 vm12.example.com (オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm13 vm12.example.com
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 58593
+  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  ;; WARNING: recursion requested but not available
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 4096
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;vm12.example.com. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  vm12.example.com. 86400 IN A 192.168.122.12
+  
+  -- 権威セクション
+  ;; AUTHORITY SECTION:
+  example.com. 86400 IN NS vm12.example.com.
+  
+  ;; Query time: 0 msec
+  ;; SERVER: 192.168.122.13#53(192.168.122.13)  // 回答元はスレーブ
+  ;; WHEN: 火  1月 11 10:27:47 JST 2022
+  ;; MSG SIZE  rcvd: 75
+  --------------------------------------------------
+  
+  vm13$ cd $HOME
+  vm13$ dig @vm13 +noall +answer vm12.example.com (全セクション非表示、回答セクション表示、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm12.example.com. 86400 IN A 192.168.122.12
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ dig @vm12 +noall +answer -x 192.168.122.12 (全セクション非表示、回答セクション表示、逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  12.122.168.192.in-addr.arpa. 86400 IN PTR vm12.example.com.
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -774,11 +964,18 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  ## コマンド(rndc)用の共有鍵
+  key rndc-key
+  {
+    algorithm hmac-md5;                # 暗号化アルゴリズム
+    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
+  };
+  
   ## プログラム(named)の操作可能ホスト
   controls
   {
-    inet 127.0.0.1 allow { localhost; };              # ローカルホストからのアクセス許可
-    inet 192.168.122.14 allow { 192.168.122.0/24; };  # ネットワーク(192.168.122.0)からのアクセス許可
+    inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };              # ローカルホストからのアクセス許可
+    inet 192.168.122.12 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
   };
   
   ## プログラム(named)の詳細オプション
@@ -791,7 +988,7 @@
     allow-query { 192.168.122.0/24; localhost; };      # 問合わせの受付ホスト
     allow-recursion { 192.168.122.0/24; localhost; };  # 再帰問合わせの受付ホスト
     forward only;                                      # フォワードのみ
-    forwarders { 192.168.122.1; };                     # フォワード先(192.168.122.14 -> 192.168.122.1 -> プロバイダDNS)
+    forwarders { 192.168.122.12; 192.168.122.1; };     # フォワード先
     version "unknown";                                 # バージョン表示
   };
   
@@ -853,6 +1050,90 @@
   --------------------------------------------------
   
   vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer example.com soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 3600 IN SOA ns.icann.org. noc.dns.icann.org. 2021120721 7200 3600 1209600 3600
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer example.com ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN NS vm12.example.com.
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 vm12.example.com (オプションなし、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm14 vm12.example.com
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 18155
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 4096
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;vm12.example.com. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  vm12.example.com. 86400 IN A 192.168.122.12
+  
+  -- 権威セクション
+  ;; AUTHORITY SECTION:
+  example.com. 86369 IN NS vm12.example.com.
+  
+  ;; Query time: 3 msec
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 回答元はキャッシュ
+  ;; WHEN: 火  1月 11 10:54:42 JST 2022
+  ;; MSG SIZE  rcvd: 75
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer vm12.example.com (全セクション非表示、回答セクション表示、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm12.example.com. 86161 IN A 192.168.122.12
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer -x 192.168.122.12 (全セクション非表示、回答セクション表示、逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  12.122.168.192.in-addr.arpa. 86400 IN PTR vm12.example.com.
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer yahoo.co.jp soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp. 900 IN SOA yahoo.co.jp. postmaster.yahoo.co.jp. 2201110002 1800 900 86400 900
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer yahoo.co.jp ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  yahoo.co.jp. 900 IN NS ns12.yahoo.co.jp.
+  yahoo.co.jp. 900 IN NS ns01.yahoo.co.jp.
+  yahoo.co.jp. 900 IN NS ns11.yahoo.co.jp.
+  yahoo.co.jp. 900 IN NS ns02.yahoo.co.jp.
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
   vm14$ dig @vm14 ns11.yahoo.co.jp (問合せサーバー指定、オプションなし、正引き名前解決)
   
   コマンドの実行結果
@@ -879,6 +1160,22 @@
   ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 指定したキャッシュサーバーに問合せ
   ;; WHEN: 日  1月 09 22:07:22 JST 2022
   ;; MSG SIZE  rcvd: 61
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer ns11.yahoo.co.jp (全セクション非表示、回答セクション表示、正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ns11.yahoo.co.jp. 252 IN A 124.83.255.37
+  --------------------------------------------------
+  
+  vm14$ cd $HOME
+  vm14$ dig @vm14 +noall +answer -x 124.83.255.37 (全セクション非表示、回答セクション表示、逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  37.255.83.124.in-addr.arpa. 900 IN PTR ns11.yahoo.co.jp.
   --------------------------------------------------
   
   以下の確認に続く
