@@ -1,0 +1,113 @@
+================================================================================
+[01] DNSクライアントコマンド - 01 (nslookup)
+================================================================================
+[01]
+  DNSクライアントコマンド - 01 (nslookup)
+  
+[内容]
+  ## 作業内容
+    コマンド(nslookup)でDNSサーバーに名前解決を依頼する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## コマンド(nslookup)
+    nslookup -type=XX    // レコードタイプ(XX)を指定
+    nslookup -norecurse  // 再帰問合せをしない
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ sudo yum -y bind-utils (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup -type=soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: 192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:
+  yahoo.co.jp
+    origin    = yahoo.co.jp
+    mail addr = postmaster.yahoo.co.jp
+    serial    = 2201070009
+    refresh   = 1800
+    retry     = 900
+    expire    = 86400
+    minimum   = 900
+  
+  Authoritative answers can be found from:
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup -type=ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server:  192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:
+  yahoo.co.jp  nameserver = ns02.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns11.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns12.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns01.yahoo.co.jp.
+  
+  Authoritative answers can be found from:
+  ns02.yahoo.co.jp  internet address = 118.151.254.149
+  ns11.yahoo.co.jp  internet address = 124.83.255.37
+  ns12.yahoo.co.jp  internet address = 124.83.255.101
+  ns01.yahoo.co.jp  internet address = 118.151.254.133
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup -type=mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: 192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:
+  yahoo.co.jp  mail exchanger = 10 mx5.mail.yahoo.co.jp.
+  yahoo.co.jp  mail exchanger = 10 mx3.mail.yahoo.co.jp.
+  yahoo.co.jp  mail exchanger = 10 mx2.mail.yahoo.co.jp.
+  yahoo.co.jp  mail exchanger = 10 mx1.mail.yahoo.co.jp.
+  
+  Authoritative answers can be found from:
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup ns02.yahoo.co.jp (正引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: 192.168.122.1
+  Address: 192.168.122.1#53
+  
+  Non-authoritative answer:  // ドメイン「yahoo.co.jp」の権威サーバーからの回答ではない
+  Name: ns02.yahoo.co.jp
+  Address: 118.151.254.149
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ nslookup 118.151.254.149 (逆引き名前解決)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  149.254.151.118.in-addr.arpa  name = ns02.yahoo.co.jp.
+  
+  Authoritative answers can be found from:
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
