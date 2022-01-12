@@ -2234,7 +2234,9 @@
   
   KERNEL[27052.818517] add /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.1 (usb)
   KERNEL[27052.819669] add /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.1/2-1.1:1.0 (usb)
+    
     -- 省略 --
+    
   KERNEL[27058.610690] add /module/vfat (module)
   UDEV  [27058.611319] add /module/vfat (module)
   --------------------------------------------------
