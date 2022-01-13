@@ -677,7 +677,7 @@
   
 [内容]
   ## 作業内容
-    手持ちのデバイス(USBメモリ)から起動デバイスの作成
+    ダウンロードした「Windows Server 2019」の評価版ISOから手持ちのデバイス(USBメモリ)を起動デバイスにする
   
   ## 使用マシン
     HOST : localhost
@@ -686,23 +686,139 @@
   
 [確認]
   $ cd $HOME
-  $ sudo udevadm monitor (デバイス接続のモニタリング開始)
+  $ lsblk (システムに接続したデバイス状況を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  monitor will print the received events for:
-  UDEV - the event which udev sends out after rule processing
-  KERNEL - the kernel uevent
+  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sr0                 11:0    1  1024M  0 rom  
+  sda                  8:0    0 465.8G  0 disk 
+  ├─sda1             8:1    0     1G  0 part /boot
+  └─sda2             8:2    0 464.8G  0 part 
+    ├─centos-root  253:0    0    50G  0 lvm  /
+    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
+    └─centos-home  253:2    0 411.1G  0 lvm  /home
+  sdb                  8:16   1    15G  0 disk 
+  ├─sdb1             8:17   1   953M  0 part /run/media/makoto/SSS_X64FREE_JA-JP_DV9
+  └─sdb2             8:18   1    14G  0 part 
+  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
+  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
+  --------------------------------------------------
   
-  // ここでUSBメモリ接続 -> デバイス認識を確認
+  $ cd $HOME
+  $ sudo umount /dev/sdb1 (アンマウントでデバイスをシステムから隔離)
+  $ sudo umount /dev/sdb2 (アンマウントでデバイスをシステムから隔離) -> マウントされていないが保険で行う
   
-  KERNEL[5020.802539] add      /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.2 (usb)
-  KERNEL[5020.803170] add      /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.2/2-1.2:1.0 (usb)
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
   
-    -- 省略 --
+  $ cd $HOME
+  $ LANG=C sudo parted /dev/sdb -s print | tail -n 5 (日本語メッセージなし、デバイス内のパーティション情報)
   
-  KERNEL[5055.407703] remove   /kernel/slab/nf_conntrack_25 (slab)
-  UDEV  [5055.408270] remove   /kernel/slab/nf_conntrack_25 (slab)
+  コマンドの実行結果
+  --------------------------------------------------
+  Number  Start   End     Size    Type     File system  Flags
+  1       1049kB  1000MB  999MB   primary  fat32        lba
+  2       1000MB  16.0GB  15.0GB  primary
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo parted /dev/sdb -s rm 1 (デバイス内のパーティション削除)
+  $ sudo parted /dev/sdb -s rm 2 (デバイス内のパーティション削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo yum -y install ntfsprogs (パッケージ追加) -> リポジトリ「EPEL」が必要
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ LANG=C sudo parted /dev/sdb (日本語メッセージなし、対話モードでデバイスのパーティション作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  GNU Parted 3.1
+  Using /dev/sdb
+  Welcome to GNU Parted! Type 'help' to view a list of commands.
+  (parted) 
+  (parted) mkpart                             // パーティション作成
+  Partition type?  primary/extended? primary  // プライマリ
+  File system type?  [ext2]? fat32            // ファイルシステムは「fat32」
+  Start? 0G                                   // 開始 - ディスク冒頭
+  End? 1G                                     // 終了 - ディスク冒頭から1GB分
+  (parted) 
+  (parted) mkpart                             // パーティション作成
+  Partition type?  primary/extended? primary  // プライマリ
+  File system type?  [ext2]? ntfs             // ファイルシステムは「ntfs」
+  Start? 1G                                   // 開始 - ディスク冒頭から1GBの位置
+  End? 100%                                   // 終了 - ディスク最後
+  (parted) 
+  (parted) print                              // デバイス情報とパーティション情報を表示
+  Model: ELECOM MF-MSU2B (scsi)               // モデル名
+  Disk /dev/sdb: 16.0GB                       // デバイス名と容量
+  Sector size (logical/physical): 512B/512B   // セクタサイズ(512バイト)
+  Partition Table: msdos                      // 不明
+  Disk Flags:                                 // 不明
+  
+  Number  Start   End     Size    Type     File system  Flags
+  1       1049kB  1000MB  999MB   primary  fat32        lba
+  2       1000MB  16.0GB  15.0GB  primary
+  
+  (parted) quit
+  Information: You may need to update /etc/fstab.
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo mkfs.vfat /dev/sdb1 (パーティションのフォーマット)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mkfs.fat 3.0.20 (12 Jun 2013)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo mkfs.ntfs -f /dev/sdb2 (パーティションのフォーマット)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Cluster size has been automatically set to 4096 bytes.
+  Creating NTFS volume structures.
+  mkntfs completed successfully. Have a nice day.
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ls -lh *.iso (ダウンロードした「Windows Server 2019」のISOファイルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto 5.2G  1月 12 15:11 17763.1158.200413-1759.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_ja-jp.iso
+  --------------------------------------------------
+  
+  $ cd /mnt
+  $ sudo mkdir mp0 mp1 mp2 (マウントポイント作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME (マウント)
+  $ sudo mount -t udf -o ro,loop 17763.1158.200413-1759.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_ja-jp.iso /mnt/mp0
+  $ sudo mount -t vfat /dev/sdb1 /mnt/mp1
+  $ sudo mount -t ntfs /dev/sdb2 /mnt/mp2
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
@@ -719,13 +835,54 @@
     ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
     └─centos-home  253:2    0 411.1G  0 lvm  /home
   sdb                  8:16   1    15G  0 disk 
-  └─sdb1             8:17   1   9.3G  0 part /run/media/makoto/SSS_X64FREE_JA-JP_DV9
+  ├─sdb1             8:17   1   953M  0 part /mnt/mp1 (デバイス内パーティション)
+  └─sdb2             8:18   1    14G  0 part /mnt/mp2 (デバイス内パーティション)
   loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
   loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
+  loop2                7:2    0   5.2G  1 loop /mnt/mp0 (ISOファイル)
   --------------------------------------------------
   
-  $ cd $HOME
-  $ sudo umount /dev/sdb1 (アンマウントでデバイスをシステムから隔離)
+  $ cd /mnt/mp0
+  $ ls -lh (ファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -r-xr-xr-x.  1 nfsnobody nfsnobody  128  4月 14  2020 autorun.inf  // mp1 にコピー
+  dr-xr-xr-x.  5 nfsnobody nfsnobody  564  4月 14  2020 boot         // mp1 にコピー
+  -r-xr-xr-x.  1 nfsnobody nfsnobody 399K  4月 14  2020 bootmgr      // mp1 にコピー
+  -r-xr-xr-x.  1 nfsnobody nfsnobody 1.4M  4月 14  2020 bootmgr.efi  // mp1 にコピー
+  dr-xr-xr-x.  4 nfsnobody nfsnobody  148  4月 14  2020 efi          // mp1 にコピー
+  -r-xr-xr-x.  1 nfsnobody nfsnobody  81K  4月 14  2020 setup.exe    // mp1 にコピー
+  dr-xr-xr-x. 11 nfsnobody nfsnobody  13K  4月 14  2020 sources      // mp2 にコピー (boot.wimのみ例外)
+  dr-xr-xr-x.  6 nfsnobody nfsnobody  252  4月 14  2020 support      // mp1 にコピー
+  --------------------------------------------------
+  
+  $ cd /mnt/mp1
+  $ sudo mkdir sources (ディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd /mnt/mp0
+  $ sudo cp -r autorun.inf boot bootmgr bootmgr.efi efi setup.exe support /mnt/mp1 (デバイス内パーティションにコピー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd /mnt/mp0
+  $ sudo cp sources/boot.wim /mnt/mp1/sources (デバイス内パーティションにコピー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd /mnt/mp0
+  $ sudo cp -r sources /mnt/mp2 (デバイス内パーティションにコピー)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -733,22 +890,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo parted /dev/sdb -s print (デバイスのパーティション情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  モデル                   : ELECOM MF-MSU2B (scsi)
-  ディスク /dev/sdb        : 16.0GB
-  セクタサイズ (論理/物理) : 512B/512B
-  パーティションテーブル   : gpt
-  ディスクフラグ           : (なし)
-  
-  番号  開始    終了    サイズ  ファイルシステム  名前     フラグ
-     1  1049kB  10.0GB  9999MB                    primary
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo parted /dev/sdb -s rm 1 (デバイスのパーティション削除)
+  $ sync (ディスクバッファ中のデータをディスク反映させる)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -756,79 +898,19 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo parted /dev/sdb -s mklabel msdos (パーティションテーブル宣言)
+  $ sudo umount /dev/sdb1 /dev/sdb2 /dev/loop2 (アンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  $ cd $HOME
-  $ sudo parted /dev/sdb -s mkpart primary fat16 1 15GB (パーティションテーブル作成)
+  $ cd /mnt
+  $ sudo rmdir mp0 mp1 mp2 (マウントポイント削除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lsblk (デバイスを調査)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sr0                 11:0    1  1024M  0 rom  
-  sda                  8:0    0 465.8G  0 disk 
-  ├─sda1             8:1    0     1G  0 part /boot
-  └─sda2             8:2    0 464.8G  0 part 
-    ├─centos-root  253:0    0    50G  0 lvm  /
-    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
-    └─centos-home  253:2    0 411.1G  0 lvm  /home
-  sdb                  8:16   1    15G  0 disk (デバイス)
-  └─sdb1             8:17   1    14G  0 part (パーティション)
-  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mkfs -t vfat /dev/sdb1 (デバイスのフォーマット)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  mkfs.fat 3.0.20 (12 Jun 2013)
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo parted /dev/sdb -s print (デバイスのパーティション情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  モデル                   : ELECOM MF-MSU2B (scsi)
-  ディスク /dev/sdb        : 16.0GB
-  セクタサイズ (論理/物理) : 512B/512B
-  パーティションテーブル   : msdos
-  ディスクフラグ           : (なし)
-  
-  番号  開始    終了    サイズ  タイプ   ファイルシステム  フラグ
-     1  1049kB  15.0GB  15.0GB  primary  fat32             lba
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ ls -lh *.iso (ダウンロードした「Windows Server 2019」のISOファイルを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 5.2G  1月 12 15:11 17763.1158.200413-1759.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_ja-jp.iso
-  --------------------------------------------------
-  
-  $ cd $HOME (起動デバイスの作成)
-  $ sudo dd if=17763.1158.200413-1759.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_ja-jp.iso of=/dev/sdb1 bs=512K && sync
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10593+1 レコード入力
-  10593+1 レコード出力
-  5554108416 バイト (5.6 GB) コピーされました、 875.139 秒、 6.3 MB/秒
   --------------------------------------------------
   
   以下の確認に続く
