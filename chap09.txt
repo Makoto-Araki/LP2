@@ -497,18 +497,20 @@
   $ORIGIN example.com.
   $TTL 1D
   example.com. IN SOA vm12.example.com. makoto.example.com. (
-    2022010901  ; シリアル(年月日＋2桁)
-    5M          ; スレーブがマスターをチェックする間隔(5分)
-    5M          ; スレーブがマスターにアクセス不能時に再試行までの時間(5分)
-    1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(1日)
-    1D          ; ネガティブキャッシュ有効期限(1日)
+    2022011501  ; serial
+    5M          ; refresh
+    5M          ; retry
+    1D          ; expire
+    1D          ; negative
   )
   
-  example.com.           IN  NS     vm12.example.com.
+  example.com.           IN  NS     vm12.example.com.  ; Master
+  example.com.           IN  NS     vm13.example.com.  ; Slave
   vm12.example.com.      IN  A      192.168.122.12
   vm13.example.com.      IN  A      192.168.122.13
   vm14.example.com.      IN  A      192.168.122.14
   vm15.example.com.      IN  A      192.168.122.15
+  www.example.com.       IN  CNAME  vm12.example.com.  ; Web Server
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -516,7 +518,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  zone example.com/IN: loaded serial 2022010901
+  zone example.com/IN: loaded serial 2022011501
   OK
   --------------------------------------------------
   
@@ -528,11 +530,11 @@
   $ORIGIN example.com.
   $TTL 1D
   122.168.192.in-addr.arpa. IN SOA vm12.example.com. makoto.example.com. (
-    2022010901  ; シリアル(年月日＋2桁)
-    5M          ; スレーブがマスターをチェックする間隔(5分)
-    5M          ; スレーブがマスターにアクセス不能時に再試行までの時間(5分)
-    1D          ; スレーブがマスターにアクセス不能時にゾーン情報を破棄するまでの時間(1日)
-    1D          ; ネガティブキャッシュ有効期限(1日)
+    2022011501  ; serial
+    5M          ; refresh
+    5M          ; retry
+    1D          ; expire
+    1D          ; negative
   )
   
   122.168.192.in-addr.arpa.       IN  NS     vm12.example.com.
@@ -547,7 +549,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  zone 122.168.192.in-addr.arpa/IN: loaded serial 2022010901
+  zone 122.168.192.in-addr.arpa/IN: loaded serial 2022011501
   OK
   --------------------------------------------------
   
@@ -597,7 +599,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -606,6 +608,7 @@
   コマンドの実行結果
   --------------------------------------------------
   example.com. 86400 IN NS vm12.example.com.
+  example.com. 86400 IN NS vm13.example.com.
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -617,8 +620,8 @@
   ; (1 server found)
   ;; global options: +cmd
   ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 36376
-  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 33114
+  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 2
   ;; WARNING: recursion requested but not available
   
   ;; OPT PSEUDOSECTION:
@@ -635,11 +638,16 @@
   -- 権威セクション
   ;; AUTHORITY SECTION:
   example.com. 86400 IN NS vm12.example.com.
+  example.com. 86400 IN NS vm13.example.com.
+  
+  -- 追加セクション
+  ;; ADDITIONAL SECTION:
+  vm13.example.com. 86400 IN A 192.168.122.13
   
   ;; Query time: 0 msec
   ;; SERVER: 192.168.122.12#53(192.168.122.12)
-  ;; WHEN: 火  1月 11 10:10:34 JST 2022
-  ;; MSG SIZE  rcvd: 75
+  ;; WHEN: 土  1月 15 09:56:59 JST 2022
+  ;; MSG SIZE  rcvd: 110
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -743,16 +751,16 @@
   ## プログラム(named)の詳細オプション
   options
   {
-    directory "/var/named";              # ゾーンファイル格納先 -> /var/named/chroot/var/named
-    listen-on-v6 { none; };              # 不使用(IPv6)
-    recursion no;                        # 再帰問合わせを受付
-    version "unknown";                   # バージョン表示
+    directory "/var/named";  # ゾーンファイル格納先 -> /var/named/chroot/var/named
+    listen-on-v6 { none; };  # 不使用(IPv6)
+    recursion no;            # 再帰問合わせを受付
+    version "unknown";       # バージョン表示
   };
   
   ## コンテンツサーバー(マスター)
   server 192.168.122.12
   {
-    keys { "tsig-key"; };                # 前述の共有鍵(tsig-key)を使用
+    keys { "tsig-key"; };    # 前述の共有鍵(tsig-key)を使用
   };
   
   ## ゾーンファイル(正引き)
@@ -856,13 +864,15 @@
     
   コマンドの実行結果
   --------------------------------------------------
-  zone example.com/IN: loaded serial 2022010901
-  example.com.              86400 IN SOA  vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
-  example.com.              86400 IN NS   vm12.example.com.
-  vm12.example.com.         86400 IN A    192.168.122.12
-  vm13.example.com.         86400 IN A    192.168.122.13
-  vm14.example.com.         86400 IN A    192.168.122.14
-  vm15.example.com.         86400 IN A    192.168.122.15
+  zone example.com/IN: loaded serial 2022011501
+  example.com.       86400 IN SOA    vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
+  example.com.       86400 IN NS     vm12.example.com.
+  example.com.       86400 IN NS     vm13.example.com.
+  vm12.example.com.  86400 IN A      192.168.122.12
+  vm13.example.com.  86400 IN A      192.168.122.13
+  vm14.example.com.  86400 IN A      192.168.122.14
+  vm15.example.com.  86400 IN A      192.168.122.15
+  www.example.com.   86400 IN CNAME  vm12.example.com.
   OK
   --------------------------------------------------
     
@@ -877,13 +887,13 @@
     
   コマンドの実行結果
   --------------------------------------------------
-  zone 122.168.192.in-addr.arpa/IN: loaded serial 2022010901
-  122.168.192.in-addr.arpa.          86400 IN SOA  vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
-  122.168.192.in-addr.arpa.          86400 IN NS   vm12.example.com.
-  12.122.168.192.in-addr.arpa.       86400 IN PTR  vm12.example.com.
-  13.122.168.192.in-addr.arpa.       86400 IN PTR  vm13.example.com.
-  14.122.168.192.in-addr.arpa.       86400 IN PTR  vm14.example.com.
-  15.122.168.192.in-addr.arpa.       86400 IN PTR  vm15.example.com.
+  zone 122.168.192.in-addr.arpa/IN: loaded serial 2022011501
+  122.168.192.in-addr.arpa.     86400 IN SOA  vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
+  122.168.192.in-addr.arpa.     86400 IN NS   vm12.example.com.
+  12.122.168.192.in-addr.arpa.  86400 IN PTR  vm12.example.com.
+  13.122.168.192.in-addr.arpa.  86400 IN PTR  vm13.example.com.
+  14.122.168.192.in-addr.arpa.  86400 IN PTR  vm14.example.com.
+  15.122.168.192.in-addr.arpa.  86400 IN PTR  vm15.example.com.
   OK
   --------------------------------------------------
   
@@ -892,7 +902,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
   --------------------------------------------------
   
   vm13$ cd $HOME
@@ -901,6 +911,7 @@
   コマンドの実行結果
   --------------------------------------------------
   example.com. 86400 IN NS vm12.example.com.
+  example.com. 86400 IN NS vm13.example.com.
   --------------------------------------------------
   
   vm13$ cd $HOME
@@ -912,8 +923,8 @@
   ; (1 server found)
   ;; global options: +cmd
   ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 58593
-  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 14575
+  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 2
   ;; WARNING: recursion requested but not available
   
   ;; OPT PSEUDOSECTION:
@@ -930,11 +941,16 @@
   -- 権威セクション
   ;; AUTHORITY SECTION:
   example.com. 86400 IN NS vm12.example.com.
+  example.com. 86400 IN NS vm13.example.com.
+  
+  -- 追加セクション
+  ;; ADDITIONAL SECTION:
+  vm13.example.com. 86400 IN A 192.168.122.13
   
   ;; Query time: 0 msec
-  ;; SERVER: 192.168.122.13#53(192.168.122.13)  // 回答元はスレーブ
-  ;; WHEN: 火  1月 11 10:27:47 JST 2022
-  ;; MSG SIZE  rcvd: 75
+  ;; SERVER: 192.168.122.13#53(192.168.122.13)
+  ;; WHEN: 土  1月 15 10:12:55 JST 2022
+  ;; MSG SIZE  rcvd: 110
   --------------------------------------------------
   
   vm13$ cd $HOME
@@ -1101,8 +1117,8 @@
   ; (1 server found)
   ;; global options: +cmd
   ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 18155
-  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9872
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
   
   ;; OPT PSEUDOSECTION:
   ; EDNS: version: 0, flags:; udp: 4096
@@ -1115,14 +1131,10 @@
   ;; ANSWER SECTION:
   vm12.example.com. 86400 IN A 192.168.122.12
   
-  -- 権威セクション
-  ;; AUTHORITY SECTION:
-  example.com. 86369 IN NS vm12.example.com.
-  
-  ;; Query time: 3 msec
-  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 回答元はキャッシュ
-  ;; WHEN: 火  1月 11 10:54:42 JST 2022
-  ;; MSG SIZE  rcvd: 75
+  ;; Query time: 9 msec
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)
+  ;; WHEN: 土  1月 15 10:22:10 JST 2022
+  ;; MSG SIZE  rcvd: 61
   --------------------------------------------------
   
   vm14$ cd $HOME
@@ -1134,7 +1146,7 @@
   ; (1 server found)
   ;; global options: +cmd
   ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41323
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 7498
   ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
   
   ;; OPT PSEUDOSECTION:
@@ -1146,11 +1158,11 @@
   
   -- 回答セクション
   ;; ANSWER SECTION:
-  ns11.yahoo.co.jp. 632 IN A 124.83.255.37
+  ns11.yahoo.co.jp. 260 IN A 124.83.255.37
   
-  ;; Query time: 26 msec
-  ;; SERVER: 192.168.122.14#53(192.168.122.14)  // 回答元はキャッシュ
-  ;; WHEN: 日  1月 09 22:07:22 JST 2022
+  ;; Query time: 21 msec
+  ;; SERVER: 192.168.122.14#53(192.168.122.14)
+  ;; WHEN: 土  1月 15 10:25:15 JST 2022
   ;; MSG SIZE  rcvd: 61
   --------------------------------------------------
   
@@ -1225,9 +1237,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
 
-  // シリアル番号は「2022010901」
+  // シリアル番号は「2022011501」
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1235,9 +1247,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
 
-  // シリアル番号は「2022010901」
+  // シリアル番号は「2022011501」
   --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1269,9 +1281,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
 
-    // シリアル番号は「2022010901」
+    // シリアル番号は「2022011501」
     --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1279,9 +1291,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022010901 300 300 86400 86400
+    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011501 300 300 86400 86400
 
-    // シリアル番号は「2022010901」
+    // シリアル番号は「2022011501」
     --------------------------------------------------
     
   vm12$ cd $HOME
@@ -1289,7 +1301,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  2022010901 -> 2022011101
+  2022011501 -> 2022011502
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1297,7 +1309,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  2022010901 -> 2022011101
+  2022011501 -> 2022011502
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1321,9 +1333,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-  // シリアル番号は「2022010901 -> 2022011101」
+  // シリアル番号は「2022011501 -> 2022011502」
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1331,9 +1343,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-  // シリアル番号は「2022010901 -> 2022011101」
+  // シリアル番号は「2022011501 -> 2022011502」
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1343,7 +1355,7 @@
   --------------------------------------------------
   zone notify queued
   --------------------------------------------------
-
+  
   vm12$ cd $HOME
   vm12$ sudo rndc -k /etc/rndc.key (-y rndc-key) notify 122.168.192.in-addr.arpa (ファイル指定、スレーブへ通知)
   
@@ -1357,9 +1369,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-    // シリアル番号は「2022010901 -> 2022011101」
+    // シリアル番号は「2022011501 -> 2022011502」
     --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1367,9 +1379,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-    // シリアル番号は「2022010901 -> 2022011101」
+    // シリアル番号は「2022011501 -> 2022011502」
     --------------------------------------------------
     
   以下の確認に続く
@@ -1443,9 +1455,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+  example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-  // シリアル番号は「2022011101」
+  // シリアル番号は「2022011502」
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1453,9 +1465,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+  122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-  // シリアル番号は「2022011101」
+  // シリアル番号は「2022011502」
   --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1487,9 +1499,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-    // シリアル番号は「2022011101」
+    // シリアル番号は「2022011502」
     --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1497,9 +1509,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011101 300 300 86400 86400
+    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011502 300 300 86400 86400
 
-    // シリアル番号は「2022011101」
+    // シリアル番号は「2022011502」
     --------------------------------------------------
     
   vm12$ cd $HOME
@@ -1507,7 +1519,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  2022011101 -> 2022011102
+  2022011502 -> 2022011503
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1515,7 +1527,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  2022011101 -> 2022011102
+  2022011502 -> 2022011503
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1555,9 +1567,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011102 300 300 86400 86400
-
-    // シリアル番号は「2022011101 -> 2022011102」
+    example.com. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011503 300 300 86400 86400
+    
+    // シリアル番号は「2022011502 -> 2022011503」
     --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1565,9 +1577,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011102 300 300 86400 86400
-
-    // シリアル番号は「2022011101 -> 2022011102」
+    122.168.192.in-addr.arpa. 86400 IN SOA vm12.example.com. makoto.example.com. 2022011503 300 300 86400 86400
+    
+    // シリアル番号は「2022011502 -> 2022011503」
     --------------------------------------------------
     
   以下の確認に続く
