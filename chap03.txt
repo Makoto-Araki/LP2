@@ -1645,139 +1645,226 @@
     MEMO : ホスト
   
 [確認]
-  # cd /usr/local/src
-  # ls -lh (イメージファイルを確認)
+  $ cd /usr/local/src
+  $ ls -lh (イメージファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--. 1 qemu qemu 918M 11月 26  2018 CentOS-7-x86_64-Minimal-1810.iso
+  -rw-r--r--. 1 qemu qemu 1020264448 11月  3  2020 CentOS-7-x86_64-Minimal-2009.iso
   --------------------------------------------------
   
-  # cd $HOME
-  # lsblk (USBメモリを挿しシステム認識を確認)
+  $ cd $HOME
+  $ lsblk (USBメモリを接続してシステム認識を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME              MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sda                 8:0    0   477G  0 disk 
-  ├─sda1            8:1    0     1G  0 part /boot
-  └─sda2            8:2    0   476G  0 part 
-    ├─centos-root 253:0    0    50G  0 lvm  /
-    ├─centos-swap 253:1    0   3.8G  0 lvm  [SWAP]
-    └─centos-home 253:2    0 422.2G  0 lvm  /home
-  sdb                 8:16   1    15G  0 disk 
-  └─sdb1            8:17   1    15G  0 part /run/media/makoto/CentOS 7 x86_64 (USBメモリ)
+  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sr0                 11:0    1  1024M  0 rom  
+  sda                  8:0    0 465.8G  0 disk 
+  ├─sda1             8:1    0     1G  0 part /boot
+  └─sda2             8:2    0 464.8G  0 part 
+    ├─centos-root  253:0    0    50G  0 lvm  /
+    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
+    └─centos-home  253:2    0 411.1G  0 lvm  /home
+  sdb                  8:16   1    15G  0 disk 
+  └─sdb1             8:17   1    15G  0 part /run/media/makoto/CentOS 7 x86_64
+  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
+  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
   --------------------------------------------------
   
-  # cd $HOME
-  # umount /dev/sdb1 (USBメモリをアンマウント)
+  $ cd $HOME
+  $ sudo umount /dev/sdb1 (USBメモリをアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> アンマウントでシステム側からのアクセス排除
   --------------------------------------------------
   
-  # cd $HOME
-  # lsblk (USBメモリのシステム認識を確認)
+  $ cd $HOME
+  $ LANG=C sudo parted /dev/sdb -s print (パーティション情報)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME              MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sda                 8:0    0   477G  0 disk 
-  ├─sda1            8:1    0     1G  0 part /boot
-  └─sda2            8:2    0   476G  0 part 
-    ├─centos-root 253:0    0    50G  0 lvm  /
-    ├─centos-swap 253:1    0   3.8G  0 lvm  [SWAP]
-    └─centos-home 253:2    0 422.2G  0 lvm  /home
-  sdb                 8:16   1    15G  0 disk 
-  └─sdb1            8:17   1    15G  0 part (USBメモリはデバイスとしての認識のみでシステム側からアクセス不可)
+  Model: ELECOM MF-MSU2B (scsi)
+  Disk /dev/sdb: 16.0GB
+  Sector size (logical/physical): 512B/512B
+  Partition Table: msdos
+  Disk Flags: 
+  
+  Number  Start   End     Size    Type     File system  Flags
+  1       1049kB  16.0GB  16.0GB  primary               boot, lba
   --------------------------------------------------
   
-  # cd /usr/local/src
-  # dd if=CentOS-7-x86_64-Minimal-1810.iso of=/dev/sdb bs=512K && sync (インストールUSBの作成)
+  $ cd $HOME
+  $ LANG=C sudo parted /dev/sdb (日本語メッセージなし、対話モードでUSBメモリのパーティション修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  // コマンド最後の「sync」でディスクバッファとディスク本体の同期を取る
+  GNU Parted 3.1
+  Using /dev/sdb
+  Welcome to GNU Parted! Type 'help' to view a list of commands.
   
-  1836+0 レコード入力
-  1836+0 レコード出力
-  962592768 バイト (963 MB) コピーされました、 150.186 秒、 6.4 MB/秒
+  // パーティション1を削除
+  (parted) 
+  (parted) rm 1
+  
+  // パーティション管理方式をmsdos(MBR方式)に変更
+  (parted) 
+  (parted) mklabel msdos
+  
+  // 確認メッセージ
+  Warning: The existing disk label on /dev/sdb will be destroyed and all data on
+  this disk will be lost. Do you want to continue?
+  Yes/No? Yes (Yesを入力)
+  
+  // パーティション作成
+  (parted) 
+  (parted) mkpart
+  
+  // パーティションのパラメータ入力
+  Partition type?  primary/extended? primary
+  File system type?  [ext2]? fat32
+  Start? 0G
+  End? 100%
+  
+  // パーティションにフラグ設定
+  (parted) 
+  (parted) set 1 boot on
+  
+  // 対話モードを終了
+  (parted) 
+  (parted) quit
+
+  // ファイル(/etc/fstab)の更新は必要なし
+  Information: You may need to update /etc/fstab.
   --------------------------------------------------
   
-  # cd $HOME
-  # mount /dev/sdb /mnt (USBメモリを再マウント)
+  $ cd $HOME
+  $ sudo mkfs.vfat /dev/sdb1 (パーティションのフォーマット)
   
   コマンドの実行結果
   --------------------------------------------------
-  mount: /dev/sdb is write-protected, mounting read-only
+  mkfs.fat 3.0.20 (12 Jun 2013)
   --------------------------------------------------
   
-  # cd /mnt
-  # ls -lh (インストールUSBのファイル構成を確認)
+  $ cd $HOME
+  $ LANG=C sudo parted /dev/sdb -s print (パーティション情報)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 root root   14 11月 26  2018 CentOS_BuildTag
-  drwxr-xr-x. 3 root root 2.0K 11月 26  2018 EFI
-  -rw-rw-r--. 1 root root  227  8月 30  2017 EULA
-  -rw-rw-r--. 1 root root  18K 12月 10  2015 GPL
-  drwxr-xr-x. 2 root root 2.0K 11月 26  2018 LiveOS
-  drwxrwxr-x. 2 root root  70K 11月 26  2018 Packages
-  -rw-rw-r--. 1 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-7
-  -rw-rw-r--. 1 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-Testing-7
-  -r--r--r--. 1 root root 2.9K 11月 26  2018 TRANS.TBL
-  drwxr-xr-x. 3 root root 2.0K 11月 26  2018 images
-  drwxr-xr-x. 2 root root 2.0K 11月 26  2018 isolinux  // ブートローダー(SYSLINUX)のコンポーネントの一つ
-  drwxr-xr-x. 2 root root 4.0K 11月 26  2018 repodata
+  Model: ELECOM MF-MSU2B (scsi)
+  Disk /dev/sdb: 16.0GB
+  Sector size (logical/physical): 512B/512B
+  Partition Table: msdos
+  Disk Flags: 
+  
+  Number  Start   End     Size    Type     File system  Flags
+  1       1049kB  16.0GB  16.0GB  primary  fat32        boot, lba
   --------------------------------------------------
   
-  SYSLINUX
-  ==================================================
-  ・起動ディスクや起動USBメモリで使用されるブートローダー
-  ・ISOLINUXはISO9660ファイルシステム(CD-ROM等)からカーネル起動を行う
-  ==================================================
-  
-  # cd /mnt/isolinux
-  # ls -lh (ブートローダー内のファイル確認)
+  $ cd /usr/local/src
+  $ sudo dd if=CentOS-7-x86_64-Minimal-2009.iso of=/dev/sdb bs=512K && sync (インストールUSBの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  -r--r--r--. 1 root root 2.2K 11月 26  2018 TRANS.TBL     // 不明
-  -r--r--r--. 1 root root 2.0K 11月 26  2018 boot.cat      // 不明
-  -rw-r--r--. 1 root root   84 11月 26  2018 boot.msg      // 不明
-  -rw-r--r--. 1 root root  281 11月 26  2018 grub.conf     // 設定ファイル
-  -rw-r--r--. 1 root root  51M 11月 26  2018 initrd.img    // 初期RAMディスク
-  -rw-r--r--. 1 root root  24K 11月 26  2018 isolinux.bin  // 不明
-  -rw-r--r--. 1 root root 3.0K 11月 26  2018 isolinux.cfg  // 不明
-  -rw-r--r--. 1 root root 187K 11月  6  2016 memtest       // 不明
-  -rw-r--r--. 1 root root  186 10月  1  2015 splash.png    // 不明
-  -rw-r--r--. 1 root root 150K 10月 31  2018 vesamenu.c32  // 不明
-  -rwxr-xr-x. 1 root root 6.4M 11月  9  2018 vmlinuz       // カーネルイメージ
+  1946+0 レコード入力
+  1946+0 レコード出力
+  1020264448 バイト (1.0 GB) コピーされました、 158.773 秒、 6.4 MB/秒
   --------------------------------------------------
   
-  # cd /mnt/isolinux
-  # cat grub.conf (設定ファイルの確認)
+  $ cd $HOME
+  $ lsblk (USBメモリを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  #debug --graphics
-  default=1
-  splashimage=@SPLASHPATH@
-  timeout 60
-  hiddenmenu
-  title Install CentOS 7
-    findiso                                         // 不明
-    kernel @KERNELPATH@ @ROOT@ quiet                // カーネルイメージ
-    initrd @INITRDPATH@                             // 初期RAMディスク
-  title Test this media & install CentOS 7
-    findiso                                         // 不明
-    kernel @KERNELPATH@ @ROOT@ rd.live.check quiet  // カーネルイメージ
-    initrd @INITRDPATH@                             // 初期RAMディスク
+  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sr0                 11:0    1  1024M  0 rom  
+  sda                  8:0    0 465.8G  0 disk 
+  ├─sda1             8:1    0     1G  0 part /boot
+  └─sda2             8:2    0 464.8G  0 part 
+    ├─centos-root  253:0    0    50G  0 lvm  /
+    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
+    └─centos-home  253:2    0 411.1G  0 lvm  /home
+  sdb                  8:16   1    15G  0 disk 
+  ├─sdb1             8:17   1   973M  0 part 
+  └─sdb2             8:18   1   8.6M  0 part (パーティションが増えている？)
+  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
+  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
   --------------------------------------------------
   
-  # cd $HOME
-  # umount /mnt (USBメモリをアンマウント)
+  $ cd /mnt
+  $ sudo mkdir mp1 mp2 (マウントポイント作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo mount -o ro /dev/sdb1 /mnt/mp1 (マウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo mount -o ro /dev/sdb2 /mnt/mp2 (マウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ lsblk (USBメモリを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sr0                 11:0    1  1024M  0 rom  
+  sda                  8:0    0 465.8G  0 disk 
+  ├─sda1             8:1    0     1G  0 part /boot
+  └─sda2             8:2    0 464.8G  0 part 
+    ├─centos-root  253:0    0    50G  0 lvm  /
+    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
+    └─centos-home  253:2    0 411.1G  0 lvm  /home
+  sdb                  8:16   1    15G  0 disk 
+  ├─sdb1             8:17   1   973M  0 part /mnt/mp1
+  └─sdb2             8:18   1   8.6M  0 part /mnt/mp2
+  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
+  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
+  --------------------------------------------------
+
+  $ cd /mnt/mp1
+  $ ls -lh (ファイル構成を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--.  2 root root   14 10月 30  2020 CentOS_BuildTag
+  drwxr-xr-x.  3 root root 2.0K 10月 27  2020 EFI
+  -rw-rw-r--. 15 root root  227  8月 30  2017 EULA
+  -rw-rw-r--. 15 root root  18K 12月 10  2015 GPL
+  drwxr-xr-x.  2 root root 2.0K 10月 27  2020 LiveOS
+  drwxr-xr-x.  2 root root  72K 11月  3  2020 Packages
+  -rw-rw-r--. 15 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-7
+  -rw-rw-r--. 15 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-Testing-7
+  -r--r--r--.  1 root root 2.9K 11月  3  2020 TRANS.TBL
+  drwxr-xr-x.  3 root root 2.0K 10月 27  2020 images
+  drwxr-xr-x.  2 root root 2.0K 11月  3  2020 isolinux
+  drwxr-xr-x.  2 root root 4.0K 11月  3  2020 repodata
+  --------------------------------------------------
+  
+  $ cd /mnt/mp2
+  $ ls -lh (ファイル構成を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  drwxr-xr-x. 3 root root 2.0K 10月 27 2020 EFI -> 他パーティション管理に使用するシステムパーティション(EFI)が自動作成？
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo umount /mnt/mp1 /mnt/mp2 (USBメモリをアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
