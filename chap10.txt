@@ -121,47 +121,47 @@
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sha256sum -c apr-util-1.6.1.tar.gz.sha256 (チェックサム確認)
+  vm12$ cd /usr/local/src
+  vm12$ sudo sha256sum -c apr-util-1.6.1.tar.gz.sha256 (チェックサム確認)
   
   コマンドの実行結果
   --------------------------------------------------
   apr-util-1.6.1.tar.gz: 完了
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ tar -zxf apr-util-1.6.1.tar.gz (アーカイブ解凍と展開)
+  vm12$ cd /usr/local/src
+  vm12$ sudo tar -zxf apr-util-1.6.1.tar.gz (アーカイブ解凍と展開)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-util-1.6.1
-  vm12$ cat README (README確認)
+  vm12$ cd /usr/local/src/apr-util-1.6.1
+  vm12$ sudo cat README (README確認)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> インストール手順を確認、以降は手順に従い作業する
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-util-1.6.1
-  vm12$ ./configure --with-apr=/usr/local/apr --with-expat=builtin (Makefile生成)
+  vm12$ cd /usr/local/src/apr-util-1.6.1
+  vm12$ sudo ./configure --prefix=/usr/local/apr-util-1.6.1 --with-apr=/usr/local/apr-1.7.0 (Makefile生成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-util-1.6.1
-  vm12$ make (ビルド実行)
+  vm12$ cd /usr/local/src/apr-util-1.6.1
+  vm12$ sudo make (ビルド実行)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-util-1.6.1
+  vm12$ cd /usr/local/src/apr-util-1.6.1
   vm12$ sudo make install (インストール実行)
   
   コマンドの実行結果
@@ -186,70 +186,54 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ sudo yum -y install wget gcc expat-devel pcre pcre-devel (パッケージ追加)
+  vm12$ sudo yum -y install gcc-c++ (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ wget --no-check-certificate https://dlcdn.apache.org//apr/apr-1.7.0.tar.gz (ソース取得)
+  vm12$ cd /usr/local/src (ソース取得)
+  vm12$ sudo wget --no-check-certificate https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz.sha256 (チェックサム取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sha256sum -c apr-1.7.0.tar.gz.sha256 (チェックサム確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  apr-1.7.0.tar.gz: 完了
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ tar -zxf apr-1.7.0.tar.gz (アーカイブ解凍と展開)
+  vm12$ cd /usr/local/src
+  vm12$ sudo tar -zxf pcre-8.45.tar.gz (アーカイブ解凍と展開)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-1.7.0
-  vm12$ cat README (README確認)
+  vm12$ cd /usr/local/src/pcre-8.45
+  vm12$ sudo cat INSTALL (INSTALL確認)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> インストール手順を確認、以降は手順に従い作業する
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-1.7.0
-  vm12$ ./configure prefix=/usr/local/apr (Makefile生成)
+  vm12$ cd /usr/local/src/pcre-8.45
+  vm12$ sudo ./configure --prefix=/usr/local/pcre-8.45 (Makefile生成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-1.7.0
-  vm12$ make (ビルド実行)
+  vm12$ cd /usr/local/src/pcre-8.45
+  vm12$ sudo make (ビルド実行)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME/apr-1.7.0
+  vm12$ cd /usr/local/src/pcre-8.45
   vm12$ sudo make install (インストール実行)
   
   コマンドの実行結果
@@ -273,56 +257,59 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ wget --no-check-certificate https://dlcdn.apache.org//httpd/httpd-2.4.52.tar.gz (ソース取得)
+  vm12$ cd /usr/local/src
+  vm12$ sudo wget --no-check-certificate https://dlcdn.apache.org//httpd/httpd-2.4.52.tar.gz (ソース取得)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ wget https://downloads.apache.org/httpd/httpd-2.4.52.tar.gz.sha256 (チェックサム取得)
+  vm12$ cd /usr/local/src
+  vm12$ sudo wget --no-check-certificate https://downloads.apache.org/httpd/httpd-2.4.52.tar.gz.sha256 (チェックサム取得)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sha256sum -c httpd-2.4.52.tar.gz.sha256 (チェックサム確認)
+  vm12$ cd /usr/local/src
+  vm12$ sudo sha256sum -c httpd-2.4.52.tar.gz.sha256 (チェックサム確認)
   
   コマンドの実行結果
   --------------------------------------------------
   httpd-2.4.52.tar.gz: 完了
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ tar -zxf httpd-2.4.52.tar.gz (アーカイブ解凍と展開)
+  vm12$ cd /usr/local/src
+  vm12$ sudo tar -zxf httpd-2.4.52.tar.gz (アーカイブ解凍と展開)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/httpd-2.4.52
-  vm12$ cat README (README確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> インストールにはファイル(INSTALL)を参照する旨が記述
-  --------------------------------------------------
-  
-  vm12$ cd $HOME/httpd-2.4.52
-  vm12$ cat INSTALL (INSTALL確認)
+  vm12$ cd /usr/local/src/httpd-2.4.52
+  vm12$ sudo cat INSTALL (INSTALL確認)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> インストール概要を確認、以降は概要に従い作業する
   --------------------------------------------------
   
-  vm12$ cd $HOME/httpd-2.4.52
-  vm12$ ./configure --prefix=/usr/local/apache (Makefile生成)
+  vm12$ cd /usr/local/src/httpd-2.4.52
+  vm12$ (Makefile生成)
+    sudo ./configure
+    --prefix=/usr/local/apache2
+    --with-apr=/usr/local/apr-1.7.0            // APR
+    --with-apr-util=/usr/local/apr-util-1.6.1  // APR-Util
+    --with-pcre=/usr/local/pcre-8.45           // PCRE
+    --enable-http2
+    --enable-ssl
+    --with-ssl=/usr/local/openssl
+    --enable-so
+    --enable-mods-shared=all
+    --enable-mpms-shared=all
   
   コマンドの実行結果
   --------------------------------------------------
