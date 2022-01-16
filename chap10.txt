@@ -405,10 +405,10 @@
     --with-pcre=/usr/local/pcre-8.45           // PCRE
     --with-ssl=/usr/local/openssl-1.1.0        // OPENSSL
     --with-mpm=prefork                         // PHP(prefork)
-    --enable-http2                 // HTTP2
-    --enable-ssl                   // SSL
-    --enable-so                    // APXS
-    --enable-mods-shared=all       // Dynamic Modules
+    --enable-http2            // HTTP2
+    --enable-ssl              // SSL
+    --enable-so               // APXS
+    --enable-mods-shared=all  // Dynamic Modules
   
   コマンドの実行結果
   --------------------------------------------------
@@ -469,6 +469,86 @@
   
   vm12$ cd $HOME
   vm12$ source /etc/bashrc (シェルの設定ファイルを読み込み)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vi /usr/lib/systemd/system/httpd.service (自動起動のためサービスファイルを作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [Unit]
+  Description=Apache httpd daemon
+  
+  [Service]
+  Type=forking
+  ExecStart=/usr/local/apache2/bin/apachectl -k start
+  
+  [Install]
+  WantedBy=multi-user.target
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl daemon-reload (サービスファイルをシステムに通知)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl enable httpd (サービスの自動起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl start httpd (サービスの起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl status httpd (サービスの状態)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ● httpd.service - Apache httpd daemon
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+     Active: active (running) since 日 2022-01-16 19:00:28 JST; 45s ago
+    Process: 3384 ExecStart=/usr/local/apache2/bin/apachectl -k start (code=exited, status=0/SUCCESS)
+   Main PID: 3387 (httpd)
+     CGroup: /system.slice/httpd.service
+             ├─3387 /usr/local/apache2/bin/httpd -k start
+             ├─3388 /usr/local/apache2/bin/httpd -k start
+             ├─3389 /usr/local/apache2/bin/httpd -k start
+             ├─3390 /usr/local/apache2/bin/httpd -k start
+             ├─3391 /usr/local/apache2/bin/httpd -k start
+             └─3392 /usr/local/apache2/bin/httpd -k start
+  
+  1月 16 19:00:28 vm12 systemd[1]      : Starting Apache httpd daemon...
+  1月 16 19:00:28 vm12 apachectl[3384] : AH00558: httpd: Could not reliably d...e
+  1月 16 19:00:28 vm12 systemd[1]      : Started Apache httpd daemon.
+  Hint: Some lines were ellipsized, use -l to show in full.
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ curl localhost:80 (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>It works!</h1></body></html>
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl stop httpd (サービスの停止)
   
   コマンドの実行結果
   --------------------------------------------------
