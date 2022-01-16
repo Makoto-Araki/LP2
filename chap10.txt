@@ -317,7 +317,6 @@
   
   vm12$ cd /usr/local/src/nghttp2-1.31.0 (Makefile生成)
   vm12$ sudo env OPENSSL_CFLAGS="-I/usr/local/openssl/include" OPENSSL_LIBS="-L/usr/local/openssl/lib -lssl -lcrypto" ./configure
-  //vm12$ sudo ./configure --prefix=/usr/local/nghttp2-1.31.0 (Makefile生成)
   
   コマンドの実行結果
   --------------------------------------------------
