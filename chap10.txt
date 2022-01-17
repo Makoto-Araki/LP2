@@ -667,12 +667,12 @@
     MEMO : 仮想マシン
   
   ## ディレクトリ構成
-    /usr/local/apache2                 // ServerRoot
+    /usr/local/apache2         // ServerRoot
       | -- /conf
-              | -- httpd.conf          // メイン設定ファイル
-              | -- /extra              // 追加設定ファイル用
-              | -- /htdocs             // DocumentRoot
-                      | -- index.html  // HTML
+              | -- httpd.conf  // Main-Config
+              | -- /extra      // Extra-Config
+      | -- /htdocs             // DocumentRoot
+              | -- index.html  // HTML
   
 [確認]
   vm12$ cd $HOME
@@ -701,7 +701,7 @@
   
   ## リスニング対象のポート番号
   Listen 80
-
+  
   ## ロードするモジュール一覧
   LoadModule authn_file_module modules/mod_authn_file.so
   LoadModule authn_core_module modules/mod_authn_core.so
