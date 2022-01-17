@@ -691,8 +691,8 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
+  vm12# cd $HOME
+  vm12# sudo vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -727,17 +727,20 @@
   
   ## モジュール(unixd-module)のロード時のみ適用
   <IfModule unixd_module>
-    User daemon   # プロセス実行ユーザー
-    Group daemon  # プロセス実行グループ
+    User apache   // プロセス実行ユーザー
+    Group apache  // プロセス実行グループ
   </IfModule>
   
   ## サーバー管理者のメールアドレス
   ServerAdmin makoto@example.com
   
+  ## ホスト名
+  ServerName vm12.example.com
+  
   ## ディレクトリ(/)に適用
   <Directory />
-    AllowOverride none  # 外部設定ファイル(.ht*)の設定変更を無効
-    Require all denied  # 全ホストを拒否 -> モジュール(authz_host_module)が必要
+    AllowOverride none  // 外部設定ファイル(.ht*)の設定変更を無効
+    Require all denied  // 全ホストを拒否 -> モジュール(authz_host_module)が必要
   </Directory>
   
   ## ドキュメントルート
@@ -745,9 +748,9 @@
   
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks  # オプション機能 -> Indexes, FollowSymLinks
-    AllowOverride None              # 外部設定ファイル(.ht*)の設定変更を無効
-    Require all granted             # 全ホストを許可 -> モジュール(authz_host_module)が必要
+    Options Indexes FollowSymLinks  // オプション機能 -> Indexes, FollowSymLinks
+    AllowOverride None              // 外部設定ファイル(.ht*)の設定変更を無効
+    Require all granted             // 全ホストを許可 -> モジュール(authz_host_module)が必要
   </Directory>
   
   ## モジュール(dir-module)のロード時のみ適用
@@ -768,8 +771,8 @@
   
   ## モジュール(log_config_module)のロード時のみ適用
   <IfModule log_config_module>
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common
-    CustomLog "logs/access_log" common
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common  // ログフォーマット(common)を定義
+    CustomLog "logs/access_log" common            // ログ出力場所(ServerRoot + logs/access_log)
   </IfModule>
   
   ## モジュール(alias_module)のロード時のみ適用
@@ -808,28 +811,74 @@
   </IfModule>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /usr/local/apache2/htdocs/index.html
+  vm12# cd $HOME
+  vm12# apachectl configtest (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Syntax OK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/apache2/htdocs/index.html
   
   コマンドの実行結果
   --------------------------------------------------
   <html><body><h1>単独サイト</h1></body></html>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl restart httpd (サービスの停止)
+  vm12# cd $HOME
+  vm12# apachectl start (Apacheを起動する)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ curl localhost:80 (Webページ要求に対する応答)
+  vm12# cd $HOME
+  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
   
   コマンドの実行結果
   --------------------------------------------------
-  <html><body><h1>It works!</h1></body></html>
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  root      2497  0.0  0.1  70520  1984 ?        Ss   14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2498  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2499  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2500  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2501  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2502  0.0  0.2  70520  2228 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl localhost:80 (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl stop (Apacheを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
   --------------------------------------------------
   
   以下の確認に続く
