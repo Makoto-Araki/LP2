@@ -10,6 +10,7 @@
 [09] 設定ファイル(httpd.conf) - 02 (複数サイト)
 [10] 設定ファイル(httpd.conf) - 03 (ルート認証局)
 [11] 設定ファイル(httpd.conf) - 04 (中間認証局)
+[12] 設定ファイル(httpd.conf) - 05 (サイト署名スクリプト)
 ================================================================================
 [01]
   ソースから構築 - 01 (APR)
@@ -1522,6 +1523,262 @@
               | -- index.txt        // 中間認証局の管理データベース
               | -- InterCaReq.pem   // 中間認証局の証明書署名要求
               | -- InterCaCert.pem  // 中間認証局のデジタル証明書
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  --------------------------------------------------
+  
+  vm12# cd /opt
+  vm12# mkdir -p pki/InterCA (ディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# mkdir certs crl newcerts private (ディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/config
+  vm12# vi openssl-InterCA.cnf (設定ファイルの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ ca ]
+    default_ca = CA_default  # セクション「CA_default」を参照
+  
+  [ CA_default ]
+    dir = /opt/pki/InterCA
+    certs = $dir/certs
+    crl_dir = $dir/crl
+    database = $dir/index.txt
+    new_certs_dir = $dir/newcerts
+    serial = $dir/serial
+    crlnumber = $dir/crlnum
+    crl = $dir/crl.pem
+    RANDFILE = $dir/.rand
+    name_opt = CA_default
+    cert_opt = CA_default
+    default_days = 365
+    default_crl_days = 30
+    default_bits = 2048
+    default_md = sha256
+    preserve = no
+    policy = policy_match  # セクション「policy_match」を参照
+  
+  [ policy_match ]
+    countryName = match
+    stateOrProvinceName = match
+    organizationName = match
+    organizationalUnitName = optional
+    commonName = supplied
+    emailAddress = optional
+  
+  [ v3_ca ]
+    subjectKeyIdentifier = hash
+    authorityKeyIdentifier = keyid:always,issuer
+    basicConstraints = CA:true      # CAフラグ
+    keyUsage = cRLSign,keyCertSign  # 鍵用途(CRL署名、鍵署名)
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# echo "01" > serial (ファイル作成)
+  vm12# echo "00" > crlnum (ファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# touch index.txt (データベース作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# (中間認証局の秘密鍵を生成)
+    openssl genrsa                                // コマンド
+    -out /opt/pki/InterCA/private/InterCaKey.pem  // 秘密鍵ファイル
+    -aes256                                       // 暗号化アルゴリズム
+    -passout pass:ma0122ma                        // 秘密鍵のパスフレーズ
+    2048                                          // 鍵長
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Generating RSA private key, 2048 bit long modulus ...
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# (証明書署名要求(CSR)を作成)
+    openssl req                                   // コマンド
+    -new                                          // 証明書署名要求(CSR)生成
+    -key /opt/pki/InterCA/private/InterCaKey.pem  // 秘密鍵ファイル
+    -out /opt/pki/InterCA/InterCaReq.pem          // 証明書署名要求(CSR)
+    -passin pass:ma0122ma                         // 秘密鍵のパスフレーズ
+    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=$InterCA.example.com"  // 認証局の情報
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# (ルート認証局による署名・デジタル証明書を作成)
+    openssl ca                                      // コマンド
+    -config /opt/pki/config/openssl-InterCA.cnf     // 設定ファイル
+    -batch                                          // 対話形式は使用しない
+    -in /opt/pki/InterCA/InterCaReq.pem             // 証明書署名要求(CSR)
+    -out /opt/pki/InterCA/InterCaCert.pem           // デジタル証明書
+    -keyfile /opt/pki/RootCA/private/RootCaKey.pem  // ルート認証局の秘密鍵
+    -cert /opt/pki/RootCA/RootCaCert.pem            // ルート認証局のデジタル証明書
+    -passin pass:ma0122ma                           // ルート認証局の秘密鍵のパスフレーズ
+    -extensions v3_ca                               // 設定ファイルの拡張セクションもロード
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Using configuration from /opt/pki/config/openssl-InterCA.cnf
+  Can't open /opt/pki/InterCA/index.txt.attr for reading, No such file or directory
+  140349152565056:error:02001002:system library:fopen:No such file or directory:crypto/bio/bss_file.c:74:...
+  140349152565056:error:2006D080:BIO routines:BIO_new_file:no such file:crypto/bio/bss_file.c:81:
+  Check that the request matches the signature
+  Signature ok
+  Certificate Details:
+    Serial Number: 1 (0x1)
+    Validity
+      Not Before: Jan 17 12:19:01 2022 GMT
+      Not After : Jan 17 12:19:01 2023 GMT
+    Subject:
+      countryName         = JP
+      stateOrProvinceName = Saitama
+      organizationName    = example.com
+      commonName          = .example.com
+    X509v3 extensions:
+      X509v3 Subject Key Identifier: 
+        23:53:F0:B2:89:B8:CD:9B:48:1A:53:88:7A:96:2C:52:31:A4:9B:77
+      X509v3 Authority Key Identifier: 
+        keyid:99:54:4C:2C:33:A3:DA:58:54:64:9F:F7:3A:66:DB:48:28:81:E4:6E
+      X509v3 Basic Constraints: 
+        CA:TRUE
+      X509v3 Key Usage: 
+        Certificate Sign, CRL Sign
+  Certificate is to be certified until Jan 17 12:19:01 2023 GMT (365 days)
+  Write out database with 1 new entries
+  Data Base Updated
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# openssl x509 -in InterCaCert.pem -text -noout (デジタル証明書の内容確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Certificate:
+    Data:
+      Version: 3 (0x2)
+      Serial Number: 1 (0x1)
+    Signature Algorithm: sha256WithRSAEncryption
+      Issuer: C = JP, ST = Saitama, O = example.com, CN = .example.com
+      Validity
+        Not Before: Jan 17 12:19:01 2022 GMT
+        Not After : Jan 17 12:19:01 2023 GMT
+      Subject: C = JP, ST = Saitama, O = example.com, CN = .example.com
+      Subject Public Key Info:
+        Public Key Algorithm: rsaEncryption
+          Public-Key: (2048 bit)
+          Modulus:
+            00:bf:e4:01:b7:ca:b5:38:29:72:2d:05:97:57:ba:
+            cf:12:9c:75:83:86:5c:86:da:49:09:43:f2:57:ad:
+            19:84:63:3d:c7:df:1b:50:a0:33:d1:85:c0:4d:6d:
+            2e:ec:bd:31:e0:14:a6:51:f3:14:90:8d:8f:ea:57:
+            a7:13:21:3c:e5:84:ae:38:ce:65:dc:e6:17:69:2b:
+            95:64:9d:00:52:9c:0a:0e:cd:30:93:7f:91:40:34:
+            6e:e1:be:a3:c7:c2:c7:99:df:ea:46:a3:7f:00:eb:
+            3e:dd:a4:40:1d:05:1c:90:95:9b:21:99:79:79:fa:
+            19:e6:ba:59:49:d1:ba:1b:c3:59:e7:d9:13:a4:06:
+            ca:e4:e6:4b:0a:c5:c4:63:ba:84:48:dd:bd:0f:ec:
+            10:0d:c2:aa:97:6f:0a:a6:9b:d2:c7:f9:d0:1b:82:
+            dd:f8:16:f9:40:af:98:80:8a:96:70:6f:e9:6a:78:
+            63:91:f9:28:a8:85:0e:74:f0:32:04:7e:85:17:f0:
+            f0:06:9e:d5:0b:d8:de:66:b2:64:da:41:ea:e5:aa:
+            a6:39:01:80:35:ba:6c:e1:a5:1c:73:51:47:18:39:
+            e1:25:fb:b3:4c:40:b9:9f:89:35:0b:79:4e:e8:e9:
+            67:32:2e:b6:13:f4:0c:ca:40:e0:cb:b1:e9:72:6a:
+            c6:03
+          Exponent: 65537 (0x10001)
+        X509v3 extensions:
+          X509v3 Subject Key Identifier: 
+            23:53:F0:B2:89:B8:CD:9B:48:1A:53:88:7A:96:2C:52:31:A4:9B:77
+          X509v3 Authority Key Identifier: 
+            keyid:99:54:4C:2C:33:A3:DA:58:54:64:9F:F7:3A:66:DB:48:28:81:E4:6E
+          X509v3 Basic Constraints: 
+            CA:TRUE
+          X509v3 Key Usage: 
+            Certificate Sign, CRL Sign
+    Signature Algorithm: sha256WithRSAEncryption
+      31:41:1c:df:ca:ab:bd:f3:91:79:45:ff:43:14:89:27:76:99:
+      57:b3:14:d3:c7:f6:f0:41:5d:5f:80:00:88:52:db:fa:c7:5a:
+      9b:bd:80:a9:a9:20:2c:e3:01:ab:90:53:2d:17:51:62:f9:a1:
+      63:b3:47:d7:cd:46:21:a7:54:50:0c:d7:85:06:d7:4d:23:35:
+      5e:79:34:7e:cf:30:04:7f:7f:ab:e2:41:d1:65:fd:86:ab:75:
+      e9:51:61:fc:30:89:35:94:93:89:72:5c:25:02:e5:ae:eb:9f:
+      a3:db:23:7f:04:5d:ef:30:a0:b3:44:50:42:70:1a:c6:54:47:
+      c7:19:39:6a:23:ff:97:51:13:50:a7:a4:c0:e7:ab:86:cc:c6:
+      a4:9d:bc:4f:47:44:cb:29:59:48:90:1b:2e:73:d0:f3:45:1f:
+      10:7b:24:73:c1:2e:0e:6e:30:65:80:d9:68:06:07:8c:a7:8a:
+      8c:a3:30:fd:67:82:4b:26:da:34:1a:c1:6c:a1:0d:7a:32:ed:
+      72:dd:e6:0f:52:79:1f:4e:cf:af:eb:91:ee:83:e9:a2:4a:6a:
+      a5:5f:ec:71:f7:ba:16:fa:5a:82:4c:cf:eb:5e:9c:97:2a:fd:
+      3f:96:a5:fa:80:41:30:05:da:00:c4:57:18:9e:1d:6f:f4:b4:
+      f4:ec:e3:33
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[12]
+  設定ファイル(httpd.conf) - 05 (サイト署名スクリプト)
+  
+[内容]
+  ## 作業内容
+    中間認証局がサイト署名に使用するサイト署名スクリプトを作成する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## ディレクトリ構成
+    /opt/pki
+      | -- /config
+              | -- openssl-site.cnf  // 設定ファイル
+      | -- /InterCA
+              | -- /private          // 中間認証局の秘密鍵
+              | -- InterCaCert.pem   // 中間認証局のデジタル証明書
+      | -- /site
+              | -- AA.csr  // サイト(AA)の証明書発行要求(CSR)
+              | -- AA.crt  // サイト(AA)のデジタル証明書
+              | -- BB.csr  // サイト(BB)の証明書発行要求(CSR)
+              | -- BB.crt  // サイト(BB)のデジタル証明書
   
 [確認]
   vm12$ cd $HOME
