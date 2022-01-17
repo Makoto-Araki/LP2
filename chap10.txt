@@ -1,13 +1,15 @@
 ================================================================================
-[01] Apache - 01 (ソースから構築 - APR)
-[02] Apache - 02 (ソースから構築 - APR-Util)
-[03] Apache - 03 (ソースから構築 - PCRE)
-[04] Apache - 04 (ソースから構築 - OPENSSL)
-[05] Apache - 05 (ソースから構築 - NGHTTP2)
-[06] Apache - 06 (ソースから構築 - Apache)
+[01] ソースから構築 - 01 (APR)
+[02] ソースから構築 - 02 (APR-Util)
+[03] ソースから構築 - 03 (PCRE)
+[04] ソースから構築 - 04 (OPENSSL)
+[05] ソースから構築 - 05 (NGHTTP2)
+[06] ソースから構築 - 06 (Apache)
+[07] 制御コマンド
+[08] 設定ファイル(httpd.conf) - 01 (単独サイト)
 ================================================================================
 [01]
-  Apache - 01 (ソースから構築 - APR)
+  ソースから構築 - 01 (APR)
   
 [内容]
   ## 作業内容
@@ -87,7 +89,7 @@
   
 ================================================================================
 [02]
-  Apache - 02 (ソースから構築 - APR-Util)
+  ソースから構築 - 02 (APR-Util)
   
 [内容]
   ## 作業内容
@@ -159,7 +161,7 @@
   
 ================================================================================
 [03]
-  Apache - 03 (ソースから構築 - PCRE)
+  ソースから構築 - 03 (PCRE)
   
 [内容]
   ## 作業内容
@@ -223,7 +225,7 @@
   
 ================================================================================
 [04]
-  Apache - 04 (ソースから構築 - OPENSSL)
+  ソースから構築 - 04 (OPENSSL)
   
 [内容]
   ## 作業内容
@@ -287,7 +289,7 @@
   
 ================================================================================
 [05]
-  Apache - 05 (ソースから構築 - NGHTTP2)
+  ソースから構築 - 05 (NGHTTP2)
   
 [内容]
   ## 作業内容
@@ -343,7 +345,7 @@
   
 ================================================================================
 [06]
-  Apache - 06 (ソースから構築 - Apache)
+  ソースから構築 - 06 (Apache)
   
 [内容]
   ## 作業内容
@@ -475,69 +477,109 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo vi /usr/lib/systemd/system/httpd.service (自動起動のためサービスファイルを作成)
+  vm12$ which apachectl (コマンドのパス開通を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  [Unit]
-  Description=Apache httpd daemon
-  
-  [Service]
-  Type=forking
-  ExecStart=/usr/local/apache2/bin/apachectl -k start
-  
-  [Install]
-  WantedBy=multi-user.target
+  /usr/local/apache2/bin/apachectl
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl daemon-reload (サービスファイルをシステムに通知)
+  #vm12$ cd $HOME
+  #vm12$ sudo vi /usr/lib/systemd/system/httpd.service (自動起動のためサービスファイルを作成)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #[Unit]
+  #Description=Apache httpd daemon
+  #
+  #[Service]
+  #Type=forking
+  #ExecStart=/usr/local/apache2/bin/apachectl -k start
+  #
+  #[Install]
+  #WantedBy=multi-user.target
+  #--------------------------------------------------
   
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
+  #vm12$ cd $HOME
+  #vm12$ sudo systemctl daemon-reload (サービスファイルをシステムに通知)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #(省略) -> 出力なし
+  #--------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl enable httpd (サービスの自動起動)
+  #vm12$ cd $HOME
+  #vm12$ sudo systemctl enable httpd (サービスの自動起動)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
+  #--------------------------------------------------
   
-  コマンドの実行結果
-  --------------------------------------------------
-  Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
-  --------------------------------------------------
+  #vm12$ cd $HOME
+  #vm12$ sudo systemctl start httpd (サービスの起動)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #(省略) -> 出力なし
+  #--------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl start httpd (サービスの起動)
+  #vm12$ cd $HOME
+  #vm12$ sudo systemctl status httpd (サービスの状態)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #● httpd.service - Apache httpd daemon
+  #   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+  #   Active: active (running) since 日 2022-01-16 19:00:28 JST; 45s ago
+  #  Process: 3384 ExecStart=/usr/local/apache2/bin/apachectl -k start (code=exited, status=0/SUCCESS)
+  # Main PID: 3387 (httpd)
+  #   CGroup: /system.slice/httpd.service
+  #           ├─3387 /usr/local/apache2/bin/httpd -k start
+  #           ├─3388 /usr/local/apache2/bin/httpd -k start
+  #           ├─3389 /usr/local/apache2/bin/httpd -k start
+  #           ├─3390 /usr/local/apache2/bin/httpd -k start
+  #           ├─3391 /usr/local/apache2/bin/httpd -k start
+  #           └─3392 /usr/local/apache2/bin/httpd -k start
+  #
+  #1月 16 19:00:28 vm12 systemd[1]      : Starting Apache httpd daemon...
+  #1月 16 19:00:28 vm12 apachectl[3384] : AH00558: httpd: Could not reliably d...e
+  #1月 16 19:00:28 vm12 systemd[1]      : Started Apache httpd daemon.
+  #Hint: Some lines were ellipsized, use -l to show in full.
+  #--------------------------------------------------
   
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
+  #vm12$ cd $HOME
+  #vm12$ sudo systemctl stop httpd (サービスの停止)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #(省略) -> 出力なし
+  #--------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl status httpd (サービスの状態)
+  以下の確認に続く
   
-  コマンドの実行結果
-  --------------------------------------------------
-  ● httpd.service - Apache httpd daemon
-     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
-     Active: active (running) since 日 2022-01-16 19:00:28 JST; 45s ago
-    Process: 3384 ExecStart=/usr/local/apache2/bin/apachectl -k start (code=exited, status=0/SUCCESS)
-   Main PID: 3387 (httpd)
-     CGroup: /system.slice/httpd.service
-             ├─3387 /usr/local/apache2/bin/httpd -k start
-             ├─3388 /usr/local/apache2/bin/httpd -k start
-             ├─3389 /usr/local/apache2/bin/httpd -k start
-             ├─3390 /usr/local/apache2/bin/httpd -k start
-             ├─3391 /usr/local/apache2/bin/httpd -k start
-             └─3392 /usr/local/apache2/bin/httpd -k start
+================================================================================
+[07]
+  制御コマンド
   
-  1月 16 19:00:28 vm12 systemd[1]      : Starting Apache httpd daemon...
-  1月 16 19:00:28 vm12 apachectl[3384] : AH00558: httpd: Could not reliably d...e
-  1月 16 19:00:28 vm12 systemd[1]      : Started Apache httpd daemon.
-  Hint: Some lines were ellipsized, use -l to show in full.
-  --------------------------------------------------
+[内容]
+  ## 作業内容
+    制御コマンド(apachectl)で「Apache」の制御を行う
   
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## コマンド(apachectl)
+    apachectl start       // Apache を起動する
+    apachectl stop        // Apache を停止する
+    apachectl restart     // Apache を再起動する
+    apachectl graceful    // Apache を安全に再起動する
+    apachectl reload      // Apache の設定ファイルを再読込する
+    apachectl configtest  // Apache の設定ファイルの構文チェック
+  
+[確認]
   vm12$ cd $HOME
   vm12$ curl localhost:80 (Webページ要求に対する応答)
   
@@ -547,11 +589,240 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo systemctl stop httpd (サービスの停止)
+  vm12$ sudo yum -y install wget gcc expat-devel (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src
+  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz (ソース取得)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src
+  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz.sha256 (チェックサム取得)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src
+  vm12$ sudo sha256sum -c apr-1.7.0.tar.gz.sha256 (チェックサム確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  apr-1.7.0.tar.gz: 完了
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src
+  vm12$ sudo tar -zxf apr-1.7.0.tar.gz (アーカイブ解凍と展開)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src/apr-1.7.0
+  vm12$ sudo ./configure --prefix=/usr/local/apr-1.7.0 (Makefile生成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src/apr-1.7.0
+  vm12$ sudo make (ビルド実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/src/apr-1.7.0
+  vm12$ sudo make install (インストール実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[08]
+  設定ファイル(httpd.conf) - 01 (単独サイト)
+  
+[内容]
+  ## 作業内容
+    設定ファイル(httpd.conf)で様々なサイト構築パターンを試してみる
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## ディレクトリ構成
+    /usr/local/apache2                 // ServerRoot
+      | -- /conf
+              | -- httpd.conf          // メイン設定ファイル -> 以降の記録のベースとする
+              | -- /extra              // 追加設定ファイル用
+              | -- /htdocs             // DocumentRoot
+                      | -- index.html  // HTML
+  
+[確認]
+  vm12$ cd /usr/local/apache2/conf
+  vm12$ sudo cp -p httpd.conf httpd.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
+
+  ## ロードするモジュール一覧
+  LoadModule authn_file_module modules/mod_authn_file.so
+  LoadModule authn_core_module modules/mod_authn_core.so
+  LoadModule authz_host_module modules/mod_authz_host.so
+  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+  LoadModule authz_user_module modules/mod_authz_user.so
+  LoadModule authz_core_module modules/mod_authz_core.so
+  LoadModule access_compat_module modules/mod_access_compat.so
+  LoadModule auth_basic_module modules/mod_auth_basic.so
+  LoadModule reqtimeout_module modules/mod_reqtimeout.so
+  LoadModule filter_module modules/mod_filter.so
+  LoadModule mime_module modules/mod_mime.so
+  LoadModule log_config_module modules/mod_log_config.so
+  LoadModule env_module modules/mod_env.so
+  LoadModule headers_module modules/mod_headers.so
+  LoadModule setenvif_module modules/mod_setenvif.so
+  LoadModule version_module modules/mod_version.so
+  LoadModule unixd_module modules/mod_unixd.so
+  LoadModule status_module modules/mod_status.so
+  LoadModule autoindex_module modules/mod_autoindex.so
+  LoadModule dir_module modules/mod_dir.so
+  LoadModule alias_module modules/mod_alias.so
+  
+  ## モジュール(unixd-module)のロード時のみ適用
+  <IfModule unixd_module>
+    User daemon   # プロセス実行ユーザー
+    Group daemon  # プロセス実行グループ
+  </IfModule>
+  
+  ## サーバー管理者のメールアドレス
+  ServerAdmin makoto@example.com
+  
+  ## ディレクトリ(/)に適用
+  <Directory />
+    AllowOverride none  # 外部設定ファイル(.ht*)の設定変更を無効
+    Require all denied  # 全ホストを拒否 -> モジュール(authz_host_module)が必要
+  </Directory>
+  
+  ## ドキュメントルート
+  DocumentRoot "/usr/local/apache2/htdocs"
+  
+  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
+  <Directory "/usr/local/apache2/htdocs">
+    Options Indexes FollowSymLinks  # オプション機能 -> Indexes, FollowSymLinks
+    AllowOverride None              # 外部設定ファイル(.ht*)の設定変更を無効
+    Require all granted             # 全ホストを許可 -> モジュール(authz_host_module)が必要
+  </Directory>
+  
+  ## モジュール(dir-module)のロード時のみ適用
+  <IfModule dir_module>
+    DirectoryIndex index.html
+  </IfModule>
+
+  ## ファイル(.ht*)が存在する場合のみ適用
+  <Files ".ht*">
+    Require all denied
+  </Files>
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ErrorLog "logs/error_log"
+  
+  ## ログレベル
+  LogLevel warn
+  
+  ## モジュール(log_config_module)のロード時のみ適用
+  <IfModule log_config_module>
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common
+    CustomLog "logs/access_log" common
+  </IfModule>
+  
+  ## モジュール(alias_module)のロード時のみ適用
+  <IfModule alias_module>
+    ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
+  </IfModule>
+  
+  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
+  <Directory "/usr/local/apache2/cgi-bin">
+    AllowOverride None
+    Options None
+    Require all granted
+  </Directory>
+  
+  ## モジュール(headers_module)のロード時のみ適用
+  <IfModule headers_module>
+    RequestHeader unset Proxy early
+  </IfModule>
+  
+  ## モジュール(mime_module)のロード時のみ適用
+  <IfModule mime_module>
+    TypesConfig conf/mime.types
+    AddType application/x-compress .Z
+    AddType application/x-gzip .gz .tgz
+  </IfModule>
+  
+  ## モジュール(proxy_html_module)のロード時のみ適用
+  <IfModule proxy_html_module>
+    Include conf/extra/proxy-html.conf
+  </IfModule>
+
+  ## モジュール(ssl_module)のロード時のみ適用
+  <IfModule ssl_module>
+    SSLRandomSeed startup builtin
+    SSLRandomSeed connect builtin
+  </IfModule>
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo vi /usr/local/apache2/htdocs/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo systemctl restart httpd (サービスの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ curl localhost:80 (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>It works!</h1></body></html>
   --------------------------------------------------
   
   以下の確認に続く
