@@ -572,84 +572,83 @@
     MEMO : 仮想マシン
   
   ## コマンド(apachectl)
-    apachectl start       // Apache を起動する
-    apachectl stop        // Apache を停止する
-    apachectl restart     // Apache を再起動する
-    apachectl graceful    // Apache を安全に再起動する
-    apachectl reload      // Apache の設定ファイルを再読込する
-    apachectl configtest  // Apache の設定ファイルの構文チェック
+    apachectl start       // Apacheを起動する
+    apachectl stop        // Apacheを停止する
+    apachectl restart     // Apacheを再起動する
+    apachectl graceful    // Apacheを安全に再起動する
+    apachectl reload      // Apacheの設定ファイルを再読込する
+    apachectl configtest  // Apacheの設定ファイルの構文チェック
   
 [確認]
   vm12$ cd $HOME
-  vm12$ curl localhost:80 (Webページ要求に対する応答)
+  vm12$ su - root (rootユーザーに変更)
   
   コマンドの実行結果
   --------------------------------------------------
-  <html><body><h1>It works!</h1></body></html>
+  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install wget gcc expat-devel (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz (ソース取得)
+  vm12# cd $HOME
+  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  (修正前) #ServerName www.example.com:80 -> ServerNameが未設定の場合は制御コマンドが失敗するため修正
+  (修正後)  ServerName www.example.com:80
   --------------------------------------------------
   
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz.sha256 (チェックサム取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo sha256sum -c apr-1.7.0.tar.gz.sha256 (チェックサム確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  apr-1.7.0.tar.gz: 完了
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf apr-1.7.0.tar.gz (アーカイブ解凍と展開)
+  vm12# cd $HOME
+  vm12# apachectl start (Apacheを起動する)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo ./configure --prefix=/usr/local/apr-1.7.0 (Makefile生成)
+  vm12# cd $HOME
+  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  root      2399  0.0  0.1  70520  1988 ?        Ss   13:37   0:00 /usr/local/apache2/bin/httpd -k start
+  daemon    2400  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
+  daemon    2401  0.0  0.2  70520  2228 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
+  daemon    2402  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
+  daemon    2403  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
+  daemon    2404  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
   --------------------------------------------------
   
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make install (インストール実行)
+  vm12# cd $HOME
+  vm12# curl localhost:80 (Webページ要求に対する応答)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  <html><body><h1>It works!</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl stop (Apacheを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
   --------------------------------------------------
   
   以下の確認に続く
@@ -670,14 +669,22 @@
   ## ディレクトリ構成
     /usr/local/apache2                 // ServerRoot
       | -- /conf
-              | -- httpd.conf          // メイン設定ファイル -> 以降の記録のベースとする
+              | -- httpd.conf          // メイン設定ファイル
               | -- /extra              // 追加設定ファイル用
               | -- /htdocs             // DocumentRoot
                       | -- index.html  // HTML
   
 [確認]
-  vm12$ cd /usr/local/apache2/conf
-  vm12$ sudo cp -p httpd.conf httpd.conf.org (設定ファイルのバックアップ)
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/conf
+  vm12# cp -p httpd.conf httpd.conf.org (設定ファイルのバックアップ)
   
   コマンドの実行結果
   --------------------------------------------------
