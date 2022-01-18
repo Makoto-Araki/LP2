@@ -832,6 +832,19 @@
   --------------------------------------------------
   
   vm12# cd $HOME
+  vm12# vi /etc/hosts (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 vm12.example.com (修正)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd $HOME
   vm12# apachectl start (Apacheを起動する)
   
   コマンドの実行結果
@@ -854,7 +867,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# curl http://localhost:80 (Webページ要求に対する応答)
+  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1082,7 +1095,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
+  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
