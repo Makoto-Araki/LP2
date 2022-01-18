@@ -2002,7 +2002,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Generating RSA private key, 2048 bit long modulus ...
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2016,7 +2016,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /opt/pki/InterCA
@@ -2028,25 +2028,25 @@
   Check that the request matches the signature
   Signature ok
   Certificate Details:
-    Serial Number: 2 (0x2)
+    Serial Number: 3 (0x3)
     Validity
-      Not Before: Jan 17 23:47:50 2022 GMT
-      Not After : Jan 17 23:47:50 2023 GMT
+      Not Before: Jan 18 03:48:28 2022 GMT
+      Not After : Jan 18 03:48:28 2023 GMT
     Subject:
       countryName         = JP
       stateOrProvinceName = Saitama
       organizationName    = example.com
-      commonName          = AA.example.com
+      commonName          = vm12.example.com
     X509v3 extensions:
       X509v3 Subject Key Identifier: 
-        E3:8D:08:13:DA:16:33:56:5C:28:98:4C:67:A0:EC:CF:60:16:5F:71
+        E2:2F:4F:70:C9:9A:AF:75:6F:CF:BD:C5:67:A3:3E:AF:6B:7C:78:D9
       X509v3 Authority Key Identifier: 
         keyid:23:53:F0:B2:89:B8:CD:9B:48:1A:53:88:7A:96:2C:52:31:A4:9B:77
       X509v3 Basic Constraints: 
         CA:FALSE
       X509v3 Key Usage: 
         Digital Signature, Non Repudiation, Key Encipherment
-  Certificate is to be certified until Jan 17 23:47:50 2023 GMT (365 days)
+  Certificate is to be certified until Jan 18 03:48:28 2023 GMT (365 days)
   Write out database with 1 new entries
   Data Base Updated
   --------------------------------------------------
@@ -2056,7 +2056,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 4.3K  1月 18 12:48 vm12.crt  // デジタル証明書
+  -rw-r--r--. 1 root root 1001  1月 18 12:47 vm12.csr  // 証明書署名要求(CSR)
+  -rw-------. 1 root root 1.8K  1月 18 12:46 vm12.key  // 秘密鍵ファイル
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2092,7 +2094,7 @@
   LoadModule autoindex_module modules/mod_autoindex.so
   LoadModule dir_module modules/mod_dir.so
   LoadModule alias_module modules/mod_alias.so
-  LoadModule ssl_module modules/mod_ssl.so  # 追加
+  LoadModule ssl_module modules/mod_ssl.so
   
   ## モジュール(unixd-module)のロード時のみ適用
   <IfModule unixd_module>
@@ -2178,7 +2180,7 @@
     SSLRandomSeed startup builtin
     SSLRandomSeed connect builtin
   </IfModule>
-
+  
   ## 追加設定ファイル
   IncludeOptional conf/extra/httpd-ssl.conf
   --------------------------------------------------
@@ -2212,20 +2214,14 @@
 
   ## 秘密鍵パスフレーズ入力時の入力方式
   SSLPassPhraseDialog builtin
-
-  ## キャッシュ
-  SSLSessionCache "shmcb:/usr/local/apache2/logs/ssl_scache(512000)"
-
-  ## キャッシュのタイムアウト(秒)
-  SSLSessionCacheTimeout 300
   
   ## HTTPS接続時のデフォルト設定
   <VirtualHost _default_:443>
     
     ## 基本設定
     SSLEngine on
-    SSLCertificateFile "/opt/pki/vm12.crt"
-    SSLCertificateKeyFile "/opt/pki/vm12.key"
+    SSLCertificateFile "/opt/pki/site/vm12.crt"
+    SSLCertificateKeyFile "/opt/pki/site/vm12.key"
     
     ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
     <FilesMatch "\.(cgi|shtml|phtml|php)$">
@@ -2261,14 +2257,14 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
+  vm12# vi /etc/hosts (設定ファイルの確認)
   
   コマンドの実行結果
   --------------------------------------------------
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
+  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正なし)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
@@ -2278,7 +2274,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Apache/2.4.52 mod_ssl (Pass Phrase Dialog)
+  Some of your private key files are encrypted for security reasons.
+  In order to read them you have to provide the pass phrases.
+  
+  Private key vm12.example.com:443:0 (/opt/pki/site/vm12.key)
+  Enter pass phrase: (秘密鍵のパスフレーズを入力)
+  
+  // パスフレーズの認証が正常に行われた旨のメッセージ出力
+  OK: Pass Phrase Dialog successful.
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2287,16 +2291,24 @@
   コマンドの実行結果
   --------------------------------------------------
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  root      2497  0.0  0.1  70520  1984 ?        Ss   14:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    2498  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    2499  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    2500  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    2501  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    2502  0.0  0.2  70520  2228 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  root      1526  0.0  0.3  80068  3348 ?        Rs   13:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    1527  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    1528  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    1529  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    1530  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    1531  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
   --------------------------------------------------
   
   vm12# cd $HOME
   vm12# curl http://vm12.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl --cacert /opt/pki/InterCA/InterCaCert.pem https://vm12.example.com (Webページ要求に対する応答)
   
   コマンドの実行結果
   --------------------------------------------------
