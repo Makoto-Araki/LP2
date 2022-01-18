@@ -11,6 +11,7 @@
 [10] 設定ファイル(httpd.conf) - 03 (ルート認証局)
 [11] 設定ファイル(httpd.conf) - 04 (中間認証局)
 [12] 設定ファイル(httpd.conf) - 05 (サイト署名スクリプト)
+[13] //
 ================================================================================
 [01]
   ソースから構築 - 01 (APR)
@@ -1943,6 +1944,379 @@
   --------------------------------------------------
   -rw-r--r--. 1 root root 4.3K  1月 18 08:47 AA.crt  // デジタル証明書
   -rw-r--r--. 1 root root  997  1月 18 08:42 AA.csr  // 証明書署名要求(CSR)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[13]
+  設定ファイル(httpd.conf) - 06 (単独サイトのHTTPS化)
+  
+[内容]
+  ## 作業内容
+    設定ファイル(httpd.conf)で様々なサイト構築パターンを試してみる
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## ディレクトリ構成
+    /opt/pki
+      | -- /site
+              | -- vm12.key  // サイト(vm12)の秘密鍵
+              | -- vm12.csr  // サイト(vm12)の証明書署名要求(CSR)
+              | -- vm12.crt  // サイト(vm12)のデジタル証明書
+    /usr/local/apache2
+      | -- /conf
+              | -- httpd.conf              // Main-Config
+              | -- /extra                  // Extra-Config
+                      | -- httpd-ssl.conf  // SSL
+      | -- /htdocs                         // DocumentRoot
+              | -- index.html              // HTML
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (サイト(vm12)の秘密鍵を作成)
+    openssl genrsa               // コマンド
+    -out /opt/pki/site/vm12.key  // 秘密鍵ファイル
+    -aes256                      // 暗号化アルゴリズム
+    -passout pass:ma0122ma       // 秘密鍵のパスフレーズ
+    2048                         // 鍵長
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (サイト(vm12)の証明書署名要求(CSR)を作成)
+    openssl req                  // コマンド
+    -new                         // 新規作成
+    -key /opt/pki/site/vm12.key  // 秘密鍵ファイル
+    -out /opt/pki/site/vm12.csr  // 証明書署名要求(CSR)
+    -passin pass:ma0122ma        // 秘密鍵のパスフレーズ
+    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=vm12.example.com"  // サイト情報
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/InterCA
+  vm12# bash SignSite.sh vm12 (サイト署名スクリプトを実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Using configuration from /opt/pki/config/openssl-site.cnf
+  Check that the request matches the signature
+  Signature ok
+  Certificate Details:
+    Serial Number: 2 (0x2)
+    Validity
+      Not Before: Jan 17 23:47:50 2022 GMT
+      Not After : Jan 17 23:47:50 2023 GMT
+    Subject:
+      countryName         = JP
+      stateOrProvinceName = Saitama
+      organizationName    = example.com
+      commonName          = AA.example.com
+    X509v3 extensions:
+      X509v3 Subject Key Identifier: 
+        E3:8D:08:13:DA:16:33:56:5C:28:98:4C:67:A0:EC:CF:60:16:5F:71
+      X509v3 Authority Key Identifier: 
+        keyid:23:53:F0:B2:89:B8:CD:9B:48:1A:53:88:7A:96:2C:52:31:A4:9B:77
+      X509v3 Basic Constraints: 
+        CA:FALSE
+      X509v3 Key Usage: 
+        Digital Signature, Non Repudiation, Key Encipherment
+  Certificate is to be certified until Jan 17 23:47:50 2023 GMT (365 days)
+  Write out database with 1 new entries
+  Data Base Updated
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/site
+  vm12# ls -lh vm12* (デジタル証明書の確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
+  
+  ## ロードするモジュール一覧
+  LoadModule authn_file_module modules/mod_authn_file.so
+  LoadModule authn_core_module modules/mod_authn_core.so
+  LoadModule authz_host_module modules/mod_authz_host.so
+  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+  LoadModule authz_user_module modules/mod_authz_user.so
+  LoadModule authz_core_module modules/mod_authz_core.so
+  LoadModule access_compat_module modules/mod_access_compat.so
+  LoadModule auth_basic_module modules/mod_auth_basic.so
+  LoadModule reqtimeout_module modules/mod_reqtimeout.so
+  LoadModule filter_module modules/mod_filter.so
+  LoadModule mime_module modules/mod_mime.so
+  LoadModule log_config_module modules/mod_log_config.so
+  LoadModule env_module modules/mod_env.so
+  LoadModule headers_module modules/mod_headers.so
+  LoadModule setenvif_module modules/mod_setenvif.so
+  LoadModule version_module modules/mod_version.so
+  LoadModule unixd_module modules/mod_unixd.so
+  LoadModule status_module modules/mod_status.so
+  LoadModule autoindex_module modules/mod_autoindex.so
+  LoadModule dir_module modules/mod_dir.so
+  LoadModule alias_module modules/mod_alias.so
+  LoadModule ssl_module modules/mod_ssl.so  # 追加
+  
+  ## モジュール(unixd-module)のロード時のみ適用
+  <IfModule unixd_module>
+    User apache
+    Group apache
+  </IfModule>
+  
+  ## サーバー管理者のメールアドレス
+  ServerAdmin makoto@example.com
+  
+  ## ホスト名
+  ServerName vm12.example.com
+  
+  ## ディレクトリ(/)に適用
+  <Directory />
+    AllowOverride none
+    Require all denied
+  </Directory>
+  
+  ## ドキュメントルート
+  DocumentRoot "/usr/local/apache2/htdocs"
+  
+  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
+  <Directory "/usr/local/apache2/htdocs">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+  </Directory>
+  
+  ## モジュール(dir-module)のロード時のみ適用
+  <IfModule dir_module>
+    DirectoryIndex index.html
+  </IfModule>
+  
+  ## ファイル(.ht*)が存在する場合のみ適用
+  <Files ".ht*">
+    Require all denied
+  </Files>
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ErrorLog "logs/error_log"
+  
+  ## ログレベル
+  LogLevel warn
+  
+  ## モジュール(log_config_module)のロード時のみ適用
+  <IfModule log_config_module>
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common
+    CustomLog "logs/access_log" common
+  </IfModule>
+  
+  ## モジュール(alias_module)のロード時のみ適用
+  <IfModule alias_module>
+    ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
+  </IfModule>
+  
+  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
+  <Directory "/usr/local/apache2/cgi-bin">
+    AllowOverride None
+    Options None
+    Require all granted
+  </Directory>
+  
+  ## モジュール(headers_module)のロード時のみ適用
+  <IfModule headers_module>
+    RequestHeader unset Proxy early
+  </IfModule>
+  
+  ## モジュール(mime_module)のロード時のみ適用
+  <IfModule mime_module>
+    TypesConfig conf/mime.types
+    AddType application/x-compress .Z
+    AddType application/x-gzip .gz .tgz
+  </IfModule>
+  
+  ## モジュール(proxy_html_module)のロード時のみ適用
+  <IfModule proxy_html_module>
+    Include conf/extra/proxy-html.conf
+  </IfModule>
+  
+  ## モジュール(ssl_module)のロード時のみ適用
+  <IfModule ssl_module>
+    SSLRandomSeed startup builtin
+    SSLRandomSeed connect builtin
+  </IfModule>
+
+  ## 追加設定ファイル
+  IncludeOptional conf/extra/httpd-ssl.conf
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/conf/extra
+  vm12# cp -p httpd-ssl.conf httpd-ssl.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/conf/extra
+  vm12# vi httpd-ssl.conf (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## リスニング対象のポート番号
+  Listen 443
+
+  ## クライアント接続時に許可する暗号化ランク
+  SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
+  SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
+
+  ## 負荷の低い暗号化アルゴリズムを自動選択
+  SSLHonorCipherOrder on
+
+  ## サポートするプロトコル
+  SSLProtocol all -SSLv3
+  SSLProxyProtocol all -SSLv3
+
+  ## 秘密鍵パスフレーズ入力時の入力方式
+  SSLPassPhraseDialog builtin
+
+  ## キャッシュ
+  SSLSessionCache "shmcb:/usr/local/apache2/logs/ssl_scache(512000)"
+
+  ## キャッシュのタイムアウト(秒)
+  SSLSessionCacheTimeout 300
+  
+  ## HTTPS接続時のデフォルト設定
+  <VirtualHost _default_:443>
+    
+    ## 基本設定
+    SSLEngine on
+    SSLCertificateFile "/opt/pki/vm12.crt"
+    SSLCertificateKeyFile "/opt/pki/vm12.key"
+    
+    ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+      SSLOptions +StdEnvVars
+    </FilesMatch>
+    
+    ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
+    <Directory "/usr/local/apache2/cgi-bin">
+      SSLOptions +StdEnvVars
+    </Directory>
+    
+    ## MSIE関連の問題解決
+    BrowserMatch "MSIE [2-5]" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+    
+  ## 終了タグ
+  </VirtualHost>                                  
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl configtest (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Syntax OK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/apache2/htdocs/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/hosts (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 vm12.example.com (修正)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl start (Apacheを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  root      2497  0.0  0.1  70520  1984 ?        Ss   14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2498  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2499  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2500  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2501  0.0  0.1  70520  1484 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2502  0.0  0.2  70520  2228 ?        S    14:16   0:00 /usr/local/apache2/bin/httpd -k start
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl stop (Apacheを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd $HOME
