@@ -502,6 +502,7 @@
   #[Service]
   #Type=forking
   #ExecStart=/usr/local/apache2/bin/apachectl -k start
+  #ExecStop=/usr/local/apache2/bin/apachectl -k stop
   #
   #[Install]
   #WantedBy=multi-user.target
@@ -1673,15 +1674,6 @@
   Data Base Updated
   --------------------------------------------------
   
-  vm12# cd /opt/pki/site
-  vm12# ls -lh AA* (デジタル証明書の確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 4.3K  1月 18 08:47 AA.crt  // デジタル証明書
-  -rw-r--r--. 1 root root  997  1月 18 08:42 AA.csr  // 証明書署名要求(CSR)
-  --------------------------------------------------
-  
   vm12# cd $HOME
   vm12# exit (rootユーザーからログアウト)
   
@@ -2661,12 +2653,10 @@
     MEMO : 仮想マシン
   
   ## コマンド(nginx)
-    apachectl start       // Apacheを起動する
-    apachectl stop        // Apacheを停止する
-    apachectl restart     // Apacheを再起動する
-    apachectl graceful    // Apacheを安全に再起動する
-    apachectl reload      // Apacheの設定ファイルを再読込する
-    apachectl configtest  // Apacheの設定ファイルの構文チェック
+    nginx            // Nginxを起動する
+    nginx -s stop    // Nginxを停止する
+    nginx -s quit    // Nginxを安全に停止する
+    nginx -s reload  // Nginxの設定ファイルを読み込む
   
 [確認]
   vm12$ cd $HOME
@@ -2674,20 +2664,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略) -> 一般ユーザー(makoto)では制御コマンドが失敗するため
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (修正前) #ServerName www.example.com:80 -> ServerNameが未設定の場合は制御コマンドが失敗するため修正
-  (修正後)  ServerName www.example.com:80
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
+  vm12# nginx (Nginxを起動する)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2695,17 +2676,13 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
+  vm12# ps aux | grep nginx | grep -v grep (Nginxのプロセスを確認する)
   
   コマンドの実行結果
   --------------------------------------------------
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  root      2399  0.0  0.1  70520  1988 ?        Ss   13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2400  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2401  0.0  0.2  70520  2228 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2402  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2403  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2404  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
+  root      1364  0.0  0.0  20976   880 ?        Ss   10:45   0:00 nginx: master process nginx  // マスタープロセス
+  nobody    1365  0.0  0.1  21436  1572 ?        S    10:45   0:00 nginx: worker process        // ワーカープロセス
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2713,11 +2690,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  <html><body><h1>It works!</h1></body></html>
+  (省略) -> Nginxのデフォルトページ表示
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
+  vm12# nginx -s quit (Nginxを安全に停止する)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2725,7 +2702,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
+  vm12# ps aux | grep nginx | grep -v grep (Apacheのプロセスを確認する)
   
   コマンドの実行結果
   --------------------------------------------------
