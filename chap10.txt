@@ -3439,7 +3439,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
+  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -3447,7 +3448,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -3456,7 +3457,8 @@
   コマンドの実行結果
   --------------------------------------------------
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  //
+  root     24792  0.0  0.1  31972  1044 ?        Ss   18:58   0:00 nginx: master process nginx
+  nobody   24793  0.0  0.1  31972  1728 ?        S    18:58   0:00 nginx: worker process
   --------------------------------------------------
   
   vm12# cd $HOME
