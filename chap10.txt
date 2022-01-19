@@ -17,6 +17,7 @@
 [16] 設定ファイル(nginx.conf) - 01 (単独サイト)
 [17] 設定ファイル(nginx.conf) - 02 (複数サイト)
 [18] 設定ファイル(nginx.conf) - 03 (単独サイトのHTTPS化)
+[19] //
 ================================================================================
 [01]
   ソースから構築 - 01 (APR)
@@ -3105,6 +3106,288 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  ## ワーカープロセス数
+  worker_processes 1;
+  
+  ## events モジュール
+  events {
+    worker_connections 1024;
+  }
+  
+  ## Web サーバー
+  http {
+    include mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    
+    ## HTTP(80)
+    server {
+      listen 80;                     # Port 80
+      server_name vm12.example.com;  # FQDN
+      location / {                   # / = 'http://vm12.example.com/'
+        root html;                   # DocumentRoot
+        index index.html index.htm;  # DirectoryIndex
+      }
+      error_page 500 502 503 504 /50x.html;
+      location = /50x.html {
+        root html;
+      }
+    }
+    
+    ## HTTPS(443)
+    server {
+      listen 443 ssl;                # Port 443
+      server_name vm12.example.com;  # FQDN
+      ssl_certificate_key /opt/pki/site/vm12.key;   # 秘密鍵ファイル
+      ssl_certificate /opt/pki/site/vm12.crt;       # デジタル証明書
+      ssl_password_file /etc/nginx/conf/vm12-pass;  # 秘密鍵パスフレーズを記録したファイル
+      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;          # プロトコル
+      ssl_ciphers HIGH:!aNULL:!MD5;                 # 暗号化アルゴリズム
+      ssl_prefer_server_ciphers on;                 # 不明
+      ssl_session_cache shared:SSL:10m;             # 不明
+      ssl_session_timeout 10m;                      # 不明
+      location / {                   # / = 'https://vm12.example.com/'
+        root html;                   # DocumentRoot
+        index index.html index.htm;  # DirectoryIndex
+      }
+      error_page 500 502 503 504 /50x.html;
+      location = /50x.html {
+        root html;
+      }
+    }
+  }
+  --------------------------------------------------
+  
+  vm12# cd /etc/nginx/conf
+  vm12# echo (パスフレーズ) > vm12-pass (秘密鍵パスフレーズを記録したファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx -t (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
+  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/nginx/html/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/hosts (設定ファイルの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正なし)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx (Nginxを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ps aux | grep nginx | grep -v grep (Nginxのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+  root     19032  0.0  0.0  31352   976 ?        Ss   17:00   0:00 nginx: master process nginx
+  nobody   19033  0.0  0.1  31732  1668 ?        S    17:00   0:00 nginx: worker process
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://vm12.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx -s quit (Nginxを安全に停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ps aux | grep nginx | grep -v grep (Nginxのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[19]
+  設定ファイル(nginx.conf) - 04 (複数サイトのHTTPS化)
+  
+[内容]
+  ## 作業内容
+    設定ファイル(nginx.conf)で様々なサイト構築パターンを試してみる
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## ディレクトリ構成
+    /opt/pki
+      | -- /site
+              | -- site1.key  // サイト(site1)の秘密鍵
+              | -- site1.csr  // サイト(site1)の証明書署名要求(CSR)
+              | -- site1.crt  // サイト(site1)のデジタル証明書
+              | -- site2.key  // サイト(site2)の秘密鍵
+              | -- site2.csr  // サイト(site2)の証明書署名要求(CSR)
+              | -- site2.crt  // サイト(site2)のデジタル証明書
+    /usr/local/apache2
+      | -- /conf
+              | -- httpd.conf                 // Main-Config
+              | -- /extra                     // Extra-Config
+                      | -- httpd-vhosts.conf  // VirtualHost
+                      | -- httpd-ssl.conf     // SSL
+      | -- /htdocs
+              | -- site1               // DocumentRoot1
+                      | -- index.html  // HTML1
+              | -- site2               // DocumentRoot2
+                      | -- index.html  // HTML2
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (サイト(site1)の秘密鍵を作成)
+    openssl genrsa                // コマンド
+    -out /opt/pki/site/site1.key  // 秘密鍵ファイル
+    -aes256                       // 暗号化アルゴリズム
+    -passout pass:ma0122ma        // 秘密鍵のパスフレーズ
+    2048                          // 鍵長
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Generating RSA private key, 2048 bit long modulus ...
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (サイト(site1)の証明書署名要求(CSR)を作成)
+    openssl req                   // コマンド
+    -new                          // 新規作成
+    -key /opt/pki/site/site1.key  // 秘密鍵ファイル
+    -out /opt/pki/site/site1.csr  // 証明書署名要求(CSR)
+    -passin pass:ma0122ma         // 秘密鍵のパスフレーズ
+    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=site1.example.com"  // サイト情報
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/SiteCA
+  vm12# bash SignSite.sh site1 (サイト署名スクリプトを実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> デジタル証明書が出力
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (サイト(site2)の秘密鍵を作成)
+    openssl genrsa                // コマンド
+    -out /opt/pki/site/site2.key  // 秘密鍵ファイル
+    -aes256                       // 暗号化アルゴリズム
+    -passout pass:ma0122ma        // 秘密鍵のパスフレーズ
+    2048                          // 鍵長
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Generating RSA private key, 2048 bit long modulus ...
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (サイト(site2)の証明書署名要求(CSR)を作成)
+    openssl req                   // コマンド
+    -new                          // 新規作成
+    -key /opt/pki/site/site2.key  // 秘密鍵ファイル
+    -out /opt/pki/site/site2.csr  // 証明書署名要求(CSR)
+    -passin pass:ma0122ma         // 秘密鍵のパスフレーズ
+    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=site2.example.com"  // サイト情報
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/SiteCA
+  vm12# bash SignSite.sh site2 (サイト署名スクリプトを実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> デジタル証明書が出力
+  --------------------------------------------------
+  
+  vm12# cd /opt/pki/site
+  vm12# ls -lh | grep -E 'site1|site2' (デジタル証明書の確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root 4.3K  1月 18 20:11 site1.crt  // デジタル証明書
+  -rw-r--r--. 1 root root 1001  1月 18 20:10 site1.csr
+  -rw-------. 1 root root 1.8K  1月 18 20:06 site1.key
+  -rw-r--r--. 1 root root 4.3K  1月 18 20:15 site2.crt  // デジタル証明書
+  -rw-r--r--. 1 root root 1001  1月 18 20:15 site2.csr
+  -rw-------. 1 root root 1.8K  1月 18 20:13 site2.key
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/conf
+  vm12# vi httpd.conf (設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
   ## トップディレクトリ
   ServerRoot "/usr/local/apache2"
   
@@ -3144,7 +3427,7 @@
   </IfModule>
   
   ## サーバー管理者のメールアドレス
-  ServerAdmin makoto@example.com
+  ## ServerAdmin makoto@example.com -> httpd-vhosts.conf に移動
   
   ## ホスト名
   ServerName vm12.example.com
@@ -3156,7 +3439,7 @@
   </Directory>
   
   ## ドキュメントルート
-  DocumentRoot "/usr/local/apache2/htdocs"
+  ## DocumentRoot "/usr/local/apache2/htdocs" -> httpd-vhosts.conf に移動
   
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
@@ -3176,7 +3459,7 @@
   </Files>
   
   ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
+  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
   
   ## ログレベル
   LogLevel warn
@@ -3184,7 +3467,7 @@
   ## モジュール(log_config_module)のロード時のみ適用
   <IfModule log_config_module>
     LogFormat "%h %l %u %t \"%r\" %>s %b" common
-    CustomLog "logs/access_log" common
+    ## CustomLog "logs/access_log" common -> httpd-vhosts.conf に移動
   </IfModule>
   
   ## モジュール(alias_module)のロード時のみ適用
@@ -3223,15 +3506,30 @@
   </IfModule>
   
   ## 追加設定ファイル
+  IncludeOptional conf/extra/httpd-vhosts.conf
   IncludeOptional conf/extra/httpd-ssl.conf
   --------------------------------------------------
   
   vm12# cd /usr/local/apache2/conf/extra
-  vm12# cp -p httpd-ssl.conf httpd-ssl.conf.org (設定ファイルのバックアップ)
+  vm12# vi httpd-vhosts.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  <VirtualHost *:80>
+    ServerName site1.example.com
+    ServerAdmin site1@example.com
+    DocumentRoot "/usr/local/apache2/htdocs/site1"
+    CustomLog "logs/site1_access_log" common
+    ErrorLog "logs/site1_error_log"
+  </VirtualHost>
+  
+  <VirtualHost *:80>
+    ServerName site2.example.com
+    ServerAdmin site2@example.com
+    DocumentRoot "/usr/local/apache2/htdocs/site2"
+    CustomLog "logs/site2_access_log" common
+    ErrorLog "logs/site2_error_log"
+  </VirtualHost>
   --------------------------------------------------
   
   vm12# cd /usr/local/apache2/conf/extra
@@ -3256,13 +3554,43 @@
   ## 秘密鍵パスフレーズ入力時の入力方式
   SSLPassPhraseDialog builtin
   
-  ## HTTPS接続時のデフォルト設定
-  <VirtualHost _default_:443>
+  ## HTTPS接続時のデフォルト設定(site1)
+  <VirtualHost *:443>
     
     ## 基本設定
+    ServerName site1.example.com
+    ServerAdmin site1@example.com
+    DocumentRoot "/usr/local/apache2/htdocs/site1"
     SSLEngine on
-    SSLCertificateFile "/opt/pki/site/vm12.crt"
-    SSLCertificateKeyFile "/opt/pki/site/vm12.key"
+    SSLCertificateFile "/opt/pki/site/site1.crt"
+    SSLCertificateKeyFile "/opt/pki/site/site1.key"
+    
+    ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+      SSLOptions +StdEnvVars
+    </FilesMatch>
+    
+    ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
+    <Directory "/usr/local/apache2/cgi-bin">
+      SSLOptions +StdEnvVars
+    </Directory>
+    
+    ## MSIE関連の問題解決
+    BrowserMatch "MSIE [2-5]" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+    
+  ## 終了タグ
+  </VirtualHost>
+
+  ## HTTPS接続時のデフォルト設定(site2)
+  <VirtualHost *:443>
+    
+    ## 基本設定
+    ServerName site2.example.com
+    ServerAdmin site2@example.com
+    DocumentRoot "/usr/local/apache2/htdocs/site2"
+    SSLEngine on
+    SSLCertificateFile "/opt/pki/site/site2.crt"
+    SSLCertificateKeyFile "/opt/pki/site/site2.key"
     
     ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
     <FilesMatch "\.(cgi|shtml|phtml|php)$">
@@ -3282,32 +3610,41 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/htdocs/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの確認)
+  vm12# vi /etc/hosts (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正なし)
+  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/htdocs
+  vm12# mkdir site1 site2
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/htdocs
+  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
+  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl configtest (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Syntax OK
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -3319,7 +3656,7 @@
   Some of your private key files are encrypted for security reasons.
   In order to read them you have to provide the pass phrases.
   
-  Private key vm12.example.com:443:0 (/opt/pki/site/vm12.key)
+  Private key site2.example.com:443:0 (/opt/pki/site/site2.key)
   Enter pass phrase: (秘密鍵のパスフレーズを入力)
   
   // パスフレーズの認証が正常に行われた旨のメッセージ出力
@@ -3332,28 +3669,44 @@
   コマンドの実行結果
   --------------------------------------------------
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  root      1526  0.0  0.3  80068  3348 ?        Rs   13:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    1527  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    1528  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    1529  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    1530  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
-  apache    1531  0.0  0.1  80068  1968 ?        S    13:16   0:00 /usr/local/apache2/bin/httpd -k start
+  root      2669  0.0  0.2  70520  2072 ?        Ss   16:02   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2670  0.0  0.1  70520  1512 ?        S    16:02   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2671  0.0  0.1  70520  1512 ?        S    16:02   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2672  0.0  0.1  70520  1512 ?        S    16:02   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2673  0.0  0.1  70520  1512 ?        S    16:02   0:00 /usr/local/apache2/bin/httpd -k start
+  apache    2674  0.0  0.1  70520  1512 ?        S    16:02   0:00 /usr/local/apache2/bin/httpd -k start
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
+  vm12# curl http://site1.example.com (Webページ要求に対する応答)
   
   コマンドの実行結果
   --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
+  <html><body><h1>サイト1</h1></body></html>
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://vm12.example.com (Webページ要求に対する応答)
+  vm12# curl http://site2.example.com (Webページ要求に対する応答)
   
   コマンドの実行結果
   --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
+  <html><body><h1>サイト2</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site1.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>サイト1</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site2.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>サイト2</h1></body></html>
   --------------------------------------------------
   
   vm12# cd $HOME
