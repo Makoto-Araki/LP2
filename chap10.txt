@@ -3272,15 +3272,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## ワーカープロセス数
+  ## Worker Process Counts
   worker_processes 1;
   
-  ## events モジュール
+  ## Module Events
   events {
     worker_connections 1024;
   }
   
-  ## Web サーバー
+  ## Web Server
   http {
     include mime.types;
     default_type application/octet-stream;
