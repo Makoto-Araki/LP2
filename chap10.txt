@@ -3838,6 +3838,7 @@
   
   ## フィルタリング(URL)
   acl blacklist dstdomain "/usr/local/squid-5.3/etc/blacklist"
+  http_access deny blacklist
   
   ##
   ## 最小限のアクセス制御(推奨)
@@ -3845,7 +3846,6 @@
   
   ## 不安全ポート(上の定義)やフィルタリングのアクセス拒否
   http_access deny !Safe_ports
-  http_access deny blacklist
   
   ## SSLポート(上の定義)以外のアクセス拒否
   http_access deny CONNECT !SSL_ports
@@ -3854,84 +3854,26 @@
   http_access allow localhost manager
   http_access deny manager
   
-  # We strongly recommend the following be uncommented to protect innocent
-  # web applications running on the proxy server who think the only
-  # one who can access services on "localhost" is a local user
-  # http_access deny to_localhost
+  ##
+  ## 独自のアクセス制御を以下に記述
+  ##
   
-  #
-  # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-  #
-  
-  # Example rule allowing access from your local networks.
-  # Adapt localnet in the ACL section to list your (internal) IP networks
-  # from where browsing should be allowed
+  ## ローカルアクセス制御
   http_access allow localnet
   http_access allow localhost
-  
-  # And finally deny all other access to this proxy
   http_access deny all
   
-  # Squid normally listens to port 3128
+  ## 待受ポート番号
   http_port 3128
   
-  # Uncomment and adjust the following to add a disk cache directory.
-  # cache_dir ufs /usr/local/squid-5.3/var/cache/squid 100 16 256
-  
-  # Leave coredumps in the first cache dir
+  ## コアダンプ出力先
   coredump_dir /usr/local/squid-5.3/var/cache/squid
   
-  #
-  # Add any of your own refresh_pattern entries above these.
-  #
+  ## キャッシュ更新間隔
   refresh_pattern ^ftp: 1440 20% 10080
   refresh_pattern ^gopher: 1440 0% 1440
   refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
   refresh_pattern . 0 20% 4320
-  
-  
-
-
-  ## 接続クライアントの定義
-  acl localnet src 192.168.122.0/24
-  
-  ## 接続クライアントのアクセス制御
-  http_access allow localnet
-  http_access allow localhost
-  http_access deny all
-  
-  ## ポート番号の定義
-  acl Safe_ports port 80
-  
-  ## ポート番号のアクセス制御
-	http_access deny blacklist
-	http_access deny !Safe_ports
-  
-  ## フィルタリングファイル
-  acl blacklist dstdomain "/usr/local/squid-5.3/etc/blacklist"
-  
-  ## 待受ポート番号
-  http_port 0.0.0.0:3128
-  
-  ## キャッシュマネージャー
-  http_access allow localhost manager
-  http_access deny manager
-  
-  ## キャッシュメモリ
-  cache_mem 256 MB
-  cache_dir ufs /var/spool/squid 200 16 256
-  
-  ## コアダンプ出力先
-  coredump_dir /var/spool/squid
-  
-  ## 独自ログフォーマット定義
-  logformat squid %tl %>a %Ss/%03>Hs %<st %rm %ru %[un %Sh/%<a %mt
-  
-  ## キャッシュメモリ更新間隔
-  refresh_pattern . 0 20% 4320
-  
-  ## エラーページにバージョン非表示
-  httpd_suppress_version_string on
   --------------------------------------------------
   
   vm12# cd $HOME
