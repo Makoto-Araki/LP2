@@ -1085,7 +1085,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
+  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
@@ -1289,8 +1289,8 @@
   コマンドの実行結果
   --------------------------------------------------
   linux-vdso.so.1 =>  (0x00007ffe87bea000)
-  libssl.so.1.1 => not found     // 参照失敗
-  libcrypto.so.1.1 => not found  // 参照失敗
+  libssl.so.1.1 => not found     // ライブラリの参照失敗
+  libcrypto.so.1.1 => not found  // ライブラリの参照失敗
   libdl.so.2 => /lib64/libdl.so.2 (0x00007f55067e5000)
   libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f55065c9000)
   libc.so.6 => /lib64/libc.so.6 (0x00007f55061fb000)
@@ -1826,7 +1826,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正なし)
+  192.168.122.12 vm12 vm12.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
@@ -2241,7 +2241,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
+  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
@@ -2940,7 +2940,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正なし)
+  192.168.122.12 vm12 vm12.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
@@ -3159,7 +3159,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
+  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
@@ -3563,19 +3563,11 @@
   --------------------------------------------------
   
   vm12$ cd /usr/local/squid-5.3/libexec
-  vm12$ sudo chmod +x cache_swap.sh (シェルの設定ファイル編集)
+  vm12$ sudo chmod +x cache_swap.sh (権限付与)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo vi /usr/local/squid-5.3/etc/squid.conf (シェルの設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  http_port 3128 -> http_port 0.0.0.0:3128
   --------------------------------------------------
   
   以下の確認に続く
@@ -3749,7 +3741,7 @@
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
+  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
   192.168.122.13 vm13
   192.168.122.14 vm14
   --------------------------------------------------
