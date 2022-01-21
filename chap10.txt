@@ -19,7 +19,8 @@
 [18] 設定ファイル(nginx.conf) - 03 (単独サイトのHTTPS化)
 [19] 設定ファイル(nginx.conf) - 04 (複数サイトのHTTPS化)
 [20] 設定ファイル(nginx.conf) - 05 (リバースプロキシ)
-[21] //
+[21] ソースから構築(Squid)
+[22] //
 ================================================================================
 [01]
   ソースから構築 - 01 (APR)
@@ -599,7 +600,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -694,7 +695,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /usr/local/apache2/conf
@@ -919,7 +920,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1189,7 +1190,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /opt
@@ -1422,7 +1423,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /opt/pki
@@ -1571,7 +1572,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1919,7 +1920,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2450,7 +2451,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2531,7 +2532,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /etc/nginx/conf
@@ -2662,7 +2663,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /etc/nginx/conf
@@ -2834,7 +2835,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /opt/pki/site
@@ -3023,7 +3024,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)にsudo付与では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /opt/pki/site
@@ -3265,7 +3266,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 一般ユーザー(makoto)では制御コマンドが失敗するため
+  (省略)
   --------------------------------------------------
   
   vm12# cd /etc/nginx/conf
@@ -3348,7 +3349,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 一般ユーザー(makoto)では制御コマンドが失敗するため
+    (省略)
     --------------------------------------------------
     
     vm13# cd $HOME
@@ -3464,10 +3465,6 @@
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン
   
-  ## 前提条件
-    PCRE (Apacheでインストール済み)
-    OPENSSL (Apacheでインストール済み)
-  
 [確認]
   vm12$ cd /usr/local/src
   vm12$ sudo wget --no-check-certificate http://www.squid-cache.org/Versions/v5/squid-5.3.tar.gz (ソース取得)
@@ -3510,15 +3507,62 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo vi /etc/bashrc (シェルの設定ファイル編集)
+  vm12$ sudo chown -R nobody:nobody /usr/local/squid-5.3 (権限変更)
   
   コマンドの実行結果
   --------------------------------------------------
-  (末尾に追加) -> PATH=$PATH:/usr/local/squid-5.3/sbin
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ source /etc/bashrc (シェルの設定ファイルを読み込み)
+  vm12$ cd /usr/lib/systemd/system
+  vm12$ sudo vi squid.service (権限変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [Unit]
+  Description=Squid caching proxy
+  After=syslog.target network.target nss-lookup.target
+  
+  [Service]
+  Type=forking
+  LimitNOFILE=16384
+  # EnvironmentFile=/etc/sysconfig/squid
+  # EnvironmentFile=/usr/local/squid-5.3/etc/squid.conf
+  Environment="SQUID_CONF=/usr/local/squid-5.3/etc/squid.conf"
+  ExecStartPre=/usr/local/squid-5.3/libexec/cache_swap.sh
+  ExecStart=/usr/local/squid-5.3/sbin/squid $SQUID_OPTS -f $SQUID_CONF
+  ExecReload=/usr/local/squid-5.3/sbin/squid $SQUID_OPTS -k reconfigure -f $SQUID_CONF
+  ExecStop=/usr/local/squid-5.3/sbin/squid -k shutdown -f $SQUID_CONF
+  TimeoutSec=0
+  
+  [Install]
+  WantedBy=multi-user.target
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/squid-5.3/libexec
+  vm12$ sudo vi cache_swap.sh (シェルの設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+
+  if [ -f /etc/sysconfig/squid ]; then
+    . /etc/sysconfig/squid
+  fi
+  
+  SQUID_CONF=${SQUID_CONF:-"/usr/local/squid-5.3/etc/squid.conf"}
+  CACHE_SWAP=`sed -e 's/#.*//g' $SQUID_CONF | grep cache_dir | awk '{ print $3 }'`
+  
+  for adir in $CACHE_SWAP; do
+    if [ ! -d $adir/00 ]; then
+      echo -n "init_cache_dir $adir... "
+      squid -N -z -F -f $SQUID_CONF >> /usr/local/squid-5.3/var/logs/squid.out 2>&1
+    fi
+  done
+  --------------------------------------------------
+  
+  vm12$ cd /usr/local/squid-5.3/libexec
+  vm12$ sudo chmod +x cache_swap.sh (シェルの設定ファイル編集)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3526,11 +3570,88 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ which squid (コマンドのパス開通を確認)
+  vm12$ sudo vi /usr/local/squid-5.3/etc/squid.conf (シェルの設定ファイル編集)
   
   コマンドの実行結果
   --------------------------------------------------
-  /usr/local/squid-5.3/sbin/squid
+  http_port 3128 -> http_port 0.0.0.0:3128
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[22]
+  制御コマンド(Squid)
+  
+[内容]
+  ## 作業内容
+    制御コマンド(systemctl)で「Squid」の制御を行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## コマンド(squid)
+    systemctl start  squid  // Squidを起動する
+    systemctl stop   squid  // Squidを停止する
+    systemctl status squid  // Squidを確認する
+    systemctl reload squid  // Squidの設定を再読込
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl start squid (Squidを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl status squid (Squidのプロセスを確認する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ● squid.service - Squid caching proxy
+     Loaded: loaded (/usr/lib/systemd/system/squid.service; disabled; vendor preset: disabled)
+     Active: active (running) since 金 2022-01-21 08:57:02 JST; 8s ago
+    Process: 1236 ExecStart=/usr/local/squid-5.3/sbin/squid $SQUID_OPTS -f $SQUID_CONF (code=exited, status=0/SUCCESS)
+    Process: 1231 ExecStartPre=/usr/local/squid-5.3/libexec/cache_swap.sh (code=exited, status=0/SUCCESS)
+   Main PID: 1238 (squid)
+     CGroup: /system.slice/squid.service
+             ├─1238 /usr/local/squid-5.3/sbin/squid -f /usr/local/squid-5.3/etc...
+             ├─1240 (squid-1) --kid squid-1 -f /usr/local/squid-5.3/etc/squid.c...
+             └─1241 (logfile-daemon) /usr/local/squid-5.3/var/logs/access.log
+  
+  1月 21 08:57:01 vm12 systemd[1]: Starting Squid caching proxy...
+  1月 21 08:57:02 vm12 systemd[1]: Started Squid caching proxy.
+  1月 21 08:57:02 vm12 squid[1238]: Squid Parent: will start 1 kids
+  1月 21 08:57:02 vm12 squid[1238]: Squid Parent: (squid-1) process 1240 started
+  Hint: Some lines were ellipsized, use -l to show in full.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl stop squid (Squidを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
   --------------------------------------------------
   
   以下の確認に続く
