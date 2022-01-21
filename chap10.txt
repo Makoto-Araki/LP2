@@ -20,7 +20,8 @@
 [19] 設定ファイル(nginx.conf) - 04 (複数サイトのHTTPS化)
 [20] 設定ファイル(nginx.conf) - 05 (リバースプロキシ)
 [21] ソースから構築(Squid)
-[22] //
+[22] 制御コマンド(Squid)
+[23] 設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
 ================================================================================
 [01]
   ソースから構築 - 01 (APR)
@@ -3640,6 +3641,373 @@
   
   vm12# cd $HOME
   vm12# systemctl stop squid (Squidを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[23]
+  設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
+  
+[内容]
+  ## 作業内容
+    設定ファイル(squid.conf)でサイトのフィルタリングを試してみる
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## ディレクトリ構成
+    /usr/local/squid-5.3
+      | -- /etc
+              | -- squid.conf  // Main-Config
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd /etc/nginx/conf
+  vm12# vi nginx.conf (設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## ワーカープロセス数
+  worker_processes 1;
+  
+  ## events モジュール
+  events {
+    worker_connections 1024;
+  }
+  
+  ## Web サーバー
+  http {
+    include mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    include vhost.conf;  # 追加設定ファイル
+  }
+  --------------------------------------------------
+  
+  vm12# cd /etc/nginx/conf
+  vm12# vi vhost.conf (設定ファイルの作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## site1
+  server {
+    listen 80;                      # Port 80
+    server_name site1.example.com;  # FQDN
+    location / {                    # / = 'http://site1.example.com/'
+      root /etc/nginx/html/site1;   # DocumentRoot
+      index index.html index.htm;   # DirectoryIndex
+    }
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+      root html;
+    }
+  }
+
+  ## site2
+  server {
+    listen 80;                      # Port 80
+    server_name site2.example.com;  # FQDN
+    location / {                    # / = 'http://site2.example.com/'
+      root /etc/nginx/html/site2;   # DocumentRoot
+      index index.html index.htm;   # DirectoryIndex
+    }
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+      root html;
+    }
+  }
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/hosts (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd /etc/nginx/html
+  vm12# mkdir site1 site2
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/nginx/html
+  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
+  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx -t (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
+  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --add-service={http,https} --permanent
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx (Nginxを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/squid-5.3/etc/squid.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ##
+  ## 最小限の設定(推奨)
+  ##
+  
+  ## アクセス可能なネットワーク
+  # acl localnet src 0.0.0.1-0.255.255.255  # RFC 1122 "this" network (LAN)
+  # acl localnet src 10.0.0.0/8             # RFC 1918 local private network (LAN)
+  # acl localnet src 100.64.0.0/10          # RFC 6598 shared address space (CGN)
+  # acl localnet src 169.254.0.0/16         # RFC 3927 link-local (directly plugged) machines
+  # acl localnet src 172.16.0.0/12          # RFC 1918 local private network (LAN)
+  acl localnet src 192.168.122.0/24         # RFC 1918 local private network (LAN)
+  # acl localnet src fc00::/7               # RFC 4193 local private network range
+  # acl localnet src fe80::/10              # RFC 4291 link-local (directly plugged) machines
+  
+  ## ポート番号の定義
+  acl SSL_ports  port 443         # ssl/tls
+  acl Safe_ports port 80          # http
+  acl Safe_ports port 21          # ftp
+  acl Safe_ports port 443         # https
+  acl Safe_ports port 70          # gopher
+  acl Safe_ports port 210         # wais
+  acl Safe_ports port 1025-65535  # unregistered ports
+  acl Safe_ports port 280         # http-mgmt
+  acl Safe_ports port 488         # gss-http
+  acl Safe_ports port 591         # filemaker
+  acl Safe_ports port 777         # multiling http
+  
+  ## フィルタリング(URL)
+  acl blacklist dstdomain "/usr/local/squid-5.3/etc/blacklist"
+  
+  ##
+  ## 最小限のアクセス制御(推奨)
+  ##
+  
+  ## 不安全ポート(上の定義)やフィルタリングのアクセス拒否
+  http_access deny !Safe_ports
+  http_access deny blacklist
+  
+  ## SSLポート(上の定義)以外のアクセス拒否
+  http_access deny CONNECT !SSL_ports
+  
+  ## キャッシュマネージャーへのアクセス制御
+  http_access allow localhost manager
+  http_access deny manager
+  
+  # We strongly recommend the following be uncommented to protect innocent
+  # web applications running on the proxy server who think the only
+  # one who can access services on "localhost" is a local user
+  # http_access deny to_localhost
+  
+  #
+  # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+  #
+  
+  # Example rule allowing access from your local networks.
+  # Adapt localnet in the ACL section to list your (internal) IP networks
+  # from where browsing should be allowed
+  http_access allow localnet
+  http_access allow localhost
+  
+  # And finally deny all other access to this proxy
+  http_access deny all
+  
+  # Squid normally listens to port 3128
+  http_port 3128
+  
+  # Uncomment and adjust the following to add a disk cache directory.
+  # cache_dir ufs /usr/local/squid-5.3/var/cache/squid 100 16 256
+  
+  # Leave coredumps in the first cache dir
+  coredump_dir /usr/local/squid-5.3/var/cache/squid
+  
+  #
+  # Add any of your own refresh_pattern entries above these.
+  #
+  refresh_pattern ^ftp: 1440 20% 10080
+  refresh_pattern ^gopher: 1440 0% 1440
+  refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
+  refresh_pattern . 0 20% 4320
+  
+  
+
+
+  ## 接続クライアントの定義
+  acl localnet src 192.168.122.0/24
+  
+  ## 接続クライアントのアクセス制御
+  http_access allow localnet
+  http_access allow localhost
+  http_access deny all
+  
+  ## ポート番号の定義
+  acl Safe_ports port 80
+  
+  ## ポート番号のアクセス制御
+	http_access deny blacklist
+	http_access deny !Safe_ports
+  
+  ## フィルタリングファイル
+  acl blacklist dstdomain "/usr/local/squid-5.3/etc/blacklist"
+  
+  ## 待受ポート番号
+  http_port 0.0.0.0:3128
+  
+  ## キャッシュマネージャー
+  http_access allow localhost manager
+  http_access deny manager
+  
+  ## キャッシュメモリ
+  cache_mem 256 MB
+  cache_dir ufs /var/spool/squid 200 16 256
+  
+  ## コアダンプ出力先
+  coredump_dir /var/spool/squid
+  
+  ## 独自ログフォーマット定義
+  logformat squid %tl %>a %Ss/%03>Hs %<st %rm %ru %[un %Sh/%<a %mt
+  
+  ## キャッシュメモリ更新間隔
+  refresh_pattern . 0 20% 4320
+  
+  ## エラーページにバージョン非表示
+  httpd_suppress_version_string on
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/squid-5.3/etc/blacklist
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  site2.example.com
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --add-service=squid --permanent
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl start squid (Squidを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl http://site1.example.com (サーバーに直接に問い合わせる)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>サイト1</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl http://site2.example.com (サーバーに直接に問い合わせる)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>サイト2</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl --proxy http://localhost:3128 http://site1.example.com (プロキシ経由で問い合わせる)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>サイト1</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl --proxy http://localhost:3128 http://site2.example.com (プロキシ経由で問い合わせる)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> The following error was encountered while trying to retrieve the URL: http://site2.example.com/
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl stop squid (Squidを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx -s quit (Nginxを安全に停止する)
   
   コマンドの実行結果
   --------------------------------------------------
