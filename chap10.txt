@@ -828,8 +828,8 @@
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
-    AllowOverride None
     Options None
+    AllowOverride None
     Require all granted
   </Directory>
   
@@ -1076,8 +1076,8 @@
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
-    AllowOverride None
     Options None
+    AllowOverride None
     Require all granted
   </Directory>
   
@@ -1807,8 +1807,8 @@
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
-    AllowOverride None
     Options None
+    AllowOverride None
     Require all granted
   </Directory>
   
@@ -2224,8 +2224,8 @@
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
-    AllowOverride None
     Options None
+    AllowOverride None
     Require all granted
   </Directory>
   
