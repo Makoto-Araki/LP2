@@ -686,7 +686,6 @@
     /usr/local/apache2         // ServerRoot
       | -- /conf
               | -- httpd.conf  // Main-Config
-              | -- /extra      // Extra-Config
       | -- /htdocs             // DocumentRoot
               | -- index.html  // HTML
   
@@ -755,6 +754,33 @@
   
   ## ホスト名
   ServerName vm12.example.com
+  
+  ## 起動する子プロセス数
+  StartServers 1
+  
+  ## 待機する子プロセス最小数
+  MinSpareServers 1
+  
+  ## 待機する子プロセス最大数
+  MaxSpareServers 5
+  
+  ## 生成される子プロセス数の上限
+  ServerLimit 5
+  
+  ## 最大同時接続数
+  MaxRequestWorkers 100
+  
+  ## 接続タイムアウト(秒)
+  Timeout 10
+
+  ## キープアライブ
+  KeepAlive on
+
+  ## キープアライブ上限リクエスト数
+  MaxKeepAliveRequests 100
+  
+  ## キープアライブタイムアウト(秒)
+  KeepAliveTimeout 10
   
   ## ディレクトリ(/)に適用
   <Directory />
@@ -975,6 +1001,33 @@
   
   ## ホスト名
   ServerName vm12.example.com
+  
+  ## 起動する子プロセス数
+  StartServers 1
+  
+  ## 待機する子プロセス最小数
+  MinSpareServers 1
+  
+  ## 待機する子プロセス最大数
+  MaxSpareServers 5
+  
+  ## 生成される子プロセス数の上限
+  ServerLimit 5
+  
+  ## 最大同時接続数
+  MaxRequestWorkers 100
+  
+  ## 接続タイムアウト(秒)
+  Timeout 10
+
+  ## キープアライブ
+  KeepAlive on
+
+  ## キープアライブ上限リクエスト数
+  MaxKeepAliveRequests 100
+  
+  ## キープアライブタイムアウト(秒)
+  KeepAliveTimeout 10
   
   ## ディレクトリ(/)に適用
   <Directory />
@@ -1679,6 +1732,33 @@
   ## ホスト名
   ServerName vm12.example.com
   
+  ## 起動する子プロセス数
+  StartServers 1
+  
+  ## 待機する子プロセス最小数
+  MinSpareServers 1
+  
+  ## 待機する子プロセス最大数
+  MaxSpareServers 5
+  
+  ## 生成される子プロセス数の上限
+  ServerLimit 5
+  
+  ## 最大同時接続数
+  MaxRequestWorkers 100
+  
+  ## 接続タイムアウト(秒)
+  Timeout 10
+
+  ## キープアライブ
+  KeepAlive on
+
+  ## キープアライブ上限リクエスト数
+  MaxKeepAliveRequests 100
+  
+  ## キープアライブタイムアウト(秒)
+  KeepAliveTimeout 10
+  
   ## ディレクトリ(/)に適用
   <Directory />
     AllowOverride none
@@ -2067,6 +2147,33 @@
   
   ## ホスト名
   ServerName vm12.example.com
+  
+  ## 起動する子プロセス数
+  StartServers 1
+  
+  ## 待機する子プロセス最小数
+  MinSpareServers 1
+  
+  ## 待機する子プロセス最大数
+  MaxSpareServers 5
+  
+  ## 生成される子プロセス数の上限
+  ServerLimit 5
+  
+  ## 最大同時接続数
+  MaxRequestWorkers 100
+  
+  ## 接続タイムアウト(秒)
+  Timeout 10
+
+  ## キープアライブ
+  KeepAlive on
+
+  ## キープアライブ上限リクエスト数
+  MaxKeepAliveRequests 100
+  
+  ## キープアライブタイムアウト(秒)
+  KeepAliveTimeout 10
   
   ## ディレクトリ(/)に適用
   <Directory />
