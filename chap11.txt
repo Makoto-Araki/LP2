@@ -6,88 +6,148 @@
   
 [内容]
   ## 作業内容
-    ホストをWindows用ファイルサーバーに構築する
+    Windowsユーザーにホームディレクトリを提供する
   
   ## 使用マシン
-    HOST : localhost        # ホスト名を「FS01」に変更して識別する
-    IPV4 : 192.168.1.3
-    MEMO : ホスト(CentOS7)  # Windows用ファイルサーバーに構築する
-    USER : 追加なし         # OSユーザーではなくSambaユーザー登録が必要
+    HOST : localhost               # ホスト名を「FS01」に変更して識別する
+    IPV4 : 192.168.1.3             # DHCP
+    MEMO : ホスト(CentOS7)         # Windows用ファイルサーバーに構築する
+    USER : kate, mike, john        # OSユーザーで追加しておく
   
   ## 使用マシン
-    HOST : localhost
-    IPV4 : 192.168.1.2
-    MEMO : 家庭内LANのノート(Windows10)  # ドメイン未参加(WORKGROUP)
-    USER : Jill, Kate, Mike, John        # 追加しておく
+    HOST : localhost               # ホスト名を「PC01」に変更して識別する
+    IPV4 : 192.168.1.2             # DHCP
+    MEMO : ノート(Windows10)       # ドメイン未参加(WORKGROUP)
+    USER : Kate, Mike, John        # OSユーザーで追加しておく
   
   ## 設定情報(Samba)
-    DOMAIN : WORKGROUP -> Windows側が「WORKGROUP」なので必然
-    DIRECTORY : /
-    SHARE-NAME : share
+    DIRECTORY : /home/samba        # サーバー側ディレクトリ
+    SHARENAME : share              # 共有名
+    PERMISSION : historian         # グループのみアクセス可
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install wget gcc expat-devel (パッケージ追加)
+  $ cd $HOME
+  $ sudo yum -y install samba samba-client (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz (ソース取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz.sha256 (チェックサム取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo sha256sum -c apr-1.7.0.tar.gz.sha256 (チェックサム確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  apr-1.7.0.tar.gz: 完了
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf apr-1.7.0.tar.gz (アーカイブ解凍と展開)
+  $ cd $HOME
+  $ sudo hostnamectl set-hostname FS01 (ホスト名変更)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo ./configure --prefix=/usr/local/apr-1.7.0 (Makefile生成)
+  $ cd $HOME
+  $ sudo groupadd historian (グループ追加)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make install (インストール実行)
+  $ cd $HOME
+  $ sudo useradd -s /usr/bin/bash -G historian kate (ユーザー追加)
+  $ sudo useradd -s /usr/bin/bash -G historian mike (ユーザー追加)
+  $ sudo useradd -s /usr/bin/bash -G historian john (ユーザー追加)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  //
+  --------------------------------------------------
+  
+  #$ cd $HOME
+  #$ sudo mkdir -p /home/samba (共有フォルダ作成)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #//
+  #--------------------------------------------------
+  
+  #$ cd $HOME
+  #$ sudo chgrp historian /home/samba (共有フォルダの所属グループ変更)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #//
+  #--------------------------------------------------
+  
+  #$ cd $HOME
+  #$ sudo chmod 775 /home/samba (共有フォルダの権限変更)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #//
+  #--------------------------------------------------
+  
+  #$ cd $HOME
+  #$ sudo ls -lh (共有フォルダの確認)
+  #
+  #コマンドの実行結果
+  #--------------------------------------------------
+  #//
+  #--------------------------------------------------
+  
+  $ cd /etc/samba
+  $ sudo cp -p smb.conf smb.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  $ cd /etc/samba
+  $ sudo vi smb.conf (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [global]
+    workgroup = WORKGROUP                         // This server is WORKGROUP
+    server_role = STANDALONE                      // This server is not Domain Controller
+    netbios name = FS01                           // NetBIOS
+    server string = File Server for Windows User  // Description
+    hosts allow = 192.168.1. 127.                 // Accessible Hosts
+    map to guest = Never                          // Guest Login is impposible
+    log file = /var/log/samba/%m.log              // Samba log
+    max log size = 0                              // Samba log size is unlimited
+    encrypt passwords = Yes                       // Samba use encrypt password
+    unix password sync = Yes                      // Samba links Linux Password
+    password program = /usr/bin/passwd %u         // Samba changes password, password program is going to be executed
+    password chat = *Password*%n\n *Retype*%n\n   // Samba displays response, when user changes password
+    username map = /etc/samba/smbusers            // Samba uses Mapping file (Kate -> kate, Mike -> mike, John -> john)
+    wins support = No                             // Samba needs no WINS, uses /etc/samba/lmhosts
+    security = user                               // Samba needs Linux Account
+    passdb backend = smbpasswd                    // 
+    smb passwd file = /etc/samba/smbpasswd        // 
+    local master = Yes                            // 
+    
+  [homes]
+    comment = Home Directories         // Description
+    browseable = Yes                   // Windows User can browse this SHARE
+    writable = Yes                     // Windows User can write in this SHARE
+    
+  #[share]
+  #  comment = share directory in FS01  // Description
+  #  browseable = Yes                   // Windows User can browse this SHARE
+  #  writable = Yes                     // Windows User can write in this SHARE
+  #  path = /home/samba                 // Specify the directory path for this SHARE
+  #  force group = historian            // 
+  #  valid users = @historian           // Historian Group can login this SHARE
+  #  public = No                        // Guest User cannot login this SHARE
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo vi /etc/samba/smbusers (マッピングファイル)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  kate = Kate
+  mike = Mike
+  john = John
   --------------------------------------------------
   
   以下の確認に続く
