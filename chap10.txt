@@ -711,12 +711,6 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
   ## ロードするモジュール一覧
   LoadModule authn_file_module modules/mod_authn_file.so
   LoadModule authn_core_module modules/mod_authn_core.so
@@ -739,6 +733,12 @@
   LoadModule autoindex_module modules/mod_autoindex.so
   LoadModule dir_module modules/mod_dir.so
   LoadModule alias_module modules/mod_alias.so
+  
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
   
   ## モジュール(unixd-module)のロード時のみ適用
   <IfModule unixd_module>
@@ -958,12 +958,6 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
   ## ロードするモジュール一覧
   LoadModule authn_file_module modules/mod_authn_file.so
   LoadModule authn_core_module modules/mod_authn_core.so
@@ -986,6 +980,12 @@
   LoadModule autoindex_module modules/mod_autoindex.so
   LoadModule dir_module modules/mod_dir.so
   LoadModule alias_module modules/mod_alias.so
+  
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
   
   ## モジュール(unixd-module)のロード時のみ適用
   <IfModule unixd_module>
@@ -1685,12 +1685,6 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
   ## ロードするモジュール一覧
   LoadModule authn_file_module modules/mod_authn_file.so
   LoadModule authn_core_module modules/mod_authn_core.so
@@ -1716,6 +1710,12 @@
   
   ## 追加モジュール
   LoadModule ssl_module modules/mod_ssl.so
+  
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
   
   ## モジュール(unixd-module)のロード時のみ適用
   <IfModule unixd_module>
@@ -2101,12 +2101,6 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
   ## ロードするモジュール一覧
   LoadModule authn_file_module modules/mod_authn_file.so
   LoadModule authn_core_module modules/mod_authn_core.so
@@ -2132,6 +2126,12 @@
   
   ## 追加モジュール
   LoadModule ssl_module modules/mod_ssl.so
+  
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
   
   ## モジュール(unixd-module)のロード時のみ適用
   <IfModule unixd_module>
