@@ -785,23 +785,21 @@
   ## ディレクトリ(/)に適用
   <Directory />
     AllowOverride none  // 外部設定ファイル(.ht*)の設定変更を無効
-    Require all denied  // 全ホストを拒否 -> モジュール(authz_host_module)が必要
+    Require all denied  // 全ホストのアクセスを拒否
   </Directory>
   
   ## ドキュメントルート
   DocumentRoot "/usr/local/apache2/htdocs"
   
+  ## ディレクトリのインデックスとして返すファイル名
+  DirectoryIndex index.html
+
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
     Options Indexes FollowSymLinks  // オプション機能 -> Indexes, FollowSymLinks
     AllowOverride None              // 外部設定ファイル(.ht*)の設定変更を無効
-    Require all granted             // 全ホストを許可 -> モジュール(authz_host_module)が必要
+    Require all granted             // 全ホストのアクセスを許可
   </Directory>
-  
-  ## モジュール(dir-module)のロード時のみ適用
-  <IfModule dir_module>
-    DirectoryIndex index.html
-  </IfModule>
   
   ## ファイル(.ht*)が存在する場合のみ適用
   <Files ".ht*">
@@ -1038,17 +1036,15 @@
   ## ドキュメントルート
   ## DocumentRoot "/usr/local/apache2/htdocs" -> httpd-vhosts.conf に移動
   
+  ## ディレクトリのインデックスとして返すファイル名
+  DirectoryIndex index.html
+  
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
     Options Indexes FollowSymLinks
     AllowOverride None
     Require all granted
   </Directory>
-  
-  ## モジュール(dir-module)のロード時のみ適用
-  <IfModule dir_module>
-    DirectoryIndex index.html
-  </IfModule>
   
   ## ファイル(.ht*)が存在する場合のみ適用
   <Files ".ht*">
@@ -1768,17 +1764,15 @@
   ## ドキュメントルート
   DocumentRoot "/usr/local/apache2/htdocs"
   
+  ## ディレクトリのインデックスとして返すファイル名
+  DirectoryIndex index.html
+  
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
     Options Indexes FollowSymLinks
     AllowOverride None
     Require all granted
   </Directory>
-  
-  ## モジュール(dir-module)のロード時のみ適用
-  <IfModule dir_module>
-    DirectoryIndex index.html
-  </IfModule>
   
   ## ファイル(.ht*)が存在する場合のみ適用
   <Files ".ht*">
@@ -2184,17 +2178,15 @@
   ## ドキュメントルート
   ## DocumentRoot "/usr/local/apache2/htdocs" -> httpd-vhosts.conf に移動
   
+  ## ディレクトリのインデックスとして返すファイル名
+  DirectoryIndex index.html
+  
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
     Options Indexes FollowSymLinks
     AllowOverride None
     Require all granted
   </Directory>
-  
-  ## モジュール(dir-module)のロード時のみ適用
-  <IfModule dir_module>
-    DirectoryIndex index.html
-  </IfModule>
   
   ## ファイル(.ht*)が存在する場合のみ適用
   <Files ".ht*">
