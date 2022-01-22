@@ -742,10 +742,10 @@
   
   ## 子プロセスの実行ユーザー
   User apache
-
+  
   ## 子プロセスの実行グループ
   Group apache
-
+  
   ## HTTPヘッダ内のバージョン表示
   ServerTokens prod
   
@@ -801,8 +801,11 @@
     Require all granted
   </Directory>
   
-  ## ファイル(.ht*)が存在する場合のみ適用
-  <Files ".ht*">
+  ## 外部設定ファイル
+  AccessFileName .htaccess
+  
+  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
+  <Files ".htaccess">
     Require all denied
   </Files>
   
@@ -1046,8 +1049,11 @@
     Require all granted
   </Directory>
   
-  ## ファイル(.ht*)が存在する場合のみ適用
-  <Files ".ht*">
+  ## 外部設定ファイル
+  AccessFileName .htaccess
+  
+  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
+  <Files ".htaccess">
     Require all denied
   </Files>
   
@@ -1774,8 +1780,11 @@
     Require all granted
   </Directory>
   
-  ## ファイル(.ht*)が存在する場合のみ適用
-  <Files ".ht*">
+  ## 外部設定ファイル
+  AccessFileName .htaccess
+  
+  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
+  <Files ".htaccess">
     Require all denied
   </Files>
   
@@ -2188,8 +2197,11 @@
     Require all granted
   </Directory>
   
-  ## ファイル(.ht*)が存在する場合のみ適用
-  <Files ".ht*">
+  ## 外部設定ファイル
+  AccessFileName .htaccess
+  
+  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
+  <Files ".htaccess">
     Require all denied
   </Files>
   
