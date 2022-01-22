@@ -784,8 +784,8 @@
   
   ## ディレクトリ(/)に適用
   <Directory />
-    AllowOverride none  // 外部設定ファイル(.ht*)の設定変更を無効
-    Require all denied  // 全ホストのアクセスを拒否
+    AllowOverride none
+    Require all denied
   </Directory>
   
   ## ドキュメントルート
@@ -796,9 +796,9 @@
 
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks  // オプション機能 -> Indexes, FollowSymLinks
-    AllowOverride None              // 外部設定ファイル(.ht*)の設定変更を無効
-    Require all granted             // 全ホストのアクセスを許可
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
   </Directory>
   
   ## ファイル(.ht*)が存在する場合のみ適用
@@ -806,11 +806,11 @@
     Require all denied
   </Files>
   
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
   ## ログレベル
   LogLevel warn
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ErrorLog "logs/error_log"
   
   ## モジュール(log_config_module)のロード時のみ適用
   <IfModule log_config_module>
@@ -1051,11 +1051,11 @@
     Require all denied
   </Files>
   
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
   ## ログレベル
   LogLevel warn
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
   
   ## モジュール(log_config_module)のロード時のみ適用
   <IfModule log_config_module>
@@ -1779,11 +1779,11 @@
     Require all denied
   </Files>
   
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
   ## ログレベル
   LogLevel warn
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ErrorLog "logs/error_log"
   
   ## モジュール(log_config_module)のロード時のみ適用
   <IfModule log_config_module>
@@ -2193,11 +2193,11 @@
     Require all denied
   </Files>
   
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
   ## ログレベル
   LogLevel warn
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
   
   ## モジュール(log_config_module)のロード時のみ適用
   <IfModule log_config_module>
