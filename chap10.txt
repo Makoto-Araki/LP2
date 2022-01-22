@@ -684,7 +684,7 @@
   
   ## ディレクトリ構成
     /usr/local/apache2         // ServerRoot
-      | -- /conf
+      | -- /conf               // Config-Directory
               | -- httpd.conf  // Main-Config
       | -- /htdocs             // DocumentRoot
               | -- index.html  // HTML
@@ -768,14 +768,14 @@
   ServerLimit 5
   
   ## 最大同時接続数
-  MaxRequestWorkers 100
+  MaxRequestWorkers 5
   
   ## 接続タイムアウト(秒)
   Timeout 10
-
+  
   ## キープアライブ
   KeepAlive on
-
+  
   ## キープアライブ上限リクエスト数
   MaxKeepAliveRequests 100
   
@@ -793,7 +793,7 @@
   
   ## ディレクトリのインデックスとして返すファイル名
   DirectoryIndex index.html
-
+  
   ## ディレクトリ(/usr/local/apache2/htdocs)に適用
   <Directory "/usr/local/apache2/htdocs">
     Options Indexes FollowSymLinks
@@ -821,10 +821,8 @@
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ErrorLog "logs/error_log"
   
-  ## モジュール(alias_module)のロード時のみ適用
-  <IfModule alias_module>
-    ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  </IfModule>
+  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
+  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
@@ -843,11 +841,6 @@
     TypesConfig conf/mime.types
     AddType application/x-compress .Z
     AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(proxy_html_module)のロード時のみ適用
-  <IfModule proxy_html_module>
-    Include conf/extra/proxy-html.conf
   </IfModule>
   
   ## モジュール(ssl_module)のロード時のみ適用
@@ -1016,7 +1009,7 @@
   ServerLimit 5
   
   ## 最大同時接続数
-  MaxRequestWorkers 100
+  MaxRequestWorkers 5
   
   ## 接続タイムアウト(秒)
   Timeout 10
@@ -1069,10 +1062,8 @@
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
   
-  ## モジュール(alias_module)のロード時のみ適用
-  <IfModule alias_module>
-    ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  </IfModule>
+  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
+  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
@@ -1091,11 +1082,6 @@
     TypesConfig conf/mime.types
     AddType application/x-compress .Z
     AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(proxy_html_module)のロード時のみ適用
-  <IfModule proxy_html_module>
-    Include conf/extra/proxy-html.conf
   </IfModule>
   
   ## モジュール(ssl_module)のロード時のみ適用
@@ -1747,14 +1733,14 @@
   ServerLimit 5
   
   ## 最大同時接続数
-  MaxRequestWorkers 100
+  MaxRequestWorkers 5
   
   ## 接続タイムアウト(秒)
   Timeout 10
-
+  
   ## キープアライブ
   KeepAlive on
-
+  
   ## キープアライブ上限リクエスト数
   MaxKeepAliveRequests 100
   
@@ -1800,10 +1786,8 @@
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ErrorLog "logs/error_log"
   
-  ## モジュール(alias_module)のロード時のみ適用
-  <IfModule alias_module>
-    ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  </IfModule>
+  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
+  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
@@ -1822,11 +1806,6 @@
     TypesConfig conf/mime.types
     AddType application/x-compress .Z
     AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(proxy_html_module)のロード時のみ適用
-  <IfModule proxy_html_module>
-    Include conf/extra/proxy-html.conf
   </IfModule>
   
   ## モジュール(ssl_module)のロード時のみ適用
@@ -2164,7 +2143,7 @@
   ServerLimit 5
   
   ## 最大同時接続数
-  MaxRequestWorkers 100
+  MaxRequestWorkers 5
   
   ## 接続タイムアウト(秒)
   Timeout 10
@@ -2217,10 +2196,8 @@
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
   
-  ## モジュール(alias_module)のロード時のみ適用
-  <IfModule alias_module>
-    ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  </IfModule>
+  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
+  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
   
   ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
   <Directory "/usr/local/apache2/cgi-bin">
@@ -2239,11 +2216,6 @@
     TypesConfig conf/mime.types
     AddType application/x-compress .Z
     AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(proxy_html_module)のロード時のみ適用
-  <IfModule proxy_html_module>
-    Include conf/extra/proxy-html.conf
   </IfModule>
   
   ## モジュール(ssl_module)のロード時のみ適用
