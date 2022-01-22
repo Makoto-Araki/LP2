@@ -809,14 +809,14 @@
   ## ログレベル
   LogLevel warn
   
+  ## ログ書式(common)を定義
+  LogFormat "%h %l %u %t \"%r\" %>s %b" common
+  
+  ## アクセスログ出力場所(ServerRoot + logs/access_log)
+  CustomLog "logs/access_log" common
+  
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ErrorLog "logs/error_log"
-  
-  ## モジュール(log_config_module)のロード時のみ適用
-  <IfModule log_config_module>
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common  // ログフォーマット(common)を定義
-    CustomLog "logs/access_log" common            // ログ出力場所(ServerRoot + logs/access_log)
-  </IfModule>
   
   ## モジュール(alias_module)のロード時のみ適用
   <IfModule alias_module>
@@ -1054,14 +1054,14 @@
   ## ログレベル
   LogLevel warn
   
+  ## ログ書式(common)を定義
+  LogFormat "%h %l %u %t \"%r\" %>s %b" common
+  
+  ## アクセスログ出力場所(ServerRoot + logs/access_log)
+  CustomLog "logs/access_log" common
+  
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
-  ## モジュール(log_config_module)のロード時のみ適用
-  <IfModule log_config_module>
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common
-    ## CustomLog "logs/access_log" common -> httpd-vhosts.conf に移動
-  </IfModule>
   
   ## モジュール(alias_module)のロード時のみ適用
   <IfModule alias_module>
@@ -1782,14 +1782,14 @@
   ## ログレベル
   LogLevel warn
   
+  ## ログ書式(common)を定義
+  LogFormat "%h %l %u %t \"%r\" %>s %b" common
+  
+  ## アクセスログ出力場所(ServerRoot + logs/access_log)
+  CustomLog "logs/access_log" common
+  
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ErrorLog "logs/error_log"
-  
-  ## モジュール(log_config_module)のロード時のみ適用
-  <IfModule log_config_module>
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common
-    CustomLog "logs/access_log" common
-  </IfModule>
   
   ## モジュール(alias_module)のロード時のみ適用
   <IfModule alias_module>
@@ -2196,14 +2196,14 @@
   ## ログレベル
   LogLevel warn
   
+  ## ログ書式(common)を定義
+  LogFormat "%h %l %u %t \"%r\" %>s %b" common
+  
+  ## アクセスログ出力場所(ServerRoot + logs/access_log)
+  CustomLog "logs/access_log" common
+  
   ## エラーログ出力場所(ServerRoot + logs/error_log)
   ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
-  ## モジュール(log_config_module)のロード時のみ適用
-  <IfModule log_config_module>
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common
-    ## CustomLog "logs/access_log" common -> httpd-vhosts.conf に移動
-  </IfModule>
   
   ## モジュール(alias_module)のロード時のみ適用
   <IfModule alias_module>
