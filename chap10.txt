@@ -747,6 +747,9 @@
     Group apache  // プロセス実行グループ
   </IfModule>
   
+  ## HTTPヘッダ内のバージョン表示
+  ServerTokens prod
+  
   ## サーバー管理者のメールアドレス
   ServerAdmin makoto@example.com
   
@@ -963,6 +966,9 @@
     User apache
     Group apache
   </IfModule>
+  
+  ## HTTPヘッダ内のバージョン表示
+  ServerTokens prod
   
   ## サーバー管理者のメールアドレス
   ## ServerAdmin makoto@example.com -> httpd-vhosts.conf に移動
@@ -1664,6 +1670,9 @@
     Group apache
   </IfModule>
   
+  ## HTTPヘッダ内のバージョン表示
+  ServerTokens prod
+  
   ## サーバー管理者のメールアドレス
   ServerAdmin makoto@example.com
   
@@ -2049,6 +2058,9 @@
     User apache
     Group apache
   </IfModule>
+  
+  ## HTTPヘッダ内のバージョン表示
+  ServerTokens prod
   
   ## サーバー管理者のメールアドレス
   ## ServerAdmin makoto@example.com -> httpd-vhosts.conf に移動
