@@ -740,12 +740,12 @@
   ## リスニング対象のポート番号
   Listen 80
   
-  ## モジュール(unixd-module)のロード時のみ適用
-  <IfModule unixd_module>
-    User apache   // プロセス実行ユーザー
-    Group apache  // プロセス実行グループ
-  </IfModule>
-  
+  ## 子プロセスの実行ユーザー
+  User apache
+
+  ## 子プロセスの実行グループ
+  Group apache
+
   ## HTTPヘッダ内のバージョン表示
   ServerTokens prod
   
@@ -987,11 +987,11 @@
   ## リスニング対象のポート番号
   Listen 80
   
-  ## モジュール(unixd-module)のロード時のみ適用
-  <IfModule unixd_module>
-    User apache
-    Group apache
-  </IfModule>
+  ## 子プロセスの実行ユーザー
+  User apache
+  
+  ## 子プロセスの実行グループ
+  Group apache
   
   ## HTTPヘッダ内のバージョン表示
   ServerTokens prod
@@ -1717,11 +1717,11 @@
   ## リスニング対象のポート番号
   Listen 80
   
-  ## モジュール(unixd-module)のロード時のみ適用
-  <IfModule unixd_module>
-    User apache
-    Group apache
-  </IfModule>
+  ## 子プロセスの実行ユーザー
+  User apache
+  
+  ## 子プロセスの実行グループ
+  Group apache
   
   ## HTTPヘッダ内のバージョン表示
   ServerTokens prod
@@ -2133,11 +2133,11 @@
   ## リスニング対象のポート番号
   Listen 80
   
-  ## モジュール(unixd-module)のロード時のみ適用
-  <IfModule unixd_module>
-    User apache
-    Group apache
-  </IfModule>
+  ## 子プロセスの実行ユーザー
+  User apache
+  
+  ## 子プロセスの実行グループ
+  Group apache
   
   ## HTTPヘッダ内のバージョン表示
   ServerTokens prod
