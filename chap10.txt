@@ -831,10 +831,8 @@
     Require all granted
   </Directory>
   
-  ## モジュール(headers_module)のロード時のみ適用
-  <IfModule headers_module>
-    RequestHeader unset Proxy early
-  </IfModule>
+  ## リクエストヘッダ追加
+  RequestHeader unset Proxy early
   
   ## モジュール(mime_module)のロード時のみ適用
   <IfModule mime_module>
@@ -1072,10 +1070,8 @@
     Require all granted
   </Directory>
   
-  ## モジュール(headers_module)のロード時のみ適用
-  <IfModule headers_module>
-    RequestHeader unset Proxy early
-  </IfModule>
+  ## リクエストヘッダ追加
+  RequestHeader unset Proxy early
   
   ## モジュール(mime_module)のロード時のみ適用
   <IfModule mime_module>
@@ -1796,10 +1792,8 @@
     Require all granted
   </Directory>
   
-  ## モジュール(headers_module)のロード時のみ適用
-  <IfModule headers_module>
-    RequestHeader unset Proxy early
-  </IfModule>
+  ## リクエストヘッダ追加
+  RequestHeader unset Proxy early
   
   ## モジュール(mime_module)のロード時のみ適用
   <IfModule mime_module>
@@ -2206,10 +2200,8 @@
     Require all granted
   </Directory>
   
-  ## モジュール(headers_module)のロード時のみ適用
-  <IfModule headers_module>
-    RequestHeader unset Proxy early
-  </IfModule>
+  ## リクエストヘッダ追加
+  RequestHeader unset Proxy early
   
   ## モジュール(mime_module)のロード時のみ適用
   <IfModule mime_module>
