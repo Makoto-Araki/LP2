@@ -13,7 +13,8 @@
 [12] 設定ファイル(httpd.conf) - 05 (単独サイトのHTTPS化)
 [13] 設定ファイル(httpd.conf) - 06 (複数サイトのHTTPS化)
 [X1] 設定ファイル(httpd.conf) - 07 (基本認証)
-[X2] //
+[X2] 設定ファイル(httpd.conf) - 08 (ダイジェスト認証)
+[X3] //
 [14] ソースから構築(Nginx)
 [15] 制御コマンド(Nginx)
 [16] 設定ファイル(nginx.conf) - 01 (単独サイト)
@@ -2876,6 +2877,275 @@
   <html><body><h1>単独サイト</h1></body></html>
   --------------------------------------------------
   
+  vm12# cd $HOME
+  vm12# apachectl stop (Apacheを停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X3]
+  設定ファイル(httpd.conf) - 09 (ホストベースのアクセス制御)
+  
+[内容]
+  ## 作業内容
+    サイト(http://vm12.example.com)アクセス時にホストベースのアクセス制御を行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## 使用マシン
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : 仮想マシン
+  
+  ## ディレクトリ構成
+    /usr/local/apache2         // ServerRoot
+      | -- /conf               // Config-Directory
+              | -- httpd.conf  // Main-Config
+      | -- /htdocs             // DocumentRoot
+              | -- index.html  // HTML
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd /usr/local/apache2/conf
+  vm12# cp -p httpd.conf httpd.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## ロードするモジュール一覧
+  LoadModule authn_file_module modules/mod_authn_file.so
+  LoadModule authn_core_module modules/mod_authn_core.so
+  LoadModule authz_host_module modules/mod_authz_host.so
+  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+  LoadModule authz_user_module modules/mod_authz_user.so
+  LoadModule authz_core_module modules/mod_authz_core.so
+  LoadModule access_compat_module modules/mod_access_compat.so
+  LoadModule auth_basic_module modules/mod_auth_basic.so
+  LoadModule reqtimeout_module modules/mod_reqtimeout.so
+  LoadModule filter_module modules/mod_filter.so
+  LoadModule mime_module modules/mod_mime.so
+  LoadModule log_config_module modules/mod_log_config.so
+  LoadModule env_module modules/mod_env.so
+  LoadModule headers_module modules/mod_headers.so
+  LoadModule setenvif_module modules/mod_setenvif.so
+  LoadModule version_module modules/mod_version.so
+  LoadModule unixd_module modules/mod_unixd.so
+  LoadModule status_module modules/mod_status.so
+  LoadModule autoindex_module modules/mod_autoindex.so
+  LoadModule dir_module modules/mod_dir.so
+  LoadModule alias_module modules/mod_alias.so
+  
+  ## トップディレクトリ
+  ServerRoot "/usr/local/apache2"
+  
+  ## リスニング対象のポート番号
+  Listen 80
+  
+  ## 子プロセスの実行ユーザー
+  User apache
+  
+  ## 子プロセスの実行グループ
+  Group apache
+  
+  ## HTTPヘッダ内のバージョン表示
+  ServerTokens prod
+  
+  ## サーバー管理者のメールアドレス
+  ServerAdmin makoto@example.com
+  
+  ## ホスト名
+  ServerName vm12.example.com
+  
+  ## 起動する子プロセス数
+  StartServers 1
+  
+  ## 待機する子プロセス最小数
+  MinSpareServers 1
+  
+  ## 待機する子プロセス最大数
+  MaxSpareServers 5
+  
+  ## 生成される子プロセス数の上限
+  ServerLimit 5
+  
+  ## 最大同時接続数
+  MaxRequestWorkers 5
+  
+  ## 接続タイムアウト(秒)
+  Timeout 10
+  
+  ## キープアライブ
+  KeepAlive on
+  
+  ## キープアライブ上限リクエスト数
+  MaxKeepAliveRequests 100
+  
+  ## キープアライブタイムアウト(秒)
+  KeepAliveTimeout 10
+  
+  ## ディレクトリ(/)に適用
+  <Directory />
+    AllowOverride none
+    Require all denied
+  </Directory>
+  
+  ## ドキュメントルート
+  DocumentRoot "/usr/local/apache2/htdocs"
+  
+  ## ディレクトリのインデックスとして返すファイル名
+  DirectoryIndex index.html
+  
+  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
+  <Directory "/usr/local/apache2/htdocs">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all denied         // 全ホストを拒否
+    Require ip 192.168.122.12  // ホスト(192.168.122.12)のみ許可
+  </Directory>
+  
+  ## 外部設定ファイル
+  AccessFileName .htaccess
+  
+  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
+  <Files ".htaccess">
+    Require all denied
+  </Files>
+  
+  ## ログレベル
+  LogLevel warn
+  
+  ## ログ書式(common)を定義
+  LogFormat "%h %l %u %t \"%r\" %>s %b" common
+  
+  ## アクセスログ出力場所(ServerRoot + logs/access_log)
+  CustomLog "logs/access_log" common
+  
+  ## エラーログ出力場所(ServerRoot + logs/error_log)
+  ErrorLog "logs/error_log"
+  
+  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
+  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
+  
+  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
+  <Directory "/usr/local/apache2/cgi-bin">
+    Options None
+    AllowOverride None
+    Require all granted
+  </Directory>
+  
+  ## リクエストヘッダ追加
+  RequestHeader unset Proxy early
+  
+  ## モジュール(mime_module)のロード時のみ適用
+  <IfModule mime_module>
+    TypesConfig conf/mime.types
+    AddType application/x-compress .Z
+    AddType application/x-gzip .gz .tgz
+  </IfModule>
+  
+  ## モジュール(ssl_module)のロード時のみ適用
+  <IfModule ssl_module>
+    SSLRandomSeed startup builtin
+    SSLRandomSeed connect builtin
+  </IfModule>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl configtest (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Syntax OK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /usr/local/apache2/htdocs/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/hosts (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 vm12.example.com (修正)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# apachectl start (Apacheを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /etc/hosts
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11
+    192.168.122.12 vm12 vm12.example.com (修正)
+    192.168.122.13 vm13
+    192.168.122.14 vm14
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ curl http://vm12.example.com
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> You don't have permission to access this resource. のメッセージ
+    --------------------------------------------------
+    
   vm12# cd $HOME
   vm12# apachectl stop (Apacheを停止する)
   
