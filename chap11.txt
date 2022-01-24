@@ -88,6 +88,8 @@
   # cd $HOME
   # echo 'AAA AAA AAA' > file1.txt (共有フォルダ内にファイル作成)
   # echo 'BBB BBB BBB' > file2.txt (共有フォルダ内にファイル作成)
+  # echo 'CCC CCC CCC' > file3.txt (共有フォルダ内にファイル作成)
+  # echo 'DDD DDD DDD' > file4.txt (共有フォルダ内にファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -95,7 +97,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # chmod 777 file[1-2].txt (共有フォルダの権限変更)
+  # chmod 777 file[1-4].txt (共有フォルダの権限変更)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -132,10 +134,10 @@
     smb passwd file = /etc/samba/smbpasswd        // Smbpasswd file
     create mask = 0777                            // File Permission
     directory mask = 0777                         // Directory Permission
-    local master = Yes                            // Master Browser is me
-    preferred master = Yes                        // Master Browser is me
-    domain master = No                            // Master Browser is me
-    os level = 30                                 // Master Browser is me
+    local master = No                             // Master Browser is not me
+    preferred master = No                         // Master Browser is not me
+    domain master = No                            // Master Browser is not me
+    os level = 10                                 // Master Browser is not me
     
   [share]
     comment = share directory in FS01  // Description
@@ -163,12 +165,13 @@
   [global]
     domain master = No
     guest account = makoto
+    local master = No
     log file = /var/log/samba/%m.log
     map to guest = Bad User
     max log size = 0
-    os level = 30
+    os level = 10
     passdb backend = smbpasswd
-    preferred master = Yes
+    preferred master = No
     security = USER
     server role = standalone server
     server string = File Server for Windows User
@@ -324,7 +327,7 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
-  .(カレントディレクトリ)             D        0  Sun Jan 23 22:06:02 2022
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   
   // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
@@ -342,14 +345,99 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
-  .(カレントディレクトリ)             D        0  Sun Jan 23 22:06:02 2022
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
-  file1.txt                           A       12  Mon Jan 24 02:44:12 2022
-  file2.txt                           A       12  Mon Jan 24 02:44:21 2022
+  file1.txt                           A       12  Mon Jan 24 09:18:51 2022
+  file2.txt                           A       12  Mon Jan 24 09:18:59 2022
   
   // Sambaクライアント終了
   smb: \> 
   smb: \> exit
+  --------------------------------------------------
+  
+  # cd /home/samba
+  # ls -lh (共有フォルダの内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // OSユーザー(kate)も存在するのに「guest account」指定ユーザーの所有なのは仕様？
+  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file2.txt
+  --------------------------------------------------
+  
+  # cd $HOME
+  # setenforce 1 (SELinuxの有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+     Sambaクライアントで接続(Sambaユーザー未登録)
+  ==================================================
+  
+  # cd $HOME
+  # setenforce 0 (SELinuxの無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd $HOME
+  # smbclient -U AAAA //FS01/share (Sambaクライアントで共有フォルダに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter WORKGROUP\AAAA's password: (AAAAと入力) -> 当然ながらOSユーザーにもSambaユーザーにも未登録
+  Try "help" to get a list of possible commands.
+  
+  // コンテンツ一覧
+  smb: \> 
+  smb: \> ls
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
+  ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
+  file1.txt                           A       12  Mon Jan 24 09:18:51 2022
+  file2.txt                           A       12  Mon Jan 24 09:18:59 2022
+  
+  // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
+  smb: \> 
+  smb: \> mput file3.txt
+  Put file file3.txt? (yes)
+  putting file file3.txt as \file3.txt (1.2 kb/s) (average 1.2 kb/s)
+  
+  // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
+  smb: \> 
+  smb: \> mput file4.txt
+  Put file file4.txt? (yes)
+  putting file file4.txt as \file4.txt (2.9 kb/s) (average 1.7 kb/s)
+  
+  // コンテンツ一覧
+  smb: \> 
+  smb: \> ls
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
+  ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
+  file1.txt                           A       12  Mon Jan 24 09:18:51 2022
+  file2.txt                           A       12  Mon Jan 24 09:18:59 2022
+  file3.txt                           A       12  Mon Jan 24 09:21:50 2022
+  file4.txt                           A       12  Mon Jan 24 09:22:37 2022
+  
+  // Sambaクライアント終了
+  smb: \> 
+  smb: \> exit
+  --------------------------------------------------
+  
+  # cd /home/samba
+  # ls -lh (共有フォルダの内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // OSユーザー(AAAA)は存在しないので「guest account」指定ユーザーの所有なのは納得できる
+  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file2.txt
+  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:21 file3.txt
+  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:22 file4.txt
   --------------------------------------------------
   
   # cd $HOME
