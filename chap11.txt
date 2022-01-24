@@ -329,24 +329,28 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+  
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file1.txt
+
   Put file file1.txt? (yes)
   putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
   
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file2.txt
+
   Put file file2.txt? (yes)
   putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
   
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   file1.txt                           A       12  Mon Jan 24 09:18:51 2022
@@ -397,6 +401,7 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   file1.txt                           A       12  Mon Jan 24 09:18:51 2022
@@ -405,18 +410,21 @@
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file3.txt
+
   Put file file3.txt? (yes)
   putting file file3.txt as \file3.txt (1.2 kb/s) (average 1.2 kb/s)
   
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file4.txt
+
   Put file file4.txt? (yes)
   putting file file4.txt as \file4.txt (2.9 kb/s) (average 1.7 kb/s)
   
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   file1.txt                           A       12  Mon Jan 24 09:18:51 2022
@@ -651,24 +659,28 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file1.txt
+
   Put file file1.txt? (yes)
   putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
   
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file2.txt
+
   Put file file2.txt? (yes)
   putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
   
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   file1.txt                           A       12  Mon Jan 24 18:29:11 2022
@@ -934,12 +946,14 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file1.txt
+
   Put file file1.txt? (yes)
   putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
   
@@ -959,6 +973,7 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   .mozilla                           DH        0  Mon Nov 29 22:18:06 2021
@@ -969,6 +984,7 @@
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file2.txt
+
   Put file file2.txt? (yes)
   putting file file2.txt as \file2.txt (0.5 kb/s) (average 0.5 kb/s)
   
@@ -988,6 +1004,7 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+  
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   file1.txt                           A       12  Mon Jan 24 20:10:58 2022
@@ -995,6 +1012,7 @@
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file3.txt
+  
   Put file file3.txt? (yes)
   putting file file3.txt as \file3.txt (0.5 kb/s) (average 0.5 kb/s)
   
@@ -1014,6 +1032,7 @@
   // コンテンツ一覧
   smb: \> 
   smb: \> ls
+  
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   .mozilla                           DH        0  Mon Nov 29 22:18:06 2021
@@ -1024,6 +1043,7 @@
   // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file4.txt
+  
   Put file file4.txt? (yes)
   putting file file4.txt as \file4.txt (0.5 kb/s) (average 0.5 kb/s)
   
