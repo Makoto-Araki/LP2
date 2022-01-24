@@ -330,13 +330,13 @@
   . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
   ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
   
-  // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
+  // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file1.txt
   Put file file1.txt? (yes)
   putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
   
-  // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
+  // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file2.txt
   Put file file2.txt? (yes)
@@ -400,13 +400,13 @@
   file1.txt                           A       12  Mon Jan 24 09:18:51 2022
   file2.txt                           A       12  Mon Jan 24 09:18:59 2022
   
-  // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
+  // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file3.txt
   Put file file3.txt? (yes)
   putting file file3.txt as \file3.txt (1.2 kb/s) (average 1.2 kb/s)
   
-  // Linux上のカレントディレクトリのファイルを共有フォルダにアップロード
+  // ファイルを共有フォルダにアップロード
   smb: \> 
   smb: \> mput file4.txt
   Put file file4.txt? (yes)
