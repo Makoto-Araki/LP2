@@ -1,6 +1,7 @@
 ================================================================================
 [01] Samba - 01 (共有フォルダ - 誰でもアクセス可能)
 [02] Samba - 02 (共有フォルダ - Samba登録ユーザーのみアクセス可能)
+[03] Samba - 03 (ホームディレクトリ)
 ================================================================================
 [01]
   Samba - 01 (共有フォルダ - 誰でもアクセス可能)
@@ -776,6 +777,319 @@
   -rwxrw-rw-. 1 kate kate 12  1月 24 18:41 file4.txt  // 所有者が「Sambaユーザー」通りに設定されている
   --------------------------------------------------
   
+  # cd $HOME
+  # setenforce 1 (SELinuxの有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[03]
+  Samba - 03 (ホームディレクトリ)
+  
+[内容]
+  ## 作業内容
+    Windows側にSamba登録ユーザーのホームディレクトリを開放する
+  
+  ## 使用マシン
+    HOST : localhost               # ホスト名を「FS01」のまま
+    IPV4 : 192.168.1.3             # DHCP
+    MEMO : ノート(CentOS7)         # Windows用ファイルサーバーに構築する
+    USER : kate, mike              # OSユーザーで追加しておく
+  
+  ## 使用マシン
+    HOST : localhost               # ホスト名を「PC01」のまま
+    IPV4 : 192.168.1.2             # DHCP
+    MEMO : ノート(Windows10)       # ドメイン未参加(WORKGROUP)
+    USER : Owner                   # 元々存在していたユーザー(Administrators)
+  
+  ## 設定情報(Samba)
+    DIRECTORY : /home/samba        # サーバー側ディレクトリ
+    SHARENAME : share              # 共有名
+  
+[確認]
+  # cd /home/samba
+  # rm -f file[1-4].txt (共有フォルダのファイル削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd /etc/samba
+  # vi smb.conf (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [global]
+    workgroup = WORKGROUP                         // This server is WORKGROUP
+    server role = STANDALONE                      // This server is not Domain Controller
+    netbios name = FS01                           // NetBIOS
+    server string = File Server for Windows User  // Description
+    hosts allow = 192.168.1. 127.                 // Accessible Hosts
+    guest account = makoto                        // Guest behaves as makoto user in Linux
+    map to guest = Never                          // Guest login is impossible (Bad User -> Never)
+    log file = /var/log/samba/%m.log              // Samba log
+    max log size = 0                              // Samba log size is unlimited
+    encrypt passwords = Yes                       // Samba use encrypt password
+    wins support = No                             // Samba needs no WINS, uses /etc/samba/lmhosts
+    security = user                               // Samba needs Linux Account
+    passdb backend = smbpasswd                    // Samba stores user data in smbpasswd
+    smb passwd file = /etc/samba/smbpasswd        // Smbpasswd file
+    create mask = 0777                            // File Permission
+    directory mask = 0777                         // Directory Permission
+    local master = No                             // Master Browser is not me
+    preferred master = No                         // Master Browser is not me
+    domain master = No                            // Master Browser is not me
+    os level = 10                                 // Master Browser is not me
+    
+  [homes]
+    comment = home directory in FS01   // Description
+    browseable = Yes                   // Windows User can browse home directory
+    writable = Yes                     // Windows User can write in home directory
+    
+  [share]
+    comment = share directory in FS01  // Description
+    browseable = Yes                   // Windows User can browse this SHARE
+    writable = Yes                     // Windows User can write in this SHARE
+    path = /home/samba                 // Specify the directory path for this SHARE
+    public = No                        // Guest User can not login (Yes -> No)
+    guest ok = No                      // Guest User can not login (Yes -> No)
+    guest only = No                    // Guest User can not login (Yes -> No)
+  --------------------------------------------------
+  
+  # cd $HOME
+  # testparm (構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Load smb config files from /etc/samba/smb.conf
+  Loaded services file OK.      // 構文チェックに異常なし
+  Server role: ROLE_STANDALONE  // スタンドアロン
+  
+  // Enterキー押下で先に進む
+  Press enter to see a dump of your service definitions
+  
+  # Global parameters
+  [global]
+    domain master = No
+    guest account = makoto
+    local master = No
+    log file = /var/log/samba/%m.log
+    max log size = 0
+    os level = 10
+    passdb backend = smbpasswd
+    preferred master = No
+    security = USER
+    server role = standalone server
+    server string = File Server for Windows User
+    smb passwd file = /etc/samba/smbpasswd
+    idmap config * : backend = tdb
+    create mask = 0777
+    directory mask = 0777
+    hosts allow = 192.168.1. 127.
+  
+  [homes]
+    comment = home directory in FS01
+    read only = No
+  
+  [share]
+    comment = share directory in FS01
+    path = /home/samba
+    read only = No
+  --------------------------------------------------
+  
+  # cd $HOME
+  # systemctl start smb nmb (Sambaサービスの起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+    Sambaクライアントで接続(Sambaユーザー登録済み)
+  ==================================================
+  
+  # cd $HOME
+  # setenforce 0 (SELinuxの無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 共有フォルダへファイルのアップロード時に権限不足のエラー出力されるのを回避
+  --------------------------------------------------
+  
+  # cd $HOME
+  # smbclient -U kate //FS01/share (Sambaクライアントで共有フォルダに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter WORKGROUP\kate's password: (ka0122maと入力)
+  Try "help" to get a list of possible commands.
+  
+  // コンテンツ一覧
+  smb: \> 
+  smb: \> ls
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
+  ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
+  
+  // ファイルを共有フォルダにアップロード
+  smb: \> 
+  smb: \> mput file1.txt
+  Put file file1.txt? (yes)
+  putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
+  
+  // Sambaクライアント終了
+  smb: \> 
+  smb: \> exit
+  --------------------------------------------------
+  
+  # cd $HOME
+  # smbclient -U kate //FS01/kate (Sambaクライアントでホームディレクトリに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter WORKGROUP\kate's password: (ka0122maと入力)
+  Try "help" to get a list of possible commands.
+  
+  // コンテンツ一覧
+  smb: \> 
+  smb: \> ls
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
+  ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
+  .mozilla                           DH        0  Mon Nov 29 22:18:06 2021
+  .bash_logout                        H       18  Thu Nov 25 01:33:26 2021
+  .bash_profile                       H      193  Thu Nov 25 01:33:26 2021
+  .bashrc                             H      231  Thu Nov 25 01:33:26 2021
+  
+  // ファイルを共有フォルダにアップロード
+  smb: \> 
+  smb: \> mput file2.txt
+  Put file file2.txt? (yes)
+  putting file file2.txt as \file2.txt (0.5 kb/s) (average 0.5 kb/s)
+  
+  // Sambaクライアント終了
+  smb: \> 
+  smb: \> exit
+  --------------------------------------------------
+  
+  # cd $HOME
+  # smbclient -U mike //FS01/share (Sambaクライアントで共有フォルダに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter WORKGROUP\mike's password: (mi0122maと入力)
+  Try "help" to get a list of possible commands.
+  
+  // コンテンツ一覧
+  smb: \> 
+  smb: \> ls
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
+  ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
+  file1.txt                           A       12  Mon Jan 24 20:10:58 2022
+
+  // ファイルを共有フォルダにアップロード
+  smb: \> 
+  smb: \> mput file3.txt
+  Put file file3.txt? (yes)
+  putting file file3.txt as \file3.txt (0.5 kb/s) (average 0.5 kb/s)
+  
+  // Sambaクライアント終了
+  smb: \> 
+  smb: \> exit
+  --------------------------------------------------
+  
+  # cd $HOME
+  # smbclient -U mike //FS01/mike (Sambaクライアントでホームディレクトリに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter WORKGROUP\mike's password: (mi0122maと入力)
+  Try "help" to get a list of possible commands.
+  
+  // コンテンツ一覧
+  smb: \> 
+  smb: \> ls
+  . (カレントディレクトリ)            D        0  Sun Jan 23 22:06:02 2022
+  ..(親ディレクトリ)                  D        0  Sun Jan 23 23:42:13 2022
+  .mozilla                           DH        0  Mon Nov 29 22:18:06 2021
+  .bash_logout                        H       18  Thu Nov 25 01:33:26 2021
+  .bash_profile                       H      193  Thu Nov 25 01:33:26 2021
+  .bashrc                             H      231  Thu Nov 25 01:33:26 2021
+  
+  // ファイルを共有フォルダにアップロード
+  smb: \> 
+  smb: \> mput file4.txt
+  Put file file4.txt? (yes)
+  putting file file4.txt as \file4.txt (0.5 kb/s) (average 0.5 kb/s)
+  
+  // Sambaクライアント終了
+  smb: \> 
+  smb: \> exit
+  --------------------------------------------------
+  
+  # cd /home/samba
+  # ls -lh (共有フォルダの内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rwxrw-rw-. 1 kate kate 12  1月 24 20:10 file1.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  -rwxrw-rw-. 1 mike mike 12  1月 24 20:18 file3.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  --------------------------------------------------
+  
+  # cd /home
+  # ls -lh kate mike | grep file (ホームディレクトリの内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rwxrw-rw-. 1 kate kate 12  1月 24 20:12 file2.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  -rwxrw-rw-. 1 mike mike 12  1月 24 20:20 file4.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  --------------------------------------------------
+  
+  # cd $HOME
+  # setenforce 1 (SELinuxの有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+         Windows側から接続(Samba登録ユーザー)
+  ==================================================
+  
+  # cd $HOME
+  # setenforce 0 (SELinuxの無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 共有フォルダへファイルのアップロード時に権限不足のエラー出力されるのを回避
+  --------------------------------------------------
+    
+    操作1
+    ==================================================
+    ネットワークパス「\\FS01」にアクセス -> Sambaユーザー(kate)の資格情報入力
+    ==================================================
+    
+    操作2
+    ==================================================
+    フォルダ「homes & kate & share」が表示
+    ==================================================
+    
+    操作3
+    ==================================================
+    フォルダ「homes & kate」の内容はファイル「file1.txt」のみ
+    ==================================================
+    
+    操作4
+    ==================================================
+    フォルダ「share」の内容はファイル「file[2,4].txt」
+    ==================================================
+    
   # cd $HOME
   # setenforce 1 (SELinuxの有効化)
   
