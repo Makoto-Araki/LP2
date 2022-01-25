@@ -4,7 +4,7 @@
 [03] Samba - 03 (ホームディレクトリ)
 [04] Samba - 04 (パスワード変更)
 [05] Samba - 05 (マスターブラウザの検索)
-[06] CIFS - 01 (Windows側の共有フォルダにSambaクライアントでアクセス)
+[06] CIFS - 01 (Windows側の共有フォルダをSambaクライアントからアクセス)
 [07] CIFS - 02 (Windows側の共有フォルダをLinux側からマウント)
 ================================================================================
 [01]
@@ -1460,11 +1460,11 @@
   コマンドの実行結果
   --------------------------------------------------
   Looking up status of 192.168.1.2
-    PC01            <00> -         B <ACTIVE>  // NetBIOS名は「PC01」と判明
-    WORKGROUP       <00> - <GROUP> B <ACTIVE>
-    PC01            <20> -         B <ACTIVE>  // NetBIOS名は「PC01」と判明
-    WORKGROUP       <1e> - <GROUP> B <ACTIVE>
-    WORKGROUP       <1d> -         B <ACTIVE>
+    PC01            <00> -         B <ACTIVE>  // NetBIOS名は「PC01」、タイプ「00」 -> ファイル共有クライアント
+    PC01            <20> -         B <ACTIVE>  // NetBIOS名は「PC01」、タイプ「20」 -> ファイル共有サーバー
+    WORKGROUP       <00> - <GROUP> B <ACTIVE>  // ワークグループ名、タイプ「00」 -> ドメイン名
+    WORKGROUP       <1e> - <GROUP> B <ACTIVE>  // ワークグループ名、タイプ「1e」 -> ポテンシャルブラウザ
+    WORKGROUP       <1d> -         B <ACTIVE>  // ワークグループ名、タイプ「1d」 -> マスターブラウザ
     ..__MSBROWSE__. <01> - <GROUP> B <ACTIVE>
   
   MAC Address = EC-F4-BB-47-A4-58
@@ -1482,7 +1482,7 @@
   
 ================================================================================
 [06]
-  CIFS - 01 (Windows側の共有フォルダにSambaクライアントでアクセス)
+  CIFS - 01 (Windows側の共有フォルダをSambaクライアントからアクセス)
   
 [内容]
   ## 作業内容
