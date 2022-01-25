@@ -1,7 +1,8 @@
 ================================================================================
 [01] Samba - 01 (共有フォルダ - 誰でもアクセス可能)
-[02] Samba - 02 (共有フォルダ - Samba登録ユーザーのみアクセス可能)
+[02] Samba - 02 (共有フォルダ - 登録ユーザーのみアクセス可能)
 [03] Samba - 03 (ホームディレクトリ)
+[04] //
 ================================================================================
 [01]
   Samba - 01 (共有フォルダ - 誰でもアクセス可能)
@@ -14,7 +15,7 @@
     HOST : localhost               # ホスト名を「FS01」に変更
     IPV4 : 192.168.1.3             # DHCP
     MEMO : ノート(CentOS7)         # Windows用ファイルサーバーに構築する
-    USER : kate, mike              # OSユーザーで追加しておく
+    USER : root                    # OSユーザーで kate, mike を追加する
   
   ## 使用マシン
     HOST : localhost               # ホスト名を「PC01」に変更
@@ -88,10 +89,10 @@
   --------------------------------------------------
   
   # cd $HOME
-  # echo 'AAA AAA AAA' > file1.txt (共有フォルダ内にファイル作成)
-  # echo 'BBB BBB BBB' > file2.txt (共有フォルダ内にファイル作成)
-  # echo 'CCC CCC CCC' > file3.txt (共有フォルダ内にファイル作成)
-  # echo 'DDD DDD DDD' > file4.txt (共有フォルダ内にファイル作成)
+  # echo 'AAA AAA AAA' > file1.txt (ファイル作成)
+  # echo 'BBB BBB BBB' > file2.txt (ファイル作成)
+  # echo 'CCC CCC CCC' > file3.txt (ファイル作成)
+  # echo 'DDD DDD DDD' > file4.txt (ファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -99,7 +100,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # chmod 777 file[1-4].txt (共有フォルダの権限変更)
+  # chmod 777 file[1-4].txt (権限変更)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -126,7 +127,7 @@
     server string = File Server for Windows User  // Description
     hosts allow = 192.168.1. 127.                 // Accessible Hosts
     guest account = makoto                        // Guest behaves as makoto user in Linux
-    map to guest = Bad User                       // If input user is not existed, Samba reckon guest
+    map to guest = Bad User                       // If input user is not existed, Samba reckon guest(makoto)
     log file = /var/log/samba/%m.log              // Samba log
     max log size = 0                              // Samba log size is unlimited
     encrypt passwords = Yes                       // Samba use encrypt password
@@ -146,9 +147,9 @@
     browseable = Yes                   // Windows User can browse this SHARE
     writable = Yes                     // Windows User can write in this SHARE
     path = /home/samba                 // Specify the directory path for this SHARE
-    public = Yes                       // Guest User can login this SHARE
-    guest ok = Yes                     // Guest User can login this SHARE
-    guest only = Yes                   // Guest User can login this SHARE
+    public = Yes                       // Guest User can access this SHARE
+    guest ok = Yes                     // Guest User can access this SHARE
+    guest only = Yes                   // Guest User can access this SHARE
   --------------------------------------------------
   
   # cd $HOME
@@ -449,17 +450,17 @@
     
     操作2
     ==================================================
-    共有フォルダ中の「file1-4.txt」をローカルにダウンロード
+    共有フォルダ中の「file[1-4].txt」をローカルにダウンロード
     ==================================================
     
     操作3
     ==================================================
-    ローカルにコピーしたファイルを元に「file5-6.txt」を作成
+    ローカルにコピーしたファイルを元に「file[5-6].txt」を作成
     ==================================================
     
     操作4
     ==================================================
-    ファイル「file1-6.txt」を共有フォルダにアップロード
+    ファイル「file[1-6].txt」を共有フォルダにアップロード
     ==================================================
     
   # cd /home/samba
@@ -487,17 +488,17 @@
   
 ================================================================================
 [02]
-  Samba - 02 (共有フォルダ - Samba登録ユーザーのみアクセス可能)
+  Samba - 02 (共有フォルダ - 登録ユーザーのみアクセス可能)
   
 [内容]
   ## 作業内容
-    共有フォルダを作成、Windows側からSamba登録ユーザーのみアクセス可能にする
+    共有フォルダに登録ユーザーのみアクセス可能にする
   
   ## 使用マシン
     HOST : localhost               # ホスト名を「FS01」のまま
     IPV4 : 192.168.1.3             # DHCP
     MEMO : ノート(CentOS7)         # Windows用ファイルサーバーに構築する
-    USER : kate, mike              # OSユーザーで追加しておく
+    USER : root                    # root
   
   ## 使用マシン
     HOST : localhost               # ホスト名を「PC01」のまま
@@ -519,7 +520,7 @@
   --------------------------------------------------
   
   # cd /etc/samba
-  # vi smb.conf (設定ファイルのバックアップ)
+  # vi smb.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -550,9 +551,9 @@
     browseable = Yes                   // Windows User can browse this SHARE
     writable = Yes                     // Windows User can write in this SHARE
     path = /home/samba                 // Specify the directory path for this SHARE
-    public = No                        // Guest User can not login (Yes -> No)
-    guest ok = No                      // Guest User can not login (Yes -> No)
-    guest only = No                    // Guest User can not login (Yes -> No)
+    public = No                        // Guest User can not access (Yes -> No)
+    guest ok = No                      // Guest User can not access (Yes -> No)
+    guest only = No                    // Guest User can not access (Yes -> No)
   --------------------------------------------------
   
   # cd $HOME
@@ -677,15 +678,6 @@
   session setup failed: NT_STATUS_LOGON_FAILURE -> Sambaサーバーと接続できなくなる
   --------------------------------------------------
   
-  # cd /home/samba
-  # ls -lh (共有フォルダの内容を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:29 file1.txt
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:29 file2.txt
-  --------------------------------------------------
-  
   # cd $HOME
   # setenforce 1 (SELinuxの有効化)
   
@@ -708,22 +700,22 @@
     
     操作1
     ==================================================
-    ネットワークパス「\\FS01\share」にアクセス -> Sambaユーザー(kate)の資格情報入力
+    ネットワークパス「\\FS01\share」にアクセス -> 資格情報ダイアログ、Sambaユーザー(kate)のユーザーとパスワード入力
     ==================================================
     
     操作2
     ==================================================
-    共有フォルダ中の「file1-2.txt」をローカルにダウンロード
+    共有フォルダ中の「file[1-2].txt」をローカルにダウンロード
     ==================================================
     
     操作3
     ==================================================
-    ローカルにコピーしたファイルを元に「file3-4.txt」を作成
+    ローカルにコピーしたファイルを元に「file[3-4].txt」を作成
     ==================================================
     
     操作4
     ==================================================
-    ファイル「file3-4.txt」を共有フォルダにアップロード
+    ファイル「file[1-4].txt」を共有フォルダにアップロード
     ==================================================
     
   # cd /home/samba
@@ -753,13 +745,13 @@
   
 [内容]
   ## 作業内容
-    Windows側にSamba登録ユーザーのホームディレクトリを開放する
+    登録ユーザーのホームディレクトリを開放する
   
   ## 使用マシン
     HOST : localhost               # ホスト名を「FS01」のまま
     IPV4 : 192.168.1.3             # DHCP
     MEMO : ノート(CentOS7)         # Windows用ファイルサーバーに構築する
-    USER : kate, mike              # OSユーザーで追加しておく
+    USER : root                    # root
   
   ## 使用マシン
     HOST : localhost               # ホスト名を「PC01」のまま
@@ -781,7 +773,7 @@
   --------------------------------------------------
   
   # cd /etc/samba
-  # vi smb.conf (設定ファイルのバックアップ)
+  # vi smb.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -817,9 +809,9 @@
     browseable = Yes                   // Windows User can browse this SHARE
     writable = Yes                     // Windows User can write in this SHARE
     path = /home/samba                 // Specify the directory path for this SHARE
-    public = No                        // Guest User can not login (Yes -> No)
-    guest ok = No                      // Guest User can not login (Yes -> No)
-    guest only = No                    // Guest User can not login (Yes -> No)
+    public = No                        // Guest User can not access (Yes -> No)
+    guest ok = No                      // Guest User can not access (Yes -> No)
+    guest only = No                    // Guest User can not access (Yes -> No)
   --------------------------------------------------
   
   # cd $HOME
@@ -1003,7 +995,7 @@
     
     操作1
     ==================================================
-    ネットワークパス「\\FS01」にアクセス -> Sambaユーザー(kate)の資格情報入力
+    ネットワークパス「\\FS01」にアクセス -> 資格情報ダイアログ、Sambaユーザー(kate)のユーザーとパスワード入力
     ==================================================
     
     操作2
@@ -1013,7 +1005,7 @@
     
     操作3
     ==================================================
-    フォルダ「homes & kate」の内容はファイル「file1.txt」のみ
+    フォルダ「homes & kate」の内容はファイル「file1.txt」-> homes = kate の認識でOK
     ==================================================
     
     操作4
