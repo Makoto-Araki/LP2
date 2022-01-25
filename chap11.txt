@@ -4,6 +4,8 @@
 [03] Samba - 03 (ホームディレクトリ)
 [04] Samba - 04 (パスワード変更)
 [05] Samba - 05 (マスターブラウザの検索)
+[06] CIFS - 01 (Windows側の共有フォルダにSambaクライアントでアクセス)
+[07] CIFS - 02 ()
 ================================================================================
 [01]
   Samba - 01 (共有フォルダ - 誰でもアクセス可能)
@@ -327,24 +329,35 @@
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122maと入力)
   Try "help" to get a list of possible commands.
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file1.txt
-
-  Put file file1.txt? (yes)
-  putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file2.txt
-
-  Put file file2.txt? (yes)
-  putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file1.txt? (yes)
+    putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file2.txt? (yes)
+    putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd /home/samba
@@ -383,24 +396,35 @@
   --------------------------------------------------
   Enter WORKGROUP\AAAA's password: (AAAAと入力) -> 当然ながらOSユーザーにもSambaユーザーにも未登録
   Try "help" to get a list of possible commands.
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file3.txt
-
-  Put file file3.txt? (yes)
-  putting file file3.txt as \file3.txt (1.2 kb/s) (average 1.2 kb/s)
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file4.txt
-
-  Put file file4.txt? (yes)
-  putting file file4.txt as \file4.txt (2.9 kb/s) (average 1.7 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file3.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file3.txt? (yes)
+    putting file file3.txt as \file3.txt (1.2 kb/s) (average 1.2 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file4.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file4.txt? (yes)
+    putting file file4.txt as \file4.txt (2.9 kb/s) (average 1.7 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd /home/samba
@@ -621,24 +645,35 @@
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122maと入力)
   Try "help" to get a list of possible commands.
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file1.txt
-
-  Put file file1.txt? (yes)
-  putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file2.txt
-
-  Put file file2.txt? (yes)
-  putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file1.txt? (yes)
+    putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file2.txt? (yes)
+    putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd /home/samba
@@ -883,17 +918,26 @@
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122maと入力)
   Try "help" to get a list of possible commands.
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file1.txt
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file1.txt? (yes)
+    putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
 
-  Put file file1.txt? (yes)
-  putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd $HOME
@@ -903,17 +947,26 @@
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122maと入力)
   Try "help" to get a list of possible commands.
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file2.txt
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file2.txt? (yes)
+    putting file file2.txt as \file2.txt (0.5 kb/s) (average 0.5 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
 
-  Put file file2.txt? (yes)
-  putting file file2.txt as \file2.txt (0.5 kb/s) (average 0.5 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd $HOME
@@ -924,16 +977,25 @@
   Enter WORKGROUP\mike's password: (mi0122maと入力)
   Try "help" to get a list of possible commands.
   
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file3.txt
-  
-  Put file file3.txt? (yes)
-  putting file file3.txt as \file3.txt (0.5 kb/s) (average 0.5 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file3.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file3.txt? (yes)
+    putting file file3.txt as \file3.txt (0.5 kb/s) (average 0.5 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd $HOME
@@ -943,17 +1005,26 @@
   --------------------------------------------------
   Enter WORKGROUP\mike's password: (mi0122maと入力)
   Try "help" to get a list of possible commands.
-  
-  // ファイルを共有フォルダにアップロード
-  smb: \> 
-  smb: \> mput file4.txt
-  
-  Put file file4.txt? (yes)
-  putting file file4.txt as \file4.txt (0.5 kb/s) (average 0.5 kb/s)
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    
+    smb: \> (ファイルを共有フォルダにアップロード)
+    smb: \>  mput file4.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Put file file4.txt? (yes)
+    putting file file4.txt as \file4.txt (0.5 kb/s) (average 0.5 kb/s)
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   # cd /home/samba
@@ -1285,10 +1356,17 @@
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122ma9310saと入力)
   Try "help" to get a list of possible commands.
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    プロンプトに戻る
+    
   --------------------------------------------------
   
   # cd $HOME
@@ -1298,10 +1376,17 @@
   --------------------------------------------------
   Enter WORKGROUP\mike's password: (mi0122ma9310saと入力)
   Try "help" to get a list of possible commands.
-  
-  // Sambaクライアント終了
-  smb: \> 
-  smb: \> exit
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    プロンプトに戻る
+    
   --------------------------------------------------
   
   # cd $HOME
@@ -1391,6 +1476,99 @@
   コマンドの実行結果
   --------------------------------------------------
   192.168.1.2 PC01<00>
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[06]
+  CIFS - 01 (Windows側の共有フォルダにSambaクライアントでアクセス)
+  
+[内容]
+  ## 作業内容
+    Windows側の共有フォルダにSambaクライアントでアクセスする
+  
+  ## 使用マシン
+    HOST : localhost               # ホスト名は「FS01」のまま
+    IPV4 : 192.168.1.3             # DHCP
+    MEMO : ノート(CentOS7)         # 追記事項なし
+    USER : root                    # 追記事項なし
+  
+  ## 使用マシン
+    HOST : localhost               # ホスト名は「PC01」のまま
+    IPV4 : 192.168.1.2             # DHCP
+    MEMO : ノート(Windows10)       # 追記事項なし
+    USER : Makoto                  # 今回の動作確認で追加されたOSユーザー
+  
+  ## 設定情報(Windows)
+    DIRECTORY : C:/share           # サーバー側ディレクトリ
+    SHARENAME : share              # 共有設定済み(所有者 = Owner, アクセス権 = Owner, Makoto)
+    MEMO : file[1-2].txt           # 先の記録で使用したファイルを共有内に設置
+  
+[確認]
+  # cd $HOME
+  # setenforce 0 (SELinuxの無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
+  --------------------------------------------------
+  
+  # cd $HOME
+  # smbclient -U Makoto //PC01/share (SambaクライアントでWindows側の共有フォルダに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Enter WORKGROUP\Makoto's password: (Windows側でMakoto作成時に設定したパスワード入力)
+  Try "help" to get a list of possible commands.
+    
+    smb: \> (共有フォルダ内のファイル一覧)
+    smb: \>  ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    .  (Parent)                         D        0  Tue Jan 25 14:37:54 2022
+    .. (Curent)                         D        0  Tue Jan 25 14:37:54 2022
+    file1.txt                           A       12  Mon Jan 24 18:29:11 2022
+    file2.txt                           A       12  Mon Jan 24 18:29:18 2022
+    --------------------------------------------------
+    
+    smb: \> (ファイルの内容を確認)
+    smb: \>  more file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    getting file \file1.txt of size 12 as /tmp/smbmore.QBMOeW (0.2 KiloBytes/sec) (average 0.2 KiloBytes/sec)
+    AAA AAA AAA
+    --------------------------------------------------
+    
+    smb: \> (ファイルの内容を確認)
+    smb: \>  more file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    getting file \file2.txt of size 12 as /tmp/smbmore.yFgF0u (3.9 KiloBytes/sec) (average 0.4 KiloBytes/sec)
+    BBB BBB BBB
+    --------------------------------------------------
+    
+    smb: \> (Sambaクライアント終了)
+    smb: \>  exit
+
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
+  --------------------------------------------------
+  
+  # cd $HOME
+  # setenforce 1 (SELinuxの有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
