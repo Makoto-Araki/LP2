@@ -1366,7 +1366,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  192.168.1.2 WORKGROUP<1d>
+  192.168.1.2 WORKGROUP<1d>  // マスターブラウザは「192.168.1.2」と判明
   --------------------------------------------------
   
   # cd $HOME
@@ -1375,12 +1375,12 @@
   コマンドの実行結果
   --------------------------------------------------
   Looking up status of 192.168.1.2
-    PC01            <00> -         B <ACTIVE> 
-    WORKGROUP       <00> - <GROUP> B <ACTIVE> 
-    PC01            <20> -         B <ACTIVE> 
-    WORKGROUP       <1e> - <GROUP> B <ACTIVE> 
-    WORKGROUP       <1d> -         B <ACTIVE> 
-    ..__MSBROWSE__. <01> - <GROUP> B <ACTIVE> 
+    PC01            <00> -         B <ACTIVE>  // NetBIOS名は「PC01」と判明
+    WORKGROUP       <00> - <GROUP> B <ACTIVE>
+    PC01            <20> -         B <ACTIVE>  // NetBIOS名は「PC01」と判明
+    WORKGROUP       <1e> - <GROUP> B <ACTIVE>
+    WORKGROUP       <1d> -         B <ACTIVE>
+    ..__MSBROWSE__. <01> - <GROUP> B <ACTIVE>
   
   MAC Address = EC-F4-BB-47-A4-58
   --------------------------------------------------
