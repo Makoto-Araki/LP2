@@ -22,18 +22,26 @@
     dhclient -d  // フォアグラウンド処理
     dhclient -r  //
     dhclient -H  //
-
+  
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install dhcp (パッケージ追加)
+  vm12# cd $HOME
+  vm12# yum -y install dhcp (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/dhcp/dhcp.conf (設定ファイルの修正)
+  vm12# cd /etc/dhcp
+  vm12# cp -p dhcpd.conf dhcpd.conf.org (設定ファイルのバックアップ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dhcp
+  vm12# vi dhcpd.conf (設定ファイルの作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -46,7 +54,7 @@
     range 192.168.122.100 192.168.122.150;     // IPアドレス - リース範囲
     default-lease-time 21600;                  // IPアドレス - リース期間(秒)
     max-lease-time 43200;                      // IPアドレス - 最大期間(秒)
-
+    
     ## ホスト(vm13)
     host vm13 {
       hardware ethernet 52:54:00:05:4e:7c;  // MACアドレス
@@ -55,68 +63,150 @@
   }
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl start dhcpd (サービスの起動)
+  vm12# cd $HOME
+  vm12# systemctl start dhcpd (サービスの起動)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
     
     vm13$ cd $HOME
-    vm13$ ip addr show (DHCPクライアント実行前)
+    vm13$ ip addr show eth0 (IPアドレスを確認)
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+      link/ether 52:54:00:05:4e:7c brd ff:ff:ff:ff:ff:ff
+      inet 192.168.122.13/24 brd 192.168.122.255 scope global noprefixroute eth0  // IPv4 = 192.168.122.13
+        valid_lft forever preferred_lft forever
+      inet6 fe80::5054:ff:fe05:4e7c/64 scope link 
+        valid_lft forever preferred_lft forever
     --------------------------------------------------
     
     vm13$ cd $HOME
-    vm13$ dhclient -d -H vm12 eth0 (DHCPクライアントによるIPアドレス取得)
+    vm13$ sudo vi /etc/hosts (設定ファイル修正)
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11
+    192.168.122.12 vm12 vm12.example.com
+    192.168.122.13 vm13 (削除)
+    192.168.122.14 vm14
     --------------------------------------------------
     
     vm13$ cd $HOME
-    vm13$ ip addr show (DHCPクライアント実行後)
+    vm13$ nmcli connection (ネットワーク接続プロファイル)
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    NAME  UUID                                  TYPE      DEVICE 
+    eth0  db786b62-d32c-49b8-aa68-c3f8d11f218b  ethernet  eth0   
     --------------------------------------------------
     
-  vm12$ cd $HOME
-  vm12$ sudo systemctl stop dhcpd (サービスの停止)
+    vm13$ cd $HOME
+    vm13$ LANG=C nmcli -f ipv4 connection show eth0 (ネットワーク接続プロファイルからIPv4のみ抽出)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ipv4.method             : manual
+    ipv4.dns                : 192.168.122.1
+    ipv4.dns-search         : --
+    ipv4.dns-options        : ""
+    ipv4.dns-priority       : 0
+    ipv4.addresses          : 192.168.122.13/24
+    ipv4.gateway            : 192.168.122.1
+    ipv4.routes             : --
+    ipv4.route-metric       : -1
+    ipv4.route-table        : 0 (unspec)
+    ipv4.routing-rules      : --
+    ipv4.ignore-auto-routes : no
+    ipv4.ignore-auto-dns    : no
+    ipv4.dhcp-client-id     : --
+    ipv4.dhcp-timeout       : 0 (default)
+    ipv4.dhcp-send-hostname : yes
+    ipv4.dhcp-hostname      : --
+    ipv4.dhcp-fqdn          : --
+    ipv4.never-default      : no
+    ipv4.may-fail           : yes
+    ipv4.dad-timeout        : -1 (default)
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo nmcli connection down eth0 (ネットワーク接続プロファイルを無効化)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    接続 'eth0' が正常に非アクティブ化されました (D-Bus アクティブパス: /org/freedesktop/NetworkManager/ActiveConnection/1)
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ ip addr show eth0 (IPアドレスを確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+      link/ether 52:54:00:05:4e:7c brd ff:ff:ff:ff:ff:ff
+      // IPv4 is not gone
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dhclient -d -H vm12 eth0 (フォアグラウンド処理、DHCPサーバー指定でIPアドレス取得)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 省略
+
+    Listening on LPF/eth0/52:54:00:05:4e:7c
+    Sending on   LPF/eth0/52:54:00:05:4e:7c
+    Sending on   Socket/fallback
+    DHCPREQUEST on eth0 to 255.255.255.255 port 67 (xid=0x70672627)
+    DHCPACK from 192.168.122.12 (xid=0x70672627)
+    bound to 192.168.122.51 -- renewal in 10571 seconds.
+
+    // Ctrl + C で終了
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ ip addr show eth0 (IPアドレスを確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+      link/ether 52:54:00:05:4e:7c brd ff:ff:ff:ff:ff:ff
+      inet 192.168.122.51/24 brd 192.168.122.255 scope global dynamic eth0  // IPv4 = 192.168.122.51
+        valid_lft 21554sec preferred_lft 21554sec
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /etc/hosts (設定ファイル修正)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11
+    192.168.122.12 vm12 vm12.example.com
+    192.168.122.13 vm13 (元に戻す)
+    192.168.122.14 vm14
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl poweroff (仮想マシンのシャットダウン)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+  vm12# cd $HOME
+  vm12# systemctl stop dhcpd (サービスの停止)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo ./configure --prefix=/usr/local/apr-1.7.0 (Makefile生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
