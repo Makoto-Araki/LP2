@@ -1,7 +1,8 @@
 ================================================================================
 [01] DHCP
 [02] PAM - 01 (モジュール一覧と設定ファイル)
-[03] //
+[03] PAM - 02 (パスワード強化 - passwd)
+[04] //
 ================================================================================
 [01]
   DHCP
@@ -215,11 +216,11 @@
   
 ================================================================================
 [02]
-  PAM - 01 (モジュール一覧と設定ファイル)
+  PAM - 01 (モジュールと設定ファイル)
   
 [内容]
   ## 作業内容
-    Linuxの認証機構(PAM)で使用されるモジュール一覧と設定ファイルを見て行く
+    Linuxの認証機構(PAM)で使用されるモジュールと設定ファイルを見て行く
   
   ## 使用マシン
     HOST : vm12
@@ -266,12 +267,12 @@
   以下の確認に続く
   
 ================================================================================
-[02]
-  PAM - 02 (パスワード強化 - passwd)
+[03]
+  PAM - 02 (設定ファイルの編集)
   
 [内容]
   ## 作業内容
-    パスワード強化 - パスワードに連続した３個以上の文字を禁止
+    設定ファイル(su)で管理者(root)であっても他ユーザーになる時にはパスワード入力
   
   ## 使用マシン
     HOST : vm12
@@ -280,38 +281,52 @@
   
 [確認]
   vm12# cd $HOME
-  vm12# useradd -s /bin/bash kate (ユーザー追加)
+  vm12# su makoto (他ユーザーになる)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (省略) -> パスワード入力なしに他ユーザーになれる
   --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# LANG=C passwd kate (パスワード設定)
+  vm12$ cd $HOME
+  vm12$ exit (管理者に戻る)
   
   コマンドの実行結果
   --------------------------------------------------
-  Changing password for user kate.
-  New password: (ka111sa22ma33と入力)
-  Retype new password: (ka111sa22ma33と入力)
-  passwd: all authentication tokens updated successfully.
+  exit
   --------------------------------------------------
   
   vm12# cd /etc/pam.d
-  vm12# cat passwd | grep -vE '^#|^$' (設定ファイルの出力)
+  vm12# cat su | grep -vE '^#|^$' (設定ファイルの確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  auth        include     system-auth                       // 設定ファイル「system-auth」を呼出
-  account     include     system-auth                       // 設定ファイル「system-auth」を呼出
-  password    substack    system-auth                       // 設定ファイル「system-auth」を呼出
-  -password   optional    pam_gnome_keyring.so use_authtok  // タイプに「-」が付くとモジュールがロード失敗でもエラー出力しない
-  password    substack    postlogin                         // 設定ファイル「postlogin」を呼出
+  auth      sufficient  pam_rootok.so
+  auth      substack    system-auth
+  auth      include     postlogin
+  account   sufficient  pam_succeed_if.so uid = 0 use_uid quiet
+  account   include     system-auth
+  password  include     system-auth
+  session   include     system-auth
+  session   include     postlogin
+  session   optional    pam_xauth.so
+
+  // pam_rootok.so     : ユーザー「root」か否かをチェック
+  // system-auth       : ファイル「system-auth」のセクション「auth」を使用
+  // postlogin         : ファイル「postlogin」のセクション「auth」を使用
+  // pam_succeed_if.so : アカウント属性(例. UID)をチェック
+  // uid = 0           : UID=0 すなわち root
+  // use_uid           : コマンド「su」の実行ユーザーを対象
+  // quiet             : ログに記録しない
+  // system-auth       : ファイル「system-auth」のセクション「account」を使用
+  // system-auto       : ファイル「system-auth」のセクション「password」を使用
+  // system-auth       : ファイル「system-auth」のセクション「session」を使用
+  // postlogin         : ファイル「postlogin」のセクション「session」を使用
+  // pam_xauth.so      : おそらく「xauth」の認証関連
   --------------------------------------------------
   
   vm12# cd /etc/pam.d
-  vm12# cat system-auth | grep -vE '^#|^$' (設定ファイルの出力)
+  vm12# cat system-auth | grep -vE '^#|^$' (設定ファイルの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -324,93 +339,82 @@
   account     sufficient    pam_localuser.so
   account     sufficient    pam_succeed_if.so uid < 1000 quiet
   account     required      pam_permit.so
-  password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=  // 該当モジュール
+  password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
   password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok
   password    required      pam_deny.so
   session     optional      pam_keyinit.so revoke
   session     required      pam_limits.so
-  -session    optional      pam_systemd.so
+  -session    optional      pam_systemd.so  // 冒頭の「-」でモジュールのロード失敗時でもログ出力しない
   session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
   session     required      pam_unix.so
+
+  // pam_env.so       : 設定ファイルを読み込み
+  // pam_faildelay.so : ログイン失敗後の待機時間を制御
+  // delay=2000000    : 待機時間を2000000マイクロ秒(2秒)に設定
+  // pam_unix.so      : 伝統的なパスワード認証
+  // nullok           : 空白パスワード許可
+  // try_first_pass   : 取得済パスワード再利用、未取得なら入力要求
+  // uid >= 1000      : UID>=1000 すなわち 一般ユーザー
+  // quiet_success    : 成功ログは記録しない
+  // pam_deny.so      : 常に失敗を返す
+  // pam_localuser.so : パスワードファイルのユーザー一覧
+  // uid < 1000       : UID<1000 すなわち 内部ユーザー
+  // pam_permit.so    : 常に成功を返す
+  // pam_pwquality.so : パスワード品質を制御
+  // local_users_only : パスワードファイル外のチェックを行わない
+  // retry=3          : 三回失敗したらエラー出力
+  // authtok_type=    : パスワード入力時のプロンプト文字
+  // sha512           : パスワードをアルゴリズム「sha512」で暗号化
+  // shadow           : パスワードをファイル「/etc/shadow」に保持
+  // use_authtok      : 以降のモジュールでパスワード入力要求をせず、入力パスワードを使用
+  // pam_keyinit.so   : 不明
+  // revoke           : 不明
+  // pam_limits.so    : リソース制限を制御
+  // pam_systemd.so   : 不明
+  // [success=1 default=ignore] : 成功時は1行スキップ(次の行を処理しない)、失敗時は無視して次の行を処理
+  // service in crond : サービス名が「crond」
   --------------------------------------------------
   
-  vm12# cd /etc/security
-  vm12# vi pwquality.conf (該当モジュールの設定ファイルの出力)
+  vm12# cd /etc/pam.d
+  vm12# cp -p su su.org (設定ファイルのバックアップ)
   
   コマンドの実行結果
   --------------------------------------------------
-  # Configuration for systemwide password quality limits
-  # Defaults:
-  #
-  # Number of characters in the new password that must not be present in the
-  # old password.
-  # difok = 5
-  #
-  # Minimum acceptable size for the new password (plus one if
-  # credits are not disabled which is the default). (See pam_cracklib manual.)
-  # Cannot be set to lower value than 6.
-  # minlen = 9
-  #
-  # The maximum credit for having digits in the new password. If less than 0
-  # it is the minimum number of digits in the new password.
-  # dcredit = 1
-  #
-  # The maximum credit for having uppercase characters in the new password.
-  # If less than 0 it is the minimum number of uppercase characters in the new
-  # password.
-  # ucredit = 1
-  #
-  # The maximum credit for having lowercase characters in the new password.
-  # If less than 0 it is the minimum number of lowercase characters in the new
-  # password.
-  # lcredit = 1
-  #
-  # The maximum credit for having other characters in the new password.
-  # If less than 0 it is the minimum number of other characters in the new
-  # password.
-  # ocredit = 1
-  #
-  # The minimum number of required classes of characters for the new
-  # password (digits, uppercase, lowercase, others).
-  # minclass = 0
-  #
-  # The maximum number of allowed consecutive same characters in the new password.
-  # The check is disabled if the value is 0.
-  maxrepeat = 3  // コメント解除、0 -> 3 に変更
-  #
-  # The maximum number of allowed consecutive characters of the same class in the
-  # new password.
-  # The check is disabled if the value is 0.
-  # maxclassrepeat = 0
-  #
-  # Whether to check for the words from the passwd entry GECOS string of the user.
-  # The check is enabled if the value is not 0.
-  # gecoscheck = 0
-  #
-  # Path to the cracklib dictionaries. Default is to use the cracklib default.
-  # dictpath =
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/pam.d
+  vm12# vi su (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 1行目をコメントアウト
+  --------------------------------------------------
+  
+  vm12# cd /etc/pam.d
+  vm12# diff su.org su (修正箇所の確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  < auth    sufficient  pam_rootok.so
+  ---
+  > #auth   sufficient  pam_rootok.so
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# LANG=C passwd kate (パスワード設定)
+  vm12# su makoto (他ユーザーになる)
   
   コマンドの実行結果
   --------------------------------------------------
-  Changing password for user kate.
-  New password: (ka111sa22ma33と入力)  // パスワードの「111」の部分がチェックに抵触
-  BAD PASSWORD: The password contains more than 3 same characters consecutively
-  ...
+  パスワード: (パスワード入力)
   --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# LANG=C passwd kate (パスワード設定)
+  vm12$ cd $HOME
+  vm12$ exit (管理者に戻る)
   
   コマンドの実行結果
   --------------------------------------------------
-  Changing password for user kate.
-  New password: (ka11sa22ma33と入力)
-  Retype new password: (ka11sa22ma33と入力)
-  passwd: all authentication tokens updated successfully.
+  exit
   --------------------------------------------------
   
   以下の確認に続く
