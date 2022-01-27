@@ -266,3 +266,153 @@
   以下の確認に続く
   
 ================================================================================
+[02]
+  PAM - 02 (パスワード強化 - passwd)
+  
+[内容]
+  ## 作業内容
+    パスワード強化 - パスワードに連続した３個以上の文字を禁止
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# useradd -s /bin/bash kate (ユーザー追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# LANG=C passwd kate (パスワード設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Changing password for user kate.
+  New password: (ka111sa22ma33と入力)
+  Retype new password: (ka111sa22ma33と入力)
+  passwd: all authentication tokens updated successfully.
+  --------------------------------------------------
+  
+  vm12# cd /etc/pam.d
+  vm12# cat passwd | grep -vE '^#|^$' (設定ファイルの出力)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  auth        include     system-auth                       // 設定ファイル「system-auth」を呼出
+  account     include     system-auth                       // 設定ファイル「system-auth」を呼出
+  password    substack    system-auth                       // 設定ファイル「system-auth」を呼出
+  -password   optional    pam_gnome_keyring.so use_authtok  // タイプに「-」が付くとモジュールがロード失敗でもエラー出力しない
+  password    substack    postlogin                         // 設定ファイル「postlogin」を呼出
+  --------------------------------------------------
+  
+  vm12# cd /etc/pam.d
+  vm12# cat system-auth | grep -vE '^#|^$' (設定ファイルの出力)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  auth        required      pam_env.so
+  auth        required      pam_faildelay.so delay=2000000
+  auth        sufficient    pam_unix.so nullok try_first_pass
+  auth        requisite     pam_succeed_if.so uid >= 1000 quiet_success
+  auth        required      pam_deny.so
+  account     required      pam_unix.so
+  account     sufficient    pam_localuser.so
+  account     sufficient    pam_succeed_if.so uid < 1000 quiet
+  account     required      pam_permit.so
+  password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=  // 該当モジュール
+  password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok
+  password    required      pam_deny.so
+  session     optional      pam_keyinit.so revoke
+  session     required      pam_limits.so
+  -session    optional      pam_systemd.so
+  session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+  session     required      pam_unix.so
+  --------------------------------------------------
+  
+  vm12# cd /etc/security
+  vm12# vi pwquality.conf (該当モジュールの設定ファイルの出力)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  # Configuration for systemwide password quality limits
+  # Defaults:
+  #
+  # Number of characters in the new password that must not be present in the
+  # old password.
+  # difok = 5
+  #
+  # Minimum acceptable size for the new password (plus one if
+  # credits are not disabled which is the default). (See pam_cracklib manual.)
+  # Cannot be set to lower value than 6.
+  # minlen = 9
+  #
+  # The maximum credit for having digits in the new password. If less than 0
+  # it is the minimum number of digits in the new password.
+  # dcredit = 1
+  #
+  # The maximum credit for having uppercase characters in the new password.
+  # If less than 0 it is the minimum number of uppercase characters in the new
+  # password.
+  # ucredit = 1
+  #
+  # The maximum credit for having lowercase characters in the new password.
+  # If less than 0 it is the minimum number of lowercase characters in the new
+  # password.
+  # lcredit = 1
+  #
+  # The maximum credit for having other characters in the new password.
+  # If less than 0 it is the minimum number of other characters in the new
+  # password.
+  # ocredit = 1
+  #
+  # The minimum number of required classes of characters for the new
+  # password (digits, uppercase, lowercase, others).
+  # minclass = 0
+  #
+  # The maximum number of allowed consecutive same characters in the new password.
+  # The check is disabled if the value is 0.
+  maxrepeat = 3  // コメント解除、0 -> 3 に変更
+  #
+  # The maximum number of allowed consecutive characters of the same class in the
+  # new password.
+  # The check is disabled if the value is 0.
+  # maxclassrepeat = 0
+  #
+  # Whether to check for the words from the passwd entry GECOS string of the user.
+  # The check is enabled if the value is not 0.
+  # gecoscheck = 0
+  #
+  # Path to the cracklib dictionaries. Default is to use the cracklib default.
+  # dictpath =
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# LANG=C passwd kate (パスワード設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Changing password for user kate.
+  New password: (ka111sa22ma33と入力)  // パスワードの「111」の部分がチェックに抵触
+  BAD PASSWORD: The password contains more than 3 same characters consecutively
+  ...
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# LANG=C passwd kate (パスワード設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Changing password for user kate.
+  New password: (ka11sa22ma33と入力)
+  Retype new password: (ka11sa22ma33と入力)
+  passwd: all authentication tokens updated successfully.
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
