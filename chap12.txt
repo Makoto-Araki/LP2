@@ -680,7 +680,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  {SSHA}Km3ThxpWQLj7t9t+94NLux5baFycy5lE
+  {SSHA}JzmzazTN2IgJ+ODY3Ut+0sfP/hQApmJf
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -691,7 +691,7 @@
   dn: olcDatabase={0}config,cn=config
   changetype: modify
   add: olcRootPW
-  olcRootPW: {SSHA}Km3ThxpWQLj7t9t+94NLux5baFycy5lE  // 設定データベースの管理者用パスワードの項目追加
+  olcRootPW: {SSHA}JzmzazTN2IgJ+ODY3Ut+0sfP/hQApmJf  // 設定データベースの管理者用パスワードの項目追加
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -732,7 +732,7 @@
   objectClass: olcDatabaseConfig
   olcDatabase: {0}config
   olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none
-  olcRootPW: {SSHA}Km3ThxpWQLj7t9t+94NLux5baFycy5lE  // 設定データベースの管理者用パスワードの項目追加
+  olcRootPW: {SSHA}JzmzazTN2IgJ+ODY3Ut+0sfP/hQApmJf  // 設定データベースの管理者用パスワードの項目追加
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -767,7 +767,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  {SSHA}iZHuCHr1i+DLTDj/yNg8cHqTKrmI/KLS
+  {SSHA}zJ9UPeI6NsWiUDER6sTqT/83YHUnuOXb
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -788,7 +788,7 @@
   dn: olcDatabase={2}hdb,cn=config
   changetype: modify
   add: olcRootPW
-  olcRootPW: {SSHA}iZHuCHr1i+DLTDj/yNg8cHqTKrmI/KLS
+  olcRootPW: {SSHA}zJ9UPeI6NsWiUDER6sTqT/83YHUnuOXb
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -804,7 +804,7 @@
   SASL/EXTERNAL authentication started
   SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
   SASL SSF: 0
-
+  
   // 実行結果
   modifying entry "olcDatabase={2}hdb,cn=config"
   modifying entry "olcDatabase={2}hdb,cn=config"
@@ -836,7 +836,7 @@
   olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
   olcSuffix: dc=AAA,dc=com                           // ベースDNの変更を確認
   olcRootDN: cn=Manager,dc=AAA,dc=com                // 管理者DNの変更を確認
-  olcRootPW: {SSHA}iZHuCHr1i+DLTDj/yNg8cHqTKrmI/KLS  // 管理者DNのパスワード
+  olcRootPW: {SSHA}zJ9UPeI6NsWiUDER6sTqT/83YHUnuOXb  // 管理者DNのパスワード
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -943,16 +943,16 @@
   コマンドの実行結果
   --------------------------------------------------
   // user01
-  {SSHA}A0ZAUwuks2gJMl9q84QdU2mHjmlgj/FO
+  {SSHA}RGi5eVRiUhzkaFkARCNPA8VG1rV4xqQ6
 
   // user02
-  {SSHA}zJHT4GMdcODVLagZYXIa15boGkOabBz3
+  {SSHA}xgdLDP0wtpAG9DbTCKUAXWuJY78G4aaR
 
   // user03
-  {SSHA}aerxXe9j5nBnMB/4/Qd3zJ5dyaZTPtPs
+  {SSHA}YwZA+Clngdjxr9ciobUBPdM2Qfw5R3vH
 
   // user04
-  {SSHA}w0C5buEguMP93nJhHCCWW6JKXdLPUHAs
+  {SSHA}OtfrlSNDC0AftJnDQgkULw1wDzocvYbU
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1010,7 +1010,7 @@
   objectClass: account
   objectClass: posixAccount
   objectClass: top
-  userPassword: {SSHA}A0ZAUwuks2gJMl9q84QdU2mHjmlgj/FO
+  userPassword: {SSHA}RGi5eVRiUhzkaFkARCNPA8VG1rV4xqQ6
   loginShell: /bin/bash
   uidNumber: 1051  // システムで既に使用されていないか注意
   gidNumber: 1041  // システムで既に使用されていないか注意
@@ -1022,7 +1022,7 @@
   objectClass: account
   objectClass: posixAccount
   objectClass: top
-  userPassword: {SSHA}zJHT4GMdcODVLagZYXIa15boGkOabBz3
+  userPassword: {SSHA}xgdLDP0wtpAG9DbTCKUAXWuJY78G4aaR
   loginShell: /bin/bash
   uidNumber: 1052  // システムで既に使用されていないか注意
   gidNumber: 1041  // システムで既に使用されていないか注意
@@ -1034,7 +1034,7 @@
   objectClass: account
   objectClass: posixAccount
   objectClass: top
-  userPassword: {SSHA}aerxXe9j5nBnMB/4/Qd3zJ5dyaZTPtPs
+  userPassword: {SSHA}YwZA+Clngdjxr9ciobUBPdM2Qfw5R3vH
   loginShell: /bin/bash
   uidNumber: 1053  // システムで既に使用されていないか注意
   gidNumber: 1042  // システムで既に使用されていないか注意
@@ -1046,7 +1046,7 @@
   objectClass: account
   objectClass: posixAccount
   objectClass: top
-  userPassword: {SSHA}w0C5buEguMP93nJhHCCWW6JKXdLPUHAs
+  userPassword: {SSHA}OtfrlSNDC0AftJnDQgkULw1wDzocvYbU
   loginShell: /bin/bash
   uidNumber: 1054  // システムで既に使用されていないか注意
   gidNumber: 1042  // システムで既に使用されていないか注意
@@ -1159,16 +1159,80 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  #vm12# cd $HOME
-  #vm12# yum -y install sssd sssd-client sssd-ldap (パッケージ追加)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> エラー出力が無ければOK
-  #--------------------------------------------------
+  vm12# cd $HOME
+  vm12# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
   
   vm12# cd $HOME
   vm12# setenforce 0 (SELinuxを無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/sssd
+  vm12# vi sssd.conf (設定ファイルを作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [domain/default]
+  autofs_provider = ldap
+  cache_credentials = True          // 認証情報のキャッシュ保存
+  ldap_uri = ldapi:///              // サーバーのURI
+  ldap_search_base = dc=AAA,dc=com  // ベースDN
+  id_provider = ldap                // バックエンド
+  auth_provider = ldap
+  chpass_provider = ldap
+  ldap_tls_cacertdir = /etc/openldap/cacerts
+  enumerate = true
+  
+  [sssd]
+  services = nss, pam, autofs
+  domains = default
+  
+  [nss]
+  homedir_substring = /home
+  
+  [pam]
+  # No Settings
+  
+  [sudo]
+  # No Settings
+  
+  [autofs]
+  # No Settings
+  
+  [ssh]
+  # No Settings
+  
+  [pac]
+  # No Settings
+  
+  [ifp]
+  # No Settings
+  
+  [secrets]
+  # No Settings
+  
+  [session_recording]
+  # No Settings
+  --------------------------------------------------
+  
+  vm12# cd /etc/sssd
+  vm12# chown root.root sssd.conf ; chmod 600 sssd.conf (設定ファイルの所有者と権限変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl restart sssd (サービスの再起動)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1183,8 +1247,8 @@
     --ldapserver=ldap://localhost/  // サーバーを指定
     --ldapbasedn=dc=AAA,dc=com      // ベースDN
     --enablemkhomedir               // 自動的にホームディレクトリ作成
-    #--enablesssd                    // SSSDを有効化
-    #--enablesssdauth                // SSSD認証を有効化
+    --enablesssd                    // SSSDを有効化
+    --enablesssdauth                // SSSD認証を有効化
     --update                        // 設定を反映
   
   コマンドの実行結果
@@ -1192,102 +1256,43 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  #vm12# cd /etc/sssd
-  #vm12# cp -p sssd.conf sssd.conf.org (設定ファイルをバックアップ)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> 出力なし
-  #--------------------------------------------------
-  
-  #vm12# cd /etc/sssd
-  #vm12# vi sssd.conf (設定ファイルを修正)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #[domain/default]
-  #autofs_provider = ldap
-  #cache_credentials = True          // 認証情報のキャッシュ保存
-  #ldap_uri = ldapi:///              // サーバーのURI
-  #ldap_search_base = dc=AAA,dc=com  // ベースDN
-  #id_provider = ldap                // バックエンド
-  #auth_provider = ldap
-  #chpass_provider = ldap
-  #ldap_tls_cacertdir = /etc/openldap/cacerts
-  #enumerate = true
-  #
-  #[sssd]
-  #services = nss, pam, autofs
-  #domains = default
-  #
-  #[nss]
-  #homedir_substring = /home
-  #
-  #[pam]
-  ## No Settings
-  #
-  #[sudo]
-  ## No Settings
-  #
-  #[autofs]
-  ## No Settings
-  #
-  #[ssh]
-  ## No Settings
-  #
-  #[pac]
-  ## No Settings
-  #
-  #[ifp]
-  ## No Settings
-  #
-  #[secrets]
-  ## No Settings
-  #
-  #[session_recording]
-  ## No Settings
-  #--------------------------------------------------
-  
-  #vm12# cd /etc/sssd
-  #vm12# chown root.root sssd.conf ; chmod 600 sssd.conf (設定ファイルの所有者と権限変更)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> 出力なし
-  #--------------------------------------------------
-  
   vm12# cd $HOME
-  vm12# vi /etc/nsswitch (ネットワーク設定ファイルを確認)
+  vm12# vi /etc/nsswitch.conf (ネットワーク設定ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
+  // 確認する箇所
   passwd: files sss ldap
   shadow: files sss ldap
   group:  files sss ldap
   --------------------------------------------------
   
-  #vm12# cd $HOME
-  #vm12# yum -y erase nscd (パッケージを削除)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> エラー出力が無ければOK
-  #--------------------------------------------------
-  
-  #vm12# cd $HOME
-  #vm12# systemctl restart sssd (サービスの再起動)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> 出力なし
-  #--------------------------------------------------
-  
   vm12# cd $HOME
-  vm12# getent passwd | grep -i user01 (システムにLDAPユーザーが存在しないことを確認)
+  vm12# getent group | grep -E Group0[1-2] (システムにLDAPグループが存在することを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Group01:*:1041:
+  Group02:*:1042:
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# getent passwd | grep -E user0[1-4] (システムにLDAPユーザーが存在することを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  user01:*:1051:1041:User01:/home/user01:/bin/bash
+  user02:*:1052:1041:User02:/home/user02:/bin/bash
+  user03:*:1053:1042:User03:/home/user03:/bin/bash
+  user04:*:1054:1042:User04:/home/user04:/bin/bash
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ls -lh /home (ホームディレクトリはまだ存在しないことを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  drwx------. 2 makoto makoto 97 12月  1 19:49 makoto
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1354,11 +1359,7 @@
     --------------------------------------------------
     
   vm12# cd $HOME
-  vm12# (認証メカニズムを変更)
-    authconfig
-    --disableldap      // LDAPを無効化
-    --disableldapauth  // LDAP認証を無効化
-    --update           // 設定を反映
+  vm12# setenforce 1 (SELinuxを有効化)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1366,7 +1367,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# setenforce 1 (SELinuxを有効化)
+  vm12# systemctl stop sssd (サービスの停止)
   
   コマンドの実行結果
   --------------------------------------------------
