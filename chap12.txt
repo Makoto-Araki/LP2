@@ -1320,26 +1320,150 @@
   ログアウト
   --------------------------------------------------
     
+    //
+    
+    vm13# cd $HOME
+    vm13# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap (パッケージ追加)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# setenforce 0 (SELinuxを無効化)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13# cd /etc/sssd
+    vm13# vi sssd.conf (設定ファイルを作成)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [domain/default]
+    autofs_provider = ldap
+    cache_credentials = True          // 認証情報のキャッシュ保存
+    ldap_uri = ldapi://vm12/          // サーバーのURI
+    ldap_search_base = dc=AAA,dc=com  // ベースDN
+    id_provider = ldap                // バックエンド
+    auth_provider = ldap
+    chpass_provider = ldap
+    ldap_tls_cacertdir = /etc/openldap/cacerts
+    enumerate = true
+    
+    [sssd]
+    services = nss, pam, autofs
+    domains = default
+    
+    [nss]
+    homedir_substring = /home
+    
+    [pam]
+    # No Settings
+    
+    [sudo]
+    # No Settings
+    
+    [autofs]
+    # No Settings
+    
+    [ssh]
+    # No Settings
+    
+    [pac]
+    # No Settings
+    
+    [ifp]
+    # No Settings
+    
+    [secrets]
+    # No Settings
+    
+    [session_recording]
+    # No Settings
+    --------------------------------------------------
+    
+    vm13# cd /etc/sssd
+    vm13# chown root.root sssd.conf ; chmod 600 sssd.conf (設定ファイルの所有者と権限変更)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# systemctl restart sssd (サービスの再起動)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
     vm13# cd $HOME
     vm13# (認証メカニズムを変更)
       authconfig
-      --enableldap                  // LDAPを有効化
-      --enableldapauth              // LDAP認証を有効化
-      --ldapserver=vm12             // サーバーを指定
-      --ldapbasedn="dc=AAA,dc=com"  // ベースDN
-      --enablemkhomedir             // 自動的にホームディレクトリ作成
+      --enableldap                    // LDAPを有効化
+      --enableldapauth                // LDAP認証を有効化
+      --ldapserver=ldap://vm12/       // サーバーを指定
+      --ldapbasedn=dc=AAA,dc=com      // ベースDN
+      --enablemkhomedir               // 自動的にホームディレクトリ作成
+      --enablesssd                    // SSSDを有効化
+      --enablesssdauth                // SSSD認証を有効化
+      --update                        // 設定を反映
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# su - user02 (LDAPユーザーに変更)
+    vm13# vi /etc/nsswitch.conf (ネットワーク設定ファイルを確認)
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    // 確認する箇所
+    passwd: files sss ldap
+    shadow: files sss ldap
+    group:  files sss ldap
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# getent group | grep -E Group0[1-2] (システムにLDAPグループが存在することを確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Group01:*:1041:
+    Group02:*:1042:
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# getent passwd | grep -E user0[1-4] (システムにLDAPユーザーが存在することを確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user01:*:1051:1041:User01:/home/user01:/bin/bash
+    user02:*:1052:1041:User02:/home/user02:/bin/bash
+    user03:*:1053:1042:User03:/home/user03:/bin/bash
+    user04:*:1054:1042:User04:/home/user04:/bin/bash
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# ls -lh /home (ホームディレクトリはまだ存在しないことを確認)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwx------. 2 makoto makoto 97 12月  1 19:49 makoto
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# su - user01 (LDAPユーザーに変更)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ディレクトリ '/home/user01' を作成中
     --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1347,7 +1471,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    uid=1051(user01) gid=1041(Group01) groups=1041(Group01)
+    /home/user01
     --------------------------------------------------
     
     vm13$ cd $HOME
@@ -1355,9 +1480,27 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    ログアウト
     --------------------------------------------------
     
+    vm13# cd $HOME
+    vm13# setenforce 1 (SELinuxを有効化)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# systemctl stop sssd (サービスの停止)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    //
+
   vm12# cd $HOME
   vm12# setenforce 1 (SELinuxを有効化)
   
