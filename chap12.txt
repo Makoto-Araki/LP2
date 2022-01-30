@@ -1320,8 +1320,6 @@
   ログアウト
   --------------------------------------------------
     
-    //
-    
     vm13# cd $HOME
     vm13# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap (パッケージ追加)
     
@@ -1416,7 +1414,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし
+    [  842.117675] SELinux:  Converting 2273 SID table entries...
+    [  843.247748] SELinux:  Context system_u:unconfined_r:sandbox_t:s0-s0:c0.c1023 became invalid (unmapped).
+    [  844.466793] SELinux:  Context unconfined_u:unconfined_r:sandbox_t:s0-s0:c0.c1023 became invalid (unmapped).
     --------------------------------------------------
     
     vm13# cd $HOME
@@ -1425,9 +1425,9 @@
     コマンドの実行結果
     --------------------------------------------------
     // 確認する箇所
-    passwd: files sss ldap
-    shadow: files sss ldap
-    group:  files sss ldap
+    passwd: files sss
+    shadow: files sss
+    group:  files sss
     --------------------------------------------------
     
     vm13# cd $HOME
@@ -1499,8 +1499,6 @@
     (省略) -> 出力なし
     --------------------------------------------------
     
-    //
-
   vm12# cd $HOME
   vm12# setenforce 1 (SELinuxを有効化)
   
