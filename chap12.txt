@@ -956,6 +956,38 @@
   --------------------------------------------------
   
   vm12# cd $HOME
+  vm12# getent passwd | grep -E '105[1-4]'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> システムに該当のUIDが存在しないことを確認
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# getent group | grep -E '104[1-2]'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> システムに該当のGIDが存在しないことを確認
+  --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# getent passwd | grep -E '105[1-4]'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> システムに該当のUIDが存在しないことを確認
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# getent group | grep -E '104[1-2]'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> システムに該当のGIDが存在しないことを確認
+    --------------------------------------------------
+    
+  vm12# cd $HOME
   vm12# vi file04.ldif (LDIFファイル作成)
   
   コマンドの実行結果
@@ -964,13 +996,13 @@
   objectClass: posixGroup
   objectClass: top
   cn: Group01
-  gidNumber: 1001
+  gidNumber: 1041  // システムで既に使用されていないか注意
   
   dn: cn=Group02,ou=OU2,dc=AAA,dc=com
   objectClass: posixGroup
   objectClass: top
   cn: Group02
-  gidNumber: 1002
+  gidNumber: 1042  // システムで既に使用されていないか注意
   
   dn: uid=user01,cn=Group01,ou=OU1,dc=AAA,dc=com
   uid: user01
@@ -980,8 +1012,8 @@
   objectClass: top
   userPassword: {SSHA}A0ZAUwuks2gJMl9q84QdU2mHjmlgj/FO
   loginShell: /bin/bash
-  uidNumber: 1001
-  gidNumber: 1001
+  uidNumber: 1051  // システムで既に使用されていないか注意
+  gidNumber: 1041  // システムで既に使用されていないか注意
   homeDirectory: /home/user01
   
   dn: uid=user02,cn=Group01,ou=OU1,dc=AAA,dc=com
@@ -992,8 +1024,8 @@
   objectClass: top
   userPassword: {SSHA}zJHT4GMdcODVLagZYXIa15boGkOabBz3
   loginShell: /bin/bash
-  uidNumber: 1002
-  gidNumber: 1001
+  uidNumber: 1052  // システムで既に使用されていないか注意
+  gidNumber: 1041  // システムで既に使用されていないか注意
   homeDirectory: /home/user02
 
   dn: uid=user03,cn=Group02,ou=OU2,dc=AAA,dc=com
@@ -1004,8 +1036,8 @@
   objectClass: top
   userPassword: {SSHA}aerxXe9j5nBnMB/4/Qd3zJ5dyaZTPtPs
   loginShell: /bin/bash
-  uidNumber: 1003
-  gidNumber: 1002
+  uidNumber: 1053  // システムで既に使用されていないか注意
+  gidNumber: 1042  // システムで既に使用されていないか注意
   homeDirectory: /home/user03
 
   dn: uid=user04,cn=Group02,ou=OU2,dc=AAA,dc=com
@@ -1016,8 +1048,8 @@
   objectClass: top
   userPassword: {SSHA}w0C5buEguMP93nJhHCCWW6JKXdLPUHAs
   loginShell: /bin/bash
-  uidNumber: 1004
-  gidNumber: 1002
+  uidNumber: 1054  // システムで既に使用されていないか注意
+  gidNumber: 1042  // システムで既に使用されていないか注意
   homeDirectory: /home/user04
   --------------------------------------------------
   
@@ -1137,7 +1169,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# setenforce 0 (SELinuxを無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1148,10 +1188,27 @@
     --ldapserver=localhost        // サーバーを指定
     --ldapbasedn="dc=AAA,dc=com"  // ベースDN
     --enablemkhomedir             // 自動的にホームディレクトリ作成
+    --update                      // 設定を反映
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/nsswitch (ネットワーク設定ファイルを修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (変更前)
+  passwd: files sss ldap
+  shadow: files sss ldap
+  group:  files sss ldap
+  
+  (変更後)
+  passwd: files ldap
+  shadow: files ldap
+  group:  files ldap
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1159,7 +1216,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1224,6 +1281,26 @@
     //
     --------------------------------------------------
     
+  vm12# cd $HOME
+  vm12# (認証メカニズムを変更)
+    authconfig
+    --disableldap      // LDAPを無効化
+    --disableldapauth  // LDAP認証を無効化
+    --update           // 設定を反映
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# setenforce 1 (SELinuxを有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   vm12# cd $HOME
   vm12# systemctl stop slapd (サービスの停止)
   
