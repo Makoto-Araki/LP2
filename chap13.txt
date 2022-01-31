@@ -1,10 +1,10 @@
 ================================================================================
-[01] メールサーバー - 01 (セキュリティなしで構築)
+[01] メールサーバー - 01 (セキュリティなし)
 [02] メールサーバー - 02 (メール送受信テスト)
 [03] //
 ================================================================================
 [01]
-  メールサーバー - 01 (セキュリティなしで構築)
+  メールサーバー - 01 (セキュリティなし)
   
 [内容]
   ## 作業内容
@@ -21,7 +21,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  success
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -29,7 +29,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  success
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -37,7 +37,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
   ==================================================
@@ -49,7 +49,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root  21K 11月  4  2010 access
+  -rw-r--r--. 1 root root  12K  4月  1  2020 canonical
+  -rw-r--r--. 1 root root 9.9K  4月  1  2020 generic
+  -rw-r--r--. 1 root root  22K  9月  4  2012 header_checks
+  -rw-r--r--. 1 root root  27K  4月  1  2020 main.cf    // メイン設定ファイル
+  -rw-r--r--. 1 root root 6.0K  4月  1  2020 master.cf  // マスタープロセス設定ファイル
+  -rw-r--r--. 1 root root 6.7K  3月 27  2007 relocated
+  -rw-r--r--. 1 root root  13K 11月 22  2009 transport
+  -rw-r--r--. 1 root root  13K  4月  1  2020 virtual
   --------------------------------------------------
   
   vm12# cd /etc/postfix
@@ -57,7 +65,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /etc/postfix
@@ -65,7 +73,59 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  ## キューのパス指定
+  queue_directory = /var/spool/postfix
+  
+  ## 使用するコマンドのパス指定
+  command_directory = /usr/sbin
+  
+  ## 常駐プロセス群のパス指定
+  daemon_directory = /usr/libexec/postfix
+  
+  ## プログラムのデータ出力先を指定
+  data_directory = /var/lib/postfix
+  
+  ## キューと常駐プロセス群の所有ユーザー名
+  mail_owner = postfix
+  
+  ## ホスト名
+  myhostname = vm12.example.com
+  
+  ## ドメイン名
+  mydomain = example.com
+  
+  ## 補完されるドメイン名
+  myorigin = $mydomain
+  
+  ## メール送受信を行うインターフェース
+  inet_interfaces = all
+  
+  ## サポートするプロトコル(IPv4 & IPv6)
+  inet_protocols = all
+  
+  ## メール送受信を行うドメイン名
+  mydestination = $myhostname, localhost.$mydomain, localhost
+
+  ## //
+  unknown_local_recipient_reject_code = 550
+
+  ## メール送受信を許可するクライアントのアドレス
+  mynetwork = 192.168.122.0/24, 127.0.0.0/0
+
+  alias_maps = hash:/etc/aliases
+  alias_database = hash:/etc/aliases
+  debug_peer_level = 2
+  debugger_command =
+    PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+    ddd $daemon_directory/$process_name $process_id & sleep 5
+  sendmail_path = /usr/sbin/sendmail.postfix
+  newaliases_path = /usr/bin/newaliases.postfix
+  mailq_path = /usr/bin/mailq.postfix
+  setgid_group = postdrop
+  html_directory = no
+  manpage_directory = /usr/share/man
+  sample_directory = /usr/share/doc/postfix-2.10.1/samples
+  readme_directory = /usr/share/doc/postfix-2.10.1/README_FILES
   --------------------------------------------------
   
   vm12# cd /etc/skel
