@@ -1,14 +1,15 @@
 ================================================================================
-[01] メールサーバー - 01 (セキュリティなし)
-[02] メールサーバー - 02 (メール送受信テスト)
+[01] メールサーバー - 01 (基本形態)
+[02] //
 [03] //
 ================================================================================
 [01]
-  メールサーバー - 01 (セキュリティなし)
+  メールサーバー - 01 (基本形態)
   
 [内容]
   ## 作業内容
-    メールサーバー構築を行う、ただしセキュリティなし。
+    メールサーバー構築を行う。
+    ただしセキュリティ設定なし、DNS参照でなくhosts参照と本番運用には使用不可。
   
   ## 使用マシン
     HOST : vm12
@@ -69,63 +70,24 @@
   --------------------------------------------------
   
   vm12# cd /etc/postfix
-  vm12# vi main.cf (設定ファイルの編集)
+  vm12# vi main.cf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  ## キューのパス指定
-  queue_directory = /var/spool/postfix
-  
-  ## 使用するコマンドのパス指定
-  command_directory = /usr/sbin
-  
-  ## 常駐プロセス群のパス指定
-  daemon_directory = /usr/libexec/postfix
-  
-  ## プログラムのデータ出力先を指定
-  data_directory = /var/lib/postfix
-  
-  ## キューと常駐プロセス群の所有ユーザー名
-  mail_owner = postfix
-  
-  ## ホスト名
-  myhostname = vm12.example.com
-  
-  ## ドメイン名
-  mydomain = example.com
-  
-  ## 補完されるドメイン名
-  myorigin = $mydomain
-  
-  ## メール送受信を行うインターフェース
-  inet_interfaces = all
-  
-  ## サポートするプロトコル(IPv4 & IPv6)
-  inet_protocols = all
-  
-  ## メール送受信を行うドメイン名
-  mydestination = $myhostname, localhost.$mydomain, localhost
-
-  ## //
-  unknown_local_recipient_reject_code = 550
-
-  ## メール送受信を許可するクライアントのアドレス
-  mynetwork = 192.168.122.0/24, 127.0.0.0/0
-
-  alias_maps = hash:/etc/aliases
-  alias_database = hash:/etc/aliases
-  debug_peer_level = 2
-  debugger_command =
-    PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-    ddd $daemon_directory/$process_name $process_id & sleep 5
-  sendmail_path = /usr/sbin/sendmail.postfix
-  newaliases_path = /usr/bin/newaliases.postfix
-  mailq_path = /usr/bin/mailq.postfix
-  setgid_group = postdrop
-  html_directory = no
-  manpage_directory = /usr/share/man
-  sample_directory = /usr/share/doc/postfix-2.10.1/samples
-  readme_directory = /usr/share/doc/postfix-2.10.1/README_FILES
+  // 変更部分のみ抜粋
+  myhostname = vm12.example.com                                // 自ホスト名
+  mydomain = example.com                                       // ドメイン名
+  myorigin = $mydomain                                         // メールアドレスの「@」以降に適用されるドメイン名
+  inet_interfaces = all                                        // SMTP接続可能なNIC
+  inet_protocols = all                                         // IPv4とIPv6の両方可
+  mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカル配送の受付ドメイン
+  local_recipient_maps = (空白)                                // ローカルユーザー
+  unknown_local_recipient_reject_code = 550                    // 
+  mynetworks = 192.168.122.0/24, 127.0.0.0/8                   // 受付許可ネットワーク
+  home_mailbox = Maildir/                                      // メールボックス形式
+  mail_spool_directory = /var/spool/mail                       // メールスプール場所
+  mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"  // ローカル配送プログラム
+  smtp_host_lookup = native                                    // DNS不使用、hostsを使用
   --------------------------------------------------
   
   vm12# cd /etc/skel
@@ -133,23 +95,44 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# useradd AAA (ユーザー追加)
+  vm12# vi /etc/hosts (ネットワーク設定ファイルを修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 example.com(追加)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# echo AA0122ma | passwd --stdin AAA (パスワード設定)
+  vm12# useradd aaa (ユーザー追加)
+  vm12# useradd bbb (ユーザー追加)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# echo aa0122ma | passwd --stdin aaa (パスワード設定)
+  vm12# echo bb0122ma | passwd --stdin bbb (パスワード設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  ユーザー aaa のパスワードを変更。
+  passwd: すべての認証トークンが正しく更新できました。
+  
+  // bbb
+  ユーザー bbb のパスワードを変更。
+  passwd: すべての認証トークンが正しく更新できました。
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -157,7 +140,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   ==================================================
@@ -169,7 +152,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  drwxr-xr-x. 2 root root 4.0K  1月 31 17:52 conf.d        // 追加設定ファイル群
+  -rw-r--r--. 1 root root 4.3K  4月 30  2018 dovecot.conf  // メイン設定ファイル
   --------------------------------------------------
   
   vm12# cd /etc/dovecot
@@ -177,15 +161,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /etc/dovecot
-  vm12# vi dovecot.conf (設定ファイルの編集)
+  vm12# vi dovecot.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  protocols = imap pop3 lmtp  // 対応プロトコル
   --------------------------------------------------
   
   vm12# cd /etc/dovecot/conf.d
@@ -193,15 +177,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /etc/dovecot/conf.d
-  vm12# vi 10-mail.conf (設定ファイルの編集)
+  vm12# vi 10-mail.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  mail_location = maildir:~/Maildir  // メールの場所
   --------------------------------------------------
   
   vm12# cd /etc/dovecot/conf.d
@@ -209,15 +193,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /etc/dovecot/conf.d
-  vm12# vi 10-auth.conf (設定ファイルの編集)
+  vm12# vi 10-auth.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  disable_plaintext_auth = no  // 平文認証を無効化しない -> 本来は危険!!
   --------------------------------------------------
   
   vm12# cd /etc/dovecot/conf.d
@@ -225,15 +209,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /etc/dovecot/conf.d
-  vm12# vi 10-ssl.conf (設定ファイルの編集)
+  vm12# vi 10-ssl.conf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  ssl = no  // SSL/TLSを使用しない -> 本来は危険!!
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -241,14 +225,199 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+                    スクリプト作成
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi send_mail.sh (スクリプト作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  ## 関数定義
+  function send_mail () {
+    echo "ehlo localhost"
+    sleep 1
+    echo "mail from: $1@example.com"
+    sleep 1
+    echo "rcpt to: $2@example.com"
+    sleep 1
+    echo "data"
+    sleep 1
+    echo "from: $1@example.com"
+    sleep 1
+    echo "to: $2@example.com"
+    sleep 1
+    echo "Subject: test$3"
+    sleep 1
+    echo "I sent test$3."
+    sleep 1
+    echo "."
+    sleep 1
+    echo "quit"
+  }
+  
+  ## サーバーにコマンド送信
+  for i in $(seq 1 $3) ; do
+    send_mail $1 $2 $i | telnet localhost 25;
+  done
+  --------------------------------------------------
+  
+  ==================================================
+                スクリプトでメール送信
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 2 (AAAからBBBへ二通メール送信)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 1通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as E450F200AE0E
+  Connection closed by foreign host.
+  
+  // 2通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as EA575200AE11
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  ==================================================
+                  メール受信を確認
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# telnet localhost 110 (メール受信を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  +OK Dovecot ready.
+    
+    > (ユーザー名)
+    > user bbb
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK
+    --------------------------------------------------
+    
+    > (パスワード)
+    > pass bb0122ma
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK Logged in.
+    --------------------------------------------------
+    
+    > (メール一覧)
+    > list
+
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK 2 messages:
+    1 448
+    2 448
+    --------------------------------------------------
+    
+    > (一番目のメール参照)
+    > retr 1
+
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK 448 octets
+    Return-Path: <aaa@example.com>
+    X-Original-To: bbb@example.com
+    Delivered-To: bbb@example.com
+    Received: from localhost (localhost [IPv6:::1])
+      by vm12.example.com (Postfix) with ESMTP id BB38F200AE13
+      for <bbb@example.com>; Tue,  1 Feb 2022 15:10:10 +0900 (JST)
+    from: aaa@example.com
+    to: bbb@example.com
+    Subject: test1
+    Message-Id: <20220201061011.BB38F200AE13@vm12.example.com>
+    Date: Tue,  1 Feb 2022 15:10:10 +0900 (JST)
+    
+    // メール本文
+    I sent test1.
+    --------------------------------------------------
+    
+    > (二番目のメール参照)
+    > retr 2
+
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK 448 octets
+    Return-Path: <aaa@example.com>
+    X-Original-To: bbb@example.com
+    Delivered-To: bbb@example.com
+    Received: from localhost (localhost [IPv6:::1])
+      by vm12.example.com (Postfix) with ESMTP id C1061200AE01
+      for <bbb@example.com>; Tue,  1 Feb 2022 15:10:19 +0900 (JST)
+    from: aaa@example.com
+    to: bbb@example.com
+    Subject: test2
+    Message-Id: <20220201061020.C1061200AE01@vm12.example.com>
+    Date: Tue,  1 Feb 2022 15:10:19 +0900 (JST)
+    
+    // メール本文
+    I sent test2.
+    --------------------------------------------------
+    
+    > (ログアウト)
+    > quit
+
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK Logging out.
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [02]
-  メールサーバー - 02 (メール送受信テスト)
+  //
   
 [内容]
   ## 作業内容
