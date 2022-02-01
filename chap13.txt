@@ -9,7 +9,7 @@
 [内容]
   ## 作業内容
     メールサーバー構築を行う。
-    ただしセキュリティ設定なし、DNS参照でなくhosts参照と本番運用には使用不可。
+    ただしセキュリティ設定なし、DNS参照よりHOSTSが優先、と本番運用向きではないので注意。
   
   ## 使用マシン
     HOST : vm12
@@ -82,12 +82,12 @@
   inet_protocols = all                                         // IPv4とIPv6の両方可
   mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカル配送の受付ドメイン
   local_recipient_maps = (空白)                                // ローカルユーザー
-  unknown_local_recipient_reject_code = 550                    // 
+  unknown_local_recipient_reject_code = 550                    // 不明
   mynetworks = 192.168.122.0/24, 127.0.0.0/8                   // 受付許可ネットワーク
   home_mailbox = Maildir/                                      // メールボックス形式
   mail_spool_directory = /var/spool/mail                       // メールスプール場所
   mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"  // ローカル配送プログラム
-  smtp_host_lookup = native                                    // DNS不使用、hostsを使用
+  smtp_host_lookup = native                                    // DNS参照よりHOSTSが優先
   --------------------------------------------------
   
   vm12# cd /etc/skel
@@ -411,6 +411,26 @@
     
     OSプロンプトに戻る
     
+  --------------------------------------------------
+  
+  ==================================================
+                    メール削除
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
