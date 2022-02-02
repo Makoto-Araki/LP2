@@ -269,7 +269,7 @@
   --------------------------------------------------
   
   ==================================================
-                スクリプトでメール送信
+                スクリプトでメール送受信
   ==================================================
   
   vm12# cd $HOME
@@ -316,10 +316,6 @@
   Connection closed by foreign host.
   --------------------------------------------------
   
-  ==================================================
-                  メール受信を確認
-  ==================================================
-  
   vm12# cd $HOME
   vm12# telnet localhost 110 (メール受信を確認)
   
@@ -330,24 +326,24 @@
   Escape character is '^]'.
   +OK Dovecot ready.
     
-    > (ユーザー名)
-    > user bbb
+    >> (ユーザー名)
+    >> user bbb
     
     コマンドの実行結果
     --------------------------------------------------
     +OK
     --------------------------------------------------
     
-    > (パスワード)
-    > pass bb0122ma
+    >> (パスワード)
+    >> pass bb0122ma
     
     コマンドの実行結果
     --------------------------------------------------
     +OK Logged in.
     --------------------------------------------------
     
-    > (メール一覧)
-    > list
+    >> (メール一覧)
+    >> list
 
     コマンドの実行結果
     --------------------------------------------------
@@ -356,8 +352,8 @@
     2 448
     --------------------------------------------------
     
-    > (一番目のメール参照)
-    > retr 1
+    >> (一番目のメール参照)
+    >> retr 1
 
     コマンドの実行結果
     --------------------------------------------------
@@ -378,8 +374,8 @@
     I sent test1.
     --------------------------------------------------
     
-    > (二番目のメール参照)
-    > retr 2
+    >> (二番目のメール参照)
+    >> retr 2
 
     コマンドの実行結果
     --------------------------------------------------
@@ -400,8 +396,8 @@
     I sent test2.
     --------------------------------------------------
     
-    > (ログアウト)
-    > quit
+    >> (ログアウト)
+    >> quit
 
     コマンドの実行結果
     --------------------------------------------------
@@ -412,10 +408,6 @@
     OSプロンプトに戻る
     
   --------------------------------------------------
-  
-  ==================================================
-                    メール削除
-  ==================================================
   
   vm12# cd $HOME
   vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
@@ -493,7 +485,7 @@
   }
   --------------------------------------------------
   
-  vm12# cd $HOME
+  vm12# cd /etc/dovecot/conf.d
   vm12# systemctl restart dovecot (サービスの再起動)
   
   コマンドの実行結果
@@ -501,52 +493,208 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# // (//)
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cat 90-sieve.conf | grep -vE '^#|^$|^.*#' (フィルタリングルールの記述場所を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  plugin {
+    sieve = file:~/sieve;active=~/.dovecot.sieve  (ホーム配下の「.dovecot.sieve」ファイル)
+  }
   --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# // (//)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  //
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# // (//)
+  vm12# cd ~bbb
+  vm12# vi .dovecot.sieve (フィルタリングルールを記述)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  require ["reject"];
+  
+  ## 差出が「aaa@example.com」の場合
+  if address :is "from" "aaa@example.com"
+  {
+    # メッセージを添えて拒否
+    reject "This Address is invalid.";
+  }
   --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# // (//)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  //
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# // (//)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  //
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# // (//)
+  vm12# cd ~bbb
+  vm12# chown bbb.bbb .dovecot.sieve (所有者変更)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+                スクリプトでメール送受信
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 (AAAからBBBへ一通メール送信)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 6157B200AE09
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=1 -> 送付したメールが拒否されて送り返された
+
+  // bbb
+  INBOX messages=0
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# telnet localhost 110 (メール受信を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  +OK Dovecot ready.
+    
+    >> (ユーザー名)
+    >> user aaa
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK
+    --------------------------------------------------
+    
+    >> (パスワード)
+    >> pass aa0122ma
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK Logged in.
+    --------------------------------------------------
+    
+    >> (メール一覧)
+    >> list
+
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK 1 messages:
+    1 1582
+    --------------------------------------------------
+    
+    >> (メール参照)
+    >> retr 1
+
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK 1582 octets
+    Return-Path: <>
+    X-Original-To: aaa@example.com
+    Delivered-To: aaa@example.com
+    Received: by vm12.example.com (Postfix, from userid 1004)
+      id B4450200AE34; Wed,  2 Feb 2022 14:30:25 +0900 (JST)
+    Message-ID: <dovecot-1643779825-547995-0@vm12>
+    Date: Wed, 02 Feb 2022 14:30:25 +0900
+    From: Mail Delivery Subsystem <postmaster@>
+    To: <aaa@example.com>
+    MIME-Version: 1.0
+    Content-Type: multipart/report; report-type=disposition-notification;
+      boundary="1570/vm12"
+    Subject: Rejected: test1  // 拒否された旨「Rejected」と表示
+    Auto-Submitted: auto-replied (rejected)
+    Precedence: bulk
+    
+    This is a MIME-encapsulated message
+    
+    --1570/vm12
+    Content-Type: text/plain; charset=utf-8
+    Content-Disposition: inline
+    Content-Transfer-Encoding: 8bit
+    
+    Your message to <bbb@example.com> was automatically rejected:
+    This Address is invalid.  // プラグイン(Sieve)で設定されたメッセージ
+    
+    --1570/vm12
+    Content-Type: message/disposition-notification
+    
+    Reporting-UA: vm12; Dovecot Mail Delivery Agent
+    Final-Recipient: rfc822; bbb@example.com
+    Original-Message-ID: <20220202053019.6157B200AE09@vm12.example.com>
+    Disposition: automatic-action/MDN-sent-automatically; deleted
+    
+    --1570/vm12
+    Content-Type: message/rfc822
+    
+    Return-Path: <aaa@example.com>
+    X-Original-To: bbb@example.com
+    Delivered-To: bbb@example.com
+    Received: from localhost (localhost [IPv6:::1])
+      by vm12.example.com (Postfix) with ESMTP id 6157B200AE09
+      for <bbb@example.com>; Wed,  2 Feb 2022 14:30:18 +0900 (JST)
+    from: aaa@example.com
+    to: bbb@example.com
+    Subject: test1
+    Message-Id: <20220202053019.6157B200AE09@vm12.example.com>
+    Date: Wed,  2 Feb 2022 14:30:18 +0900 (JST)
+    --------------------------------------------------
+    
+    >> (ログアウト)
+    >> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    +OK Logging out.
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+    OSプロンプトに戻る
+    
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+
+  // bbb
+  INBOX messages=0
   --------------------------------------------------
   
   以下の確認に続く
