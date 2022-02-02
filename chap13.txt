@@ -905,7 +905,7 @@
   250 2.1.0 Ok
   250 2.1.5 Ok
   354 End data with <CR><LF>.<CR><LF>
-  250 2.0.0 Ok: queued as EA921200AE12
+  250 2.0.0 Ok: queued as 0B9B7200AE12
   Connection closed by foreign host.
   --------------------------------------------------
   
@@ -917,13 +917,13 @@
   コマンドの実行結果
   --------------------------------------------------
   // aaa
-  INBOX messages=1
+  INBOX messages=0
   
   // bbb
   INBOX messages=0
   
   // ccc
-  INBOX messages=0 -> 送付したメールが指定フォルダ移動
+  INBOX messages=1 -> メール転送された
   --------------------------------------------------
   
   vm12# cd $HOME
