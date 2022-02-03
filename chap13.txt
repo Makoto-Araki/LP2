@@ -6,7 +6,8 @@
 [05] メール転送 - 01 (.forward)
 [06] メール転送 - 02 (newaliases)
 [07] メール転送 - 03 (mailing list)
-[08] Procmail - 01 ()
+[08] Procmail - 01 (メール配送プログラムの変更)
+[09] //
 ================================================================================
 [01]
   メールサーバー構築(練習版)
@@ -421,7 +422,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
   vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -429,10 +432,19 @@
   --------------------------------------------------
   
   vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
   vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
   
   コマンドの実行結果
   --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
   INBOX messages=0
   --------------------------------------------------
   
@@ -572,6 +584,7 @@
   vm12# cd $HOME
   vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
   vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -579,6 +592,9 @@
   INBOX messages=1 -> 送付したメールが拒否されて送り返された
 
   // bbb
+  INBOX messages=0
+  
+  // ccc
   INBOX messages=0
   --------------------------------------------------
   
@@ -689,6 +705,7 @@
   vm12# cd $HOME
   vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
   vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -698,6 +715,7 @@
   vm12# cd $HOME
   vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
   vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -705,6 +723,9 @@
   INBOX messages=0
 
   // bbb
+  INBOX messages=0
+
+  // ccc
   INBOX messages=0
   --------------------------------------------------
   
@@ -799,6 +820,7 @@
   vm12# cd $HOME
   vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
   vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
   vm12# doveadm mailbox status -u bbb messages AAA   (メールボックス内のメール確認)
   
   コマンドの実行結果
@@ -806,7 +828,10 @@
   // aaa
   INBOX messages=1
   
-  // bbb(INBOX)
+  // bbb
+  INBOX messages=0
+  
+  // ccc
   INBOX messages=0
   
   // bbb(AAA)
@@ -824,6 +849,7 @@
   vm12# cd $HOME
   vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
   vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -833,6 +859,7 @@
   vm12# cd $HOME
   vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
   vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -840,6 +867,9 @@
   INBOX messages=0
 
   // bbb
+  INBOX messages=0
+
+  // ccc
   INBOX messages=0
   --------------------------------------------------
   
@@ -1376,7 +1406,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1384,7 +1414,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  /bin/procmail
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1415,6 +1445,14 @@
   --------------------------------------------------
   
   vm12# cd $HOME
+  vm12# systemctl restart postfix (サービスの再起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /bin/procmail
+  --------------------------------------------------
+  
+  vm12# cd $HOME
   vm12# vi ~aaa/.forward (設定ファイルを編集)
   vm12# vi ~bbb/.forward (設定ファイルを編集)
   vm12# vi ~ccc/.forward (設定ファイルを編集)
@@ -1431,7 +1469,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   ==================================================
@@ -1443,7 +1481,23 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 6C9C6200AE33
+  Connection closed by foreign host.
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1471,23 +1525,6 @@
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // aaa
-  INBOX messages=0
-  
-  // bbb
-  INBOX messages=0
-  
-  // ccc
-  INBOX messages=0
   --------------------------------------------------
   
   以下の確認に続く
