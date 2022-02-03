@@ -1866,7 +1866,7 @@
   
 [内容]
   ## 作業内容
-    認証機能の無いSMTPサーバー(Postfix)に認証プログラム(Saslauthd)を導入する
+    認証機能の無いSMTPサーバー(Postfix)に認証プログラム(Saslauthd)を導入して「SASL認証」を行う
   
   ## 使用マシン
     HOST : vm12
@@ -1958,15 +1958,86 @@
   コマンドの実行結果
   --------------------------------------------------
   # service   type  private  unpriv  chroot  wakeup   maxproc  command + args
-  #                 (yes)    (yes)   (yes)   (never)  (100)    (none)
-  
-  submission  inet  n        -       n       -        -        smtpd -o ...
-    -o smtpd_sasl_auth_enable=yes                                  // SMTP認証を有効化
-    -o smtpd_client_restrictions=permit_sasl_authenticated,reject  // SMTP認証されたクライアントのみ許可
+  submission  inet  n        -       n       -        -        smtpd -o smtpd_sasl_auth_enable=yes -o ...
+
+  -o smtpd_sasl_auth_enable=yes                                  // SMTP認証を有効化
+  -o smtpd_client_restrictions=permit_sasl_authenticated,reject  // SMTP認証されたクライアントのみ許可
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
+  vm12# systemctl restart postfix (サービスの再起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  ==================================================
+                  SASL認証のテスト
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# testsaslauthd -u aaa -p aa0122ma (SASL認証のテスト)
+  vm12# testsaslauthd -u bbb -p bb0122ma (SASL認証のテスト)
+  vm12# testsaslauthd -u ccc -p cc0122ma (SASL認証のテスト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# less /var/log/messages (SASL認証のログ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# getenforce (SELinuxの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# setsebool saslauthd_read_shadow on (ユーザー「saslauthd」にファイル「/etc/shadow」へのアクセス許可を付与)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# testsaslauthd -u aaa -p aa0122ma (SASL認証のテスト)
+  vm12# testsaslauthd -u bbb -p bb0122ma (SASL認証のテスト)
+  vm12# testsaslauthd -u ccc -p cc0122ma (SASL認証のテスト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# // (//)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# // (//)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# // (//)
   
   コマンドの実行結果
   --------------------------------------------------
