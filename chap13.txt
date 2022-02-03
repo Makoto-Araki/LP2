@@ -1944,35 +1944,29 @@
   smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
   --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# cd /etc/postfix
+  vm12# cp -p master.cf master.cf.org (設定ファイルの退避)
   
   コマンドの実行結果
   --------------------------------------------------
-  // aaa
-  INBOX messages=0
-  
-  // bbb
-  INBOX messages=0
-  
-  // ccc
-  INBOX messages=1 -> メール転送された
+  //
   --------------------------------------------------
   
-  vm12# cd ~bbb
-  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
+  vm12# cd /etc/postfix
+  vm12# vi master.cf (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
-  From aaa@example.com  Thu Feb  3 13:37:39 2022
-    Subject: test1
-      Folder: /usr/sbin/sendmail -oi ccc@example.com    436
+  # service   type  private  unpriv  chroot  wakeup   maxproc  command + args
+  #                 (yes)    (yes)   (yes)   (never)  (100)    (none)
+  
+  submission  inet  n        -       n       -        -        smtpd -o ...
+    -o smtpd_sasl_auth_enable=yes                                  // SMTP認証を有効化
+    -o smtpd_client_restrictions=permit_sasl_authenticated,reject  // SMTP認証されたクライアントのみ許可
   --------------------------------------------------
   
   vm12# cd $HOME
   vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
   
   コマンドの実行結果
   --------------------------------------------------
