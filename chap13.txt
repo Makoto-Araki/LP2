@@ -1879,7 +1879,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  success
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1887,7 +1887,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  success
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1895,7 +1895,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   ==================================================
@@ -1907,7 +1907,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  saslauthd 2.1.26  // shadow -> /etc/shadow
+  authentication mechanisms: getpwent kerberos5 pam rimap shadow ldap httpform
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1927,7 +1928,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   ==================================================
@@ -1939,8 +1940,8 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  smtpd_sasl_auth_enable = yes               // SMTP認証を有効化
-  smtpd_sasl_security_options = noanonymous  // $(mynetworks)以外の匿名接続を拒否
+  smtpd_sasl_auth_enable = yes               // SASL認証を有効化
+  smtpd_sasl_security_options = noanonymous  // 匿名接続を拒否
   smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
   --------------------------------------------------
   
@@ -1949,7 +1950,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd /etc/postfix
@@ -1958,10 +1959,13 @@
   コマンドの実行結果
   --------------------------------------------------
   # service   type  private  unpriv  chroot  wakeup   maxproc  command + args
-  submission  inet  n        -       n       -        -        smtpd -o smtpd_sasl_auth_enable=yes -o ...
+  submission  inet  n        -       n       -        -        smtpd
+  
+  // SASL認証を有効化
+  -o smtpd_sasl_auth_enable=yes
 
-  -o smtpd_sasl_auth_enable=yes                                  // SMTP認証を有効化
-  -o smtpd_client_restrictions=permit_sasl_authenticated,reject  // SMTP認証されたクライアントのみ許可
+  // SASL認証されたクライアントのみ許可
+  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1969,7 +1973,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   ==================================================
@@ -1983,7 +1987,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  // aaa
+  0: NO "authentication failed"
+
+  // bbb
+  0: NO "authentication failed"
+
+  // ccc
+  0: NO "authentication failed"
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1991,7 +2002,17 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  // aaa
+  Feb  4 06:50:11 vm12 saslauthd[1304] ...
+  auth failure: [user=aaa] ... [mech=shadow] [reason=Username shadow lookup failure: No such file or directory]
+  
+  // bbb
+  Feb  4 06:50:40 vm12 saslauthd[1304] ...
+  auth failure: [user=bbb] ... [mech=shadow] [reason=Username shadow lookup failure: No such file or directory]
+  
+  // ccc
+  Feb  4 06:51:05 vm12 saslauthd[1304] ...
+  auth failure: [user=ccc] ... [mech=shadow] [reason=Username shadow lookup failure: No such file or directory]
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1999,15 +2020,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Enforcing -> 有効
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# setsebool saslauthd_read_shadow on (ユーザー「saslauthd」にファイル「/etc/shadow」へのアクセス許可を付与)
+  vm12# setsebool saslauthd_read_shadow on (認証プログラム「Saslauthd」にファイル「/etc/shadow」へのアクセス許可を付与)
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2017,7 +2038,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  // aaa
+  0: OK "Success."
+  
+  // bbb
+  0: OK "Success."
+  
+  // ccc
+  0: OK "Success."
   --------------------------------------------------
   
   vm12# cd $HOME
