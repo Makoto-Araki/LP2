@@ -9,7 +9,8 @@
 [08] Procmail - 01 (メール配送プログラムの変更)
 [09] Procmail - 02 (特定メールアドレスからのメール廃棄)
 [10] Procmail - 03 (特定アドレスからのメールを指定フォルダ移動)
-[11] //
+[11] Procmail - 04 (特定アドレスからのメールを指定アドレス転送)
+[12] //
 ================================================================================
 [01]
   メールサーバー構築(練習版)
@@ -1762,6 +1763,110 @@
 [内容]
   ## 作業内容
     メール配送プログラム(Procmail)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# systemctl is-active postfix (サービスの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  active
+  --------------------------------------------------
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .procmailrc (フィルタリングルールを記述)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## 差出が「aaa@example.com」の場合、アドレス「ccc@example.com」に転送
+  :0
+  * ^From:.*aaa@example\.com.*
+  !ccc@example.com
+  --------------------------------------------------
+  
+  ==================================================
+                スクリプトでメール送受信
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 (AAAからBBBへ一通メール送信)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as B82E5200AE3E
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール転送された
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Thu Feb  3 13:37:39 2022
+    Subject: test1
+      Folder: /usr/sbin/sendmail -oi ccc@example.com    436
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[12]
+  SMTP-AUTH
+  
+[内容]
+  ## 作業内容
+    認証機能の無いSMTPサーバー(Postfix)に認証プログラム(Saslauthd)を導入する
   
   ## 使用マシン
     HOST : vm12
