@@ -1977,7 +1977,7 @@
   --------------------------------------------------
   
   ==================================================
-                  SASL認証のテスト
+                  SASL認証(単体テスト)
   ==================================================
   
   vm12# cd $HOME
@@ -2002,15 +2002,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  // aaa
+  // aaa -> /etc/shadow 参照時に失敗
   Feb  4 06:50:11 vm12 saslauthd[1304] ...
   auth failure: [user=aaa] ... [mech=shadow] [reason=Username shadow lookup failure: No such file or directory]
   
-  // bbb
+  // bbb -> /etc/shadow 参照時に失敗
   Feb  4 06:50:40 vm12 saslauthd[1304] ...
   auth failure: [user=bbb] ... [mech=shadow] [reason=Username shadow lookup failure: No such file or directory]
   
-  // ccc
+  // ccc -> /etc/shadow 参照時に失敗
   Feb  4 06:51:05 vm12 saslauthd[1304] ...
   auth failure: [user=ccc] ... [mech=shadow] [reason=Username shadow lookup failure: No such file or directory]
   --------------------------------------------------
@@ -2047,6 +2047,10 @@
   // ccc
   0: OK "Success."
   --------------------------------------------------
+  
+  ==================================================
+                  SASL認証(結合テスト)
+  ==================================================
   
   vm12# cd $HOME
   vm12# // (//)
