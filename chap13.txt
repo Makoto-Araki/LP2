@@ -2609,7 +2609,7 @@ Connection closed by foreign host.
   コマンドの実行結果
   --------------------------------------------------
   Return-Path: <aaa@example.com>
-  X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on vm12  // スパムチェックのバージョン情報
+  X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on vm12  // バージョン情報
   X-Spam-Level: **                                                 // 脅威度は「**」と低く評価
   X-Spam-Status: No, score=2.7 required=13.0 tests=ALL_TRUSTED,    // スパム判定は「No」
     DNS_FROM_AHBL_RHSBL,NOTINCONTENTTYPE autolearn=no autolearn_force=no
@@ -2746,10 +2746,10 @@ Connection closed by foreign host.
   コマンドの実行結果
   --------------------------------------------------
   Return-Path: <aaa@example.com>
-  X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on vm12    //
-  X-Spam-Flag: YES                                                   //
-  X-Spam-Level: **************************************************   //
-  X-Spam-Status: Yes, score=1002.7 required=13.0 tests=ALL_TRUSTED,  //
+  X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on vm12    // バージョン情報
+  X-Spam-Flag: YES                                                   // 不明
+  X-Spam-Level: **************************************************   // 脅威度は高く評価
+  X-Spam-Status: Yes, score=1002.7 required=13.0 tests=ALL_TRUSTED,  // スパム判定は「Yes」
     DNS_FROM_AHBL_RHSBL,GTUBE,NOTINCONTENTTYPE autolearn=no autolearn_force=no
     version=3.4.0
   X-Spam-Report: 
