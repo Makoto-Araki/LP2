@@ -420,7 +420,7 @@
     Connection closed by foreign host.
     --------------------------------------------------
     
-    OSプロンプトに戻る
+  OSプロンプトに戻る
     
   --------------------------------------------------
   
@@ -684,7 +684,7 @@
     Connection closed by foreign host.
     --------------------------------------------------
     
-    OSプロンプトに戻る
+  OSプロンプトに戻る
     
   --------------------------------------------------
   
@@ -2049,15 +2049,80 @@
   --------------------------------------------------
   
   ==================================================
-                  SASL認証(結合テスト)
+                SASL認証(AUTH-PLAIN方式)
   ==================================================
   
-  vm12# cd $HOME
-  vm12# // (//)
+  vm12# cd $HOME (AUTH-PLAIN時の認証文字列を出力)
+  vm12# printf "%s\0%s\0%s" aaa@example.jp aaa@example.jp aa0122ma | openssl base64 -e | tr -d '\n'; echo
+  vm12# printf "%s\0%s\0%s" bbb@example.jp bbb@example.jp bb0122ma | openssl base64 -e | tr -d '\n'; echo
+  vm12# printf "%s\0%s\0%s" ccc@example.jp ccc@example.jp cc0122ma | openssl base64 -e | tr -d '\n'; echo
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  // aaa
+  YWFhQGV4YW1wbGUuanAAYWFhQGV4YW1wbGUuanAAYWEwMTIybWE=
+  
+  // bbb
+  YmJiQGV4YW1wbGUuanAAYmJiQGV4YW1wbGUuanAAYmIwMTIybWE=
+  
+  // ccc
+  Y2NjQGV4YW1wbGUuanAAY2NjQGV4YW1wbGUuanAAY2MwMTIybWE=
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# telnet localhost 587 (認証プログラムに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+    
+    >> (接続準備)
+    >> ehlo localhost
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    250-vm12.example.com
+    250-PIPELINING
+    250-SIZE 10240000
+    250-VRFY
+    250-ETRN
+    250-AUTH PLAIN LOGIN  // 確認する
+    250-ENHANCEDSTATUSCODES
+    250-8BITMIME
+    250 DSN
+    --------------------------------------------------
+    
+    >> (AUTH-PLAIN方式で認証)
+    >> auth plain YWFhQGV4YW1wbGUuanAAYWFhQGV4YW1wbGUuanAAYWEwMTIybWE=  // aaa
+    >> auth plain YmJiQGV4YW1wbGUuanAAYmJiQGV4YW1wbGUuanAAYmIwMTIybWE=  // bbb
+    >> auth plain Y2NjQGV4YW1wbGUuanAAY2NjQGV4YW1wbGUuanAAY2MwMTIybWE=  // ccc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // aaa
+    235 2.7.0 Authentication successful
+
+    // bbb
+    235 2.7.0 Authentication successful
+
+    // ccc
+    235 2.7.0 Authentication successful
+    --------------------------------------------------
+    
+    >> (ログアウト)
+    >> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    221 2.0.0 Bye
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+  OSプロンプトに戻る
+  
   --------------------------------------------------
   
   vm12# cd $HOME
