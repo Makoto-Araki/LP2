@@ -11,6 +11,7 @@
 [10] Procmail - 03 (特定アドレスからのメールを指定フォルダ移動)
 [11] Procmail - 04 (特定アドレスからのメールを指定アドレス転送)
 [12] SMTP-AUTH
+[13] SpamAssassin
 ================================================================================
 [01]
   メールサーバー構築(練習版)
@@ -233,6 +234,14 @@
   コマンドの実行結果
   --------------------------------------------------
   ssl = no  // SSL/TLSを使用しない -> 本来は危険!!
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl enable dovecot (サービスの自動起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -1924,6 +1933,14 @@
   --------------------------------------------------
   
   vm12# cd $HOME
+  vm12# systemctl enable saslauthd (サービスの自動起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
   vm12# systemctl start saslauthd (サービスの起動)
   
   コマンドの実行結果
@@ -2327,6 +2344,435 @@
   
   // ccc
   INBOX messages=1 -> 前回のメール転送設定がそのままで「ccc@example.com」に転送されただけなのでOK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[13]
+  SpamAssassin
+  
+[内容]
+  ## 作業内容
+    スパムフィルタリングを行う
+    参考史料1 : https://centossrv.com/postfix-spamass-milter.shtml
+    参考資料2 : https://www.bigbang.mydns.jp/spamassassin-x.htm
+    参考史料3 : https://korodes.com/rocky/rocky_08/
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# yum -y install epel-release (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# yum -y install wget unzip zip (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# yum -y install spamassassin spamass-milter-postfix (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  ##vm12# cd $HOME
+  ##vm12# curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | bash (パッケージ追加)
+  ##
+  ##コマンドの実行結果
+  ##--------------------------------------------------
+  ##(省略) -> エラー出力が無ければOK
+  ##--------------------------------------------------
+  
+  ##vm12# cd $HOME
+  ##vm12# yum -y --skip-broken install milter-manager (パッケージ追加)
+  ##
+  ##コマンドの実行結果
+  ##--------------------------------------------------
+  ##(省略) -> エラー出力が無ければOK
+  ##--------------------------------------------------
+  
+  ==================================================
+                    SpamAssassin
+  ==================================================
+  
+  vm12# cd /etc/mail/spamassassin
+  vm12# vi v310.pre (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (修正前)
+  # TextCat - language guesser
+  #
+  # loadplugin Mail::SpamAssassin::Plugin::TextCat
+
+  (修正後)
+  # TextCat - language guesser
+  #
+  loadplugin Mail::SpamAssassin::Plugin::TextCat
+  --------------------------------------------------
+  
+  vm12# cd /etc/mail/spamassassin
+  vm12# cp -p local.cf local.cf.org (設定ファイルの退避)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME (最新の設定ファイルのダウンロード)
+  vm12# wget -q https://github.com/kittyfreak/spamassassin_user_prefs/archive/refs/heads/main.zip
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# unzip -q main.zip (最新の設定ファイルの解凍)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ls -lh (解凍ファイルの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  drwxr-xr-x. 2 root root   24 12月 29 00:02 spamassassin_user_prefs-main
+  --------------------------------------------------
+  
+  vm12# cd $HOME/spamassassin_user_prefs-main
+  vm12# cp -f user_prefs /etc/mail/spamassassin/local.cf (設定ファイルを上書き)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/mail/spamassassin
+  vm12# vi local.cf (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (末尾に追加)
+  report_safe 0
+  rewrite_header Subject ***SPAM***
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl enable spamassassin (サービスの自動起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl start spamassassin (サービスの起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+                    SpamAss-Milter
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# systemctl enable spamass-milter (サービスの自動起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl start spamass-milter (サービスの起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+                       Procmail
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi /etc/procmailrc (設定ファイルの修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## ログファイル名
+  LOGFILE=$HOME/.procmail.log
+  
+  ## メールの保存ディレクトリ
+  MAILDIR=$HOME/Maildir/
+  
+  ## デフォルト
+  DEFAULT=$MAILDIR
+  
+  ## スパムチェック
+  :0fw
+  |/bin/spamc
+  --------------------------------------------------
+  
+  ==================================================
+            スクリプトで通常メール送受信
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa aa0122ma aaa ccc 1 (AAAからCCCへ一通メール送信)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+Trying ::1...
+Connected to localhost.
+Escape character is '^]'.
+220 vm12.example.com ESMTP Postfix
+250-vm12.example.com
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-AUTH PLAIN LOGIN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+334 VXNlcm5hbWU6
+334 UGFzc3dvcmQ6
+235 2.7.0 Authentication successful
+250 2.1.0 Ok
+250 2.1.5 Ok
+354 End data with <CR><LF>.<CR><LF>
+250 2.0.0 Ok: queued as 2090E2019D51
+Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール確認
+  --------------------------------------------------
+  
+  vm12# cd ~ccc
+  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Fri Feb  4 23:00:19 2022
+    Subject: test1
+      Folder: /home/ccc/Maildir/new/1643983219.2754_0.vm12    665
+  --------------------------------------------------
+  
+  vm12# cd ~ccc
+  vm12# cat Maildir/new/1643983219.2754_0.vm12 (メール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Return-Path: <aaa@example.com>
+  X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on vm12  // スパムチェックのバージョン情報
+  X-Spam-Level: **                                                 // 脅威度は「**」と低く評価
+  X-Spam-Status: No, score=2.7 required=13.0 tests=ALL_TRUSTED,    // スパム判定は「No」
+    DNS_FROM_AHBL_RHSBL,NOTINCONTENTTYPE autolearn=no autolearn_force=no
+    version=3.4.0
+  X-Original-To: ccc@example.com
+  Delivered-To: ccc@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTPA id 2090E2019D51
+    for <ccc@example.com>; Fri,  4 Feb 2022 23:00:12 +0900 (JST)
+  from: aaa@example.com
+  to: ccc@example.com
+  Subject: test1  // タイトルには影響なし
+  Message-Id: <20220204140013.2090E2019D51@vm12.example.com>
+  Date: Fri,  4 Feb 2022 23:00:12 +0900 (JST)
+  
+  // メール本文には影響なし
+  I sent test1.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+            スクリプトでスパムメール送受信
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi send_mail.sh (スクリプト修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  ## 関数定義
+  function send_mail () {
+    echo "ehlo localhost"
+    sleep 1
+    echo "auth login"
+    sleep 1
+    echo "$(echo -n $1 | base64)"  // AUTH-LOGIN方式のユーザー名
+    sleep 1
+    echo "$(echo -n $2 | base64)"  // AUTH-LOGIN方式のパスワード
+    sleep 1
+    echo "mail from: $3@example.com"
+    sleep 1
+    echo "rcpt to: $4@example.com"
+    sleep 1
+    echo "data"
+    sleep 1
+    echo "from: $3@example.com"
+    sleep 1
+    echo "to: $4@example.com"
+    sleep 1
+    echo "Subject: test$5"
+    sleep 1
+    echo "XJS*C4JDBQADN1.NSBN3*2IDNEN*GTUBE-STANDARD-ANTI-UBE-TEST-EMAIL*C.34X"  // 本文をGTUBEコード(スパム検出)
+    sleep 1
+    echo "."
+    sleep 1
+    echo "quit"
+  }
+  
+  ## サーバーにコマンド送信
+  for i in $(seq 1 $5) ; do
+    send_mail $1 $2 $3 $4 $i | telnet localhost 25;
+  done
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa aa0122ma aaa ccc 1 (AAAからCCCへ一通メール送信)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+Trying ::1...
+Connected to localhost.
+Escape character is '^]'.
+220 vm12.example.com ESMTP Postfix
+250-vm12.example.com
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-AUTH PLAIN LOGIN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+334 VXNlcm5hbWU6
+334 UGFzc3dvcmQ6
+235 2.7.0 Authentication successful
+250 2.1.0 Ok
+250 2.1.5 Ok
+354 End data with <CR><LF>.<CR><LF>
+250 2.0.0 Ok: queued as AC2642019D51
+Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール確認
+  --------------------------------------------------
+  
+  vm12# cd ~ccc
+  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Fri Feb  4 23:07:45 2022
+    Subject: ***SPAM*** test1
+      Folder: /home/ccc/Maildir/new/1643983665.2811_0.vm12    1160
+  --------------------------------------------------
+  
+  vm12# cd ~ccc
+  vm12# cat Maildir/new/1643983665.2811_0.vm12 (メール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Return-Path: <aaa@example.com>
+  X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on vm12    //
+  X-Spam-Flag: YES                                                   //
+  X-Spam-Level: **************************************************   //
+  X-Spam-Status: Yes, score=1002.7 required=13.0 tests=ALL_TRUSTED,  //
+    DNS_FROM_AHBL_RHSBL,GTUBE,NOTINCONTENTTYPE autolearn=no autolearn_force=no
+    version=3.4.0
+  X-Spam-Report: 
+    *  2.4 DNS_FROM_AHBL_RHSBL RBL: Envelope sender listed in dnsbl.ahbl.org
+    *      [listed in example.com.rhsbl.ahbl.org.	IN]
+    [A]
+    *  0.1 ALL_TRUSTED Passed through trusted hosts only via SMTP
+    *  1000 GTUBE BODY: Generic Test for Unsolicited Bulk Email
+    *  0.2 NOTINCONTENTTYPE ! There's no Content-Type header
+  X-Original-To: ccc@example.com
+  Delivered-To: ccc@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTPA id AC2642019D51
+    for <ccc@example.com>; Fri,  4 Feb 2022 23:07:37 +0900 (JST)
+  from: aaa@example.com
+  to: ccc@example.com
+  Subject: ***SPAM*** test1  // タイトルに「***SPAM***」と付与
+  Message-Id: <20220204140738.AC2642019D51@vm12.example.com>
+  Date: Fri,  4 Feb 2022 23:07:37 +0900 (JST)
+  X-Spam-Prev-Subject: test1
+  
+  // メール本文には影響なし
+  XJS*C4JDBQADN1.NSBN3*2IDNEN*GTUBE-STANDARD-ANTI-UBE-TEST-EMAIL*C.34X
   --------------------------------------------------
   
   vm12# cd $HOME
