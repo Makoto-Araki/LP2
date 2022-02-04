@@ -2553,27 +2553,27 @@
   
   コマンドの実行結果
   --------------------------------------------------
-Trying ::1...
-Connected to localhost.
-Escape character is '^]'.
-220 vm12.example.com ESMTP Postfix
-250-vm12.example.com
-250-PIPELINING
-250-SIZE 10240000
-250-VRFY
-250-ETRN
-250-AUTH PLAIN LOGIN
-250-ENHANCEDSTATUSCODES
-250-8BITMIME
-250 DSN
-334 VXNlcm5hbWU6
-334 UGFzc3dvcmQ6
-235 2.7.0 Authentication successful
-250 2.1.0 Ok
-250 2.1.5 Ok
-354 End data with <CR><LF>.<CR><LF>
-250 2.0.0 Ok: queued as 2090E2019D51
-Connection closed by foreign host.
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-AUTH PLAIN LOGIN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  334 VXNlcm5hbWU6
+  334 UGFzc3dvcmQ6
+  235 2.7.0 Authentication successful
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 2090E2019D51
+  Connection closed by foreign host.
   --------------------------------------------------
   
   vm12# cd $HOME
@@ -2690,27 +2690,27 @@ Connection closed by foreign host.
   
   コマンドの実行結果
   --------------------------------------------------
-Trying ::1...
-Connected to localhost.
-Escape character is '^]'.
-220 vm12.example.com ESMTP Postfix
-250-vm12.example.com
-250-PIPELINING
-250-SIZE 10240000
-250-VRFY
-250-ETRN
-250-AUTH PLAIN LOGIN
-250-ENHANCEDSTATUSCODES
-250-8BITMIME
-250 DSN
-334 VXNlcm5hbWU6
-334 UGFzc3dvcmQ6
-235 2.7.0 Authentication successful
-250 2.1.0 Ok
-250 2.1.5 Ok
-354 End data with <CR><LF>.<CR><LF>
-250 2.0.0 Ok: queued as AC2642019D51
-Connection closed by foreign host.
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-AUTH PLAIN LOGIN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  334 VXNlcm5hbWU6
+  334 UGFzc3dvcmQ6
+  235 2.7.0 Authentication successful
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as AC2642019D51
+  Connection closed by foreign host.
   --------------------------------------------------
   
   vm12# cd $HOME
