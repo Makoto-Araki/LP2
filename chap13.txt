@@ -2070,7 +2070,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# telnet localhost 587 (認証プログラムに接続)
+  vm12# telnet localhost 587 (認証プログラム経由でSMTPサーバーに接続)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2125,16 +2125,214 @@
   
   --------------------------------------------------
   
+  ==================================================
+                SASL認証(AUTH-LOGIN方式)
+  ==================================================
+  
   vm12# cd $HOME
-  vm12# // (//)
+  vm12# echo -n aaa | base64 (ユーザー名のエンコード)
+  vm12# echo -n bbb | base64 (ユーザー名のエンコード)
+  vm12# echo -n ccc | base64 (ユーザー名のエンコード)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  YWFh  // aaa
+  YmJi  // bbb
+  Y2Nj  // ccc
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# // (//)
+  vm12# echo -n aa0122ma | base64 (パスワードのエンコード)
+  vm12# echo -n bb0122ma | base64 (パスワードのエンコード)
+  vm12# echo -n cc0122ma | base64 (パスワードのエンコード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  YWEwMTIybWE=  // aaa
+  YmIwMTIybWE=  // bbb
+  Y2MwMTIybWE=  // ccc
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# telnet localhost 587 (認証プログラム経由でSMTPサーバーに接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+    
+    >> (接続準備)
+    >> ehlo localhost
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    250-vm12.example.com
+    250-PIPELINING
+    250-SIZE 10240000
+    250-VRFY
+    250-ETRN
+    250-AUTH PLAIN LOGIN  // 確認する
+    250-ENHANCEDSTATUSCODES
+    250-8BITMIME
+    250 DSN
+    --------------------------------------------------
+    
+    >> (AUTH-LOGIN方式で認証)
+    >> auth login
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    334 VXNlcm5hbWU6
+    --------------------------------------------------
+    
+    >> (ユーザー名をエンコード状態で入力)
+    >> YWFh  // aaa
+    >> YmJi  // bbb
+    >> Y2Nj  // ccc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // aaa
+    334 UGFzc3dvcmQ6
+    
+    // bbb
+    334 UGFzc3dvcmQ6
+    
+    // ccc
+    334 UGFzc3dvcmQ6
+    --------------------------------------------------
+    
+    >> (パスワードをエンコード状態で入力)
+    >> YWEwMTIybWE=  // aaa
+    >> YmIwMTIybWE=  // bbb
+    >> Y2MwMTIybWE=  // ccc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // aaa
+    235 2.7.0 Authentication successful
+    
+    // bbb
+    235 2.7.0 Authentication successful
+    
+    // ccc
+    235 2.7.0 Authentication successful
+    --------------------------------------------------
+    
+    >> (ログアウト)
+    >> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    221 2.0.0 Bye
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+  OSプロンプトに戻る
+  
+  --------------------------------------------------
+  
+  ==================================================
+                    スクリプト修正
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi send_mail.sh (スクリプト修正)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  ## 関数定義
+  function send_mail () {
+    echo "ehlo localhost"
+    sleep 1
+    echo "auth login"
+    sleep 1
+    echo "$(echo -n $1 | base64)"  // AUTH-LOGIN方式のユーザー名
+    sleep 1
+    echo "$(echo -n $2 | base64)"  // AUTH-LOGIN方式のパスワード
+    sleep 1
+    echo "mail from: $3@example.com"
+    sleep 1
+    echo "rcpt to: $4@example.com"
+    sleep 1
+    echo "data"
+    sleep 1
+    echo "from: $3@example.com"
+    sleep 1
+    echo "to: $4@example.com"
+    sleep 1
+    echo "Subject: test$5"
+    sleep 1
+    echo "I sent test$5."
+    sleep 1
+    echo "."
+    sleep 1
+    echo "quit"
+  }
+  
+  ## サーバーにコマンド送信
+  for i in $(seq 1 $5) ; do
+    send_mail $1 $2 $3 $4 $i | telnet localhost 25;
+  done
+  --------------------------------------------------
+  
+  ==================================================
+                スクリプトでメール送受信
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa aa0122ma aaa bbb 1 (AAAからBBBへ一通メール送信)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-AUTH PLAIN LOGIN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  334 VXNlcm5hbWU6                     // auth login
+  334 UGFzc3dvcmQ6                     // aaa
+  235 2.7.0 Authentication successful  // aa0122ma
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as F1281200B112
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> 前回のメール転送設定がそのままで「ccc@example.com」に転送されただけなのでOK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
   
   コマンドの実行結果
   --------------------------------------------------
