@@ -1,0 +1,472 @@
+================================================================================
+[01] カーネル機能「Netfilter」 - 01 (各チェイン)
+[02] カーネル機能「Netfilter」 - 02 (各OSの操作インターフェース)
+[03] カーネル機能「Netfilter」 - 03 (初期設定)
+[04] カーネル機能「Netfilter」 - 04 (ルールの削除と追加)
+[05] //
+================================================================================
+[01]
+  カーネル機能「Netfilter」 - 01 (各チェイン)
+  
+[内容]
+  ## カーネル機能「Netfilter」の各チェインを図解
+  
+                            |
+                            |
+                            |
+  ==========================================================
+                       入力パケット
+  ==========================================================
+                            |
+                            |
+                            |
+  ==========================================================
+                        PREROUTING
+  ==========================================================
+                            |
+                            |
+                            |
+  ==========================================================
+                       ルーティング
+  ==========================================================
+            |                                    |
+            |                                    |
+            |                                    |
+  ======================                         |
+          INPUT                                  |
+  ======================                         |
+            |                                    |
+            |                                    |
+            |                                    |
+  ======================              ======================
+         プロセス                            FORWARD
+  ======================              ======================
+            |                                    |
+            |                                    |
+            |                                    |
+  ======================                         |
+          OUTPUT                                 |
+  ======================                         |
+            |                                    |
+            |                                    |
+            |                                    |
+  ==========================================================
+                        POSTROUTING
+  ==========================================================
+                            |
+                            |
+                            |
+  ==========================================================
+                       出力パケット
+  ==========================================================
+                            |
+                            |
+                            |
+  
+[確認]
+  実機での確認なし
+  
+================================================================================
+[02]
+  カーネル機能「Netfilter」 - 02 (各OSの操作インターフェース)
+  
+[内容]
+  ## 作業内容
+    コマンド「firewall-cmd」ではなくコマンド「iptables」を使用可能にする
+
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# firewall-cmd --state (サービスの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  running
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl stop firewalld (サービスの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [  420.090153] Ebtables v2.0 unregistered
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl disable firewalld (サービスの自動起動を無効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.
+  Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --state (サービスの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  not running
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# yum -y install iptables-services (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl start iptables (サービスの起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [  521.376810] ip_tables: (C) 2000-2006 Netfilter Core Team
+  [  521.446576] nf_conntrack version 0.5.0 (7928 buckets, 31712 max)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl enable iptables (サービスの自動起動の有効化)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Created symlink from /etc/systemd/system/basic.target.wants/iptables.service to /usr/lib/systemd/system/iptables.service.
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[03]
+  カーネル機能「Netfilter」 - 03 (初期設定)
+  
+[内容]
+  ## 作業内容
+    各チェインの初期設定を確認する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール確認)
+    iptables        // コマンド本体
+    --table nat     // テーブル指定
+    --list          // ルール一覧表示
+    --line-numbers  // 番号付与
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // PREROUTING チェイン
+  Chain PREROUTING (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+
+  // INPUT チェイン
+  Chain INPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  
+  // OUTPUT チェイン
+  Chain OUTPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  
+  // POSTROUTING チェイン
+  Chain POSTROUTING (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール確認)
+    iptables        // コマンド本体
+    --table filter  // テーブル指定
+    --list          // ルール一覧表示
+    --line-numbers  // 番号付与
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // INPUT チェイン
+  Chain INPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
+  2    ACCEPT  icmp  --   anywhere  anywhere                                       // None
+  3    ACCEPT  all   --   anywhere  anywhere                                       // None
+  4    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
+  5    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
+  
+  // FORWARD チェイン
+  Chain FORWARD (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
+  
+  // OUTPUT チェイン
+  Chain OUTPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[04]
+  カーネル機能「Netfilter」 - 04 (ルールの削除と追加)
+  
+[内容]
+  ## 作業内容
+    ルールの削除と追加を行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## 使用マシン
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# systemctl is-active iptables (サービスの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  active
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール確認)
+    iptables        // コマンド本体
+    --table filter  // テーブル指定
+    --list          // ルール一覧表示
+    --line-numbers  // 番号付与
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // INPUT チェイン
+  Chain INPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
+  2    ACCEPT  icmp  --   anywhere  anywhere                                       // None
+  3    ACCEPT  all   --   anywhere  anywhere                                       // None
+  4    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
+  5    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
+  
+  // FORWARD チェイン
+  Chain FORWARD (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
+  
+  // OUTPUT チェイン
+  Chain OUTPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# ping -c 3 -i 1 vm12 (ICMPパケット送信)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING vm12 (192.168.122.12) 56(84) bytes of data.
+    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=0.495 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.627 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.554 ms
+    
+    --- vm12 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+    rtt min/avg/max/mdev = 0.495/0.558/0.627/0.060 ms
+    --------------------------------------------------
+    
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール削除)
+    iptables          // コマンド本体
+    --table filter    // テーブル指定
+    --delete INPUT 2  // 番号指定でルール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール確認)
+    iptables        // コマンド本体
+    --table filter  // テーブル指定
+    --list          // ルール一覧表示
+    --line-numbers  // 番号付与
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // INPUT チェイン
+  Chain INPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
+  2    ACCEPT  all   --   anywhere  anywhere                                       // None
+  3    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
+  4    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
+  
+  // FORWARD チェイン
+  Chain FORWARD (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
+  
+  // OUTPUT チェイン
+  Chain OUTPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# ping -c 3 -i 1 vm12 (ICMPパケット送信)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING vm12 (192.168.122.12) 56(84) bytes of data.
+    From vm12 (192.168.122.12) icmp_seq=1 Destination Host Prohibited
+    From vm12 (192.168.122.12) icmp_seq=2 Destination Host Prohibited
+    From vm12 (192.168.122.12) icmp_seq=3 Destination Host Prohibited
+    
+    --- vm12 ping statistics ---
+    3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2004ms
+    --------------------------------------------------
+    
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール追加)
+    iptables           // コマンド本体
+    --table filter     // テーブル指定
+    --insert INPUT 2   // チェイン内の番号指定
+    -p icmp -j ACCEPT  // 追加ルール
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# (パケットフィルタリングルール確認)
+    iptables        // コマンド本体
+    --table filter  // テーブル指定
+    --list          // ルール一覧表示
+    --line-numbers  // 番号付与
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // INPUT チェイン
+  Chain INPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
+  2    ACCEPT  icmp  --   anywhere  anywhere                                       // None
+  3    ACCEPT  all   --   anywhere  anywhere                                       // None
+  4    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
+  5    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
+  
+  // FORWARD チェイン
+  Chain FORWARD (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
+  
+  // OUTPUT チェイン
+  Chain OUTPUT (policy ACCEPT)
+  num  target  prot  opt  source    destination  備考
+  (No Rule)
+  --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# ping -c 3 -i 1 vm12 (ICMPパケット送信)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING vm12 (192.168.122.12) 56(84) bytes of data.
+    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=0.581 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.528 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.525 ms
+    
+    --- vm12 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+    rtt min/avg/max/mdev = 0.525/0.544/0.581/0.037 ms
+    --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# iptables-save > /etc/sysconfig/iptables  (設定の保存)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[XX]
+  //
+  
+[内容]
+  ## 作業内容
+    //
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# // (//)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# // (//)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[XX]
+  //
+  
+[内容]
+  ## 作業内容
+    //
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+[確認]
+  vm12# cd $HOME
+  vm12# // (//)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# // (//)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
