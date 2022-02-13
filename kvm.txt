@@ -1204,6 +1204,40 @@
     MEMO : ホスト
   
 [確認]
+  $ cd $HOME (パッケージ追加)
+  $ sudo yum -y install autoconf automake libtool m4 pkgconfig gettext-devel popt-devel asciidoc
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  $ cd $HOME (最新ソース取得)
+  $ git clone https://github.com/authselect/authselect.git
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  $ cd authselect (ビルド準備)
+  $ autoreconf -iv
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  $ cd authselect (ビルド準備)
+  $ ./configure --enable-silent-rules
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラーで進めない
+  --------------------------------------------------
+  
+  //
+  
   $ cd /usr/local/src
   $ ls -lh Rocky* (イメージファイルの確認)
   
@@ -1232,7 +1266,7 @@
   lang ja_JP.UTF-8                    // 言語・国・文字コード
   network                             // ネットワーク構成
     --bootproto=static                // static or dhcp
-    --device=ens3                     // NIC
+    --device=enp1s0                   // NIC
     --gateway=192.168.122.1           // GateWay
     --ip=192.168.122.21               // IPv4
     --nameserver=192.168.122.1        // DNS
@@ -1242,7 +1276,7 @@
   rootpw                              // Password(root)
     --plaintext rt0122ma9310sa4221pd  // パスワード(平文)
   services                            // 自動起動サービス
-    --enabled="chronyd"               // 自動起動サービスにchronyd
+    --enabled="chronyd"               // 自動起動サービス : chronyd
   skipx                               // GUI不使用
   timezone Asia/Tokyo                 // タイムゾーン
     --isUtc                           // UTC時刻
@@ -1274,7 +1308,7 @@
   %addon com_redhat_kdump --enable --reserve-mb='auto'
   %end
   
-  // 不明
+  // パスワードポリシー
   %anaconda
   pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
   pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
