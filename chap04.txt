@@ -1643,8 +1643,8 @@
   ## コマンド(mkisofs)
     mkisofs -b     // ブート可能CD
     mkisofs -o XX  // イメージファイル(XX)を作成
-    mkisofs -J     // Microsoft用フォーマット
-    mkisofs -r(R)  // ロングネーム用フォーマット
+    mkisofs -J     // Windows
+    mkisofs -r(R)  // LongName
     mkisofs -udf   // DVD
   
 [確認]
@@ -1657,7 +1657,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME/HISTORY -> 先にディレクトリ作成
-  vm12$ vi AAA.txt
+  vm12$ vi 1234567890.12345
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1666,32 +1666,36 @@
   1615年 大坂夏の陣
   --------------------------------------------------
   
-  vm12$ cd $HOME/HISTORY
-  vm12$ vi BBB.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  1894年 日清戦争
-  1904年 日露戦争
-  1914年 第一次世界大戦
-  --------------------------------------------------
-  
   vm12$ cd $HOME
-  vm12$ mkisofs -o HISTORY-CDROM.iso -r(-R) HISTORY (CD-ROM用イメージ、ロングネーム対応でISOイメージ作成)
+  vm12$ mkisofs -o HISTORY-CDROM1.iso HISTORY (CD-ROM でISOイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  I: -input-charset not specified, using utf-8 (detected in locale settings) // 文字コードはシステムのものを使用
+  I: -input-charset not specified, using utf-8 (detected in locale settings)  // 文字コードはシステムのものを使用
   Total translation table size: 0
-  Total rockridge attributes bytes: 327
+  Total rockridge attributes bytes: 0
   Total directory bytes: 0
   Path table size(bytes): 10
   Max brk space used 0
-  177 extents written (0 MB)
+  175 extents written (0 MB)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkisofs -o HISTORY-CDROM2.iso -r(-R) HISTORY (LongName、CD-ROM でISOイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  I: -input-charset not specified, using utf-8 (detected in locale settings)
+  Total translation table size: 0
+  Total rockridge attributes bytes: 257
+  Total directory bytes: 0
+  Path table size(bytes): 10
+  Max brk space used 0
+  176 extents written (0 MB)
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ sudo mkdir cdrom (マウントポイント作成)
+  vm12$ sudo mkdir cdrom1 cdrom2 (マウントポイント作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1699,11 +1703,22 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mount -r -t iso9660 HISTORY-CDROM.iso /mnt/cdrom (CD-ROM用イメージを読取専用でマウント)
+  vm12$ sudo mount -r -t iso9660 HISTORY-CDROM1.iso /mnt/cdrom1 (CD-ROM用イメージを読取専用でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  [ 1429.225612] loop: module loaded
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -r -t iso9660 HISTORY-CDROM2.iso /mnt/cdrom2 (CD-ROM用イメージを読取専用でマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 1455.303908] Buffer I/O error on dev loop1, logical block 0, async page read
+  [ 1455.307354] Buffer I/O error on dev loop1, logical block 0, async page read
+  [ 1455.310038] Buffer I/O error on dev loop1, logical block 0, async page read
+  [ 1455.312705] Buffer I/O error on dev loop1, logical block 0, async page read
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1713,12 +1728,13 @@
   --------------------------------------------------
   NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
   sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0  354K  1 loop /mnt/cdrom (CD-ROMイメージ)
   vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  ├─vda1                252:1    0    1G  0 part /boot
+  └─vda2                252:2    0   19G  0 part 
+    ├─centos_vm11-root  253:0    0   17G  0 lvm  /
+    └─centos_vm11-swap  253:1    0    2G  0 lvm  [SWAP]
+  loop0                     7:0    0  350K  1 loop /mnt/cdrom1
+  loop1                     7:1    0  352K  1 loop /mnt/cdrom2
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1727,27 +1743,48 @@
   コマンドの実行結果
   --------------------------------------------------
   ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5402  11993   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/loop0                   iso9660            1     1      0  100% /mnt/cdrom (CD-ROMイメージ)
-  --------------------------------------------------
-
-  vm12$ cd /mnt/cdrom
-  vm12$ ls -lh (CD-ROMイメージを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -r--r--r--. 1 root root 75 12月 28 11:10 AAA.txt
-  -r--r--r--. 1 root root 72 12月 28 11:11 BBB.txt
+  devtmpfs                     devtmpfs         484     0    484    0% /dev
+  tmpfs                        tmpfs            496     0    496    0% /dev/shm
+  tmpfs                        tmpfs            496     7    489    2% /run
+  tmpfs                        tmpfs            496     0    496    0% /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root xfs            17394  1384  16011    8% /
+  /dev/vda1                    xfs             1014   137    878   14% /boot
+  tmpfs                        tmpfs            100     0    100    0% /run/user/0
+  tmpfs                        tmpfs            100     0    100    0% /run/user/1000
+  /dev/loop0                   iso9660            1     1      0  100% /mnt/cdrom1
+  /dev/loop1                   iso9660            1     1      0  100% /mnt/cdrom2
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo umount /mnt/cdrom
+  vm12$ ls -lh /mnt/cdrom[1-2]/ (CD-ROMイメージを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // cdrom1 -> ファイル名が「8.3」形式に制限
+  -r-xr-xr-x. 1 root root 75  2月 13 16:20 12345678.123
+  
+  // cdrom2
+  -r--r--r--. 1 root root 75  2月 13 16:20 1234567890.12345
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ cat /mnt/cdrom[1-2]/* (ファイル内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 12345678.123
+  1582年 本能寺の変
+  1600年 関ヶ原の戦い
+  1615年 大坂夏の陣
+  
+  // 1234567890.12345
+  1582年 本能寺の変
+  1600年 関ヶ原の戦い
+  1615年 大坂夏の陣
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt/cdrom1 /mnt/cdrom2
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1780,27 +1817,41 @@
   ## コマンド(mkisofs)
     mkisofs -b     // ブート可能CD
     mkisofs -o XX  // イメージファイル(XX)を作成
-    mkisofs -J     // Microsoft用フォーマット
-    mkisofs -r(R)  // ロングネーム用フォーマット
+    mkisofs -J     // Windows
+    mkisofs -r(R)  // LongName
     mkisofs -udf   // DVD
   
 [確認]
   vm12$ cd $HOME
-  vm12$ mkisofs -udf -o HISTORY-DVD.iso -r(-R) HISTORY (DVD-ROM用イメージ、ロングネーム対応でISOイメージ作成)
+  vm12$ mkisofs -udf -o HISTORY-DVDROM1.iso HISTORY (DVD-ROM でISOイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  I: -input-charset not specified, using utf-8 (detected in locale settings) // 文字コードはシステムのものを使用
+  I: -input-charset not specified, using utf-8 (detected in locale settings)
   Total translation table size: 0
-  Total rockridge attributes bytes: 327
+  Total rockridge attributes bytes: 0
   Total directory bytes: 0
   Path table size(bytes): 10
   Max brk space used 0
-  422 extents written (0 MB)
+  419 extents written (0 MB)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ mkisofs -udf -o HISTORY-DVDROM2.iso -r(-R) HISTORY (LongName、DVD-ROM でISOイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  I: -input-charset not specified, using utf-8 (detected in locale settings)
+  Total translation table size: 0
+  Total rockridge attributes bytes: 257
+  Total directory bytes: 0
+  Path table size(bytes): 10
+  Max brk space used 0
+  420 extents written (0 MB)
   --------------------------------------------------
   
   vm12$ cd /mnt
-  vm12$ sudo mkdir dvd (マウントポイント作成)
+  vm12$ sudo mkdir dvdrom1 dvdrom2 (マウントポイント作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1808,11 +1859,22 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mount -r -t iso9660 HISTORY-DVD.iso /mnt/dvd (DVD-ROM用イメージを読取専用でマウント)
+  vm12$ sudo mount -r -t iso9660 HISTORY-DVDROM1.iso /mnt/dvdrom1 (DVD-ROM用イメージを読取専用でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  [ 7209.369367] Buffer I/O error on dev loop0, logical block 0, async page read
+  [ 7209.372646] Buffer I/O error on dev loop0, logical block 0, async page read
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo mount -r -t iso9660 HISTORY-DVDROM2.iso /mnt/dvdrom2 (DVD-ROM用イメージを読取専用でマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 7237.076382] Buffer I/O error on dev loop1, logical block 0, async page read
+  [ 7237.079664] Buffer I/O error on dev loop1, logical block 0, async page read
+  [ 7237.083200] Buffer I/O error on dev loop1, logical block 0, async page read
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1822,12 +1884,13 @@
   --------------------------------------------------
   NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
   sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0  844K  1 loop /mnt/dvd (DVD-ROMイメージ)
   vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  ├─vda1                252:1    0    1G  0 part /boot
+  └─vda2                252:2    0   19G  0 part 
+    ├─centos_vm11-root  253:0    0   17G  0 lvm  /
+    └─centos_vm11-swap  253:1    0    2G  0 lvm  [SWAP]
+  loop0                     7:0    0  838K  1 loop /mnt/dvdrom1
+  loop1                     7:1    0  840K  1 loop /mnt/dvdrom2
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1836,27 +1899,47 @@
   コマンドの実行結果
   --------------------------------------------------
   ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5402  11993   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/loop0                   iso9660            1     1      0  100% /mnt/dvd (DVD-ROMイメージ)
+  devtmpfs                     devtmpfs         484     0    484    0% /dev
+  tmpfs                        tmpfs            496     0    496    0% /dev/shm
+  tmpfs                        tmpfs            496     7    489    2% /run
+  tmpfs                        tmpfs            496     0    496    0% /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root xfs            17394  1386  16009    8% /
+  /dev/vda1                    xfs             1014   137    878   14% /boot
+  tmpfs                        tmpfs            100     0    100    0% /run/user/1000
+  /dev/loop0                   iso9660            1     1      0  100% /mnt/dvdrom1
+  /dev/loop1                   iso9660            1     1      0  100% /mnt/dvdrom2
   --------------------------------------------------
 
-  vm12$ cd /mnt/dvd
-  vm12$ ls -lh (DVD-ROMイメージを確認)
+  vm12$ cd $HOME
+  vm12$ ls -lh /mnt/dvdrom[1-2]/ (DVD-ROMイメージを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -r--r--r--. 1 root root 75 12月 28 11:10 AAA.txt
-  -r--r--r--. 1 root root 72 12月 28 11:11 BBB.txt
+  // dvdrom1 -> ファイル名が「8.3」形式に制限
+  -r-xr-xr-x. 1 root root 75  2月 13 16:20 12345678.123
+  
+  // dvdrom2
+  -r--r--r--. 1 root root 75  2月 13 16:20 1234567890.12345
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo umount /mnt/dvd
+  vm12$ cat /mnt/dvdrom[1-2]/* (ファイル内容を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 12345678.123
+  1582年 本能寺の変
+  1600年 関ヶ原の戦い
+  1615年 大坂夏の陣
+  
+  // 1234567890.12345
+  1582年 本能寺の変
+  1600年 関ヶ原の戦い
+  1615年 大坂夏の陣
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ sudo umount /mnt/dvdrom1 /mnt/dvdrom2
   
   コマンドの実行結果
   --------------------------------------------------
