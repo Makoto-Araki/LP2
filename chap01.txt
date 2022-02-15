@@ -384,6 +384,26 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
+  vm12$ cat script01.sh (スクリプト確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  # 既存ログファイル削除
+  if test -f script.log ; then
+    rm -f script.log
+  fi
+  
+  # 無限ループ
+  while :
+  do
+    echo AAA >> script.log
+    sleep 1
+  done
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
   vm12$ bash script01.sh & (バックグラウンド実行)
   
   コマンドの実行結果
@@ -973,14 +993,11 @@
     --------------------------------------------------
     
   $ cd $HOME (デフォルト端末から操作)
-  $ w -h -s
+  $ w -h -s | grep sleep
   
   コマンドの実行結果
   --------------------------------------------------
-  USER     TTY      FROM              IDLE  WHAT
-  makoto   :0       :0               ?xdm?  /usr/libexec/gnome-session-binary -
-  makoto   pts/0    :0               6.00s  w -s
-  makoto   pts/1    :0               16:46  bash
+  USER     TTY      FROM             IDLE   WHAT
   makoto   tty2                      38.00s sleep 1  // Ctrl + Alt + F2 -> tty2
   makoto   tty3                      38.00s sleep 1  // Ctrl + Alt + F3 -> tty3
   --------------------------------------------------
@@ -993,7 +1010,7 @@
   
 [内容]
   ## 作業内容
-    CPU負荷をコマンド(ps)で測定する
+    プロセスをコマンド(ps)で測定する
   
   ## 使用マシン
     HOST : vm12
@@ -1028,72 +1045,48 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ vi sample09.sh
+  vm12$ cat script01.sh
   
   コマンドの実行結果
   --------------------------------------------------
   #!/bin/bash
   
-  # CPU負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
-  stress -c 1 -t 5 -q &
+  # 既存ログファイル削除
+  if test -f script.log ; then
+    rm -f script.log
+  fi
   
-  # ループ処理
-  for i in $(seq 1 9); do
-    ps aux | grep stress
+  # 無限ループ
+  while :
+  do
+    echo AAA >> script.log
     sleep 1
   done
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ bash sample09.sh
+  vm12$ bash script01.sh & (バックグラウンド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  // 1回目
+  [1] 3075
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ ps aux | grep script01 | grep -v grep (プロセスを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
-  makoto    2135  0.0  0.0   7308    92 ttyS0    R+   12:56   0:00 stress -c 1 -t 5 -q
-  makoto    2134  0.0  0.0 112824   952 ttyS0    R+   12:56   0:00 grep stress
-
-  // 2回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
-  makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:01 stress -c 1 -t 5 -q
-  makoto    2138  0.0  0.0 112824   948 ttyS0    R+   12:56   0:00 grep stress
-
-  // 3回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
-  makoto    2135  103  0.0   7308    92 ttyS0    R+   12:56   0:02 stress -c 1 -t 5 -q
-  makoto    2141  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
-
-  // 4回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
-  makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:03 stress -c 1 -t 5 -q
-  makoto    2144  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
-
-  // 5回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2131  0.0  0.0   7308   424 ttyS0    S+   12:56   0:00 stress -c 1 -t 5 -q
-  makoto    2135  102  0.0   7308    92 ttyS0    R+   12:56   0:04 stress -c 1 -t 5 -q
-  makoto    2147  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
-
-  // 6回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2150  0.0  0.0 112824   948 ttyS0    S+   12:56   0:00 grep stress
-
-  // 7回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2153  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
-
-  // 8回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2156  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
-
-  // 9回目
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    2159  0.0  0.0 112824   952 ttyS0    S+   12:56   0:00 grep stress
+  makoto    3075  0.0  0.1 113284  1384 ttyS0    S    20:45   0:00 bash script01.sh
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ kill -TERM(15) 3075 (プロセス終了)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [1]+  Terminated              bash script01.sh
   --------------------------------------------------
   
   以下の確認に続く
