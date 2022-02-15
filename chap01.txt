@@ -158,7 +158,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ vi sample01.sh
+  vm12$ vi script02.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -172,7 +172,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ bash sample01.sh
+  vm12$ bash script02.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -211,7 +211,7 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ vi sample02.sh
+  vm12$ vi script03.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -225,7 +225,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ bash sample02.sh
+  vm12$ bash script03.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -275,7 +275,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ vi sample03.sh
+  vm12$ vi script04.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -292,7 +292,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ bash sample03.sh
+  vm12$ bash script04.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -352,7 +352,7 @@
   
 [内容]
   ## 作業内容
-    HDD負荷をコマンド(iotop)で測定する
+    プロセスをコマンド(iotop)で測定する
   
   ## 使用マシン
     HOST : vm12
@@ -384,80 +384,45 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ vi sample06.sh
+  vm12$ bash script01.sh & (バックグラウンド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  #!/bin/bash
-  
-  # HDD負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
-  stress -d 1 -t 5 -q &
-  
-  # 数秒待機
-  sleep 1
-  
-  # バッチモード、更新間隔1秒、更新回数9回
-  iotop -b -d 1 -n 9 | grep stress
+  [1] 2514
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo bash sample06.sh (実行にroot権限が必要)
+  vm12$ ps -ef | grep script01 | grep -v grep (プロセスを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  // 1回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1316  be/4  root  0.00 B/s   161.10 M/s  0.00 %  93.14 %  stress -d 1 -t 5 -q
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
+  UID        PID  PPID  C STIME TTY          TIME CMD
+  makoto    2514  1114  0 19:36 ttyS0    00:00:00 bash script01.sh
+  --------------------------------------------------
   
-  // 2回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   6.91 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
+  vm12$ cd $HOME (バッチモード、ユーザー指定、更新間隔1秒、更新回数9回)
+  vm12$ sudo iotop -b -u makoto -d 1 -n 9 | grep 2514 | grep -v grep
   
-  // 3回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
+  コマンドの実行結果
+  --------------------------------------------------
+  TID  PRIO USER        DISK-READ   DISK-WRITE  SWAPIN  IO      COMMAND
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 1回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 2回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 3回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 4回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 5回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 6回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 7回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 8回目の出力
+  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 9回目の出力
+  --------------------------------------------------
   
-  // 4回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
+  vm12$ cd $HOME
+  vm12$ kill -TERM(15) 2514 (プロセス終了)
   
-  // 5回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
-  
-  // 6回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
-  
-  // 7回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
-  
-  // 8回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
-  
-  // 9回目
-  TID   PRIO  USER  DISK READ  DISK WRITE  SWAPIN  IO>      COMMAND
-  1314  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  stress -d 1 -t 5 -q
-  1316  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  [stress]
-  1318  be/4  root  0.00 B/s     0.00 B/s  0.00 %   0.00 %  grep stress
+  コマンドの実行結果
+  --------------------------------------------------
+  [1]+  Terminated              bash script01.sh
   --------------------------------------------------
   
   以下の確認に続く
