@@ -1097,7 +1097,7 @@
   
 [内容]
   ## 作業内容
-    CPU負荷をコマンド(ps)で測定する
+    プロセスをコマンド(ps)で測定する
   
   ## 使用マシン
     HOST : vm12
@@ -1132,72 +1132,48 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ vi sample10.sh
+  vm12$ cat script01.sh
   
   コマンドの実行結果
   --------------------------------------------------
   #!/bin/bash
   
-  # CPU負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
-  stress -c 1 -t 5 -q &
+  # 既存ログファイル削除
+  if test -f script.log ; then
+    rm -f script.log
+  fi
   
-  # ループ処理
-  for i in $(seq 1 9); do
-    ps -ef | grep stress
+  # 無限ループ
+  while :
+  do
+    echo AAA >> script.log
     sleep 1
   done
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ bash sample10.sh
+  vm12$ bash script01.sh & (バックグラウンド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  // 1回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
-  makoto    2197  2193  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
-  makoto    2196  2192  0 13:10 ttyS0    00:00:00 grep stress
+  [1] 3212
+  --------------------------------------------------
   
-  // 2回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
-  makoto    2197  2193 99 13:10 ttyS0    00:00:01 stress -c 1 -t 5 -q
-  makoto    2200  2192  0 13:10 ttyS0    00:00:00 grep stress
+  vm12$ cd $HOME
+  vm12$ ps -ef | grep script01 | grep -v grep (プロセスを確認)
   
-  // 3回目
+  コマンドの実行結果
+  --------------------------------------------------
   UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
-  makoto    2197  2193 99 13:10 ttyS0    00:00:02 stress -c 1 -t 5 -q
-  makoto    2203  2192  0 13:10 ttyS0    00:00:00 grep stress
+  makoto    3212  1114  0 20:54 ttyS0    00:00:00 bash script01.sh
+  --------------------------------------------------
   
-  // 4回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
-  makoto    2197  2193 99 13:10 ttyS0    00:00:03 stress -c 1 -t 5 -q
-  makoto    2206  2192  0 13:10 ttyS0    00:00:00 grep stress
+  vm12$ cd $HOME
+  vm12$ kill -TERM(15) 3212 (プロセス終了)
   
-  // 5回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2193  2192  0 13:10 ttyS0    00:00:00 stress -c 1 -t 5 -q
-  makoto    2197  2193 82 13:10 ttyS0    00:00:04 stress -c 1 -t 5 -q
-  makoto    2209  2192  0 13:10 ttyS0    00:00:00 grep stress
-  
-  // 6回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2212  2192  0 13:10 ttyS0    00:00:00 grep stress
-  
-  // 7回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2215  2192  0 13:10 ttyS0    00:00:00 grep stress
-  
-  // 8回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2218  2192  0 13:10 ttyS0    00:00:00 grep stress
-  
-  // 9回目
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2221  2192  0 13:10 ttyS0    00:00:00 grep stress
+  コマンドの実行結果
+  --------------------------------------------------
+  [1]+  Terminated              bash script01.sh
   --------------------------------------------------
   
   以下の確認に続く
