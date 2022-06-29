@@ -152,6 +152,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  // 単にmakeと実行した場合は一番上のターゲットが実行
+  // 行頭はtabキー
+
   PROG := HELLO
   OBJ1 := main.o
   OBJ2 := hello.o
@@ -159,19 +162,15 @@
   SRC2 := hello.c
   COMP := gcc
   
-  // HELLO (単にmakeと実行した場合は一番上のターゲットが実行される)
   $(PROG): $(OBJ1) $(OBJ2)
-    $(COMP) $(OBJ1) $(OBJ2) -o $(PROG)  // 行頭のインデントはtabキー
+    $(COMP) $(OBJ1) $(OBJ2) -o $(PROG)
   
-  // main.o
   $(OBJ1): $(SRC1)
     $(COMP) -c $(SRC1)
   
-  // hello.o
   $(OBJ2): $(SRC2)
     $(COMP) -c $(SRC2)
   
-  // 削除
   clean:
     rm -f $(PROG) $(OBJ1) $(OBJ2)
   --------------------------------------------------
@@ -739,7 +738,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME/SAMP1
-  vm12$ modinfo SAMP2.ko (カーネルモジュールの詳細情報表示)
+  vm12$ modinfo SAMP1.ko (カーネルモジュールの詳細情報表示)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1625,7 +1624,7 @@
   nodev  pstore
   nodev  mqueue
   nodev  selinuxfs
-         xfs  // システムで使用中のファイルシステム
+         xfs  // システムで使用中
   --------------------------------------------------
   
   以下の確認に続く
@@ -1695,6 +1694,14 @@
   
 [確認]
   vm12$ cd $HOME
+  vm12$ sudo yum -y install pciutils (パッケージ追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
   vm12$ ls -lh /proc/bus/pci (PCIバス情報を確認する)
   
   コマンドの実行結果
@@ -1732,14 +1739,6 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo yum -y install pciutils (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
   vm12$ lspci | grep 00:00 (PCIバス「00」、スロット「00」のデバイス情報)
   
   コマンドの実行結果
@@ -1772,6 +1771,14 @@
   
 [確認]
   vm12$ cd $HOME
+  vm12$ sudo yum -y install usbutils (パッケージのインストール)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
   vm12$ sudo find /proc -type d | grep -i usb (USBバス情報を検索する)
   
   コマンドの実行結果
@@ -1780,14 +1787,6 @@
   /proc/irq/10/uhci_hcd:usb4
   /proc/irq/11/ehci_hcd:usb1
   /proc/irq/11/uhci_hcd:usb2
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install usbutils (パッケージのインストール)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1894,7 +1893,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo mkfs.ext4 /dev/loop0 (ループバックデバイスにファイルシステム構築)
+  vm12$ sudo mkfs -t ext4 /dev/loop0 (ループバックデバイスにファイルシステム構築)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1964,12 +1963,6 @@
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン
   
-  ## 動的デバイス管理
-    1. カーネルがデバイスの追加または削除を認識
-    2. カーネルがパス(/sys)配下にデバイス情報を作成
-    3. カーネルがプロセス(udevd)に通知(uevent)
-    4. プロセス(udevd)はパス(/sys)配下とルール(後述)を参照してデバイスファイルを作成
-  
 [確認]
   vm12$ cd $HOME
   vm12$ systemctl is-active systemd-udevd (プロセスの稼働状況を確認)
@@ -1984,11 +1977,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  # ループバックデバイス検出時にコマンド実行
-  KERNEL=="loop*", RUN="/bin/logger %k %p"
-  
   // %k : デバイス名
   // %p : デバイスファイル(絶対パス)
+  
+  ## デバイス検出時にジャーナル記録
+  KERNEL=="loop*", RUN="/bin/logger %k %p"
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2002,20 +1995,11 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージからループバックデバイス作成)
+  vm12$ sudo losetup /dev/loop0 image0.img (ループバックデバイス作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ losetup -l (ループバックデバイス確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME       SIZELIMIT  OFFSET  AUTOCLEAR  RO  BACK-FILE
-  /dev/loop0         0       0          0   0  /home/makoto/image0.img
+  (省略) -> デバイス検知(sysfs) - デバイスファイル(udevd)
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -2059,12 +2043,6 @@
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン
   
-  ## 動的デバイス管理
-    01. カーネルがデバイスの追加または削除を認識
-    02. カーネルがパス(/sys)配下にデバイス情報を作成
-    03. カーネルがプロセス(udevd)に通知(uevent)
-    04. プロセス(udevd)はパス(/sys)配下とルール(後述)を参照してデバイスファイルを作成
-  
 [確認]
   vm12$ cd $HOME
   vm12$ systemctl is-active systemd-udevd (プロセスの稼働状況を確認)
@@ -2092,23 +2070,31 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ losetup -l (ループバックデバイス確認)
+  vm12$ cd $HOME (デバイス名(udevd)指定)
+  vm12$ udevadm info -n /dev/loop1
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME       SIZELIMIT  OFFSET  AUTOCLEAR  RO  BACK-FILE
-  /dev/loop1         0       0          0   0  /home/makoto/loop1.img
+  P: /devices/virtual/block/loop1          // デバイス名(sysfs)
+  N: loop1                                 // デバイス名(udevd)
+  E: DEVNAME=/dev/loop1                    // プロパティ
+  E: DEVPATH=/devices/virtual/block/loop1  // プロパティ
+  E: DEVTYPE=disk                          // プロパティ
+  E: MAJOR=7                               // プロパティ
+  E: MINOR=1                               // プロパティ
+  E: SUBSYSTEM=block                       // プロパティ
+  E: TAGS=:systemd:                        // プロパティ
+  E: USEC_INITIALIZED=36141906492          // プロパティ
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ udevadm info -n /dev/loop1 (デバイス名指定)
+  vm12$ cd $HOME (デバイス名(sysfs)指定)
+  vm12$ udevadm info -p /devices/virtual/block/loop1
   
   コマンドの実行結果
   --------------------------------------------------
-  P: /devices/virtual/block/loop1          // デバイス名(sys)
-  N: loop1                                 // 名前
-  E: DEVNAME=/dev/loop1                    // デバイス名
+  P: /devices/virtual/block/loop1          // デバイス名(sysfs)
+  N: loop1                                 // デバイス名(udevd)
+  E: DEVNAME=/dev/loop1                    // プロパティ
   E: DEVPATH=/devices/virtual/block/loop1  // プロパティ
   E: DEVTYPE=disk                          // プロパティ
   E: MAJOR=7                               // プロパティ
@@ -2119,24 +2105,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ udevadm info -p /devices/virtual/block/loop1 (デバイス名(sysfs)指定)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  P: /devices/virtual/block/loop1          // デバイス名(sys)
-  N: loop1                                 // 名前
-  E: DEVNAME=/dev/loop1                    // デバイス名
-  E: DEVPATH=/devices/virtual/block/loop1  // プロパティ
-  E: DEVTYPE=disk                          // プロパティ
-  E: MAJOR=7                               // プロパティ
-  E: MINOR=1                               // プロパティ
-  E: SUBSYSTEM=block                       // プロパティ
-  E: TAGS=:systemd:                        // プロパティ
-  E: USEC_INITIALIZED=36141906492          // プロパティ
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ udevadm info -n /dev/loop1 -q name (デバイス名からの問合せ結果から名前のみ抽出)
+  vm12$ udevadm info -n /dev/loop1 -q name (問合せ結果から名前のみ抽出)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2144,11 +2113,11 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ udevadm info -n /dev/loop1 -q property (デバイス名からの問合せ結果からプロパティ表示)
+  vm12$ udevadm info -n /dev/loop1 -q property (問合せ結果からプロパティ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  E: DEVNAME=/dev/loop1                    // デバイス名
+  E: DEVNAME=/dev/loop1                    // プロパティ
   E: DEVPATH=/devices/virtual/block/loop1  // プロパティ
   E: DEVTYPE=disk                          // プロパティ
   E: MAJOR=7                               // プロパティ
@@ -2159,13 +2128,13 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ udevadm info -n /dev/loop1 -q all (デバイス名からの問合せ結果から全情報表示)
+  vm12$ udevadm info -n /dev/loop1 -q all (問合せ結果から全情報表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  P: /devices/virtual/block/loop1          // デバイス名(sys)
-  N: loop1                                 // 名前
-  E: DEVNAME=/dev/loop1                    // デバイス名
+  P: /devices/virtual/block/loop1          // デバイス名(sysfs)
+  N: loop1                                 // デバイス名(udevd)
+  E: DEVNAME=/dev/loop1                    // プロパティ
   E: DEVPATH=/devices/virtual/block/loop1  // プロパティ
   E: DEVTYPE=disk                          // プロパティ
   E: MAJOR=7                               // プロパティ
@@ -2205,12 +2174,6 @@
     HOST : localhost
     IPV4 : 192.168.1.3
     MEMO : ホスト
-  
-  ## 動的デバイス管理
-    01. カーネルがデバイスの追加または削除を認識
-    02. カーネルがパス(/sys)配下にデバイス情報を作成
-    03. カーネルがプロセス(udevd)に通知(uevent)
-    04. プロセス(udevd)はパス(/sys)配下とルール(後述)を参照してデバイスファイルを作成
   
 [確認]
   # cd $HOME
