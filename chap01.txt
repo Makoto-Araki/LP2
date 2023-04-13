@@ -409,7 +409,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ iotop -> 対話モード
+  vm12$ sudo iotop -> 対話モード、root権限が必要
   
   コマンドの実行結果
   --------------------------------------------------
@@ -441,37 +441,45 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 2514
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ ps -ef | grep script01 | grep -v grep (プロセスを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    2514  1114  0 19:36 ttyS0    00:00:00 bash script01.sh
+  [1] 4088
   --------------------------------------------------
   
   vm12$ cd $HOME (バッチモード、ユーザー指定、更新間隔1秒、更新回数9回)
-  vm12$ sudo iotop -b -u makoto -d 1 -n 9 | grep 2514 | grep -v grep
+  vm12$ sudo iotop -b -u makoto -d 1 -n 9 | grep 4088 | grep -v grep
   
   コマンドの実行結果
   --------------------------------------------------
   TID  PRIO USER        DISK-READ   DISK-WRITE  SWAPIN  IO      COMMAND
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 1回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 2回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 3回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 4回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 5回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 6回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 7回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 8回目の出力
-  2514 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh  // 9回目の出力
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    3.97 K/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    0.00 %  0.00 %  bash script01.sh
+  --------------------------------------------------
+  
+  vm12$ cd $HOME (バッチモード、PID指定、更新間隔1秒、更新回数9回)
+  vm12$ sudo iotop -b -p 4088 -d 1 -n 9 | grep 4088 | grep -v grep
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  TID  PRIO USER        DISK-READ   DISK-WRITE  SWAPIN  IO      COMMAND
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
+  4088 be/4 makoto      0.00 B/s    0.00 B/s    ?unavailable?   bash script01.sh
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ kill -TERM(15) 2514 (プロセス終了)
+  vm12$ kill -term(15) 4088 (プロセス終了)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -486,7 +494,7 @@
   
 [内容]
   ## 作業内容
-    パッケージの各種調査を行う
+    パッケージ「sysstat」の調査を行う
   
   ## 使用マシン
     HOST : vm12
