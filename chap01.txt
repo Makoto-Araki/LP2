@@ -331,7 +331,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 	2023年04月15日 	_x86_64_	(1 CPU)
+  Linux 3.10.0-1160.el7.x86_64 (vm11) 2023年04月15日 _x86_64_ (1 CPU)
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
   vda             150.00         0.00        73.68          0         28  // HDD負荷
@@ -1252,48 +1252,48 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/meminfo
+  vm11$ cd $HOME
+  vm11$ cat /proc/meminfo
   
   コマンドの実行結果
   --------------------------------------------------
-  MemTotal:        1014676 kB
-  MemFree:          470024 kB
-  MemAvailable:     710576 kB
-  Buffers:             164 kB
-  Cached:           357136 kB
+  MemTotal:        1013456 kB
+  MemFree:          572196 kB
+  MemAvailable:     681372 kB
+  Buffers:            2108 kB
+  Cached:           235040 kB
   SwapCached:            0 kB
-  Active:           352548 kB
-  Inactive:          65288 kB
-  Active(anon):      33032 kB
-  Inactive(anon):    34340 kB
-  Active(file):     319516 kB
-  Inactive(file):    30948 kB
+  Active:           172540 kB
+  Inactive:         128512 kB
+  Active(anon):      64156 kB
+  Inactive(anon):     8452 kB
+  Active(file):     108384 kB
+  Inactive(file):   120060 kB
   Unevictable:           0 kB
   Mlocked:               0 kB
-  SwapTotal:       1048572 kB
-  SwapFree:        1048572 kB
+  SwapTotal:       2097148 kB
+  SwapFree:        2097148 kB
   Dirty:                 0 kB
   Writeback:             0 kB
-  AnonPages:         60568 kB
-  Mapped:            21676 kB
-  Shmem:              6836 kB
-  Slab:              63216 kB
-  SReclaimable:      35728 kB
-  SUnreclaim:        27488 kB
-  KernelStack:        1792 kB
-  PageTables:         3556 kB
+  AnonPages:         63924 kB
+  Mapped:            22292 kB
+  Shmem:              8704 kB
+  Slab:              48092 kB
+  SReclaimable:      23404 kB
+  SUnreclaim:        24688 kB
+  KernelStack:        1808 kB
+  PageTables:         3508 kB
   NFS_Unstable:          0 kB
   Bounce:                0 kB
   WritebackTmp:          0 kB
-  CommitLimit:     1555908 kB
-  Committed_AS:     271108 kB
+  CommitLimit:     2603876 kB
+  Committed_AS:     272724 kB
   VmallocTotal:   34359738367 kB
-  VmallocUsed:      268044 kB
+  VmallocUsed:      270100 kB
   VmallocChunk:   34358947836 kB
-  Percpu:              176 kB
+  Percpu:              520 kB
   HardwareCorrupted:     0 kB
-  AnonHugePages:      6144 kB
+  AnonHugePages:     10240 kB
   CmaTotal:              0 kB
   CmaFree:               0 kB
   HugePages_Total:       0
@@ -1301,8 +1301,8 @@
   HugePages_Rsvd:        0
   HugePages_Surp:        0
   Hugepagesize:       2048 kB
-  DirectMap4k:       57200 kB
-  DirectMap2M:      991232 kB
+  DirectMap4k:       61284 kB
+  DirectMap2M:     1986560 kB
   --------------------------------------------------
   
   以下の確認に続く
@@ -1316,8 +1316,8 @@
     ディスク使用量をコマンド(df)で測定する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド
@@ -1330,19 +1330,19 @@
     df -T  // ファイルシステムタイプを表示
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ LANG=C df -mT (メガバイト単位、ファイルシステムタイプ表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT (メガバイト単位、ファイルシステムタイプ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  Filesystem                    Type      1M-blocks   Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        484      0        484    0%  /dev
-  tmpfs                         tmpfs           496      0        496    0%  /dev/shm
-  tmpfs                         tmpfs           496      7        489    2%  /run
-  tmpfs                         tmpfs           496      0        496    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs            8178   1470       6709   18%  /
-  /dev/vda1                     xfs            1014    137        878   14%  /boot
-  tmpfs                         tmpfs           100      0        100    0%  /run/user/1000
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        884     0        884    0%  /dev
+  tmpfs                         tmpfs           895     0        895    0%  /dev/shm
+  tmpfs                         tmpfs           895     9        887    1%  /run
+  tmpfs                         tmpfs           895     0        895    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  1470      15925    9%  /
+  /dev/vda1                     xfs            1014   150        865   15%  /boot
+  tmpfs                         tmpfs            99     0         99    0%  /run/user/1000
   --------------------------------------------------
   
   以下の確認に続く
@@ -1356,8 +1356,8 @@
     iノード使用状況をコマンド(df)で測定する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド
@@ -1370,19 +1370,20 @@
     df -T  // ファイルシステムタイプを表示
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ LANG=C df -iT (iノードの使用状況、ファイルシステムタイプ表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C df -iT (iノードの使用状況、ファイルシステムタイプ表示)
   
   コマンドの実行結果
   --------------------------------------------------
   Filesystem                    Type      Inodes  IUsed    IFree  IUse%  Mounted on
-  devtmpfs                      devtmpfs  123903    343   123560     1%  /dev
-  tmpfs                         tmpfs     126834      1   126833     1%  /dev/shm
-  tmpfs                         tmpfs     126834    436   126398     1%  /run
-  tmpfs                         tmpfs     126834     16   126818     1%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs      4192256  27610  4164646     1%  /
-  /dev/vda1                     xfs       524288    326   523962     1%  /boot
-  tmpfs                         tmpfs     126834      1   126833     1%  /run/user/1000
+  devtmpfs                      devtmpfs  226150    355   225795     1%  /dev
+  tmpfs                         tmpfs     229082      1   229081     1%  /dev/shm
+  tmpfs                         tmpfs     229082    476   228606     1%  /run
+  tmpfs                         tmpfs     229082     16   229066     1%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs      8910848  27618  8883230     1%  /
+  /dev/vda1                     xfs       524288    327   523961     1%  /boot
+  tmpfs                         tmpfs     126682      1   126681     1%  /run/user/1000
+  tmpfs                         tmpfs     126682      1   126681     1%  /run/user/0
   --------------------------------------------------
   
   以下の確認に続く
@@ -1396,8 +1397,8 @@
     NIC情報をコマンド(netstat)で測定する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド
@@ -1406,33 +1407,33 @@
     netstat -s     // プロトコル毎の統計情報
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install net-tools (コマンドのインストール)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install net-tools (コマンドのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ netstat -i
+  vm11$ cd $HOME
+  vm11$ netstat -i
   
   コマンドの実行結果
   --------------------------------------------------
   Kernel Interface table
   Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
-  eth0      1500    19378         0        13         0     1235         0         0         0    BMRU
+  eth0      1500     1496         0         9         0      698         0         0         0    BMRU
   lo       65536       32         0         0         0       32         0         0         0     LRU
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ netstat -I=eth0
+  vm11$ cd $HOME
+  vm11$ netstat -I=eth0
   
   コマンドの実行結果
   --------------------------------------------------
   Kernel Interface table
   Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
-  eth0      1500    19706         0        13         0     1239         0         0         0    BMRU
+  eth0      1500     1580         0         9         0      706         0         0         0    BMRU
   --------------------------------------------------
   
   以下の確認に続く
@@ -1446,8 +1447,8 @@
     プロトコル毎の統計情報をコマンド(netstat)で測定する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド
@@ -1456,12 +1457,12 @@
     netstat -s     // プロトコル毎の統計情報
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ netstat -s
+  vm11$ cd $HOME
+  vm11$ netstat -s
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> IP, ICMP, TCP, UDP ... の統計情報を確認した
+  (省略) -> IP, ICMP, TCP, UDP ... の統計情報を確認
   --------------------------------------------------
   
   以下の確認に続く
@@ -1491,9 +1492,9 @@
   コマンドの実行結果
   --------------------------------------------------
   State    Recv-Q    Send-Q    Local Address:Port    Peer Address:Port                
-  ESTAB    0         0         192.168.1.3:51332     52.35.145.245:https                
-  ESTAB    0         0         192.168.1.3:57674     133.152.42.207:https                
-  ESTAB    0         0         192.168.1.3:50576     133.152.40.171:https  
+  ESTAB    0         0         192.168.1.4:51332     52.35.145.245:https                
+  ESTAB    0         0         192.168.1.4:57674     133.152.42.207:https                
+  ESTAB    0         0         192.168.1.4:50576     133.152.40.171:https  
   --------------------------------------------------
   
   $ cd $HOME
@@ -1552,98 +1553,98 @@
     ホスト間でネットワークのスループット測定
   
   ## 使用マシン1
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+  ## 仮想マシン2
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン
   
-  ## 仮想マシン2
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install wget (コマンドのインストール)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install wget (コマンドのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm (RPMファイル入手)
+  vm11$ cd $HOME
+  vm11$ wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm (RPMファイル入手)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo rpm -ivh netperf-2.7.0-1.el7.lux.x86_64.rpm
+  vm11$ cd $HOME
+  vm11$ sudo rpm -ivh netperf-2.7.0-1.el7.lux.x86_64.rpm
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo firewall-cmd --add-port=12865/tcp --permanent
+  vm11$ cd $HOME
+  vm11$ sudo firewall-cmd --add-port=12865/tcp --permanent
   
   コマンドの実行結果
   --------------------------------------------------
   success
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo firewall-cmd --add-port=12866/tcp --permanent
+  vm11$ cd $HOME
+  vm11$ sudo firewall-cmd --add-port=12866/tcp --permanent
   
   コマンドの実行結果
   --------------------------------------------------
   success
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo firewall-cmd --reload
+  vm11$ cd $HOME
+  vm11$ sudo firewall-cmd --reload
   
   コマンドの実行結果
   --------------------------------------------------
   success
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo netserver (Netperfサーバー起動)
+  vm11$ cd $HOME
+  vm11$ sudo netserver (Netperfサーバー起動)
   
   コマンドの実行結果
   --------------------------------------------------
   Starting netserver with host 'IN(6)ADDR_ANY' port '12865' and family AF_UNSPEC
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo yum -y install wget (コマンドのインストール)
+    vm12$ cd $HOME
+    vm12$ sudo yum -y install wget (コマンドのインストール)
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm (RPMファイル入手)
+    vm12$ cd $HOME
+    vm12$ wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm (RPMファイル入手)
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo rpm -ivh netperf-2.7.0-1.el7.lux.x86_64.rpm
+    vm12$ cd $HOME
+    vm12$ sudo rpm -ivh netperf-2.7.0-1.el7.lux.x86_64.rpm
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ netperf -H 192.168.122.12 -p 12865 -- -P 12866
+    vm12$ cd $HOME
+    vm12$ netperf -H 192.168.122.11 -p 12865 -- -P 12866
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1652,13 +1653,13 @@
     Recv   Send    Send                          
     Socket Socket  Message  Elapsed              
     Size   Size    Size     Time     Throughput
-
     bytes  bytes   bytes    secs.    10^6bits/sec
-    87380  16384   16384    10.00    6038.26  // 6000M(Bits) / 8 -> 750M(Bytes)/秒
+
+    87380  16384   16384    10.00    6297.77 -> 6300M(Bits) / 8 -> 787M(Bytes) / 秒
     --------------------------------------------------
     
-  vm12$ cd $HOME
-  vm12$ sudo pkill netserver (Netperfサーバー停止)
+  vm11$ cd $HOME
+  vm11$ sudo pkill netserver (Netperfサーバー停止)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1676,49 +1677,49 @@
     ネットワークトラフィックのモニタリング
   
   ## 使用マシン1
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+  ## 仮想マシン2
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン
   
-  ## 仮想マシン2
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install iptraf-ng (コマンドのインストール)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install iptraf-ng (コマンドのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo iptraf-ng (ネットワークトラフィックのモニタリング)
+  vm11$ cd $HOME
+  vm11$ sudo iptraf-ng (ネットワークトラフィックのモニタリング)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> Main Menu -> [IP traffic monitor] -> [eth0]
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ ping -c 3 vm12 (ICMPパケット送信)
+    vm12$ cd $HOME
+    vm12$ ping -c 3 vm11 (ICMPパケット送信)
     
     コマンドの実行結果
     --------------------------------------------------
-    PING vm12 (192.168.122.12) 56(84) bytes of data.
-    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=0.553 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.870 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.872 ms
+    PING vm11 (192.168.122.11) 56(84) bytes of data.
+    64 bytes from vm11 (192.168.122.11): icmp_seq=1 ttl=64 time=1.90 ms
+    64 bytes from vm11 (192.168.122.11): icmp_seq=2 ttl=64 time=0.719 ms
+    64 bytes from vm11 (192.168.122.11): icmp_seq=3 ttl=64 time=1.51 ms
     
-    --- vm12 ping statistics ---
+    --- vm11 ping statistics ---
     3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-    rtt min/avg/max/mdev = 0.553/0.765/0.872/0.149 ms
+    rtt min/avg/max/mdev = 0.719/1.379/1.904/0.494 ms
     --------------------------------------------------
     
-  vm12$ cd $HOME
-  vm12$ (パケット監視)
+  vm11$ cd $HOME
+  vm11$ (パケット監視)
   
   コマンドの実行結果
   --------------------------------------------------
