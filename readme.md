@@ -1,4 +1,3 @@
-# LPIC Level 2
 ## 201試験
 ### chap01.txt : 第01章 キャパシティプランニング
 ### chap02.txt : 第02章 Linuxカーネル

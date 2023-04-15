@@ -692,7 +692,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 28K  4月 13 20:20 sa13
   --------------------------------------------------
   
   vm12$ cd $HOME (スワップ統計、収集データ(13日)、18:40開始、19:40終了、20分(1200秒)単位)
@@ -700,7 +700,12 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Linux 3.10.0-1160.el7.x86_64 (vm12) 	04/13/23 	_x86_64_	(1 CPU)
+  
+  18:40:02     pswpin/s  pswpout/s
+  19:00:01         0.00       0.00
+  19:20:01         0.00       0.00
+  Average:         0.00       0.00
   --------------------------------------------------
   
   以下の確認に続く
@@ -736,7 +741,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 28K  4月 13 20:20 sa13
   --------------------------------------------------
   
   vm12$ cd $HOME (ディスクIO統計、収集データ(13日)、18:40開始、19:40終了、20分(1200秒)単位)
@@ -744,7 +749,12 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Linux 3.10.0-1160.el7.x86_64 (vm12) 	04/13/23 	_x86_64_	(1 CPU)
+  
+  18:40:02       tps      rtps      wtps   bread/s   bwrtn/s
+  19:00:01      2.08      0.13      1.94     10.27   1857.45
+  19:20:01      0.74      0.42      0.33     35.81      5.71
+  Average:      1.41      0.28      1.13     23.05    930.85
   --------------------------------------------------
   
   以下の確認に続く
@@ -780,7 +790,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 28K  4月 13 20:20 sa13
   --------------------------------------------------
   
   vm12$ cd $HOME (ネットワーク統計、収集データ(13日)、18:40開始、19:40終了、20分(1200秒)単位)
@@ -788,7 +798,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Linux 3.10.0-1160.el7.x86_64 (vm12) 	04/13/23 	_x86_64_	(1 CPU)
+  
+  18:40:02     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+  19:00:01      eth0      0.55      0.02      0.03      0.00      0.00      0.00      0.00
+  19:00:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  19:20:01      eth0      0.85      0.48      0.10      0.03      0.00      0.00      0.00
+  19:20:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  Average:      eth0      0.70      0.25      0.07      0.02      0.00      0.00      0.00
+  Average:        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
   --------------------------------------------------
   
   以下の確認に続く
@@ -824,7 +842,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 28K  4月 13 20:20 sa13
   --------------------------------------------------
   
   vm12$ cd $HOME (ネットワークエラー統計、収集データ(13日)、18:40開始、19:40終了、20分(1200秒)単位)
@@ -832,7 +850,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Linux 3.10.0-1160.el7.x86_64 (vm12) 	04/13/23 	_x86_64_	(1 CPU)
+  
+  18:40:02     IFACE   rxerr/s   txerr/s    coll/s  rxdrop/s  txdrop/s  txcarr/s  rxfram/s  rxfifo/s  txfifo/s
+  19:00:01      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  19:00:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  19:20:01      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  19:20:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  Average:      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  Average:        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
   --------------------------------------------------
   
   以下の確認に続く
@@ -861,7 +887,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  -rw-r--r--. 1 root root 28K  4月 13 20:20 sa13
   --------------------------------------------------
   
   vm12$ cd $HOME (JSON出力、ローカル時刻、収集データ(13日)、ネットワーク統計、18:40開始、19:40終了、20分(1200秒)単位)
@@ -869,7 +895,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (省略) -> JSON出力を確認
   --------------------------------------------------
   
   以下の確認に続く
@@ -880,7 +906,7 @@
   
 [内容]
   ## 作業内容
-    HDD負荷をかけてシステム稼働時間、ログインユーザー数、平均負荷の推移を観察する
+    システム稼働時間、ログインユーザー数、平均負荷を観察する
   
   ## 使用マシン
     HOST : vm12
@@ -892,36 +918,11 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ vi script05.sh
+  vm12$ uptime
   
   コマンドの実行結果
   --------------------------------------------------
-  #!/bin/bash
-  
-  # HDD負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
-  stress -d 1 -t 5 -q &
-  
-  # ループ処理
-  for i in $(seq 1 9); do
-    uptime
-    sleep 1
-  done
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ bash script05.sh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  12:22:09 up  3:50,  1 user,  load average: 0.00, 0.01, 0.05  // CPU負荷よりもHDD負荷の方が効果的
-  12:22:10 up  3:50,  1 user,  load average: 0.08, 0.03, 0.05
-  12:22:12 up  3:50,  1 user,  load average: 0.08, 0.03, 0.05
-  12:22:14 up  3:50,  1 user,  load average: 0.08, 0.03, 0.05
-  12:22:15 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
-  12:22:16 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
-  12:22:17 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
-  12:22:18 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
-  12:22:19 up  3:50,  1 user,  load average: 0.16, 0.05, 0.06
+  20:50:52 up  2:43,  1 user,  load average: 0.00, 0.01, 0.05
   --------------------------------------------------
   
   以下の確認に続く
@@ -935,9 +936,9 @@
     指定ユーザー(makoto)のプロセス情報を出力
   
   ## 使用マシン
-    HOST : fs01
-    IPV4 : 192.168.1.3
-    MEMO : ホスト
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
   ## コマンド
     w XX     // ユーザー(XX)のプロセス情報を出力
@@ -954,50 +955,32 @@
     WHAT   : 実行コマンド
   
 [確認]
-  $ cd $HOME (デフォルト端末から操作)
-  $ cat script06.sh
+  vm12$ cd $HOME
+  vm12$ systemctl is-active sshd
   
   コマンドの実行結果
   --------------------------------------------------
-  #!/bin/bash
-  
-  # 無限ループ
-  while :(ヌルコマンド)
-  do
-    echo AAA
-    echo BBB
-    sleep 1  // プロセス内では「echo」より「sleep」の時間が圧倒的に長い
-  done
+  active
   --------------------------------------------------
     
-    $ cd $HOME (Ctrl + Alt + F2 で別端末からログイン)
-    $ bash script06.sh
+    $ cd $HOME
+    $ ssh makoto@192.168.122.12 (ホスト側から仮想マシンにログイン)
     
     コマンドの実行結果
     --------------------------------------------------
-    AAA
-    BBB
-    ... // 確認が完了したら Ctrl + C で終了する
+    (省略)
     --------------------------------------------------
     
-    $ cd $HOME (Ctrl + Alt + F3 で別端末からログイン)
-    $ bash script06.sh
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    AAA
-    BBB
-    ... // 確認が完了したら Ctrl + C で終了する
-    --------------------------------------------------
-    
-  $ cd $HOME (デフォルト端末から操作)
-  $ w -h -s | grep sleep
+  vm12$ cd $HOME
+  vm12$ w -h
   
   コマンドの実行結果
   --------------------------------------------------
-  USER     TTY      FROM             IDLE   WHAT
-  makoto   tty2                      38.00s sleep 1  // Ctrl + Alt + F2 -> tty2
-  makoto   tty3                      38.00s sleep 1  // Ctrl + Alt + F3 -> tty3
+  21:13:00 up  3:05,  2 users,  load average: 0.00, 0.01, 0.05
+
+  USER    TTY    FROM     LOGIN@  IDLE   JCPU   PCPU   WHAT
+  makoto  ttyS0           18:08   4.00s  1.67s  0.01s  w
+  makoto  pts/0  gateway  21:09   3:48   0.03s  0.03s  -bash  // ssh makoto@192.168.122.12
   --------------------------------------------------
   
   以下の確認に続く
@@ -1043,31 +1026,11 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ cat script01.sh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #!/bin/bash
-  
-  # 既存ログファイル削除
-  if test -f script.log ; then
-    rm -f script.log
-  fi
-  
-  # 無限ループ
-  while :
-  do
-    echo AAA >> script.log
-    sleep 1
-  done
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
   vm12$ bash script01.sh & (バックグラウンド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 3075
+  [1] 18552
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1075,12 +1038,12 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  makoto    3075  0.0  0.1 113284  1384 ttyS0    S    20:45   0:00 bash script01.sh
+  USER       PID  %CPU  %MEM     VSZ   RSS  TTY    STAT  START  TIME  COMMAND
+  makoto   18552   0.0   0.1  113284  1384  ttyS0  S     21:22  0:00  bash script01.sh
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ kill -TERM(15) 3075 (プロセス終了)
+  vm12$ kill -term(15) 18552 (プロセス終了)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1130,31 +1093,11 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ cat script01.sh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #!/bin/bash
-  
-  # 既存ログファイル削除
-  if test -f script.log ; then
-    rm -f script.log
-  fi
-  
-  # 無限ループ
-  while :
-  do
-    echo AAA >> script.log
-    sleep 1
-  done
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
   vm12$ bash script01.sh & (バックグラウンド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 3212
+  [1] 18972
   --------------------------------------------------
   
   vm12$ cd $HOME
@@ -1162,12 +1105,12 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  UID        PID  PPID  C STIME TTY          TIME CMD
-  makoto    3212  1114  0 20:54 ttyS0    00:00:00 bash script01.sh
+  UID       PID  PPID  C  STIME  TTY        TIME  CMD
+  makoto  18972  1225  0  21:28  ttyS0  00:00:00  bash script01.sh
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ kill -TERM(15) 3212 (プロセス終了)
+  vm12$ kill -term(15) 18972 (プロセス終了)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1182,7 +1125,7 @@
   
 [内容]
   ## 作業内容
-    CPU負荷をコマンド(pstree)で測定する
+    プロセスの親子関係をコマンド(pstree)で確認する
   
   ## 使用マシン
     HOST : vm12
@@ -1204,29 +1147,21 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ stress -c 3 -q &
+  vm12$ ps -ef | grep -i NetworkManager (NetworkManagerのPID)
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 2414 -> PID出力
+  UID   PID  PPID  C  STIME  TTY      TIME  CMD
+  root  665     1  0  18:07  ?    00:00:00  /usr/sbin/NetworkManager --no-daemon
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ pstree -p $! (最後に実行されたバックグラウンドプロセスのPIDを指定)
+  vm12$ pstree -p 665 (プロセスの親子関係)
   
   コマンドの実行結果
   --------------------------------------------------
-  stress(2414)─┬─stress(2415)
-                ├─stress(2416)
-                └─stress(2417)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ pkill -u makoto stress
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> Terminatedの出力があればOK
+  NetworkManager(665)─┬─{NetworkManager}(673)
+                       └─{NetworkManager}(678)
   --------------------------------------------------
   
   以下の確認に続く
@@ -1262,15 +1197,15 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ lsof -i:https -n
+  $ lsof -i:https -n (HTTPS通信を測定)
   
   コマンドの実行結果
   --------------------------------------------------
-  COMMAND   PID    USER    FD  TYPE  DEVICE  SIZE/OFF  NODE   NAME
-  code     3368  makoto   42u  IPV4  301529       0t0   TCP   192.168.1.3:38862 -> 40.77.226.250:https (SYN_SENT)
-  firefox  3563  makoto   49u  IPV4  301406       0t0   TCP   192.168.1.3:41428 -> 133.152.62.71:https (ESTABLISHED)
-  firefox  3563  makoto   53u  IPV4  263699       0t0   TCP   192.168.1.3:55368 -> 133.152.42.207:https (ESTABLISHED)
-  firefox  3563  makoto  103u  IPV4   46986       0t0   TCP   192.168.1.3:51332 -> 52.35.145.245:https (ESTABLISHED)
+  COMMAND   PID    USER    FD  TYPE  DEVICE  SIZE/OFF  NODE  NAME
+  code     3368  makoto   42u  IPV4  301529       0t0   TCP  192.168.1.3:38862 -> 40.77.226.250:https (SYN_SENT)
+  firefox  3563  makoto   49u  IPV4  301406       0t0   TCP  192.168.1.3:41428 -> 133.152.62.71:https (ESTABLISHED)
+  firefox  3563  makoto   53u  IPV4  263699       0t0   TCP  192.168.1.3:55368 -> 133.152.42.207:https (ESTABLISHED)
+  firefox  3563  makoto  103u  IPV4   46986       0t0   TCP  192.168.1.3:51332 -> 52.35.145.245:https (ESTABLISHED)
   --------------------------------------------------
   
   以下の確認に続く
@@ -1281,7 +1216,7 @@
   
 [内容]
   ## 作業内容
-    メモリ負荷をコマンド(free)で測定する
+    メモリとスワップの使用量を確認する
   
   ## 使用マシン
     HOST : vm12
@@ -1299,68 +1234,15 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ vi sample12.sh
+  vm12$ free -m (メガバイト単位)
   
   コマンドの実行結果
   --------------------------------------------------
-  #!/bin/bash
-  
-  # メモリ負荷プロセス、5秒後タイムアウト、起動メッセージ非表示、バックグラウンド実行
-  stress -m 1 -t 5 -q &
-  
-  # 更新間隔1秒、更新回数9回、メガバイト単位
-  free -s 1 -c 9 -m
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ bash sample12.sh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 1回目 -> メモリ負荷で「available」が増減していく
                 total        used        free      shared  buff/cache   available
-  Mem:            991         146         526           6         318         700
-  Swap:          2047           0        2047
+  Mem:            990         148         458           6         383         693
+  Swap:          1023           0        1023
   
-  // 2回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         237         435           6         318         609
-  Swap:          2047           0        2047
-  
-  // 3回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         333         339           6         318         513
-  Swap:          2047           0        2047
-  
-  // 4回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         371         301           6         318         475
-  Swap:          2047           0        2047
-  
-  // 5回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         197         475           6         318         649
-  Swap:          2047           0        2047
-  
-  // 6回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         146         526           6         318         700
-  Swap:          2047           0        2047
-  
-  // 7回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         146         526           6         318         700
-  Swap:          2047           0        2047
-  
-  // 8回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         146         526           6         318         700
-  Swap:          2047           0        2047
-  
-  // 9回目
-                total        used        free      shared  buff/cache   available
-  Mem:            991         146         526           6         318         700
-  Swap:          2047           0        2047
+  // total(990) = used(148) + buff/cache(383) + free(458) -> used(148)以外からavailable(693)を捻出
   --------------------------------------------------
   
   以下の確認に続く
@@ -1384,43 +1266,43 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  MemTotal:        1014784 kB
-  MemFree:          539392 kB
-  MemAvailable:     717784 kB
-  Buffers:            2108 kB
-  Cached:           297992 kB
+  MemTotal:        1014676 kB
+  MemFree:          470024 kB
+  MemAvailable:     710576 kB
+  Buffers:             164 kB
+  Cached:           357136 kB
   SwapCached:            0 kB
-  Active:           226876 kB
-  Inactive:         142096 kB
-  Active(anon):      69088 kB
-  Inactive(anon):     6576 kB
-  Active(file):     157788 kB
-  Inactive(file):   135520 kB
+  Active:           352548 kB
+  Inactive:          65288 kB
+  Active(anon):      33032 kB
+  Inactive(anon):    34340 kB
+  Active(file):     319516 kB
+  Inactive(file):    30948 kB
   Unevictable:           0 kB
   Mlocked:               0 kB
-  SwapTotal:       2097148 kB
-  SwapFree:        2097148 kB
-  Dirty:                 8 kB
+  SwapTotal:       1048572 kB
+  SwapFree:        1048572 kB
+  Dirty:                 0 kB
   Writeback:             0 kB
-  AnonPages:         68904 kB
-  Mapped:            22384 kB
-  Shmem:              6792 kB
-  Slab:              50140 kB
-  SReclaimable:      25720 kB
-  SUnreclaim:        24420 kB
-  KernelStack:        1664 kB
-  PageTables:         3568 kB
+  AnonPages:         60568 kB
+  Mapped:            21676 kB
+  Shmem:              6836 kB
+  Slab:              63216 kB
+  SReclaimable:      35728 kB
+  SUnreclaim:        27488 kB
+  KernelStack:        1792 kB
+  PageTables:         3556 kB
   NFS_Unstable:          0 kB
   Bounce:                0 kB
   WritebackTmp:          0 kB
-  CommitLimit:     2604540 kB
-  Committed_AS:     271296 kB
+  CommitLimit:     1555908 kB
+  Committed_AS:     271108 kB
   VmallocTotal:   34359738367 kB
-  VmallocUsed:        5904 kB
-  VmallocChunk:   34359729920 kB
+  VmallocUsed:      268044 kB
+  VmallocChunk:   34358947836 kB
   Percpu:              176 kB
   HardwareCorrupted:     0 kB
-  AnonHugePages:     12288 kB
+  AnonHugePages:      6144 kB
   CmaTotal:              0 kB
   CmaFree:               0 kB
   HugePages_Total:       0
@@ -1428,8 +1310,8 @@
   HugePages_Rsvd:        0
   HugePages_Surp:        0
   Hugepagesize:       2048 kB
-  DirectMap4k:       45020 kB
-  DirectMap2M:     1003520 kB
+  DirectMap4k:       57200 kB
+  DirectMap2M:      991232 kB
   --------------------------------------------------
   
   以下の確認に続く
@@ -1458,18 +1340,18 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ df -mT (メガバイト単位、ファイルシステムタイプ表示)
+  vm12$ LANG=C df -mT (メガバイト単位、ファイルシステムタイプ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         484     0    484    0% /dev
-  tmpfs                        tmpfs            496     0    496    0% /dev/shm
-  tmpfs                        tmpfs            496     7    489    2% /run
-  tmpfs                        tmpfs            496     0    496    0% /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root xfs            17394  1575  15820   10% /
-  /dev/vda1                    xfs             1014   137    878   14% /boot
-  tmpfs                        tmpfs            100     0    100    0% /run/user/1000
+  Filesystem                    Type      1M-blocks   Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        484      0        484    0%  /dev
+  tmpfs                         tmpfs           496      0        496    0%  /dev/shm
+  tmpfs                         tmpfs           496      7        489    2%  /run
+  tmpfs                         tmpfs           496      0        496    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs            8178   1470       6709   18%  /
+  /dev/vda1                     xfs            1014    137        878   14%  /boot
+  tmpfs                         tmpfs           100      0        100    0%  /run/user/1000
   --------------------------------------------------
   
   以下の確認に続く
@@ -1498,18 +1380,18 @@
   
 [確認]
   vm12$ cd $HOME
-  vm12$ df -iT (iノードの使用状況、ファイルシステムタイプ表示)
+  vm12$ LANG=C df -iT (iノードの使用状況、ファイルシステムタイプ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   Iノード I使用   I残り I使用% マウント位置
-  devtmpfs                     devtmpfs  123900   349  123551     1% /dev
-  tmpfs                        tmpfs     126848     1  126847     1% /dev/shm
-  tmpfs                        tmpfs     126848   427  126421     1% /run
-  tmpfs                        tmpfs     126848    16  126832     1% /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root xfs      8910848 27645 8883203     1% /
-  /dev/vda1                    xfs       524288   326  523962     1% /boot
-  tmpfs                        tmpfs     126848     1  126847     1% /run/user/1000
+  Filesystem                    Type      Inodes  IUsed    IFree  IUse%  Mounted on
+  devtmpfs                      devtmpfs  123903    343   123560     1%  /dev
+  tmpfs                         tmpfs     126834      1   126833     1%  /dev/shm
+  tmpfs                         tmpfs     126834    436   126398     1%  /run
+  tmpfs                         tmpfs     126834     16   126818     1%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs      4192256  27610  4164646     1%  /
+  /dev/vda1                     xfs       524288    326   523962     1%  /boot
+  tmpfs                         tmpfs     126834      1   126833     1%  /run/user/1000
   --------------------------------------------------
   
   以下の確認に続く
@@ -1602,18 +1484,18 @@
     TCP接続とUDP接続を表示
   
   ## 使用マシン
-    HOST : localhost
-    IPV4 : 192.168.1.3
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
     MEMO : ホスト
   
   ## コマンド
     ss -t  // TCP接続を表示
     ss -u  // UDP接続を表示
-    ss -s  // 接続状態の統計を表示
+    ss -s  // 統計情報を表示
   
 [確認]
   $ cd $HOME
-  $ ss -t
+  $ ss -t (TCP接続)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1624,7 +1506,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ ss -u
+  $ ss -u (UDP接続)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1642,31 +1524,30 @@
     接続状態の統計を表示
   
   ## 使用マシン
-    HOST : localhost
-    IPV4 : 192.168.1.3
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
     MEMO : ホスト
   
   ## コマンド
     ss -t  // TCP接続を表示
     ss -u  // UDP接続を表示
-    ss -s  // 接続状態の統計を表示
+    ss -s  // 統計情報を表示
   
 [確認]
   $ cd $HOME
-  $ ss -s
+  $ ss -s (統計情報)
   
   コマンドの実行結果
   --------------------------------------------------
-  Total: 1497 (kernel 0)
-  TCP: 20 (estab 3, closed 8, orphaned 0, synrecv 0, timewait 7/0), ports 0
+  Total: 1154
+  TCP: 14 (estab 1, closed 6, orphaned 0, timewait 0)
   
-  Transport   Total     IP        IPv6
-  *           0         -         -        
-  RAW         1         0         1        
-  UDP         11        8         3        
-  TCP         12        8         4        
-  INET        24        16        8        
-  FRAG        0         0         0        
+  Transport  Total     IP        IPv6
+  RAW        1         0         1        
+  UDP        12        8         4        
+  TCP        8         4         4        
+  INET       21        12        9        
+  FRAG       0         0         0        
   --------------------------------------------------
   
   以下の確認に続く
@@ -1776,13 +1657,13 @@
     コマンドの実行結果
     --------------------------------------------------
     MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 12866 AF_INET to 192.168.122.12 () port 12866 AF_INET
-    
-    Recv    Send    Send
-    Socket  Socket  Message  Elapsed
-    Size    Size    Size     Time     Throughput
-    bytes   bytes   bytes    secs.    10^6bits/sec
-    
-    87380   16384   16384    10.01    5197.63  // およそ5200Mbps
+
+    Recv   Send    Send                          
+    Socket Socket  Message  Elapsed              
+    Size   Size    Size     Time     Throughput
+
+    bytes  bytes   bytes    secs.    10^6bits/sec
+    87380  16384   16384    10.00    6038.26  // 6000M(Bits) / 8 -> 750M(Bytes)/秒
     --------------------------------------------------
     
   vm12$ cd $HOME
@@ -1803,9 +1684,14 @@
   ## 作業内容
     ネットワークトラフィックのモニタリング
   
-  ## 使用マシン
+  ## 使用マシン1
     HOST : vm12
     IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
+  ## 仮想マシン2
+    HOST : vm13
+    IPV4 : 192.168.122.13
     MEMO : 仮想マシン
   
 [確認]
@@ -1822,7 +1708,30 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> コンソール上にモニタリング画面が表示
+  (省略) -> Main Menu -> [IP traffic monitor] -> [eth0]
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ ping -c 3 vm12 (ICMPパケット送信)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING vm12 (192.168.122.12) 56(84) bytes of data.
+    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=0.553 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.870 ms
+    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.872 ms
+    
+    --- vm12 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+    rtt min/avg/max/mdev = 0.553/0.765/0.872/0.149 ms
+    --------------------------------------------------
+    
+  vm12$ cd $HOME
+  vm12$ (パケット監視)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> ICMPパケット確認
   --------------------------------------------------
   
   以下の確認に続く
