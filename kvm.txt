@@ -4,10 +4,10 @@
 [03] 仮想マシンの複製
 [04] 仮想マシンの変更 - 01 (CPU数)
 [05] 仮想マシンの変更 - 02 (メモリ拡張)
-
+[06] 仮想マシンの変更 - 03 (デバイス追加)
+[07] 仮想マシンの強制停止
 [04] 仮想マシンの削除
-[05] 仮想マシンの強制停止
-[08] 仮想マシンの変更 - 03 (ディスク拡張)
+
 [X1] Install USB - 01 (Rocky Linux 8)
 [X2] 仮想マシンの作成(Rocky Linux)
 ================================================================================
@@ -448,18 +448,18 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ LANG=C sudo virsh dominfo vm12 (仮想マシンのCPU割当数を確認)
+  $ LANG=C sudo virsh dominfo vm11 (仮想マシンのメモリ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   Id:             -
-  Name:           vm12
-  UUID:           e62ddb52-8e69-4c0e-b0cf-f9c5556b5c26
+  Name:           vm11
+  UUID:           9a873402-a94f-4530-a872-af79d68bdeb7
   OS Type:        hvm
   State:          shut off
-  CPU(s):         1 (CPU割当数)
-  Max memory:     1048576 KiB
-  Used memory:    1048576 KiB
+  CPU(s):         1
+  Max memory:     1048576 KiB -> メモリ最大値(1000MB)
+  Used memory:    1048576 KiB -> メモリ現在値(1000MB)
   Persistent:     yes
   Autostart:      disable
   Managed save:   no
@@ -468,7 +468,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo virsh setmaxmem vm12 2G (仮想マシンのメモリ上限を変更)
+  $ sudo virsh setmaxmem vm11 2000M --config (メモリ最大値を変更)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -476,27 +476,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo virsh dominfo vm12 (仮想マシンを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Id:             -
-  Name:           vm12
-  UUID:           e62ddb52-8e69-4c0e-b0cf-f9c5556b5c26
-  OS Type:        hvm
-  State:          shut off
-  CPU(s):         1 (CPU割当数)
-  Max memory:     2097152 KiB (1G -> 2Gに変更)
-  Used memory:    1048576 KiB
-  Persistent:     yes
-  Autostart:      disable
-  Managed save:   no
-  Security model: selinux
-  Security DOI:   0
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo virsh setmem vm12 1500M --config (仮想マシンのメモリ割当を変更)
+  $ sudo virsh setmem vm11 1200M --config (メモリ現在値を変更)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -504,18 +484,18 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo virsh dominfo vm12 (仮想マシンを確認)
+  $ LANG=C sudo virsh dominfo vm11 (仮想マシンのメモリ状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   Id:             -
-  Name:           vm12
-  UUID:           e62ddb52-8e69-4c0e-b0cf-f9c5556b5c26
+  Name:           vm11
+  UUID:           9a873402-a94f-4530-a872-af79d68bdeb7
   OS Type:        hvm
   State:          shut off
-  CPU(s):         1 (CPU割当数)
-  Max memory:     2097152 KiB
-  Used memory:    1536000 KiB (1000M -> 1500Mに変更)
+  CPU(s):         1
+  Max memory:     2048000 KiB -> メモリ最大値(2000MB)
+  Used memory:    1228800 KiB -> メモリ現在値(1200MB)
   Persistent:     yes
   Autostart:      disable
   Managed save:   no
@@ -526,12 +506,12 @@
   以下の確認に続く
   
 ================================================================================
-[04]
-  仮想マシンの削除
+[06]
+  仮想マシンの変更 - 03 (デバイス追加)
   
 [内容]
   ## 作業内容
-    仮想マシンの削除を行う
+    仮想マシン(vm11)にデバイス追加
   
   ## 使用マシン
     HOST : localhost(Rocky-Linux)
@@ -545,40 +525,137 @@
   コマンドの実行結果
   --------------------------------------------------
   Id   Name   State
-  -    vm11   shut off -> 削除対象
-  -    vm12   shut off
+  -    vm11   shut off -> Server
+  -    vm12   shut off -> Client
   --------------------------------------------------
   
-  $ cd $HOME
-  $ LANG=C sudo virsh domblklist vm11 (仮想マシンの実体ファイル)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Target   Source
-  vda      /home/vm11.qcow2
-  sda      -
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ LANG=C sudo virsh undefine vm11 (仮想マシンの削除)
+  $ cd /home
+  $ LANG=C sudo dd if=/dev/zero of=disk1.img bs=100M count=20 (イメージファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  Domain 'vm11' has been undefined
+  20+0 records in
+  20+0 records out
+  2097152000 bytes (2.1 GB, 2.0 GiB) copied, 7.7094 s, 272 MB/s
   --------------------------------------------------
   
-  $ cd $HOME
-  $ LANG=C sudo virsh vol-delete /home/vm11.qcow2 (実体ファイルを削除)
+  $ cd /home
+  $ sudo vi disk1.xml (デバイスのXMLファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  Vol /home/vm11.qcow2 deleted
+  <disk type='file' device='disk'>
+    <driver name='qemu' type='raw' cache='none'/>
+    <source file='/home/disk1.img'/>
+    <target dev='vdb'/>
+  </disk>
+  --------------------------------------------------
+  
+  $ cd /home
+  $ LANG=C sudo virsh attach-device --config vm11 /home/disk1.xml (仮想マシンにデバイス追加)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Device attached successfully
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh start vm11 --console (仮想マシンの起動およびコンソール接続)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> makotoでログイン
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ ls -lh /dev | grep vdb (デバイスファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  brw-rw----. 1 root   disk    252,  16  4月 15  2023 vdb
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk (デバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  vdb                         252:16    0     2G   0  disk  (デバイス認識済)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ LANG=C sudo fdisk /dev/vdb (パーティション作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Command (m for help): 
+  Command (m for help): n -> パーティション作成
+  
+  Partition type:
+    p  primary (0 primary, 0 extended, 4 free)
+    e  extended
+  
+  Select (default p): p -> プライマリ選択
+  Partition number (1-4, default 1): 1 -> パーティション番号
+  
+  First sector (2048-4095999, default 2048): 2048 -> 開始セクタを指定
+  Last sector, +sectors or +size{K,M,G} (2048-4095999, default 4095999): +1G -> 終了セクタ
+  
+  Partition 1 of type Linux and of size 1 GiB is set
+  
+  Command (m for help): 
+  Command (m for help): n -> パーティション作成
+  
+  Partition type:
+    p  primary (0 primary, 0 extended, 4 free)
+    e  extended
+  
+  Select (default p): p -> プライマリ選択
+  Partition number (2-4, default 2): 2 -> パーティション番号
+  
+  First sector (2099200-4095999, default 2099200): (Enter) -> デフォルト値
+  Last sector, +sectors or +size{K,M,G} (2099200-4095999, default 4095999): (Enter) -> デフォルト値
+  
+  Partition 2 of type Linux and of size 975 MiB is set
+  
+  Command (m for help): 
+  Command (m for help): w -> 設定保存
+  
+  The partition table has been altered!
+  Calling ioctl() to re-read partition table.
+
+  [ 1748.856231] vdb: vdb1 vdb2 -> /dev/vdb1 と /dev/vdb2 のパーティション作成
+  Syncing disks.
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk (デバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  vdb                         252:16    0     2G   0  disk 
+   |-- vdb1                   252:17    0     1G   0  part  (パーティション作成)
+   |-- vdb2                   252:18    0   975M   0  part  (パーティション作成)
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[05]
+[07]
   仮想マシンの強制停止
   
 [内容]
@@ -623,11 +700,11 @@
   
 ================================================================================
 [08]
-  仮想マシンの変更 - 03 (ディスク拡張)
+  仮想マシンの削除
   
 [内容]
   ## 作業内容
-    仮想マシンのディスクサイズを変更する
+    仮想マシンの削除を行う
   
   ## 使用マシン
     HOST : localhost(Rocky-Linux)
@@ -642,526 +719,33 @@
   --------------------------------------------------
   Id   Name   State
   -    vm11   shut off
-  -    vm12   shut off -> ディスク拡張
+  -    vm12   shut off -> 削除対象
   --------------------------------------------------
   
   $ cd $HOME
-  $ LANG=C sudo virsh pool-list (ホスト上の格納場所)
+  $ LANG=C sudo virsh domblklist vm12 (仮想マシンの実体ファイル)
   
   コマンドの実行結果
   --------------------------------------------------
-  Name   State    Autostart
-  home   active   yes -> 自分は /home 配下に仮想マシンのファイルを配置した
-  opt    active   yes
-  src    active   yes
+  Target   Source
+  vda      /home/vm12.qcow2
+  sda      -
   --------------------------------------------------
   
   $ cd $HOME
-  $ LANG=C sudo virsh vol-list --pool home (仮想マシンのファイル情報)
+  $ LANG=C sudo virsh undefine vm12 (仮想マシンの削除)
   
   コマンドの実行結果
   --------------------------------------------------
-  Name         Path
-  vm11.qcow2   /home/vm11.qcow2
-  vm12.qcow2   /home/vm12.qcow2 -> 拡張対象のファイル判明
+  Domain 'vm12' has been undefined
   --------------------------------------------------
   
   $ cd $HOME
-  $ LANG=C sudo virsh vol-info --pool home vm12.qcow2 (仮想マシンのファイル詳細情報)
+  $ LANG=C sudo virsh vol-delete /home/vm12.qcow2 (実体ファイルを削除)
   
   コマンドの実行結果
   --------------------------------------------------
-  Name:         vm12.qcow2
-  Type:         file
-  Capacity:     10.00 GiB -> 25BiB に拡張 (+15GiB)
-  Allocation:   3.05 GiB
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ LANG=C sudo virsh vol-resize vm12.qcow2 --pool home --delta +15GiB (仮想マシンのディスク拡張)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Size of volume 'vm12.qcow2' successfully changed by +15GiB
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ LANG=C sudo virsh vol-info --pool home vm12.qcow2 (仮想マシンのファイル詳細情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Name:         vm12.qcow2
-  Type:         file
-  Capacity:     25.00 GiB -> ファイル拡張が完了
-  Allocation:   3.05 GiB
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X1]
-  Install USB - 01 (Rocky Linux 8)
-  
-[内容]
-  ## 作業内容
-    Rocky-LinuxのインストールUSBの作成
-  
-  ## 使用マシン
-    HOST : localhost(Rocky-Linux)
-    IPV4 : 192.168.1.4
-    MEMO : ホスト
-  
-[確認]
-  $ cd /usr/local/src
-  $ ls -lh | grep -i rocky (イメージファイルを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  10G  1月 25 18:23 Rocky-8.5-x86_64-dvd1.iso     // 通常版
-  -rw-rw-r--. 1 makoto makoto 2.0G  1月 25 18:28 Rocky-8.5-x86_64-minimal.iso  // 最小版
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lsblk (USBメモリを接続してシステム認識を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sda                  8:0    0 465.8G  0 disk 
-  ├─sda1             8:1    0     1G  0 part /boot
-  └─sda2             8:2    0 464.8G  0 part 
-    ├─centos-root  253:0    0    50G  0 lvm  /
-    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
-    └─centos-home  253:2    0 411.1G  0 lvm  /home
-  sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1   973M  0 part /run/media/makoto/CentOS 7 x86_64
-  └─sdb2             8:18   1   8.6M  0 part 
-  sr0                 11:0    1  1024M  0 rom  
-  loop0                7:0    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  loop1                7:1    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo umount /dev/sdb1 (USBメモリをアンマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> アンマウントでシステム側からのアクセス排除
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ LANG=C sudo parted /dev/sdb -s print (パーティション情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Model: ELECOM MF-MSU2B (scsi)
-  Disk /dev/sdb: 16.0GB
-  Sector size (logical/physical): 512B/512B
-  Partition Table: msdos
-  Disk Flags: 
-  
-  Number  Start   End     Size    Type     File system  Flags
-  2       227kB   9239kB  9011kB  primary  fat16
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ LANG=C sudo parted /dev/sdb (日本語メッセージなし、対話モードでUSBメモリのパーティション修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  GNU Parted 3.1
-  Using /dev/sdb
-  Welcome to GNU Parted! Type 'help' to view a list of commands.
-  
-  // パーティション2を削除
-  (parted) 
-  (parted) rm 2
-  
-  // パーティション管理方式をmsdos(MBR方式)に変更
-  (parted) 
-  (parted) mklabel msdos
-  
-  // 確認メッセージ
-  Warning: The existing disk label on /dev/sdb will be destroyed and all data on
-  this disk will be lost. Do you want to continue?
-  Yes/No? Yes (Yesを入力)
-  
-  // パーティション作成
-  (parted) 
-  (parted) mkpart
-  
-  // パーティションのパラメータ入力
-  Partition type?  primary/extended? primary
-  File system type?  [ext2]? fat32
-  Start? 0G
-  End? 100%
-  
-  // パーティションにフラグ設定
-  (parted) 
-  (parted) set 1 boot on
-  
-  // 対話モードを終了
-  (parted) 
-  (parted) quit
-
-  // ファイル(/etc/fstab)の更新は必要なし
-  Information: You may need to update /etc/fstab.
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mkfs.vfat /dev/sdb1 (パーティションのフォーマット)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  mkfs.fat 3.0.20 (12 Jun 2013)
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ LANG=C sudo parted /dev/sdb -s print (パーティション情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Model: ELECOM MF-MSU2B (scsi)
-  Disk /dev/sdb: 16.0GB
-  Sector size (logical/physical): 512B/512B
-  Partition Table: msdos
-  Disk Flags: 
-  
-  Number  Start   End     Size    Type     File system  Flags
-  1       1049kB  16.0GB  16.0GB  primary  fat32        boot, lba
-  --------------------------------------------------
-  
-  $ cd /usr/local/src
-  $ sudo dd if=Rocky-8.5-x86_64-dvd1.iso of=/dev/sdb bs=512K && sync (インストールUSBの作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  1946+0 レコード入力
-  1946+0 レコード出力
-  1020264448 バイト (1.0 GB) コピーされました、 158.773 秒、 6.4 MB/秒
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lsblk (USBメモリを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sda                  8:0    0 465.8G  0 disk 
-  ├─sda1             8:1    0     1G  0 part /boot
-  └─sda2             8:2    0 464.8G  0 part 
-    ├─centos-root  253:0    0    50G  0 lvm  /
-    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
-    └─centos-home  253:2    0 411.1G  0 lvm  /home
-  sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1    10G  0 part 
-  └─sdb2             8:18   1   9.6M  0 part (パーティションが増えている？)
-  sr0                 11:0    1  1024M  0 rom  
-  loop0                7:0    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  loop1                7:1    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  --------------------------------------------------
-  
-  $ cd /mnt
-  $ sudo mkdir mp1 mp2 (マウントポイント作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mount -o ro /dev/sdb1 /mnt/mp1 (マウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mount -o ro /dev/sdb2 /mnt/mp2 (マウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lsblk (USBメモリを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sda                  8:0    0 465.8G  0 disk 
-  ├─sda1             8:1    0     1G  0 part /boot
-  └─sda2             8:2    0 464.8G  0 part 
-    ├─centos-root  253:0    0    50G  0 lvm  /
-    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
-    └─centos-home  253:2    0 411.1G  0 lvm  /home
-  sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1    10G  0 part /mnt/mp1  // マウント
-  └─sdb2             8:18   1   9.6M  0 part /mnt/mp2  // マウント
-  sr0                 11:0    1  1024M  0 rom  
-  loop0                7:0    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  loop1                7:1    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  --------------------------------------------------
-
-  $ cd /mnt/mp1
-  $ ls -lh (ファイル構成を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dr-xr-xr-x. 4 root root 2.0K 11月 14 18:30 AppStream
-  dr-xr-xr-x. 4 root root 2.0K 11月 14 18:30 BaseOS
-  dr-xr-xr-x. 3 root root 2.0K 11月 14 18:30 EFI
-  -r--r--r--. 1 root root 2.2K 10月  9 08:30 LICENSE
-  -r--r--r--. 1 root root  883 11月 14 18:30 TRANS.TBL
-  dr-xr-xr-x. 3 root root 2.0K 11月 14 18:30 images
-  dr-xr-xr-x. 2 root root 2.0K 11月 14 18:30 isolinux
-  -r--r--r--. 1 root root   86 11月 14 18:29 media.repo
-  --------------------------------------------------
-  
-  $ cd /mnt/mp2
-  $ ls -lh (ファイル構成を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  drwxr-xr-x. 3 root root 2.0K 11月 14 18:02 EFI -> 他パーティション管理に使用するシステムパーティション(EFI)が自動作成？
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo umount /mnt/mp1 /mnt/mp2 (USBメモリをアンマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> USBメモリをシステムから外すことが可能
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X2]
-  仮想マシンの作成(Rocky Linux)
-  
-[内容]
-  ## 作業内容
-    仮想マシンの作成を行う
-  
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : 192.168.1.3
-    MEMO : ホスト
-  
-[確認]
-  $ cd $HOME (パッケージ追加)
-  $ sudo yum -y install autoconf automake libtool m4 pkgconfig gettext-devel popt-devel asciidoc
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  $ cd $HOME (最新ソース取得)
-  $ git clone https://github.com/authselect/authselect.git
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  $ cd authselect (ビルド準備)
-  $ autoreconf -iv
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  $ cd authselect (ビルド準備)
-  $ ./configure --enable-silent-rules
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラーで進めない
-  --------------------------------------------------
-  
-  //
-  
-  $ cd /usr/local/src
-  $ ls -lh Rocky* (イメージファイルの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  10G  1月 25 18:23 Rocky-8.5-x86_64-dvd1.iso
-  -rw-rw-r--. 1 makoto makoto 2.0G  1月 25 18:28 Rocky-8.5-x86_64-minimal.iso
-  --------------------------------------------------
-  
-  $ cd $HOME/kick
-  $ vi vm21-ks.cfg (キックスタートファイルの作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 注意1 : 説明のためコメント部分(//)を追加
-  // 注意2 : 検証時はオプション部分(--)は一行にまとめないとエラー
-  
-  auth
-    --enableshadow                    // シャドウパスワード使用
-    --passalgo=sha512                 // 暗号化アルゴリズム
-  cdrom                               // ISOイメージ使用
-  text                                // テキストベースのインストール
-  firstboot                           // 初回セットアップ処理
-    --enable                          // 処理を有効化
-  keyboard jp106                      // キーボード配列
-  lang ja_JP.UTF-8                    // 言語・国・文字コード
-  network                             // ネットワーク構成
-    --bootproto=static                // static or dhcp
-    --device=enp1s0                   // NIC
-    --gateway=192.168.122.1           // GateWay
-    --ip=192.168.122.21               // IPv4
-    --nameserver=192.168.122.1        // DNS
-    --netmask=255.255.255.0           // Class C
-    --noipv6 --no-activate            // IPv6
-    --hostname=vm21                   // Host
-  rootpw                              // Password(root)
-    --plaintext rt0122ma9310sa4221pd  // パスワード(平文)
-  services                            // 自動起動サービス
-    --enabled="chronyd"               // 自動起動サービス : chronyd
-  skipx                               // GUI不使用
-  timezone Asia/Tokyo                 // タイムゾーン
-    --isUtc                           // UTC時刻
-  user                                // 一般ユーザー(makoto)
-    --groups=wheel                    // 管理者グループに所属
-    --name=makoto                     // ユーザー名
-    --password=ma0122ma9310sa4221pd   // パスワード(平文)
-    --gecos="Makoto Araki"            // コメント
-  bootloader                          // ブートローダー設定
-    --append="net.ifnames=0 crashkernel=auto"       // 不明
-    --location=mbr                    // ブートローダー場所(MBR)
-  ignoredisk                          // インストールに関係ないディスクを「--drives」で指定
-    --only-use=sda                    // 逆に「--only-use」で使用するディスクを指定
-  autopart                            // パーティション自動作成
-    --type=lvm                        // LVM構成
-  clearpart                           // パーティション初期化
-    --none                            // 既存パーティションを全削除
-    --initlabel                       // 既出の「ignoredisk」で指定したディスクをフォーマット
-  reboot                              // 再起動
-  
-  // パッケージのインストール
-  %packages
-  @core
-  chrony
-  kexec-tools
-  %end
-  
-  // アドオン
-  %addon com_redhat_kdump --enable --reserve-mb='auto'
-  %end
-  
-  // パスワードポリシー
-  %anaconda
-  pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
-  pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
-  pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
-  %end
-  --------------------------------------------------
-  
-  $ cd $HOME/kick
-  $ ksvalidator vm21-ks.cfg (キックスタートファイルの検証)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  $ cd $HOME/kick
-  $ vi vm21-mk.sh (仮想マシン作成スクリプト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 注意1 : 説明のためコメント部分(//)を追加
-  // 注意2 : 検証時はオプション部分(--)は一行にまとめないとエラー
-  
-  virt-install                                                  // 使用コマンド
-    --name=vm21                                                 // 仮想マシン名
-    --location=/usr/local/src/Rocky-8.5-x86_64-minimal.iso      // イメージファイル(ISO)
-    --disk path=/home/vm21.qcow2,size=20,format=qcow2           // 仮想ディスク(20GB)
-    --os-type=linux                                             // OSタイプ
-    --os-variant=generic                                        // OSディストリビューション
-    --vcpus=1                                                   // 仮想CPU数
-    --ram=1024                                                  // 割当メモリ量(MB) -> 512(MB)では動作が不安定
-    --network network=default                                   // ネットワーク(default)
-    --graphics none                                             // GUI不使用
-    --initrd-inject /home/makoto/kick/vm21-ks.cfg               // キックスタートファイル
-    --extra-args                                                // 追加パラメータ
-      "ks=file:vm21-ks.cfg                                      // 追加パラメータ : キックスタートファイル
-      console=tty0 console=ttyS0,115200n8"                      // 追加パラメータ : コンソール接続を最初から使用可能
-  --------------------------------------------------
-  
-  $ cd $HOME/kick
-  $ sudo bash vm21-mk.sh (仮想マシン作成スクリプトの実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (コマンド実行後に自動インストール開始 -> ログイン画面 -> makotoでログイン)
-  --------------------------------------------------
-  
-  vm21$ cd $HOME
-  vm21$ vi .vimrc (VIMエディタの設定)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  set tabstop=2
-  --------------------------------------------------
-  
-  vm21$ cd $HOME
-  vm21$ sudo vi /etc/hosts (ネットワーク設定を追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.21 vm11  // 追加 - 仮想マシンの複製元
-  192.168.122.22 vm12  // 追加
-  192.168.122.23 vm13  // 追加
-  192.168.122.24 vm14  // 追加
-  192.168.122.25 vm15  // 追加
-  --------------------------------------------------
-  
-  vm21$ cd $HOME
-  vm21$ ping -c 3 192.168.122.1 (仮想ブリッジへ導通テスト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  PING 192.168.122.1 (192.168.122.1) 56(84) bytes of data.
-  64 bytes from 192.168.122.1: icmp_seq=1 ttl=64 time=0.443 ms
-  64 bytes from 192.168.122.1: icmp_seq=2 ttl=64 time=0.417 ms
-  64 bytes from 192.168.122.1: icmp_seq=3 ttl=64 time=0.370 ms
-  
-  --- 192.168.122.1 ping statistics ---
-  3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-  rtt min/avg/max/mdev = 0.370/0.410/0.443/0.030 ms
-  --------------------------------------------------
-  
-  vm21$ cd $HOME
-  vm21$ ping -c 3 www.yahoo.co.jp (インターネットへ導通テスト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  PING edge12.g.yimg.jp (182.22.28.252) 56(84) bytes of data.
-  64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=1 ttl=54 time=9.54 ms
-  64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=2 ttl=54 time=7.63 ms
-  64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=3 ttl=54 time=7.09 ms
-  
-  --- edge12.g.yimg.jp ping statistics ---
-  3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-  rtt min/avg/max/mdev = 7.094/8.091/9.543/1.050 ms
-  --------------------------------------------------
-  
-  vm21$ cd $HOME
-  vm21$ sudo systemctl poweroff
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
+  Vol /home/vm12.qcow2 deleted
   --------------------------------------------------
   
   以下の確認に続く
