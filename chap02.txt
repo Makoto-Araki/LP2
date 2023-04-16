@@ -1249,28 +1249,20 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/sys/net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
+  vm11$ cd $HOME
+  vm11$ cat /proc/sys/net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
   
   コマンドの実行結果
   --------------------------------------------------
   0 -> IPv4のパケット転送禁止
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo echo 1 > /proc/sys/net/ipv4/ip_forward (カーネルパラメータ値を更新)
+  vm11$ cd $HOME
+  vm11$ sudo echo 1 > /proc/sys/net/ipv4/ip_forward (カーネルパラメータ値を更新)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> rootユーザーにならないとエラー
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ cat /proc/sys/net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  1 -> IPv4のパケット転送許可
   --------------------------------------------------
   
   以下の確認に続く
@@ -1284,29 +1276,29 @@
     カーネルパラメータを閲覧・更新する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
+  vm11$ cd $HOME
+  vm11$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
   
   コマンドの実行結果
   --------------------------------------------------
   net.ipv4.ip_forward = 0 -> IPv4のパケット転送禁止
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo sysctl -w net/ipv4/ip_forward=1 (カーネルパラメータ値を更新)
+  vm11$ cd $HOME
+  vm11$ sudo sysctl -w net/ipv4/ip_forward=1 (カーネルパラメータ値を更新)
   
   コマンドの実行結果
   --------------------------------------------------
   net.ipv4.ip_forward = 1
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
+  vm11$ cd $HOME
+  vm11$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1324,45 +1316,45 @@
     カーネルパラメータを閲覧・(永続的に)更新する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
+  vm11$ cd $HOME
+  vm11$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
   
   コマンドの実行結果
   --------------------------------------------------
   net.ipv4.ip_forward = 0 -> IPv4のパケット転送禁止
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/sysctl.conf (設定ファイルでカーネルパラメータの永続化)
+  vm11$ cd $HOME
+  vm11$ sudo vi /etc/sysctl.conf (設定ファイルでカーネルパラメータの永続化)
   
   コマンドの実行結果
   --------------------------------------------------
   net.ipv4.ip_forward=1
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo sysctl -p /etc/sysctl.conf (設定ファイルからカーネルパラメータ値を反映)
+  vm11$ cd $HOME
+  vm11$ sudo sysctl -p /etc/sysctl.conf (設定ファイルからカーネルパラメータ値を反映)
   
   コマンドの実行結果
   --------------------------------------------------
   net.ipv4.ip_forward = 1
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl reboot (システム再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reboot (システム再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
+  vm11$ cd $HOME
+  vm11$ sysctl net/ipv4/ip_forward (カーネルパラメータ値を閲覧)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1380,81 +1372,28 @@
     初期RAMディスクの内容を確認
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd /boot
-  vm12$ ls -lh | grep -E 'vmlinuz|initramfs' (仮想マシン上のカーネルイメージと初期RAMディスクを確認)
+  vm11$ cd /boot
+  vm11$ ls -lh | grep $(uname -r) | grep -E 'vmlinuz|initramfs' (カーネルイメージと初期RAMディスクを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx. 1 root root   20 12月  4 15:46 vmlinuz -> /boot/vmlinuz-4.15.3       // システムは新カーネル(4.15.3)を起動
-  -rw-------. 1 root root  21M 12月  1 19:41 initramfs-3.10.0-1160.el7.x86_64.img  // 初期RAMディスク(3.10.0)
-  -rw-------. 1 root root  41M 12月  4 15:53 initramfs-4.15.3.img                  // 初期RAMディスク(4.15.3)
-  -rwxr-xr-x. 1 root root 6.5M 10月 20  2020 vmlinuz-3.10.0-1160.el7.x86_64        // カーネルイメージ(3.10.0)
-  -rw-r--r--. 1 root root 7.2M 12月  4 15:46 vmlinuz-4.15.3                        // カーネルイメージ(4.15.3)
+  -rw-------. 1 root root  40M  4月 16 10:44 initramfs-4.15.3.img
+  lrwxrwxrwx. 1 root root   20  4月 16 10:40 vmlinuz -> /boot/vmlinuz-4.15.3
+  -rw-r--r--. 1 root root 7.2M  4月 16 10:40 vmlinuz-4.15.3
   --------------------------------------------------
   
-  vm12$ cd /boot
-  vm12$ sudo lsinitrd initramfs-4.15.3.img | head -n 50 (初期RAMディスクの内容を確認)
+  vm11$ cd /boot
+  vm11$ sudo lsinitrd initramfs-4.15.3.img | head -n 50 (初期RAMディスクの内容を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  // 確認内容の初期RAMディスクとそのファイルサイズ
   Image: initramfs-4.15.3.img: 41M
-  Version: dracut-033-572.el7
-  
-  // ファイル指定のオプション(-f)指定
-  Arguments: -H -f
-  
-  // モジュール一覧
-  dracut modules:
-  bash
-  nss-softokn
-  i18n
-  network
-  ifcfg
-  drm
-  plymouth
-  dm
-  kernel-modules
-  lvm
-  qemu
-  qemu-net
-  resume
-  rootfs-block
-  terminfo
-  udev-rules
-  biosdevname
-  systemd
-  usrmount
-  base
-  fs-lib
-  microcode_ctl-fw_dir_override
-  shutdown
-  
-  // 初期RAMディスク内のファイル一覧(一部)
-  drwxr-xr-x  12 root     root            0 Dec 25 00:41 .
-  crw-r--r--   1 root     root       5,   1 Dec 25 00:35 dev/console
-  crw-r--r--   1 root     root       1,  11 Dec 25 00:35 dev/kmsg
-  crw-r--r--   1 root     root       1,   3 Dec 25 00:35 dev/null
-  lrwxrwxrwx   1 root     root            7 Dec 25 00:35 bin -> usr/bin
-  drwxr-xr-x   2 root     root            0 Dec 25 00:35 dev
-  drwxr-xr-x  12 root     root            0 Dec 25 00:41 etc
-  drwxr-xr-x   2 root     root            0 Dec 25 00:35 etc/cmdline.d
-  drwxr-xr-x   2 root     root            0 Dec 25 00:41 etc/conf.d
-  -rw-r--r--   1 root     root          124 Dec 25 00:41 etc/conf.d/systemd.conf
-  -rw-r--r--   1 root     root          262 Oct  1  2020 etc/dhclient.conf
-  -rw-r--r--   1 root     root            0 Dec 25 00:40 etc/fstab.empty
-  -rw-r--r--   1 root     root          174 Dec 25 00:40 etc/group
-  -rw-r--r--   1 root     root            5 Dec 22 17:22 etc/hostname
-  -rw-r--r--   1 root     root          170 Dec 25 00:40 etc/initrd-release
-  -rw-r--r--   1 root     root         8043 Dec 25 00:41 etc/ld.so.cache
-  -rw-r--r--   1 root     root           28 Feb 28  2013 etc/ld.so.conf
-  drwxr-xr-x   2 root     root            0 Dec 25 00:41 etc/ld.so.conf.d
-  -rw-r--r--   1 root     root           26 Oct 14  2020 etc/ld.so.conf.d/bind-export-x86_64.conf
+  ...
   --------------------------------------------------
   
   以下の確認に続く
