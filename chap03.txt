@@ -31,26 +31,21 @@
     ブートからカーネルの起動をコマンド(dmesg)で確認
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dmesg | head -n 10
+  vm11$ cd $HOME
+  vm11$ dmesg | head -n 5
   
   コマンドの実行結果
   --------------------------------------------------
-  [    0.000000] Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) ...
-  [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-4.15.3 root=/dev/mapper/centos_vm11-root ro crashkernel= ...
-  [    0.000000] x86/fpu: x87 FPU will use FXSAVE
-  [    0.000000] e820: BIOS-provided physical RAM map:
-  [    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
-  [    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved
-  [    0.000000] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
-  [    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000003fff6fff] usable
-  [    0.000000] BIOS-e820: [mem 0x000000003fff7000-0x000000003fffffff] reserved
-  [    0.000000] BIOS-e820: [mem 0x00000000feffc000-0x00000000feffffff] reserved
+  [    0.000000] Linux version 4.15.3 (root@vm11) ...
+  [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-4.15.3 root=/dev/mapper/centos_vm11-root ro ...
+  [    0.000000] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+  [    0.000000] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+  [    0.000000] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
   --------------------------------------------------
   
   以下の確認に続く
@@ -64,26 +59,21 @@
     ブートからカーネルの起動をコマンド(journalctl -b -k)で確認
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ journalctl -b -k | head -n 10
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl -b -k | head -n 5
   
   コマンドの実行結果
   --------------------------------------------------
-  -- Logs begin at 日 2021-12-26 07:49:49 JST, end at 日 2021-12-26 10:20:01 JST. --
-  12月 26 07:49:49 vm12 kernel: Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) ...
-  12月 26 07:49:49 vm12 kernel: Command line: BOOT_IMAGE=/vmlinuz-4.15.3 root=/dev/mapper/centos_vm11-root ro crashkernel= ...
-  12月 26 07:49:49 vm12 kernel: x86/fpu: x87 FPU will use FXSAVE
-  12月 26 07:49:49 vm12 kernel: e820: BIOS-provided physical RAM map:
-  12月 26 07:49:49 vm12 kernel: BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
-  12月 26 07:49:49 vm12 kernel: BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved
-  12月 26 07:49:49 vm12 kernel: BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
-  12月 26 07:49:49 vm12 kernel: BIOS-e820: [mem 0x0000000000100000-0x000000003fff6fff] usable
-  12月 26 07:49:49 vm12 kernel: BIOS-e820: [mem 0x000000003fff7000-0x000000003fffffff] reserved
+  -- Logs begin at Sun 2023-04-16 18:31:25 JST, end at Sun 2023-04-16 20:50:01 JST. --
+  Apr 16 18:31:25 vm11 kernel: Linux version 4.15.3 (root@vm11) ...
+  Apr 16 18:31:25 vm11 kernel: Command line: BOOT_IMAGE=/vmlinuz-4.15.3 root=/dev/mapper/centos_vm11-root ro ...
+  Apr 16 18:31:25 vm11 kernel: x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+  Apr 16 18:31:25 vm11 kernel: x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
   --------------------------------------------------
   
   以下の確認に続く
@@ -106,14 +96,14 @@
   ID : ランレベル : アクション指示 : コマンド
   
   アクション指示
-    boot         // システム起動時に実行、プロセス終了を待たずに次のプロセス起動
-    bootwait     // システム起動時に実行、プロセス終了後に次のプロセス起動
-    ctlaltdel    // Ctrl + Alt + Del、つまりSIGINT時に実行
-    initdefault  // デフォルトランレベル指定
-    once         // 指定ランレベルで一度のみ実行、プロセス終了を待たずに次のプロセス起動
-    respawn      // 指定プロセスが終了された場合、プロセスを再起動
-    sysinit      // システム起動時に「boot」や「bootwait」よりも先に起動
-    wait         // 指定ランレベルで一度のみ実行、プロセス終了後に次のプロセス起動
+    boot        : システム起動時に実行、プロセス終了を待たずに次のプロセス起動
+    bootwait    : システム起動時に実行、プロセス終了後に次のプロセス起動
+    ctlaltdel   : Ctrl + Alt + Del、つまりSIGINT時に実行
+    initdefault : デフォルトランレベル指定
+    once        : 指定ランレベルで一度のみ実行、プロセス終了を待たずに次のプロセス起動
+    respawn     : 指定プロセスが終了された場合、プロセスを再起動
+    sysinit     : システム起動時に「boot」や「bootwait」よりも先に起動
+    wait        : 指定ランレベルで一度のみ実行、プロセス終了後に次のプロセス起動
   --------------------------------------------------
   
   ## 設定ファイル(/etc/inittab)の設定例
@@ -213,7 +203,7 @@
   -rwxr-xr-x. 1 root root 3.5K  5月 11 15:17 2016 auditd
   -r-xr-xr-x. 1 root root 1.4K  5月 11 19:18 2016 blk-availability
   -rwxr-xr-x. 1 root root 2.8K 11月 10 19:14 2015 crond
-    -- 省略 --
+  ...
   -rwxr-xr-x. 1 root root  647  4月 12 18:14 2016 single
   -rwxr-xr-x. 1 root root 4.6K  5月 11 08:10 2016 sshd (このサービスで確認を行う)
   -rwxr-xr-x. 1 root root 2.3K  5月 11 17:55 2016 udev-post
@@ -343,7 +333,7 @@
   -rwxr-xr-x. 1 root root 3.5K  5月 11 15:17 2016 auditd
   -r-xr-xr-x. 1 root root 1.4K  5月 11 19:18 2016 blk-availability
   -rwxr-xr-x. 1 root root 2.8K 11月 10 19:14 2015 crond
-    -- 省略 --
+  ...
   -rwxr-xr-x. 1 root root  647  4月 12 18:14 2016 single
   -rwxr-xr-x. 1 root root 4.6K  5月 11 08:10 2016 sshd (このサービスで確認を行う)
   -rwxr-xr-x. 1 root root 2.3K  5月 11 17:55 2016 udev-post
@@ -381,7 +371,7 @@
   auditd             0:off    1:off    2:on     3:on     4:on     5:on     6:off
   blk-availability   0:off    1:on     2:on     3:on     4:on     5:on     6:off
   crond              0:off    1:off    2:on     3:on     4:on     5:on     6:off
-    -- 省略 --
+  ...
   saslauthd          0:off    1:off    2:off    3:off    4:off    5:off    6:off
   sshd               0:off    1:off    2:on     3:on     4:on     5:on     6:off
   udev-post          0:off    1:on     2:on     3:on     4:on     5:on     6:off
@@ -422,8 +412,8 @@
     ターゲット(default.target)を追跡する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
