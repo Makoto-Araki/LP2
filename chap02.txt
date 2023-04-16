@@ -1025,13 +1025,13 @@
     カーネルモジュール起動時にパラメータ値を指定可能にする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME/SAMP2 -> 先にディレクトリ作成
-  vm12$ vi SAMP2.c (ソースファイル作成)
+  vm11$ cd $HOME/sample2 -> 先にディレクトリ作成
+  vm11$ vi sample2.c (ソースファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1041,7 +1041,7 @@
   // ライセンス情報
   MODULE_LICENSE("GPL");
   MODULE_AUTHOR("Makoto-Araki");
-  MODULE_DESCRIPTION("SAMP2");
+  MODULE_DESCRIPTION("sample2");
   
   // パラメータ値をソース記述
   static int P1 = 11;
@@ -1052,28 +1052,28 @@
   module_param(P2, int, S_IWUSR);
   
   // ロード時
-  static int SAMP2_init(void)
+  static int sample2_init(void)
   {
-    printk( KERN_INFO "SAMP2 init\n" );
+    printk( KERN_INFO "sample2 init\n" );
     printk( KERN_INFO "P1 = %d\n", P1);  // パラメータ値を表示
     printk( KERN_INFO "P2 = %d\n", P2);  // パラメータ値を表示
     return 0;
   }
   
   // アンロード時
-  static void SAMP2_exit(void) { printk( KERN_INFO "SAMP2 exit\n" ); }
+  static void sample2_exit(void) { printk( KERN_INFO "sample2 exit\n" ); }
   
-  module_init( SAMP2_init );
-  module_exit( SAMP2_exit );
+  module_init( sample2_init );
+  module_exit( sample2_exit );
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ vi Makefile (Makefileを記述)
+  vm11$ cd $HOME/sample2
+  vm11$ vi Makefile (Makefileを記述)
   
   コマンドの実行結果
   --------------------------------------------------
   // 既存ファイル(/lib/modules/4.15.3/build/Makefile)のターゲットを利用
-  obj-m := SAMP2.o
+  obj-m := sample2.o
   
   all:
     make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
@@ -1082,112 +1082,112 @@
     make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ make -n (実行処理をシミューレート)
+  vm11$ cd $HOME/sample2
+  vm11$ make -n (実行処理をシミューレート)
   
   コマンドの実行結果
   --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP2 modules
+  make -C /lib/modules/4.15.3/build M=/home/makoto/sample2 modules
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ make (ビルド実行)
+  vm11$ cd $HOME/sample2
+  vm11$ make (ビルド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP2 modules
+  make -C /lib/modules/4.15.3/build M=/home/makoto/sample2 modules
   make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' に入ります
-    CC [M]  /home/makoto/SAMP2/SAMP2.o
+    CC [M]  /home/makoto/sample2/sample2.o
     Building modules, stage 2.
     MODPOST 1 modules
-    CC      /home/makoto/SAMP2/SAMP2.mod.o
-    LD [M]  /home/makoto/SAMP2/SAMP2.ko
+    CC      /home/makoto/sample2/sample2.mod.o
+    LD [M]  /home/makoto/sample2/sample2.ko
   make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' から出ます
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ ls -lh
+  vm11$ cd $HOME/sample2
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  167 12月 25 12:40 Makefile
-  -rw-rw-r--. 1 makoto makoto    0 12月 25 12:42 Module.symvers
-  -rw-rw-r--. 1 makoto makoto  748 12月 25 12:39 SAMP2.c
-  -rw-rw-r--. 1 makoto makoto 140K 12月 25 12:42 SAMP2.ko  // カーネルモジュール
-  -rw-rw-r--. 1 makoto makoto  907 12月 25 12:42 SAMP2.mod.c
-  -rw-rw-r--. 1 makoto makoto  70K 12月 25 12:42 SAMP2.mod.o
-  -rw-rw-r--. 1 makoto makoto  74K 12月 25 12:42 SAMP2.o
-  -rw-rw-r--. 1 makoto makoto   35 12月 25 12:42 modules.order
+  -rw-rw-r--. 1 makoto makoto  169  4月 16 12:51 Makefile
+  -rw-rw-r--. 1 makoto makoto    0  4月 16 12:51 Module.symvers
+  -rw-rw-r--. 1 makoto makoto   39  4月 16 12:51 modules.order
+  -rw-rw-r--. 1 makoto makoto  762  4月 16 12:50 sample2.c
+  -rw-rw-r--. 1 makoto makoto 140K  4月 16 12:51 sample2.ko -> カーネルモジュール
+  -rw-rw-r--. 1 makoto makoto  907  4月 16 12:51 sample2.mod.c
+  -rw-rw-r--. 1 makoto makoto  70K  4月 16 12:51 sample2.mod.o
+  -rw-rw-r--. 1 makoto makoto  74K  4月 16 12:51 sample2.o
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ modinfo SAMP2.ko (カーネルモジュールの詳細情報表示)
+  vm11$ cd $HOME/sample2
+  vm11$ modinfo sample2.ko (カーネルモジュールの詳細情報表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  filename:       /home/makoto/SAMP2/SAMP2.ko
-  description:    SAMP2
+  filename:       /home/makoto/sample2/sample2.ko
+  description:    sample2
   author:         Makoto-Araki
   license:        GPL
-  srcversion:     630C08CBFDACE4CDD56E017
-  depends:        (依存しているモジュールなし)
+  srcversion:     4F346D3AF5E699BD1ED2A9B
+  depends:        (依存モジュール無し)
   retpoline:      Y
-  name:           SAMP2
+  name:           sample2
   vermagic:       4.15.3 SMP mod_unload modversions 
-  parm:           P1:int  // 追加パラメータ
-  parm:           P2:int  // 追加パラメータ
+  parm:           P1:int -> カーネルパラメータ
+  parm:           P2:int -> カーネルパラメータ
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ sudo insmod SAMP2.ko (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [15242.728079] SAMP2 init
-  [15242.729467] P1 = 11  // 追加パラメータ
-  [15242.730586] P2 = 22  // 追加パラメータ
-  --------------------------------------------------
-  
-  vm12$ cd $HOME/SAMP2
-  vm12$ sudo rmmod SAMP2.ko (カーネルモジュールのアンロード)
+  vm11$ cd $HOME/sample2
+  vm11$ sudo insmod sample2.ko (カーネルモジュールのロード)
   
   コマンドの実行結果
   --------------------------------------------------
-  [15281.656053] SAMP2 exit
+  [ 7041.491557] sample2 init
+  [ 7041.492623] P1 = 11 -> カーネルパラメータ値
+  [ 7041.493396] P2 = 22 -> カーネルパラメータ値
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel (カーネルモジュールをコピー)
+  vm11$ cd $HOME/sample2
+  vm11$ sudo rmmod sample2.ko (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 7085.492958] sample2 exit
+  --------------------------------------------------
+  
+  vm11$ cd $HOME/sample2
+  vm11$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel (カーネルモジュールをコピー)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP2
-  vm12$ sudo depmod (依存関係ファイルを更新)
+  vm11$ cd $HOME/sample2
+  vm11$ sudo depmod (依存関係ファイルを更新)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 2分ほど時間がかかった
+  (省略) -> /lib/modules/$(uname -r)/modules.depを更新
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo modprobe SAMP2 (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [15490.821975] SAMP2 init
-  [15490.823478] P1 = 11  // 追加パラメータ
-  [15490.824920] P2 = 22  // 追加パラメータ
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo modprobe -r SAMP2 (カーネルモジュールのアンロード)
+  vm11$ cd $HOME
+  vm11$ sudo modprobe sample2 (カーネルモジュールのロード)
   
   コマンドの実行結果
   --------------------------------------------------
-  [15539.678640] SAMP2 exit
+  [ 7352.384008] sample2 init
+  [ 7352.385432] P1 = 11 -> カーネルパラメータ値
+  [ 7352.386669] P2 = 22 -> カーネルパラメータ値
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo modprobe -r sample2 (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 7398.172762] sample2 exit
   --------------------------------------------------
   
   以下の確認に続く
@@ -1198,39 +1198,39 @@
   
 [内容]
   ## 作業内容
-    カーネルモジュール起動時にパラメータ値を設定ファイルから指定可能にする
+    パラメータ値を設定ファイルから指定可能にする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd /etc/modprobe.d
-  vm12$ sudo vi SAMP2.conf
+  vm11$ cd /etc/modprobe.d
+  vm11$ sudo vi sample2.conf
   
   コマンドの実行結果
   --------------------------------------------------
-  options SAMP2 P1=111
-  options SAMP2 P2=222
+  options sample2 P1=111
+  options sample2 P2=222
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo modprobe SAMP2 (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [15765.190123] SAMP2 init
-  [15765.191809] P1 = 111  // 設定ファイル値で起動
-  [15765.193223] P2 = 222  // 設定ファイル値で起動
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo modprobe -r SAMP2 (カーネルモジュールのアンロード)
+  vm11$ cd $HOME
+  vm11$ sudo modprobe sample2 (カーネルモジュールのロード)
   
   コマンドの実行結果
   --------------------------------------------------
-  [15806.350829] SAMP2 exit
+  [ 7679.412909] sample2 init
+  [ 7679.414042] P1 = 111 -> 設定ファイルの値
+  [ 7679.415003] P2 = 222 -> 設定ファイルの値
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo modprobe -r sample2 (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 7729.297950] sample2 exit
   --------------------------------------------------
   
   以下の確認に続く
@@ -1241,11 +1241,11 @@
   
 [内容]
   ## 作業内容
-    カーネルパラメータを閲覧・更新する
+    カーネルパラメータの閲覧と更新
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
