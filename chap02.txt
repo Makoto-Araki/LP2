@@ -576,63 +576,63 @@
     カーネルモジュールの格納されているディレクトリ構成(FHS)を把握する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ uname -r
+  vm11$ cd $HOME
+  vm11$ uname -r
   
   コマンドの実行結果
   --------------------------------------------------
   4.15.3 -> 4(メジャー番号)、15(マイナー番号)、3(リリース番号)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo find /lib/modules -name $(uname -r) (カーネルモジュールのディレクトリを検索)
+  vm11$ cd $HOME
+  vm11$ sudo find /lib/modules -name $(uname -r) (カーネルモジュールのディレクトリを検索)
   
   コマンドの実行結果
   --------------------------------------------------
   /lib/modules/4.15.3
   --------------------------------------------------
   
-  vm12$ cd /lib/modules/4.15.3
-  vm12$ ls -lh
+  vm11$ cd /lib/modules/4.15.3
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx.  1 root root   29 12月 25 00:16 build -> /usr/src/kernels/linux-4.15.3
-  drwxr-xr-x. 12 root root  128 12月 25 00:26 kernel         // カーネルモジュール格納ディレクトリ
-  -rw-r--r--.  1 root root 833K 12月 25 00:35 modules.alias  // 別名ファイル
-  -rw-r--r--.  1 root root 800K 12月 25 00:35 modules.alias.bin
-  -rw-r--r--.  1 root root 7.7K 12月 25 00:16 modules.builtin
-  -rw-r--r--.  1 root root  10K 12月 25 00:35 modules.builtin.bin
-  -rw-r--r--.  1 root root 245K 12月 25 00:35 modules.dep    // 依存関係ファイル
-  -rw-r--r--.  1 root root 351K 12月 25 00:35 modules.dep.bin
-  -rw-r--r--.  1 root root  351 12月 25 00:35 modules.devname
-  -rw-r--r--.  1 root root  96K 12月 25 00:16 modules.order
-  -rw-r--r--.  1 root root  515 12月 25 00:35 modules.softdep
-  -rw-r--r--.  1 root root 377K 12月 25 00:35 modules.symbols
-  -rw-r--r--.  1 root root 461K 12月 25 00:35 modules.symbols.bin
-  lrwxrwxrwx.  1 root root   29 12月 25 00:16 source -> /usr/src/kernels/linux-4.15.3
+  lrwxrwxrwx.  1 root root   29  4月 16 10:36 build -> /usr/src/kernels/linux-4.15.3
+  drwxr-xr-x. 12 root root  128  4月 16 10:38 kernel // カーネルモジュール格納場所
+  -rw-r--r--.  1 root root 833K  4月 16 10:41 modules.alias // 別名ファイル
+  -rw-r--r--.  1 root root 800K  4月 16 10:41 modules.alias.bin
+  -rw-r--r--.  1 root root 7.7K  4月 16 10:36 modules.builtin
+  -rw-r--r--.  1 root root  10K  4月 16 10:41 modules.builtin.bin
+  -rw-r--r--.  1 root root 246K  4月 16 10:41 modules.dep // モジュール依存関係
+  -rw-r--r--.  1 root root 352K  4月 16 10:41 modules.dep.bin
+  -rw-r--r--.  1 root root  411  4月 16 10:41 modules.devname
+  -rw-r--r--.  1 root root  97K  4月 16 10:36 modules.order
+  -rw-r--r--.  1 root root  515  4月 16 10:41 modules.softdep
+  -rw-r--r--.  1 root root 386K  4月 16 10:41 modules.symbols
+  -rw-r--r--.  1 root root 472K  4月 16 10:41 modules.symbols.bin
+  lrwxrwxrwx.  1 root root   29  4月 16 10:36 source -> /usr/src/kernels/linux-4.15.3
   --------------------------------------------------
   
-  vm12$ cd /lib/modules/4.15.3/kernel
-  vm12$ ls -lh (カーネルモジュール格納ディレクトリ配下のファイル一覧)
+  vm11$ cd /lib/modules/4.15.3/kernel
+  vm11$ ls -lh (カーネルモジュール格納場所の内部確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  drwxr-xr-x.  3 root root   17 12月 25 00:16 arch     // アーキテクチャ
-  drwxr-xr-x.  3 root root 4.0K 12月 25 00:17 crypto   // 暗号化
-  drwxr-xr-x. 68 root root 4.0K 12月 25 00:24 drivers  // ドライバ
-  drwxr-xr-x. 25 root root 4.0K 12月 25 00:24 fs       // ファイルシステム
-  drwxr-xr-x.  3 root root   19 12月 25 00:24 kernel   // カーネル
-  drwxr-xr-x.  5 root root  207 12月 25 00:24 lib      // ライブラリ
-  drwxr-xr-x.  2 root root   32 12月 25 00:24 mm       // メモリ
-  drwxr-xr-x. 35 root root 4.0K 12月 25 00:26 net      // ネットワーク
-  drwxr-xr-x. 12 root root  167 12月 25 00:26 sound    // サウンド -> 仮想マシンでは本来不要
-  drwxr-xr-x.  3 root root   17 12月 25 00:26 virt     // 仮想環境 -> 仮想マシンでは本来不要
+  drwxr-xr-x.  3 root root   17  4月 16 10:36 arch    // アーキテクチャ
+  drwxr-xr-x.  3 root root 4.0K  4月 16 10:36 crypto  // 暗号化
+  drwxr-xr-x. 69 root root 4.0K  4月 16 10:38 drivers // デバイスドライバ
+  drwxr-xr-x. 25 root root 4.0K  4月 16 10:38 fs      // ファイルシステム
+  drwxr-xr-x.  3 root root   19  4月 16 10:38 kernel  // カーネル
+  drwxr-xr-x.  5 root root  207  4月 16 10:38 lib     // ライブラリ
+  drwxr-xr-x.  2 root root   32  4月 16 10:38 mm      // メモリ関連
+  drwxr-xr-x. 35 root root 4.0K  4月 16 10:38 net     // ネットワーク
+  drwxr-xr-x. 12 root root  167  4月 16 10:38 sound   // サウンド -> 仮想マシンには不要
+  drwxr-xr-x.  3 root root   17  4月 16 10:38 virt    // 仮想環境 -> 仮想マシンには不要
   --------------------------------------------------
   
   以下の確認に続く
@@ -643,16 +643,16 @@
   
 [内容]
   ## 作業内容
-    作成したカーネルモジュールをコマンド(insmod)でロードする
+    カーネルモジュールを作成して、コマンド(insmod)でロード
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME/SAMP1 -> 先にディレクトリ作成
-  vm12$ vi BASE.c (ソースファイル作成)
+  vm11$ cd $HOME/sample1 -> 先にディレクトリ作成
+  vm11$ vi base.c (ソースファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -662,32 +662,32 @@
   // ライセンス情報
   MODULE_LICENSE("GPL");
   MODULE_AUTHOR("Makoto-Araki");
-  MODULE_DESCRIPTION("BASE");
+  MODULE_DESCRIPTION("base");
   
   // ロード時
-  static int BASE_init(void)
+  static int base_init(void)
   {
-    printk(KERN_INFO "BASE init\n");
+    printk(KERN_INFO "base init\n");
     return 0;
   }
   
   // アンロード時
-  static void BASE_exit(void) { printk(KERN_INFO "BASE exit\n"); }
+  static void base_exit(void) { printk(KERN_INFO "base exit\n"); }
   
-  // 他モジュールから呼び出される
-  void FUNC1(void) { printk(KERN_INFO "FUNC1 call\n"); }
-  void FUNC2(void) { printk(KERN_INFO "FUNC2 call\n"); }
+  // 関数定義
+  void func1(void) { printk(KERN_INFO "func1 called\n"); }
+  void func2(void) { printk(KERN_INFO "func2 called\n"); }
   
-  // マクロエクスポート
-  EXPORT_SYMBOL(FUNC1);
-  EXPORT_SYMBOL(FUNC2);
+  // エクスポート
+  EXPORT_SYMBOL(func1);
+  EXPORT_SYMBOL(func2);
   
-  module_init( BASE_init );
-  module_exit( BASE_exit );
+  module_init( base_init );
+  module_exit( base_exit );
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ vi SAMP1.c (ソースファイル作成)
+  vm11$ cd $HOME/sample1
+  vm11$ vi sample1.c (ソースファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -695,37 +695,37 @@
   #include <linux/kernel.h>
   
   // プロトタイプ宣言
-  void FUNC1(void);
-  void FUNC2(void);
+  void func1(void);
+  void func2(void);
   
   // ライセンス情報
   MODULE_LICENSE("GPL");
   MODULE_AUTHOR("Makoto-Araki");
-  MODULE_DESCRIPTION("SAMP1");
+  MODULE_DESCRIPTION("sample1");
   
   // ロード時
-  static int SAMP1_init(void)
+  static int sample1_init(void)
   {
-    printk( KERN_INFO "SAMP1 init\n" );
-    FUNC1();  // 他モジュールの関数実行
-    FUNC2();  // 他モジュールの関数実行
+    printk( KERN_INFO "sample1 init\n" );
+    func1();  // 他モジュールの関数実行
+    func2();  // 他モジュールの関数実行
     return 0;
   }
   
   // アンロード時
-  static void SAMP1_exit(void) { printk( KERN_INFO "SAMP1 exit\n" ); }
+  static void sample1_exit(void) { printk( KERN_INFO "sample1 exit\n" ); }
   
-  module_init( SAMP1_init );
-  module_exit( SAMP1_exit );
+  module_init( sample1_init );
+  module_exit( sample1_exit );
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ vi Makefile (Makefileを記述)
+  vm11$ cd $HOME/sample1
+  vm11$ vi Makefile (Makefileを記述)
   
   コマンドの実行結果
   --------------------------------------------------
   // 既存ファイル(/lib/modules/4.15.3/build/Makefile)のターゲットを利用
-  obj-m := SAMP1.o BASE.o
+  obj-m := sample1.o base.o
   
   all:
     make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
@@ -734,161 +734,188 @@
     make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ make -n (実行処理をシミューレート)
+  vm11$ cd $HOME/sample1
+  vm11$ make -n (実行処理をシミューレート)
   
   コマンドの実行結果
   --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP1 modules
+  make -C /lib/modules/4.15.3/build M=/home/makoto/sample1 modules
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ make (ビルド実行)
+  vm11$ cd $HOME/sample1
+  vm11$ make (ビルド実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/SAMP1 modules
+  make -C /lib/modules/4.15.3/build M=/home/makoto/sample1 modules
   make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' に入ります
-    CC [M]  /home/makoto/SAMP1/SAMP1.o
-    CC [M]  /home/makoto/SAMP1/BASE.o
+    CC [M]  /home/makoto/sample1/sample1.o
+    CC [M]  /home/makoto/sample1/base.o
     Building modules, stage 2.
     MODPOST 2 modules
-    CC      /home/makoto/SAMP1/BASE.mod.o
-    LD [M]  /home/makoto/SAMP1/BASE.ko
-    CC      /home/makoto/SAMP1/SAMP1.mod.o
-    LD [M]  /home/makoto/SAMP1/SAMP1.ko
+    CC      /home/makoto/sample1/base.mod.o
+    LD [M]  /home/makoto/sample1/base.ko
+    CC      /home/makoto/sample1/sample1.mod.o
+    LD [M]  /home/makoto/sample1/sample1.ko
   make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' から出ます
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ ls -lh
+  vm11$ cd $HOME/sample1
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  627 12月 25 09:38 BASE.c
-  -rw-rw-r--. 1 makoto makoto 124K 12月 25 09:41 BASE.ko  // カーネルモジュール
-  -rw-rw-r--. 1 makoto makoto  853 12月 25 09:41 BASE.mod.c
-  -rw-rw-r--. 1 makoto makoto  70K 12月 25 09:41 BASE.mod.o
-  -rw-rw-r--. 1 makoto makoto  59K 12月 25 09:41 BASE.o
-  -rw-rw-r--. 1 makoto makoto  174 12月 25 09:40 Makefile
-  -rw-rw-r--. 1 makoto makoto  110 12月 25 09:41 Module.symvers
-  -rw-rw-r--. 1 makoto makoto  570 12月 25 09:39 SAMP1.c
-  -rw-rw-r--. 1 makoto makoto 122K 12月 25 09:41 SAMP1.ko  // カーネルモジュール
-  -rw-rw-r--. 1 makoto makoto  949 12月 25 09:41 SAMP1.mod.c
-  -rw-rw-r--. 1 makoto makoto  70K 12月 25 09:41 SAMP1.mod.o
-  -rw-rw-r--. 1 makoto makoto  56K 12月 25 09:41 SAMP1.o
-  -rw-rw-r--. 1 makoto makoto   69 12月 25 09:41 modules.order
+  -rw-rw-r--. 1 makoto makoto  176  4月 16 11:33 Makefile
+  -rw-rw-r--. 1 makoto makoto  114  4月 16 11:34 Module.symvers
+  -rw-rw-r--. 1 makoto makoto  592  4月 16 11:32 base.c
+  -rw-rw-r--. 1 makoto makoto 124K  4月 16 11:34 base.ko -> カーネルモジュール
+  -rw-rw-r--. 1 makoto makoto  853  4月 16 11:34 base.mod.c
+  -rw-rw-r--. 1 makoto makoto  70K  4月 16 11:34 base.mod.o
+  -rw-rw-r--. 1 makoto makoto  59K  4月 16 11:34 base.o
+  -rw-rw-r--. 1 makoto makoto   75  4月 16 11:34 modules.order
+  -rw-rw-r--. 1 makoto makoto  584  4月 16 11:32 sample1.c
+  -rw-rw-r--. 1 makoto makoto 122K  4月 16 11:34 sample1.ko -> カーネルモジュール
+  -rw-rw-r--. 1 makoto makoto  949  4月 16 11:34 sample1.mod.c
+  -rw-rw-r--. 1 makoto makoto  70K  4月 16 11:34 sample1.mod.o
+  -rw-rw-r--. 1 makoto makoto  56K  4月 16 11:34 sample1.o
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ modinfo BASE.ko (カーネルモジュールの詳細情報表示)
+  vm11$ cd $HOME/sample1
+  vm11$ modinfo base.ko (カーネルモジュールの詳細情報表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  filename:       /home/makoto/SAMP1/BASE.ko
-  description:    BASE
+  filename:       /home/makoto/sample1/base.ko
+  description:    base
   author:         Makoto-Araki
   license:        GPL
-  srcversion:     5A9A789D1B53D4BFA7708EA
-  depends:        (依存しているモジュールなし)
+  srcversion:     F97D838A3F67D2B0738370E
+  depends:        (依存モジュール無し)
   retpoline:      Y
-  name:           BASE
-  vermagic:       4.15.3 SMP mod_unload modversions
-  --------------------------------------------------
-  
-  vm12$ cd $HOME/SAMP1
-  vm12$ modinfo SAMP1.ko (カーネルモジュールの詳細情報表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  filename:       /home/makoto/SAMP1/SAMP1.ko
-  description:    SAMP1
-  author:         Makoto-Araki
-  license:        GPL
-  srcversion:     7DB3D082E1724DE7F5D6AF2
-  depends:        BASE (BASEモジュールに依存している)
-  retpoline:      Y
-  name:           SAMP1
+  name:           base
   vermagic:       4.15.3 SMP mod_unload modversions 
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ sudo insmod BASE.ko (カーネルモジュールのロード)
+  vm11$ cd $HOME/sample1
+  vm11$ modinfo sample1.ko (カーネルモジュールの詳細情報表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 4534.763526] BASE init -> 初回のみカーネルツリー外からのロードです、という意味の警告メッセージが出力
+  filename:       /home/makoto/sample1/sample1.ko
+  description:    sample1
+  author:         Makoto-Araki
+  license:        GPL
+  srcversion:     F1D32A59A79F9BEB488D4E5
+  depends:        base (baseモジュールに依存)
+  retpoline:      Y
+  name:           sample1
+  vermagic:       4.15.3 SMP mod_unload modversions 
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ sudo insmod SAMP1.ko (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 4638.441836] SAMP1 init
-  [ 4638.443573] FUNC1 call  // BASEモジュールの関数実行
-  [ 4638.445259] FUNC2 call  // BASEモジュールの関数実行
-  --------------------------------------------------
-  
-  vm12$ cd $HOME/SAMP1
-  vm12$ sudo rmmod SAMP1.ko (カーネルモジュールのアンロード)
+  vm11$ cd $HOME/sample1
+  vm11$ sudo insmod base.ko (カーネルモジュールのロード)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 4701.109105] SAMP1 exit
+  [ 2638.788717] base init -> 初回のみカーネルツリー外からのロードです、という意味の警告メッセージが出力
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ sudo rmmod BASE.ko (カーネルモジュールのアンロード)
+  vm11$ cd $HOME/sample1
+  vm11$ sudo insmod sample1.ko (カーネルモジュールのロード)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 4732.850872] BASE exit
+  [ 2693.578594] sample1 init
+  [ 2693.580103] func1 called  // baseモジュールの関数実行
+  [ 2693.581408] func2 called  // baseモジュールの関数実行
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel (カーネルモジュールをシステム規定の場所にコピー)
+  vm11$ cd $HOME/sample1
+  vm11$ sudo rmmod sample1.ko (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 2844.979185] sample1 exit
+  --------------------------------------------------
+  
+  vm11$ cd $HOME/sample1
+  vm11$ sudo rmmod base.ko (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 2890.677721] base exit
+  --------------------------------------------------
+  
+  vm11$ cd $HOME/sample1
+  vm11$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel (カーネルモジュールをシステム規定の場所にコピー)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 後のコマンド「modprobe」は依存関係ファイル(modules.dep)に記述が無いと動作しないため
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP1
-  vm12$ sudo depmod (依存関係ファイルを更新)
+  vm11$ cd $HOME/sample1
+  vm11$ sudo depmod (依存関係ファイルを更新)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 2分ほど時間がかかった
+  (省略) -> /lib/modules/$(uname -r)/modules.depを更新
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo modprobe SAMP1 (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 5218.961025] BASE  init
-  [ 5218.963848] SAMP1 init
-  [ 5218.965409] FUNC1 call
-  [ 5218.967256] FUNC2 call
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo modprobe -r SAMP1 (カーネルモジュールのアンロード)
+  vm11$ cd $HOME/sample1
+  vm11$ sudo grep -E 'base|sample1' /lib/modules/$(uname -r)/modules.dep (依存関係ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 5279.873593] SAMP1 exit
-  [ 5279.875888] BASE  exit  // BASEモジュールまでアンロードされる仕様
+  kernel/kernel/sample1.ko: kernel/kernel/base.ko
+  kernel/kernel/base.ko:
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo modprobe --show-depends SAMP1 (カーネルモジュールの依存関係を表示)
+  vm11$ cd $HOME
+  vm11$ sudo modprobe sample1 (カーネルモジュールのロード)
   
   コマンドの実行結果
   --------------------------------------------------
-  insmod /lib/modules/4.15.3/kernel/kernel/BASE.ko 
-  insmod /lib/modules/4.15.3/kernel/kernel/SAMP1.ko 
+  [ 3090.930929] base init
+  [ 3090.933586] sample1 init
+  [ 3090.935034] func1 called
+  [ 3090.936509] func2 called
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo lsmod | grep -E 'base|sample1' (カーネルモジュールの一覧表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sample1                16384  0 
+  base                   16384  1 sample1 -> base は sample1 が参照している
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo cat /proc/modules | grep -E 'base|sample1' (カーネルモジュールの一覧表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sample1 16384 0 - Live 0xffffffffc0681000 (OE)
+  base 16384 1 sample1, Live 0xffffffffc067c000 (OE) -> base は sample1 が参照している
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo modprobe -r sample1 (カーネルモジュールのアンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 3172.765596] sample1 exit
+  [ 3172.768971] base exit -> baseモジュールまでアンロードされる仕様
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo modprobe --show-depends sample1 (カーネルモジュールの依存関係を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  insmod /lib/modules/4.15.3/kernel/kernel/base.ko 
+  insmod /lib/modules/4.15.3/kernel/kernel/sample1.ko 
   --------------------------------------------------
   
   以下の確認に続く
@@ -902,8 +929,8 @@
     作成したカーネルモジュールをコマンド(rmmod)でアンロードする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
@@ -918,8 +945,8 @@
     作成したカーネルモジュールをコマンド(modprobe)でロード・アンロードする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
@@ -934,8 +961,8 @@
     作成したカーネルモジュールをコマンド(depmod)で依存関係ファイル(modules.dep)に登録する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
@@ -950,8 +977,8 @@
     作成したカーネルモジュールの詳細情報をコマンド(modinfo)で表示する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
@@ -966,41 +993,12 @@
     作成したカーネルモジュールをコマンド(lsmod)で表示する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ lsmod | grep -E 'BASE|SAMP'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 該当なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo modprobe SAMP1 (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 8671.523003] BASE  init
-  [ 8671.524501] SAMP1 init
-  [ 8671.525855] FUNC1 call
-  [ 8671.527614] FUNC2 call
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsmod | grep -E 'BASE|SAMP'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Module                  Size  Used-by
-  SAMP1                  16384  0 
-  BASE                   16384  1 SAMP1
-  --------------------------------------------------
-  
-  以下の確認に続く
+  上記の「09」を参照
   
 ================================================================================
 [15]
@@ -1011,40 +1009,12 @@
     作成したカーネルモジュールをコマンド(cat /proc/modules)で表示する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/modules | grep -E 'BASE|SAMP'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 該当なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo modprobe SAMP1 (カーネルモジュールのロード)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 9049.869145] BASE  init
-  [ 9049.871072] SAMP1 init
-  [ 9049.872323] FUNC1 call
-  [ 9049.873543] FUNC2 call
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ cat /proc/modules | grep -E 'BASE|SAMP'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  SAMP1 16384 0 - Live 0x          (null) (OE)
-  BASE  16384 1 SAMP1, Live 0x     (null) (OE)
-  --------------------------------------------------
-  
-  以下の確認に続く
+  上記の「09」を参照
   
 ================================================================================
 [16]
