@@ -1388,7 +1388,7 @@
   --------------------------------------------------
   
   vm11$ cd /boot
-  vm11$ sudo lsinitrd initramfs-4.15.3.img | head -n 50 (初期RAMディスクの内容を確認)
+  vm11$ sudo lsinitrd initramfs-4.15.3.img | head -n 10 (初期RAMディスクの内容を確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1407,64 +1407,65 @@
     初期RAMディスクをコマンド(mkinitrd)で作成
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME/TEMP1 -> 先にディレクトリ作成
-  vm12$ sudo mkinitrd BBB.img $(uname -r) (初期RAMディスクをコマンドで作成)
+  vm11$ cd $HOME/temp1 -> 先にディレクトリ作成
+  vm11$ sudo mkinitrd AAA.img $(uname -r) (初期RAMディスクをコマンドで作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 5分程かかる
   --------------------------------------------------
   
-  vm12$ cd $HOME/TEMP1
-  vm12$ sudo lsinitrd BBB.img (初期RAMディスクの内容を確認)
+  vm11$ cd $HOME/temp1
+  vm11$ sudo lsinitrd AAA.img | head -n 10 (初期RAMディスクの内容を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 前記録を参照
+  Image: AAA.img: 38M
+  ...
   --------------------------------------------------
   
-  vm12$ cd $HOME/TEMP1
-  vm12$ sudo zcat BBB.img | cpio -i (初期RAMディスクを展開)
+  vm11$ cd $HOME/temp1
+  vm11$ sudo zcat AAA.img | cpio -id (初期RAMディスクを展開)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> コマンド(mknod)部分でエラー出力されたが続行
   --------------------------------------------------
   
-  vm12$ cd $HOME/TEMP1
-  vm12$ sudo rm BBB.img (初期RAMディスクを削除)
+  vm11$ cd $HOME/temp1
+  vm11$ sudo rm AAA.img (初期RAMディスクを削除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME/TEMP1
-  vm12$ ls -lh
+  vm11$ cd $HOME/temp1
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx.  1 makoto makoto    7 12月  6 10:16 bin -> usr/bin
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 dev
-  drwxr-xr-x. 12 makoto makoto 4.0K 12月  6 10:16 etc
-  lrwxrwxrwx.  1 makoto makoto   23 12月  6 10:16 init -> usr/lib/systemd/systemd
-  lrwxrwxrwx.  1 makoto makoto    7 12月  6 10:16 lib -> usr/lib
-  lrwxrwxrwx.  1 makoto makoto    9 12月  6 10:16 lib64 -> usr/lib64
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 proc
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 root
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 run
-  lrwxrwxrwx.  1 makoto makoto    8 12月  6 10:16 sbin -> usr/sbin
-  -rwxr-xr-x.  1 makoto makoto 3.1K 12月  6 10:16 shutdown
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 sys
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 sysroot
-  drwxr-xr-x.  2 makoto makoto    6 12月  6 10:16 tmp
-  drwxr-xr-x.  7 makoto makoto   66 12月  6 10:16 usr
-  drwxr-xr-x.  2 makoto makoto   29 12月  6 10:16 var
+  lrwxrwxrwx.  1 makoto makoto    7  4月 16 18:39 bin -> usr/bin
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 dev
+  drwxr-xr-x. 12 makoto makoto 4.0K  4月 16 18:39 etc
+  lrwxrwxrwx.  1 makoto makoto   23  4月 16 18:39 init -> usr/lib/systemd/systemd
+  lrwxrwxrwx.  1 makoto makoto    7  4月 16 18:39 lib -> usr/lib
+  lrwxrwxrwx.  1 makoto makoto    9  4月 16 18:39 lib64 -> usr/lib64
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 proc
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 root
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 run
+  lrwxrwxrwx.  1 makoto makoto    8  4月 16 18:39 sbin -> usr/sbin
+  -rwxr-xr-x.  1 makoto makoto 3.1K  4月 16 18:39 shutdown
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 sys
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 sysroot
+  drwxr-xr-x.  2 makoto makoto    6  4月 16 18:39 tmp
+  drwxr-xr-x.  7 makoto makoto   66  4月 16 18:39 usr
+  drwxr-xr-x.  2 makoto makoto   29  4月 16 18:39 var
   --------------------------------------------------
   
   以下の確認に続く
@@ -1478,24 +1479,24 @@
     システム起動時のカーネル引数を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/cmdline (システム起動時のカーネル引数)
+  vm11$ cd $HOME
+  vm11$ cat /proc/cmdline (システム起動時のカーネル引数)
   
   コマンドの実行結果
   --------------------------------------------------
-  BOOT_IMAGE=/vmlinuz-4.15.3         // カーネルイメージ(/boot/vmlinuz-4.15.3)
-  root=/dev/mapper/centos_vm11-root  // 起動デバイス
-  ro                                 // 読取専用
-  crashkernel=auto                   // 不明
-  rd.lvm.lv=centos_vm11/root         // 不明
-  rd.lvm.lv=centos_vm11/swap         // 不明
-  console=ttyS0,115200n8             // 仮想マシン作成時にブートローダーに指定したコンソール接続のためのパラメータ
-  LANG=ja_JP.UTF-8                   // 言語・国・文字コード
+  BOOT_IMAGE=/vmlinuz-4.15.3        // カーネルイメージ
+  root=/dev/mapper/centos_vm11-root // ルートファイルシステム
+  ro
+  crashkernel=auto
+  rd.lvm.lv=centos_vm11/root
+  rd.lvm.lv=centos_vm11/swap
+  console=ttyS0,115200n8 // コンソール接続
+  LANG=ja_JP.UTF-8       // 言語・国・文字コード
   --------------------------------------------------
   
   以下の確認に続く
@@ -1509,42 +1510,42 @@
     CPU情報を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/cpuinfo (CPU情報を確認する)
+  vm11$ cd $HOME
+  vm11$ cat /proc/cpuinfo (CPU情報を確認する)
   
   コマンドの実行結果
   --------------------------------------------------
-  processor        : 0                                   // CPUのID
-  vendor_id        : GenuineIntel                        // ベンダーID
-  cpu family       : 6                                   // 不明
-  model            : 26                                  // 不明
-  model name       : Intel Core i7 9xx (Nehalem Core i7, IBRS update)
-  stepping         : 3                                   // 不明
-  microcode        : 0x1                                 // 不明
-  cpu MHz          : 2394.414                            // 不明
-  cache size       : 4096 KB                             // 不明
-  physical id      : 0                                   // 不明
-  siblings         : 1                                   // 不明
-  core id          : 0                                   // 不明
-  cpu cores        : 1                                   // CPU内のコア数
-  apicid           : 0                                   // 不明
-  initial apicid   : 0                                   // 不明
-  fpu              : yes                                 // 不明
-  fpu_exception    : yes                                 // 不明
-  cpuid level      : 11                                  // 不明
-  wp               : yes                                 // 不明
-  flags            : fpu de pse tsc msr pae ..           // vmx -> CPUがKVMに対応している
-  bugs             : cpu_meltdown spectre_v1 spectre_v2  // 不明
-  bogomips         : 4788.82                             // 不明
-  clflush size     : 64                                  // 不明
-  cache_alignment  : 64                                  // 不明
-  address sizes    : 36 bits physical, 48 bits virtual   // 不明
-  power management :                                     // 不明
+  processor       : 0 -> プロセッサID
+  vendor_id       : GenuineIntel
+  cpu family      : 6
+  model           : 42
+  model name      : Intel Xeon E312xx (Sandy Bridge, IBRS update)
+  stepping        : 1
+  microcode       : 0x1
+  cpu MHz         : 2494.332
+  cache size      : 16384 KB
+  physical id     : 0
+  siblings        : 1
+  core id         : 0
+  cpu cores       : 1 -> CPU内のコア数
+  apicid          : 0
+  initial apicid  : 0
+  fpu             : yes
+  fpu_exception   : yes
+  cpuid level     : 13
+  wp              : yes
+  flags           : fpu vme de ... -> フラグ(vmx)で仮想化対応
+  bugs            : cpu_meltdown spectre_v1 spectre_v2
+  bogomips        : 4988.66
+  clflush size    : 64
+  cache_alignment : 64
+  address sizes   : 36 bits physical, 48 bits virtual
+  power management:
   --------------------------------------------------
   
   以下の確認に続く
@@ -1558,13 +1559,13 @@
     ファイルシステム情報を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/filesystems (ファイルシステム情報を確認する)
+  vm11$ cd $HOME
+  vm11$ cat /proc/filesystems (ファイルシステム情報を確認する)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1592,7 +1593,7 @@
   nodev  pstore
   nodev  mqueue
   nodev  selinuxfs
-         xfs  // システムで使用中
+         xfs  // システムで使用デバイスが存在する
   --------------------------------------------------
   
   以下の確認に続く
@@ -1606,13 +1607,13 @@
     使用中のスワップ領域を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/swaps (使用中のスワップ領域)
+  vm11$ cd $HOME
+  vm11$ cat /proc/swaps (使用中のスワップ領域)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1631,18 +1632,18 @@
     バージョン情報を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/version (バージョン情報)
+  vm11$ cd $HOME
+  vm11$ cat /proc/version (バージョン情報)
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux version 4.15.3 (root@vm12) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC))
-  #1 SMP Sat Dec 4 10:54:37 JST 2021
+  Linux version 4.15.3 (root@vm11) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (GCC))
+  #1 SMP Sun Apr 16 08:02:00 JST 2023
   --------------------------------------------------
   
   以下の確認に続く
@@ -1656,70 +1657,59 @@
     PCIバス情報を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install pciutils (パッケージ追加)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install pciutils (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh /proc/bus/pci (PCIバス情報を確認する)
+  vm11$ cd $HOME
+  vm11$ ls -lh /proc/bus/pci (PCIバス情報を確認する)
   
   コマンドの実行結果
   --------------------------------------------------
-  dr-xr-xr-x. 2 root root 0 12月 25 20:19 00       // PCIバス「00」
-  -r--r--r--. 1 root root 0 12月 25 20:19 devices  // 不明
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 00 -> バス(00)
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 01
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 02
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 03
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 04
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 05
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 06
+  dr-xr-xr-x. 2 root root 0  4月 16 18:57 07
+  -r--r--r--. 1 root root 0  4月 16 18:57 devices
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh /proc/bus/pci/00 (PCIバス「00」のデバイスを確認する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 256 12月 25 20:26 00.0  // スロット「00」、デバイス「0」
-  -rw-r--r--. 1 root root 256 12月 25 20:26 01.0  // スロット「01」、デバイス「0」
-  -rw-r--r--. 1 root root 256 12月 25 20:26 01.1  // スロット「01」、デバイス「1」
-  -rw-r--r--. 1 root root 256 12月 25 20:26 01.3
-  -rw-r--r--. 1 root root 256 12月 25 20:26 03.0
-  -rw-r--r--. 1 root root 256 12月 25 20:26 04.0
-  -rw-r--r--. 1 root root 256 12月 25 20:26 04.1
-  -rw-r--r--. 1 root root 256 12月 25 20:26 04.2
-  -rw-r--r--. 1 root root 256 12月 25 20:26 04.7
-  -rw-r--r--. 1 root root 256 12月 25 20:26 05.0
-  -rw-r--r--. 1 root root 256 12月 25 20:26 06.0
-  -rw-r--r--. 1 root root 256 12月 25 20:26 07.0
-  -rw-r--r--. 1 root root 256 12月 25 20:26 08.0
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ file /proc/bus/pci/00/00.0 (PCIバス「00」、スロット「00」のデバイス情報)
+  vm11$ cd $HOME
+  vm11$ ls -lh /proc/bus/pci/00 (バス(00)のデバイス一覧)
   
   コマンドの実行結果
   --------------------------------------------------
-  /proc/bus/pci/00/00.0: data -> エディタで閲覧不可
+  -rw-r--r--. 1 root root  256  4月 16 18:58 00.0 -> スロット(00)のデバイス(0)
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.0
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.1
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.2
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.3
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.4
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.5
+  -rw-r--r--. 1 root root 4.0K  4月 16 18:58 01.6
+  -rw-r--r--. 1 root root  256  4月 16 18:58 1f.0
+  -rw-r--r--. 1 root root  256  4月 16 18:58 1f.2
+  -rw-r--r--. 1 root root  256  4月 16 18:58 1f.3
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lspci | grep 00:00 (PCIバス「00」、スロット「00」のデバイス情報)
+  vm11$ cd $HOME
+  vm11$ lspci | grep 00:00.0 (バス(00)、デバイス(00.0)のデバイス情報)
   
   コマンドの実行結果
   --------------------------------------------------
-  00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lspci -s 00:00 (PCIバス「00」、スロット「00」のデバイス情報)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
+  00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM Controller
   --------------------------------------------------
   
   以下の確認に続く
@@ -1733,43 +1723,38 @@
     USBバス情報を確認する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install usbutils (パッケージのインストール)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install usbutils (パッケージのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo find /proc -type d | grep -i usb (USBバス情報を検索する)
+  vm11$ cd $HOME
+  vm11$ sudo find /proc -type d | grep -i usb (USBバス情報を検索する)
   
   コマンドの実行結果
   --------------------------------------------------
-  /proc/irq/10/uhci_hcd:usb3 -> パス(/proc/bus/usb)が存在しない
-  /proc/irq/10/uhci_hcd:usb4
-  /proc/irq/11/ehci_hcd:usb1
-  /proc/irq/11/uhci_hcd:usb2
+  (出力なし) -> パス(/proc/bus/usb)が存在しない
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsusb (USBデバイスを検索)
+  vm11$ cd $HOME
+  vm11$ lsusb (USBデバイスを検索)
   
   コマンドの実行結果
   --------------------------------------------------
   Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-  Bus 004 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-  Bus 003 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-  Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+  Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsusb -s 001:001 (USBバス「001」、デバイス「001」のデバイス情報)
+  vm11$ cd $HOME
+  vm11$ lsusb -s 001:001 (バス(001)、デバイス(001)のデバイス情報)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1787,34 +1772,34 @@
     デバイスファイルの情報を追跡してみる
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ ls -lh /dev | grep -E '^b' (ブロック型デバイスファイル)
+  vm11$ cd $HOME
+  vm11$ ls -lh /dev | grep -E '^b' (ブロック型デバイスファイル)
   
   コマンドの実行結果
   --------------------------------------------------
-  brw-rw----. 1 root   disk    253,   0 12月  6 09:11 dm-0
-  brw-rw----. 1 root   disk    253,   1 12月  6 09:11 dm-1
-  brw-rw----. 1 root   cdrom    11,   0 12月  6 09:11 sr0
-  brw-rw----. 1 root   disk    252,   0 12月  6 09:11 vda
-  brw-rw----. 1 root   disk    252,   1 12月  6 09:11 vda1
-  brw-rw----. 1 root   disk    252,   2 12月  6 09:11 vda2
-  
-  // 252 : メジャー番号
-  // 0   : マイナー番号
+  brw-rw----. 1 root   disk    253,   0  4月 16 18:31 dm-0 -> 253(メジャー番号)、0(マイナー番号)
+  brw-rw----. 1 root   disk    253,   1  4月 16 18:31 dm-1
+  brw-rw----. 1 root   cdrom    11,   0  4月 16 18:31 sr0
+  brw-rw----. 1 root   disk    252,   0  4月 16 18:31 vda
+  brw-rw----. 1 root   disk    252,   1  4月 16 18:31 vda1
+  brw-rw----. 1 root   disk    252,   2  4月 16 18:31 vda2
+  brw-rw----. 1 root   disk    252,  16  4月 16 18:31 vdb
+  brw-rw----. 1 root   disk    252,  17  4月 16 18:31 vdb1
+  brw-rw----. 1 root   disk    252,  18  4月 16 18:31 vdb2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/devices | grep 252 (メジャー番号252が何を意味するか調査)
+  vm11$ cd $HOME
+  vm11$ cat /proc/devices | grep 253 (メジャー番号253の意味を調査)
   
   コマンドの実行結果
   --------------------------------------------------
-  252 dax      // 不明 -> おそらく関係ない
-  252 virtblk  // 仮想ブロック(おそらく仮想マシン内の仮想ディスクを指す)
+  253 tpm
+  253 device-mapper
   --------------------------------------------------
   
   以下の確認に続く
@@ -1828,88 +1813,90 @@
     ディスクイメージからループバックデバイス作成
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=1M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=1M count=10 (ディスクイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 レコード入力
-  10+0 レコード出力
-  10485760 バイト (10 MB) コピーされました、 0.0541071 秒、 194 MB/秒
+  10+0 records in
+  10+0 records out
+  10485760 bytes (10 MB) copied, 0.0727656 s, 144 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージからループバックデバイス作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 5755.538761] loop: module loaded
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ losetup -l (ループバックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージからループバックデバイス作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME       SIZELIMIT OFFSET AUTOCLEAR RO BACK-FILE
-  /dev/loop0         0      0         0  0 /home/makoto/image0.img
+  [ 4801.711345] loop: module loaded
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0 (ループバックデバイスにファイルシステム構築)
+  vm11$ cd $HOME
+  vm11$ losetup -l (ループバックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME        SIZELIMIT  OFFSET  AUTOCLEAR  RO  BACK-FILE
+  /dev/loop0          0       0          0   0  /home/makoto/image0.img
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0 (ループバックデバイスにファイルシステム構築)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> ブロック割当のメッセージが多数出力されるが成功
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -t ext4 /dev/loop0 /mnt (ループバックデバイスをマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -t ext4 /dev/loop0 /mnt (ループバックデバイスをマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 6136.444509] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
+  [ 5139.620213] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ df -mT (ループバックデバイスを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root xfs            17394  5406  11989   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/loop0                   ext4               9     1      8    3% /mnt  // ループバックデバイス
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (ループバックデバイスをアンマウント)
+  vm11$ cd $HOME
+  vm11$ lsblk (ループバックデバイスを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0    10M   0  loop  /mnt (ループバックデバイス)
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスを一括削除)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (ループバックデバイスをアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスを一括削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
