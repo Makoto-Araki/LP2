@@ -42,21 +42,64 @@
     簡単なプログラム作成後に、Makefileを使用せずビルド
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y groupinstall '開発ツール' (開発ツール一式をインストール)
+  vm11$ cd $HOME
+  vm11$ LANG=C sudo yum groups list (パッケージグループ一覧)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Available Environment Groups:
+    Minimal Install
+    Compute Node
+    Infrastructure Server
+    File and Print Server
+    Cinnamon Desktop
+    MATE Desktop
+    Basic Web Server
+    Virtualization Host
+    Server with GUI
+    GNOME Desktop
+    KDE Plasma Workspaces
+    Development and Creative Workstation
+  Available Groups:
+    Cinnamon
+    Compatibility Libraries
+    Console Internet Tools
+    Development Tools -> 開発ツール、これが必要
+    Educational Software
+    Electronic Lab
+    Fedora Packager
+    General Purpose Desktop
+    Graphical Administration Tools
+    Haskell
+    LXQt Desktop
+    Legacy UNIX Compatibility
+    MATE
+    Milkymist
+    Scientific Support
+    Security Tools
+    Smart Card Support
+    System Administration Tools
+    System Management
+    TurboGears application framework
+    Xfce
+  Done
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo yum -y groupinstall 'Development Tools' (パッケージグループをインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello -> 先にディレクトリ作成
-  vm12$ vi hello.h (ヘッダファイル作成)
+  vm11$ cd $HOME/hello -> 先にディレクトリ作成
+  vm11$ vi hello.h (ヘッダファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -68,8 +111,8 @@
   #endif
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ vi hello.c (ソースファイル作成)
+  vm11$ cd $HOME/hello
+  vm11$ vi hello.c (ソースファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -80,8 +123,8 @@
   void Hello2(void) { printf("Hello2\n"); }  // 関数実装
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ vi main.c (プログラム本体)
+  vm11$ cd $HOME/hello
+  vm11$ vi main.c (プログラム本体)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -95,27 +138,27 @@
   }
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ gcc -o hello main.c hello.c (Makefileを使用せずビルド)
+  vm11$ cd $HOME/hello
+  vm11$ gcc -o hello main.c hello.c (Makefileを使用せずビルド)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ ls -lh
+  vm11$ cd $HOME/hello
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrwxr-x. 1 makoto makoto 8.3K  4月 14 08:03 hello
-  -rw-rw-r--. 1 makoto makoto  123  4月 14 08:01 hello.c
-  -rw-rw-r--. 1 makoto makoto   64  4月 14 07:59 hello.h
-  -rw-rw-r--. 1 makoto makoto   75  4月 14 08:02 main.c
+  -rwxrwxr-x. 1 makoto makoto 8.3K  4月 16 07:39 hello
+  -rw-rw-r--. 1 makoto makoto  123  4月 16 07:39 hello.c
+  -rw-rw-r--. 1 makoto makoto   64  4月 16 07:34 hello.h
+  -rw-rw-r--. 1 makoto makoto   75  4月 16 07:37 main.c
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ ./hello (ビルドされた実行ファイルを実行)
+  vm11$ cd $HOME/hello
+  vm11$ ./hello (ビルドされた実行ファイルを実行)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -123,8 +166,8 @@
   Hello2
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ rm hello
+  vm11$ cd $HOME/hello
+  vm11$ rm hello
   
   コマンドの実行結果
   --------------------------------------------------
@@ -142,19 +185,19 @@
     Makefileによるビルドを行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME/hello
-  vm12$ vi Makefile (Makefileを記述)
+  vm11$ cd $HOME/hello
+  vm11$ vi Makefile (Makefileを記述)
   
   コマンドの実行結果
   --------------------------------------------------
   // 単にmakeと実行した場合は一番上のターゲットが実行
   // ファイル行頭の空白はタブ
-
+  
   PROG := hello
   OBJ1 := main.o
   OBJ2 := hello.o
@@ -175,8 +218,8 @@
     rm -f $(PROG) $(OBJ1) $(OBJ2)
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ make -n (実行処理をシミューレート)
+  vm11$ cd $HOME/hello
+  vm11$ make -n (実行処理をシミューレート)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -185,8 +228,8 @@
   gcc main.o hello.o -o hello
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ make (Makefileによるビルド)
+  vm11$ cd $HOME/hello
+  vm11$ make (Makefileによるビルド)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -195,22 +238,22 @@
   gcc main.o hello.o -o hello
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ ls -lh
+  vm11$ cd $HOME/hello
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  265  4月 14 08:10 Makefile
-  -rwxrwxr-x. 1 makoto makoto 8.3K  4月 14 08:11 hello
-  -rw-rw-r--. 1 makoto makoto  123  4月 14 08:01 hello.c
-  -rw-rw-r--. 1 makoto makoto   64  4月 14 07:59 hello.h
-  -rw-rw-r--. 1 makoto makoto 1.7K  4月 14 08:11 hello.o
-  -rw-rw-r--. 1 makoto makoto   75  4月 14 08:02 main.c
-  -rw-rw-r--. 1 makoto makoto 1.4K  4月 14 08:11 main.o
+  -rw-rw-r--. 1 makoto makoto  265  4月 16 07:42 Makefile
+  -rwxrwxr-x. 1 makoto makoto 8.3K  4月 16 07:43 hello
+  -rw-rw-r--. 1 makoto makoto  123  4月 16 07:39 hello.c
+  -rw-rw-r--. 1 makoto makoto   64  4月 16 07:34 hello.h
+  -rw-rw-r--. 1 makoto makoto 1.7K  4月 16 07:43 hello.o
+  -rw-rw-r--. 1 makoto makoto   75  4月 16 07:37 main.c
+  -rw-rw-r--. 1 makoto makoto 1.4K  4月 16 07:43 main.o
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ ./hello (ビルドされた実行ファイルを実行)
+  vm11$ cd $HOME/hello
+  vm11$ ./hello (ビルドされた実行ファイルを実行)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -218,8 +261,8 @@
   Hello2
   --------------------------------------------------
   
-  vm12$ cd $HOME/hello
-  vm12$ make clean (実行ファイルと中間ファイルを削除)
+  vm11$ cd $HOME/hello
+  vm11$ make clean (実行ファイルと中間ファイルを削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -237,13 +280,13 @@
     カーネルバージョンをコマンド(uname)から調査
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ uname -r
+  vm11$ cd $HOME
+  vm11$ uname -r
   
   コマンドの実行結果
   --------------------------------------------------
@@ -261,13 +304,13 @@
     カーネルバージョンをコマンド(cat /proc/version)から調査
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/version
+  vm11$ cd $HOME
+  vm11$ cat /proc/version
   
   コマンドの実行結果
   --------------------------------------------------
@@ -285,28 +328,28 @@
     カーネルバージョンをファイル(Makefile)から調査
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ ls -lh /usr/src/kernels (カーネルソースのディレクトリ)
+  vm11$ cd $HOME
+  vm11$ ls -lh /usr/src/kernels (カーネルソースのディレクトリ)
   
   コマンドの実行結果
   --------------------------------------------------
-  drwxr-xr-x. 22 root root 4.0K  4月 14 07:57 3.10.0-1160.88.1.el7.x86_64.debug
+  drwxr-xr-x. 22 root root 4.0K  4月 16 07:32 3.10.0-1160.88.1.el7.x86_64.debug
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels/3.10.0-1160.88.1.el7.x86_64.debug
-  vm12$ head -n 4 Makefile (ファイル(Makefile)を参照)
+  vm11$ cd /usr/src/kernels/3.10.0-1160.88.1.el7.x86_64.debug
+  vm11$ head -n 4 Makefile (ファイル(Makefile)を参照)
   
   コマンドの実行結果
   --------------------------------------------------
-  VERSION = 3                           // メジャー番号
-  PATCHLEVEL = 10                       // マイナー番号
-  SUBLEVEL = 0                          // リリース番号
-  EXTRAVERSION = -1160.45.1.el7.x86_64  // エクストラ番号
+  VERSION = 3
+  PATCHLEVEL = 10
+  SUBLEVEL = 0
+  EXTRAVERSION = -1160.88.1.el7.x86_64.debug
   --------------------------------------------------
   
   以下の確認に続く
@@ -320,19 +363,20 @@
     パス(/boot)からカーネルイメージを検索
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ ls -lh /boot | grep $(uname -r)
+  vm11$ cd $HOME
+  vm11$ ls -lh /boot | grep $(uname -r)
   
   コマンドの実行結果
   --------------------------------------------------
   -rw-------. 1 root root 3.5M 10月 20  2020 System.map-3.10.0-1160.el7.x86_64
   -rw-r--r--. 1 root root 150K 10月 20  2020 config-3.10.0-1160.el7.x86_64
-  -rw-------. 1 root root  21M  4月 13 13:42 initramfs-3.10.0-1160.el7.x86_64.img  // 初期RAMディスク
+  -rw-------. 1 root root  21M  4月 15 12:11 initramfs-3.10.0-1160.el7.x86_64.img  // 初期RAMディスク
+  -rw-------. 1 root root  13M  4月 15 18:12 initramfs-3.10.0-1160.el7.x86_64kdump.img
   -rw-r--r--. 1 root root 314K 10月 20  2020 symvers-3.10.0-1160.el7.x86_64.gz
   -rwxr-xr-x. 1 root root 6.5M 10月 20  2020 vmlinuz-3.10.0-1160.el7.x86_64  // カーネルイメージ
   --------------------------------------------------
@@ -348,382 +392,173 @@
     カーネル(4.15.3)のコンパイルとインストール
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ LANG=C df -mT (ディスク空き容量)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        484     0        484    0%  /dev
-  tmpfs                         tmpfs           496     0        496    0%  /dev/shm
-  tmpfs                         tmpfs           496     7        489    2%  /run
-  tmpfs                         tmpfs           496     0        496    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs            8178  1849       6330   23%  / -> コンパイル時に容量不足が予想
-  /dev/vda1                     xfs            1014   137        878   14%  /boot
-  tmpfs                         tmpfs           100     0        100    0%  /run/user/1000
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ LANG=C sudo parted /dev/vda -s print (パーティション情報)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Model: Virtio Block Device (virtblk)
-    Disk /dev/vda: 26.8GB
-    Sector size (logical/physical): 512B/512B
-    Partition Table: msdos
-    Disk Flags: 
-    
-    Number  Start   End     Size    Type     File system  Flags
-    1       1049kB  1075MB  1074MB  primary  xfs          boot -> /boot
-    2       1075MB  10.7GB  9663MB  primary               lvm  -> LVM を使用
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo lvscan (論理ボリューム探査)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ACTIVE  '/dev/centos_vm11/swap' [1.00 GiB] inherit
-    ACTIVE  '/dev/centos_vm11/root' [<8.00 GiB] inherit -> 最大8GiBのサイズ
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo vgscan (ボリュームグループ探査)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Reading volume groups from cache.
-    Found volume group "centos_vm11" using metadata type lvm2 -> ボリュームグループ名は「centos_vm11」
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo pvscan (物理ボリューム探査)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    PV /dev/vda2  VG centos_vm11
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl poweroff (仮想マシンの停止)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略)
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ LANG=C sudo virsh list --all (仮想マシンの一覧表示)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Id   Name   State
-    -    vm11   shut off
-    -    vm12   shut off -> ディスク拡張
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ LANG=C sudo virsh pool-list (ホスト上の格納場所)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Name   State    Autostart
-    home   active   yes -> 自分は /home 配下に仮想マシンのファイルを配置した
-    opt    active   yes
-    src    active   yes
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ LANG=C sudo virsh vol-list --pool home (仮想マシンのファイル情報)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Name         Path
-    vm11.qcow2   /home/vm11.qcow2
-    vm12.qcow2   /home/vm12.qcow2 -> 拡張対象のファイル判明
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ LANG=C sudo virsh vol-info --pool home vm12.qcow2 (仮想マシンのファイル詳細情報)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Name:         vm12.qcow2
-    Type:         file
-    Capacity:     10.00 GiB -> 25BiB に拡張 (+15GiB)
-    Allocation:   3.05 GiB
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ LANG=C sudo virsh vol-resize vm12.qcow2 --pool home --delta +15GiB (仮想マシンのディスク拡張)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Size of volume 'vm12.qcow2' successfully changed by +15GiB
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ LANG=C sudo virsh vol-info --pool home vm12.qcow2 (仮想マシンのファイル詳細情報)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Name:         vm12.qcow2
-    Type:         file
-    Capacity:     25.00 GiB -> ファイル拡張が完了
-    Allocation:   3.05 GiB
-    --------------------------------------------------
-    
-    $ cd $HOME
-    $ sudo virsh start vm12 --console (仮想マシンの起動)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> makotoでログイン
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ LANG=C sudo fdisk /dev/vda (パーティション作成)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Command (m for help):
-    Command (m for help): p -> パーティション情報
-    
-    Device     Boot  Start     End       Blocks    Id  System
-    /dev/vda1  *     2048      2099199   1048576   83  Linux
-    /dev/vda2        2099200   20971519  9436160   8e  Linux LVM
-    
-    Command (m for help):
-    Command (m for help): n -> パーティション作成
-    
-    ...(省略) -> +12000M(+12G)
-    
-    Command (m for help):
-    Command (m for help): p -> パーティション情報
-    
-    Device     Boot  Start     End       Blocks    Id  System
-    /dev/vda1  *     2048      2099199   1048576   83  Linux
-    /dev/vda2        2099200   20971519  9436160   8e  Linux LVM
-    /dev/vda3        20971520  45547519  12288000  8e  Linux LVM -> 追加
-
-    Command (m for help):
-    Command (m for help): w -> 保存
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl reboot (仮想マシン再起動)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> makotoでログイン
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ ls -lh /dev | grep vda (デバイスファイル確認)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    brw-rw----. 1 root   disk    252,   0  4月 14 21:33 vda
-    brw-rw----. 1 root   disk    252,   1  4月 14 21:33 vda1
-    brw-rw----. 1 root   disk    252,   2  4月 14 21:33 vda2
-    brw-rw----. 1 root   disk    252,   3  4月 14 21:33 vda3
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo pvcreate /dev/vda3 (物理ボリューム作成)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略)
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo vgextend centos_vm11 /dev/vda3 (ボリュームグループに物理ボリューム追加)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略)
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo lvextend -L +10g /dev/centos_vm11/root (論理ボリューム拡張)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略)
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo lvscan (論理ボリューム拡張)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ACTIVE  '/dev/centos_vm11/swap' [1.00 GiB] inherit
-    ACTIVE  '/dev/centos_vm11/root' [<18.00 GiB] inherit -> 最大18GiBのサイズ
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ LANG=C sudo parted /dev/vda -s print (パーティション情報)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Model: Virtio Block Device (virtblk)
-    Disk /dev/vda: 26.8GB
-    Sector size (logical/physical): 512B/512B
-    Partition Table: msdos
-    Disk Flags: 
-    
-    Number  Start   End     Size    Type     File system  Flags
-    1       1049kB  1075MB  1074MB  primary  xfs          boot -> /boot
-    2       1075MB  10.7GB  9663MB  primary               lvm  -> LVM
-    3       10.7GB  23.3GB  12.6GB  primary               lvm  -> LVM
-    --------------------------------------------------
-    
-  vm12$ cd $HOME
-  vm12$ LANG=C df -mT (ディスク空き容量)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        484     0        484    0%  /dev
-  tmpfs                         tmpfs           496     0        496    0%  /dev/shm
-  tmpfs                         tmpfs           496     7        489    2%  /run
-  tmpfs                         tmpfs           496     0        496    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs            8178  1849       6330   23%  / -> 空き容量に反映されていないが続行する
-  /dev/vda1                     xfs            1014   137        878   14%  /boot
-  tmpfs                         tmpfs           100     0        100    0%  /run/user/1000
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install kernel-devel ncurses-devel elfutils-libelf-devel openssl-devel bc (パッケージのインストール)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install kernel-devel ncurses-devel elfutils-libelf-devel openssl-devel bc (パッケージのインストール)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels
-  vm12$ sudo wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.15.3.tar.xz (カーネルソースのダウンロード)
+  vm11$ cd /usr/src/kernels
+  vm11$ sudo wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.15.3.tar.xz (カーネルソースのダウンロード)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels
-  vm12$ sudo xz -d linux-4.15.3.tar.xz (カーネルソースの解凍)
+  vm11$ cd /usr/src/kernels
+  vm11$ sudo xz -d linux-4.15.3.tar.xz (カーネルソースの解凍)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> unxzコマンドでもOK
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels
-  vm12$ sudo tar xf linux-4.15.3.tar (カーネルソースの展開)
+  vm11$ cd /usr/src/kernels
+  vm11$ sudo tar xf linux-4.15.3.tar (カーネルソースの展開)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels
-  vm12$ ls -lh | grep linux
+  vm11$ cd /usr/src/kernels
+  vm11$ ls -lh | grep linux | grep -E '^d'
   
   コマンドの実行結果
   --------------------------------------------------
   drwxrwxr-x. 24 root root 4.0K  2月 12  2018 linux-4.15.3 -> コンパイル対象のカーネル
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels/linux-4.15.3
-  vm12$ sudo make menuconfig (カーネルの設定変更)
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ sudo make menuconfig (カーネルの設定変更)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 設定内容がファイル「.config」に保存される
+  (省略) -> ツールを開いた直後に保存して終了 -> 設定内容がファイル「.config」に保存
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels/linux-4.15.3
-  vm12$ sudo nice -n -10 make (優先度「-10」を指定してカーネルをコンパイル)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 5時間程で完了
-  --------------------------------------------------
-  
-  vm12$ cd /usr/src/kernels/linux-4.15.3
-  vm12$ sudo make modules_install (カーネルモジュールをインストール)
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ ls -lh .config (カーネルの設定ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 20分程で完了
+  -rw-r--r--. 1 root root 180K  4月 16 07:58 .config
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels/linux-4.15.3
-  vm12$ sudo make install (カーネル本体をインストール)
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ sudo nice -n -10 make (優先度「-10」を指定してカーネルをコンパイル)
   
   コマンドの実行結果
   --------------------------------------------------
-  sh ./arch/x86/boot/install.sh 4.15.3 arch/x86/boot/bzImage System.map "/boot" -> カーネルイメージの圧縮形式はbzimage
+  (省略) -> 2.5時間程で完了
   --------------------------------------------------
   
-  vm12$ cd /usr/src/kernels/linux-4.15.3
-  vm12$ sudo make clean (不要な中間ファイルを削除してディスク容量に空きを作る -> 空き容量サイズは9G程度)
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ sudo make modules_install (カーネルモジュールをインストール)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 5分程で完了
+  --------------------------------------------------
+  
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ sudo make install (カーネル本体をインストール)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sh ./arch/x86/boot/install.sh 4.15.3 arch/x86/boot/bzImage System.map "/boot" -> 5分程で完了、圧縮形式はbzimage
+  --------------------------------------------------
+  
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ LANG=C df -mT (ディスク空き容量)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem                    Type      1M-blocks   Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        884      0        884    0%  /dev
+  tmpfs                         tmpfs           895      0        895    0%  /dev/shm
+  tmpfs                         tmpfs           895      9        887    1%  /run
+  tmpfs                         tmpfs           895      0        895    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  16173       1222   93%  / (空き容量がギリギリの状態)
+  /dev/vda1                     xfs            1014    199        816   20%  /boot
+  tmpfs                         tmpfs            99      0         99    0%  /run/user/1000
+  --------------------------------------------------
+  
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ sudo make clean (不要な中間ファイルを削除してディスク容量に空きを作る)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 設定ファイル(.config)は残る
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo grub2-editenv list (デフォルト起動されるカーネル確認)
+  vm11$ cd /usr/src/kernels/linux-4.15.3
+  vm11$ LANG=C df -mT (ディスク空き容量)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem                    Type      1M-blocks   Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        884      0        884    0%  /dev
+  tmpfs                         tmpfs           895      0        895    0%  /dev/shm
+  tmpfs                         tmpfs           895      9        887    1%  /run
+  tmpfs                         tmpfs           895      0        895    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394   6418      10977   37%  / (空き容量が10GB程度増えた)
+  /dev/vda1                     xfs            1014    199        816   20%  /boot
+  tmpfs                         tmpfs            99      0         99    0%  /run/user/1000
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo grub2-editenv list (デフォルト起動されるカーネル確認)
   
   コマンドの実行結果
   --------------------------------------------------
   saved_entry=CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core) -> デフォルト起動は旧パージョンのカーネルのまま
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo grep -E ^menu /etc/grub2.cfg (起動可能なカーネルリストを番号表示)
+  vm11$ cd $HOME
+  vm11$ sudo grep -E '^menuentry' /etc/grub2.cfg (起動可能なカーネルリストを番号表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  menuentry 'CentOS Linux (4.15.3) 7 (Core)'                                     // 0
-  menuentry 'CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)'                     // 1
-  menuentry 'CentOS Linux (0-rescue-5685550d34954a16aab7e36c1390eb86) 7 (Core)'  // 2
+  menuentry 'CentOS Linux (4.15.3) 7 (Core)' ...                                     // 0
+  menuentry 'CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)' ...                     // 1
+  menuentry 'CentOS Linux (0-rescue-9a873402a94f4530a872af79d68bdeb7) 7 (Core)' ...  // 2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo grub2-set-default 0 (デフォルト起動されるカーネルを番号指定)
+  vm11$ cd $HOME
+  vm11$ sudo grub2-set-default 0 (デフォルト起動のカーネルを番号指定)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> デフォルト起動されるカーネルを新カーネル(4.15.3)に変更
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo grub2-editenv list (デフォルト起動されるカーネル確認)
+  vm11$ cd $HOME
+  vm11$ sudo grub2-editenv list (デフォルト起動されるカーネル確認)
   
   コマンドの実行結果
   --------------------------------------------------
   saved_entry=0 -> 新カーネル(4.15.3)の番号を確認
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl reboot (システム再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reboot (システム再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> カーネル選択画面に新カーネル(4.15.3)が確認できた
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ uname -r
+  vm11$ cd $HOME
+  vm11$ uname -r
   
   コマンドの実行結果
   --------------------------------------------------
