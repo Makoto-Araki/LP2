@@ -417,35 +417,32 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo find /etc -name default.target (ターゲットの正確なパスを確認)
+  vm11$ cd $HOME
+  vm11$ sudo find /etc -name default.target (ターゲットの正確なパスを確認)
   
   コマンドの実行結果
   --------------------------------------------------
   /etc/systemd/system/default.target
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh /etc/systemd/system/default.target (ターゲットの実体を確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh /etc/systemd/system/default.target (ターゲットの実体を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx. 1 root root 37 12月  1 19:40 /etc/systemd/system/default.target -> /lib/systemd/system/multi-user.target
+  lrwxrwxrwx. 1 root root 37  4月 15 12:09 /etc/systemd/system/default.target -> /lib/systemd/system/multi-user.target
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl list-dependencies multi-user.target (ターゲットの実体が更に何を呼び出すか確認)
+  vm11$ cd $HOME
+  vm11$ systemctl list-dependencies default.target (ターゲットの実体が更に何を呼び出すか確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  multi-user.target  // ターゲット配下に多数のサービスが存在するためAAAやBBBといった表現で記述
-    AAA.service
-    BBB.service
-    basic.target
-      CCC.service
-      DDD.service
-    EEE.service
-    FFF.service
+  default.target(multi-user.target)
+    |-- auditd.service
+    |-- chronyd.service
+    |-- crond.service
+     ...
   --------------------------------------------------
   
   以下の確認に続く
@@ -459,141 +456,142 @@
     サービスの起動・停止・再起動等を確認 -> サンプルとして「sshd」サービスを確認
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ systemctl status sshd (サービス状態を確認)
+  vm11$ cd $HOME
+  vm11$ systemctl status sshd (サービス状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   ● sshd.service - OpenSSH server daemon
-      Loaded: loaded (/usr/lib/systemd/system/sshd.service)                    // UNITファイル
-      Active: active (running) since 火 2021-12-07 22:35:46 JST; 1h 48min ago  // サービス稼働中
-        Docs: man:sshd(8)                                                      // サービス本体のマニュアルは八章を参照
-              man:sshd_config(5)                                               // 設定ファイルのマニュアルは五章を参照
-    Main PID: 965 (sshd)                                                       // PID(965)
-      CGroup: /system.slice/sshd.service                                       // 不明
-              └─965 /usr/sbin/sshd -D                                        // 実行コマンド「sshd -D」
+     Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; vendor preset: enabled)
+     Active: active (running) since 月 2023-04-17 09:57:28 JST; 28min ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+   Main PID: 1422 (sshd)
+     CGroup: /system.slice/sshd.service
+             └─1422 /usr/sbin/sshd -D
   
-  12月 07 22:35:46 vm12 systemd[1]: Starting OpenSSH server daemon...          // 起動開始メッセージ
-  12月 07 22:35:46 vm12 sshd[965] : Server listening on 0.0.0.0 port 22.       // ポート22をリスニング中
-  12月 07 22:35:46 vm12 sshd[965] : Server listening on :: port 22.            // ポート22をリスニング中
-  12月 07 22:35:46 vm12 systemd[1]: Started OpenSSH server daemon.             // 起動完了メッセージ
+   4月 17 09:57:28 vm11 sshd[1422]: Server listening on 0.0.0.0 port 22.
+   4月 17 09:57:28 vm11 systemd[1]: Stopped OpenSSH server daemon.
+   4月 17 09:57:28 vm11 sshd[1422]: Server listening on :: port 22.
+   4月 17 09:57:28 vm11 systemd[1]: Starting OpenSSH server daemon...
+   4月 17 09:57:28 vm11 systemd[1]: Started OpenSSH server daemon.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /usr/lib/systemd/system/sshd.service (UNITファイル参照)
+  vm11$ cd $HOME
+  vm11$ cat /usr/lib/systemd/system/sshd.service (UNITファイル参照)
   
   コマンドの実行結果
   --------------------------------------------------
-  [Unit]                                        // セクション
-  Description=OpenSSH server daemon             // 説明
-  Documentation=man:sshd(8) man:sshd_config(5)  // man 8 sshd, man 5 sshd
-  After=network.target sshd-keygen.service      // 指定したターゲットとサービスが起動開始するまで起動しない
-  Wants=sshd-keygen.service                     // 指定したサービスが起動失敗しても本サービスは起動開始する
+  [Unit]
+  Description=OpenSSH server daemon
+  Documentation=man:sshd(8) man:sshd_config(5)  // マニュアル参照コマンド
+  After=network.target sshd-keygen.service      // 指定サービスの起動が開始後に起動
+  Wants=sshd-keygen.service                     // 指定サービスの起動が失敗でも起動
   
-  [Service]                                     // セクション
-  Type=notify                                   // simple(デフォルト値)
-  EnvironmentFile=/etc/sysconfig/sshd           // 設定ファイル
-  ExecStart=/usr/sbin/sshd -D $OPTIONS          // systemctl start
-  ExecReload=/bin/kill -HUP $MAINPID            // systemctl reload
-  KillMode=process                              // systemctl stop
-  Restart=on-failure                            // systemctl restart
-  RestartSec=42s                                // 不明
+  [Service]
+  Type=notify                           // デフォルト値(simple)
+  EnvironmentFile=/etc/sysconfig/sshd   // 設定ファイル
+  ExecStart=/usr/sbin/sshd -D $OPTIONS
+  ExecReload=/bin/kill -HUP $MAINPID
+  KillMode=process
+  Restart=on-failure
+  RestartSec=42s
   
-  [Install]                                     // セクション
-  WantedBy=multi-user.target                    // systemctl enable -> /etc/systemd/system/multi-user.target.wants
+  [Install]
+  WantedBy=multi-user.target  // 所属ターゲット
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl is-active sshd (サービス起動を確認)
+  vm11$ cd $HOME
+  vm11$ systemctl is-active sshd (サービス起動を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   active
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl stop sshd (サービス停止)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl stop sshd (サービス停止)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl start sshd (サービス開始)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl start sshd (サービス開始)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl reload sshd (設定ファイル再読込)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reload sshd (設定ファイル再読込)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl restart sshd (サービス再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl restart sshd (サービス再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl is-enabled sshd (サービス自動起動を確認)
+  vm11$ cd $HOME
+  vm11$ systemctl is-enabled sshd (サービス自動起動を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   enabled -> 自動起動が有効
   --------------------------------------------------
   
-  vm12$ cd /etc/systemd/system/multi-user.target.wants
-  vm12$ ls -lh | grep sshd
+  vm11$ cd /etc/systemd/system/multi-user.target.wants
+  vm11$ ls -lh | grep sshd
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx. 1 root root 36 12月  1 19:31 sshd.service -> /usr/lib/systemd/system/sshd.service
+  lrwxrwxrwx. 1 root root 36  4月 15 12:05 sshd.service -> /usr/lib/systemd/system/sshd.service
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl disable sshd (サービス自動起動を無効化)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl disable sshd (サービス自動起動を無効化)
   
   コマンドの実行結果
   --------------------------------------------------
   Removed symlink /etc/systemd/system/multi-user.target.wants/sshd.service.
   --------------------------------------------------
   
-  vm12$ cd /etc/systemd/system/multi-user.target.wants
-  vm12$ ls -lh | grep sshd
+  vm11$ cd /etc/systemd/system/multi-user.target.wants
+  vm11$ ls -lh | grep sshd
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (省略) -> リンクが削除された
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl enable sshd (サービス自動起動を有効化)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl enable sshd (サービス自動起動を有効化)
   
   コマンドの実行結果
   --------------------------------------------------
   Created symlink from /etc/systemd/system/multi-user.target.wants/sshd.service to /usr/lib/systemd/system/sshd.service.
   --------------------------------------------------
   
-  vm12$ cd /etc/systemd/system/multi-user.target.wants
-  vm12$ ls -lh | grep sshd
+  vm11$ cd /etc/systemd/system/multi-user.target.wants
+  vm11$ ls -lh | grep sshd
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx. 1 root root 36 12月  8 16:52 sshd.service -> /usr/lib/systemd/system/sshd.service
+  lrwxrwxrwx. 1 root root 36  4月 17 10:00 sshd.service -> /usr/lib/systemd/system/sshd.service
   --------------------------------------------------
   
   以下の確認に続く
@@ -607,93 +605,76 @@
     検索条件に合致するサービスの検索を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ systemctl --no-pager list-units -t target | head -n 10 (ページャー不使用、起動済みサービス、タイプはターゲットのみ)
+  vm11$ cd $HOME
+  vm11$ systemctl --no-pager list-units -t target | head -n 5 (起動済み、対象はターゲット)
   
   コマンドの実行結果
   --------------------------------------------------
-  UNIT                   LOAD    ACTIVE  SUB    
-  basic.target           loaded  active  active Basic System
-  cryptsetup.target      loaded  active  active Local Encrypted Volumes
-  getty.target           loaded  active  active Login Prompts
-  local-fs-pre.target    loaded  active  active Local File Systems (Pre)
-  local-fs.target        loaded  active  active Local File Systems
-  multi-user.target      loaded  active  active Multi-User System
-  network-online.target  loaded  active  active Network is Online
-  network-pre.target     loaded  active  active Network (Pre)
-  network.target         loaded  active  active Network
+  UNIT                 LOAD    ACTIVE  SUB    
+  basic.target         loaded  active  active Basic System
+  cryptsetup.target    loaded  active  active Local Encrypted Volumes
+  getty.target         loaded  active  active Login Prompts
+  local-fs-pre.target  loaded  active  active Local File Systems (Pre)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl --no-pager list-units -t service | head -n 10 (ページャー不使用、起動済みサービス、タイプはサービスのみ)
+  vm11$ cd $HOME
+  vm11$ systemctl --no-pager list-units -t service | head -n 5 (起動済み、対象はサービス)
   
   コマンドの実行結果
   --------------------------------------------------
-  UNIT                       LOAD    ACTIVE  SUB      
-  auditd.service             loaded  active  running  Security Auditing Service
-  chronyd.service            loaded  active  running  NTP client/server
-  crond.service              loaded  active  running  Command Scheduler
-  dbus.service               loaded  active  running  D-Bus System Message Bus
-  firewalld.service          loaded  active  running  firewalld - dynamic firewall daemon
-  getty@tty1.service         loaded  active  running  Getty on tty1
-  kdump.service              loaded  failed  failed   Crash recovery kernel arming
-  kmod-static-nodes.service  loaded  active  exited   Create list of required static device ...
-  lvm2-lvmetad.service       loaded  active  running  LVM2 metadata daemon
+  UNIT             LOAD    ACTIVE  SUB     
+  auditd.service   loaded  active  running Security Auditing Service
+  chronyd.service  loaded  active  running NTP client/server
+  crond.service    loaded  active  running Command Scheduler
+  dbus.service     loaded  active  running D-Bus System Message Bus
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl --no-pager list-timers (ページャー不使用、起動済みタイマー)
+  vm11$ cd $HOME
+  vm11$ LANG=C systemctl --no-pager list-timers (起動済み、対象はタイマー)
   
   コマンドの実行結果
   --------------------------------------------------
-  // 次のタイマー起動時刻
-  NEXT
-  木 2021-12-09 14:35:54 JST
-  
-  // 次のタイマー起動時刻までに残された時間
-  LEFT
-  21h left
-  
-  // 前回にタイマーが起動した時刻
-  LAST
-  水 2021-12-08 14:35:54 JST
-  
-  // 前回にタイマーが起動してからの経過時間
-  PASSED
-  2h 27min ago
-  
-  // タイマーUNIT
-  UNIT
-  systemd-tmpfiles-clean.timer
-  
-  // タイマーUNITが呼び出すサービス
-  ACTIVATES
-  systemd-tmpfiles-clean.service
-  
-  // コマンド実行のサマリー
-  1 timers listed.
-  Pass --all to see loaded but inactive timers, too.
+  NEXT                         LEFT      LAST                         PASSED     UNIT                          ACTIVATES
+  Tue 2023-04-18 09:40:21 JST  23h left  Mon 2023-04-17 09:40:21 JST  28min ago  systemd-tmpfiles-clean.timer  systemd-tmpfiles-clean.service
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl --no-pager list-unit-files -t target | head -n 10 (ページャー不使用、全サービス、タイプはターゲットのみ)
+  vm11$ cd $HOME
+  vm11$ systemctl --no-pager list-unit-files -t target | head -n 5 (未起動も含む、対象はターゲット)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 表示内容は概ね「list-units」と同じ
+  UNIT FILE              STATE   
+  basic.target           static  
+  bluetooth.target       static  
+  cryptsetup-pre.target  static  
+  cryptsetup.target      static  
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl --no-pager list-unit-files -t service | head -n 10 (ページャー不使用、全サービス、タイプはサービスのみ)
+  vm11$ cd $HOME
+  vm11$ systemctl --no-pager list-unit-files -t service | head -n 5 (未起動も含む、対象はサービス)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 表示内容は概ね「list-units」と同じ
+  UNIT FILE                 STATE   
+  arp-ethers.service        disabled
+  auditd.service            enabled 
+  autovt@.service           enabled 
+  blk-availability.service  disabled
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ LANG=C systemctl --no-pager list-timers --all | head -n 5 (未起動も含む、対象はタイマー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NEXT                         LEFT      LAST                         PASSED     UNIT                          ACTIVATES
+  Tue 2023-04-18 09:40:21 JST  23h left  Mon 2023-04-17 09:40:21 JST  38min ago  systemd-tmpfiles-clean.timer  systemd-tmpfiles-clean.service
+  n/a                          n/a       n/a                          n/a        systemd-readahead-done.timer  systemd-readahead-done.service
   --------------------------------------------------
   
   以下の確認に続く
@@ -707,98 +688,99 @@
     サービスの作成とシステムへの登録を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME/SAMP4 -> 先にディレクトリ作成
-  vm12$ vi SAMP4.sh (シェルスクリプトを作成)
+  vm11$ cd $HOME/sample3 -> 先にディレクトリ作成
+  vm11$ vi sample3.sh (シェルスクリプトを作成)
   
   コマンドの実行結果
   --------------------------------------------------
   #!/bin/bash
   
-  LOG=/home/makoto/SAMP4/SAMP4.log
+  LOG=/home/makoto/sample3/sample3.log
   
-  echo "SAMP4 - $(date "+%Y/%m/%d %H:%M:%S")" >> $LOG
+  echo "sample3 - $(date "+%Y/%m/%d %H:%M:%S")" >> $LOG
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP4
-  vm12$ chmod 777 SAMP4.sh (実行権限を付与)
+  vm11$ cd $HOME/sample3
+  vm11$ chmod 777 sample3.sh (実行権限を付与)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /usr/lib/systemd/system/multi-user.target.wants
-  vm12$ sudo vi SAMP4.service (サービスの作成)
+  vm11$ cd /usr/lib/systemd/system/multi-user.target.wants
+  vm11$ sudo vi sample3.service (サービスの作成)
   
   コマンドの実行結果
   --------------------------------------------------
   [Unit]
-  Description=SAMP4.service
+  Description=sample3.service
   
   [Service]
   Type=simple
-  ExecStart=/home/makoto/SAMP4/SAMP4.sh
+  ExecStart=/home/makoto/sample3/sample3.sh
   
   [Install]
   WantedBy=multi-user.target
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl daemon-reload (システムへの登録)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl daemon-reload (システムへの登録)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl status SAMP4 (サービス状態を確認)
+  vm11$ cd $HOME
+  vm11$ systemctl status sample3 (サービス状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  ● SAMP4.service
-     Loaded: loaded (/usr/lib/systemd/system/multi-user.target.wants/SAMP4.service; bad; vendor preset: disabled)
-     Active: inactive (dead) since 水 2021-12-08 19:13:05 JST; 10min ago
-    Process: 1898 ExecStart=/home/makoto/SAMP4/SAMP4.sh (code=exited, status=0/SUCCESS)
-   Main PID: 1898 (code=exited, status=0/SUCCESS)
+  ● sample3.service
+     Loaded: loaded (/usr/lib/systemd/system/multi-user.target.wants/sample3.service; bad; vendor preset: disabled)
+     Active: inactive (dead)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ systemctl list-dependencies multi-user.target | grep SAMP4
+  vm11$ cd $HOME
+  vm11$ systemctl list-dependencies multi-user.target | grep sample3
   
   コマンドの実行結果
   --------------------------------------------------
-  ● ├─SAMP4.service -> ターゲット「multi-user.target」配下にサービスが存在
+  ● ├─sample3.service -> ターゲット「multi-user.target」配下にサービスが存在
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl start SAMP4 (サービスの実行)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl start sample3 (サービスの実行)
+  vm11$ sudo systemctl start sample3 (サービスの実行)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP4
-  vm12$ cat SAMP4.log (ログ確認)
+  vm11$ cd $HOME/sample3
+  vm11$ cat sample3.log (ログ確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  SAMP4 - 2021/12/08 19:12:45
+  sample3 - 2023/04/17 10:35:28
+  sample3 - 2023/04/17 10:38:32
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --no-pager -u SAMP4 (ページャー不使用、指定サービスの検索条件でジャーナル表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --no-pager -u sample3 (ジャーナル表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  -- Logs begin at 水 2021-12-08 14:20:26 JST, end at 水 2021-12-08 19:18:33 JST. --
-  12月 08 19:12:45 vm12 systemd[1]: Started SAMP4.service.
+  -- Logs begin at Mon 2023-04-17 09:30:15 JST, end at Mon 2023-04-17 10:38:32 JST. --
+  Apr 17 10:35:28 vm11 systemd[1]: Started sample3.service.
+  Apr 17 10:38:32 vm11 systemd[1]: Started sample3.service.
   --------------------------------------------------
   
   以下の確認に続く
@@ -809,11 +791,11 @@
   
 [内容]
   ## 作業内容
-    コマンド(journalctl)でジャーナルの表示を行う
+    コマンド(journalctl)でジャーナル表示を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
