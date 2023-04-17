@@ -1086,30 +1086,30 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  default=0                                        // デフォルト起動エントリ
-  timeout=5                                        // メニュー表示時間
-  splashimage=(hd0,0)/grub/splash.xpm.gz           // (hd0,0) = /dev/vda1 = /boot
-  hiddenmenu                                       // メニュー非表示
+  default=0
+  timeout=5
+  splashimage=(hd0,0)/grub/splash.xpm.gz  // (hd0,0) = /dev/vda1 = /boot
+  hiddenmenu
   
-  title CentOS 6 (2.6.32-642.el6.x86_64)           // エントリ(0)
-    root (hd0,0)                                   // (hd0,0) = /dev/vda1 = /boot
-      kernel                                       // カーネルパラメータ -> 配下の設定は1行にまとめること
-        /vmlinuz-2.6.32-642.el6.x86_64             // カーネルイメージ
-        ro                                         // カーネル書き込み禁止
-        root=/dev/mapper/vg_vm16-lv_root           // ルートファイルシステム -> 配下の設定は1行にまとめること
-          rd_LVM_LV=vg_ch16/lv_swap                // 不明
-          rd_NO_LUKS                               // 不明
-          rd_NO_MD                                 // 不明
-          rd_LVM_LV=vg_ch16/lv_root                // 不明
-          crashkernel=auto                         // 不明
-          KEYBOARDTYPE=pc                          // 不明
-          KEYTABLE=jp106                           // 不明
-          LANG=ja_JP.UTF-8                         // 不明
-          rd_NO_DM                                 // 不明
-          rhgb                                     // 不明
-          quiet                                    // デバッグ情報非表示
+  title CentOS 6 (2.6.32-642.el6.x86_64)  // エントリ(0)
+    root (hd0,0)                          // (hd0,0) = /dev/vda1 = /boot
+      kernel                              // カーネル設定 -> 配下の設定は1行にまとめること
+        /vmlinuz-2.6.32-642.el6.x86_64    // カーネルイメージ
+        ro
+        root=/dev/mapper/vg_vm16-lv_root
+          rd_LVM_LV=vg_ch16/lv_swap
+          rd_NO_LUKS
+          rd_NO_MD
+          rd_LVM_LV=vg_ch16/lv_root
+          crashkernel=auto
+          KEYBOARDTYPE=pc
+          KEYTABLE=jp106
+          LANG=ja_JP.UTF-8
+          rd_NO_DM
+          rhgb
+          quiet
           console=tty0 console=ttyS0,115200n8      // コンソール接続(仮想マシン作成時に追加)
-      initrd /initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク → ルートパーティションをマウント
+      initrd /initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク
   --------------------------------------------------
   
   以下の確認に続く
@@ -1120,7 +1120,7 @@
   
 [内容]
   ## 作業内容
-    ブートローダー(Grub Legacy)に搭載されているシェル機能を使用してみる
+    ブートローダー(Grub Legacy)のシェル機能を使用する
   
   ## 使用マシン
     HOST : vm16
@@ -1136,7 +1136,7 @@
   Probing devices to guess BIOS drives. This may take a long time.
   GNU GRUB  version 0.97  (640K lower / 3072K upper memory)
   
-    -- 省略 --
+  ...
   
   grub> ■ (シェルのプロンプト表示)
   --------------------------------------------------
@@ -1146,26 +1146,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  blocklist FILE                         boot                                   
-  cat FILE                               chainloader [--force] FILE             
-  clear                                  color NORMAL [HIGHLIGHT]               
-  configfile FILE                        device DRIVE DEVICE                    
-  displayapm                             displaymem                             
-  find FILENAME                          geometry DRIVE [CYLINDER HEAD SECTOR [ 
-  halt [--no-apm]                        help [--all] [PATTERN ...]             
-  hide PARTITION                         initrd FILE [ARG ...]                  
-  kernel [--no-mem-option] [--type=TYPE] makeactive                             
-  map TO_DRIVE FROM_DRIVE                md5crypt                               
-  module FILE [ARG ...]                  modulenounzip FILE [ARG ...]           
-  pager [FLAG]                           partnew PART TYPE START LEN            
-  parttype PART TYPE                     quit                                   
-  reboot                                 root [DEVICE [HDBIAS]]                 
-  rootnoverify [DEVICE [HDBIAS]]         serial [--unit=UNIT] [--port=PORT] [-- 
-  setkey [TO_KEY FROM_KEY]               setup [--prefix=DIR] [--stage2=STAGE2_ 
-  grub will attempt to avoid printing an terminal [--dumb] [--no-echo] [--no-ed 
-  terminfo [--name=NAME --cursor-address testvbe MODE                           
-  unhide PARTITION                       uppermem KBYTES                        
-  vbeprobe [MODE]                        
+  (省略)
   --------------------------------------------------
   
   grub> 
@@ -1200,7 +1181,7 @@
   
 [内容]
   ## 作業内容
-    ブートローダー(Grub Legacy)に搭載されているシェル機能でカーネルを手動起動してみる
+    ブートローダー(Grub Legacy)のシェル機能でカーネルを手動起動する
   
   ## 使用マシン
     HOST : vm16
@@ -1227,63 +1208,66 @@
   (省略) -> システム選択時に「e」キーから「c」キーの順番でGRUBシェル起動
   --------------------------------------------------
   
-  grub> 
-  grub> root (hd0,0) (操作上の起点を設定)
+  grub> (操作上の起点を設定)
+  grub> root (hd0,0) -> (hd0,0) = /dev/vda1 = /boot
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  grub> 
-  grub> cat (/boot)/grub/menu.lst (設定ファイルを出力)
+  grub> (設定ファイルを出力)
+  grub> cat (/boot)/grub/menu.lst
   
   コマンドの実行結果
   --------------------------------------------------
-  default=0                                        // デフォルト起動エントリ
-  timeout=5                                        // メニュー表示時間
-  splashimage=(hd0,0)/grub/splash.xpm.gz           // (hd0,0) = /dev/vda1 = /boot
-  hiddenmenu                                       // メニュー非表示
+  default=0                               // デフォルト起動エントリ
+  timeout=5                               // メニュー表示時間
+  splashimage=(hd0,0)/grub/splash.xpm.gz  // (hd0,0) = /dev/vda1 = /boot
+  hiddenmenu                              // メニュー非表示
   
-  title CentOS 6 (2.6.32-642.el6.x86_64)           // エントリ(0)
-    root (hd0,0)                                   // (hd0,0) = /dev/vda1 = /boot
-      kernel                                       // カーネルパラメータ -> 配下の設定は1行にまとめること
-        /vmlinuz-2.6.32-642.el6.x86_64             // カーネルイメージ
-        ro                                         // カーネル書き込み禁止
-        root=/dev/mapper/vg_vm16-lv_root           // ルートファイルシステム -> 配下の設定は1行にまとめること
-          rd_LVM_LV=vg_ch16/lv_swap                // 不明
-          rd_NO_LUKS                               // 不明
-          rd_NO_MD                                 // 不明
-          rd_LVM_LV=vg_ch16/lv_root                // 不明
-          crashkernel=auto                         // 不明
-          KEYBOARDTYPE=pc                          // 不明
-          KEYTABLE=jp106                           // 不明
-          LANG=ja_JP.UTF-8                         // 不明
-          rd_NO_DM                                 // 不明
-          rhgb                                     // 不明
-          quiet                                    // デバッグ情報非表示
+  title CentOS 6 (2.6.32-642.el6.x86_64)  // エントリ(0)
+    root (hd0,0)                          // (hd0,0) = /dev/vda1 = /boot
+      kernel                              // カーネルパラメータ -> 配下の設定は1行にまとめること
+        /vmlinuz-2.6.32-642.el6.x86_64    // カーネルイメージ
+        ro
+        root=/dev/mapper/vg_vm16-lv_root
+          rd_LVM_LV=vg_ch16/lv_swap
+          rd_NO_LUKS
+          rd_NO_MD
+          rd_LVM_LV=vg_ch16/lv_root
+          crashkernel=auto
+          KEYBOARDTYPE=pc
+          KEYTABLE=jp106
+          LANG=ja_JP.UTF-8
+          rd_NO_DM
+          rhgb
+          quiet
           console=tty0 console=ttyS0,115200n8      // コンソール接続(仮想マシン作成時に追加)
       initrd /initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク → ルートパーティションをマウント
   --------------------------------------------------
   
-  grub> 
-  grub> kernel (/boot)/vmlinuz-2.6.32-642.el6.x86_64 root=/dev/mapper/vg_vm16-lv_root (カーネルとルートファイルシステムを指定)
+  grub> (コマンド引数にカーネルイメージと起動デバイスを指定)
+  grub> kernel
+      > (/boot)/vmlinuz-2.6.32-642.el6.x86_64  // カーネルイメージ
+      > root=/dev/mapper/vg_vm16-lv_root       // 起動デバイス
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  grub> 
-  grub> initrd (/boot)/initramfs-2.6.32-642.el6.x86_64.img (初期RAMディスクを指定)
+  grub> (コマンド引数に初期RAMディスクを指定)
+  grub> initrd
+      > (/boot)/initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  grub>
-  grub> boot (システム起動)
+  grub> (システム起動)
+  grub> boot
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1294,28 +1278,28 @@
   
 ================================================================================
 [19]
-  ブートローダー(Grub 2) - 01
+  ブートローダー(Grub2) - 01
   
 [内容]
   ## 作業内容
-    ブートローダー(Grub 2)のパラメータファイル(/boot/default/grub)から設定ファイル(grub.cfg)を生成
+    ブートローダー(Grub2)のパラメータファイル(/boot/default/grub)から設定ファイル(grub.cfg)を生成
   
   ## 使用マシン
-    HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo ls -lh /boot/grub2/grub.cfg (システム起動で使用される本来の設定ファイルを確認)
+  vm11$ cd $HOME
+  vm11$ sudo ls -lh /boot/grub2/grub.cfg (本来の設定ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--. 1 root root 5.0K 12月  4 15:53 /boot/grub2/grub.cfg
+  -rw-r--r--. 1 root root 5.0K  4月 16 10:44 /boot/grub2/grub.cfg
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /etc/default/grub (パラメータファイルの内容を確認)
+  vm11$ cd $HOME
+  vm11$ cat /etc/default/grub (パラメータファイルの内容を確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1325,267 +1309,171 @@
   GRUB_DISABLE_SUBMENU=true
   GRUB_TERMINAL="serial console"
   GRUB_SERIAL_COMMAND="serial --speed=115200"
-  GRUB_CMDLINE_LINUX="          // 配下の設定は1行にまとめること
-    crashkernel=auto            // 不明
-    rd.lvm.lv=centos_vm11/root  // 不明
-    rd.lvm.lv=centos_vm11/swap  // 不明
-    console=ttyS0,115200n8"     // コンソール接続
+  GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=centos_vm11/root rd.lvm.lv=centos_vm11/swap console=ttyS0,115200n8"
   GRUB_DISABLE_RECOVERY="true"
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo grub2-mkconfig -o grub.cfg (設定ファイルを生成)
+  vm11$ cd $HOME
+  vm11$ sudo grub2-mkconfig -o AAA.cfg (設定ファイルを生成)
   
   コマンドの実行結果
   --------------------------------------------------
   // 指定するべき本来の生成場所は /boot/grub2/grub.cfg が正しい
   
-  Generating grub configuration file ...                           // 処理開始のメッセージ
-  Found linux image  : /boot/vmlinuz-4.15.3                        // カーネルイメージ (4.15.3)
-  Found initrd image : /boot/initramfs-4.15.3.img                  // 初期RANディスク (4.15.3)
-  Found linux image  : /boot/vmlinuz-3.10.0-1160.el7.x86_64        // カーネルイメージ (3.10.0)
-  Found initrd image : /boot/initramfs-3.10.0-1160.el7.x86_64.img  // 初期RANディスク (3.10.0)
-  
-  [  885.871475] raid6: sse2x1   gen()  3300 MB/s
-  [  885.890455] raid6: sse2x1   xor()  2396 MB/s
-  [  885.910454] raid6: sse2x2   gen()  3453 MB/s
-  [  885.929433] raid6: sse2x2   xor()  2810 MB/s
-  [  885.947440] raid6: sse2x4   gen()  5015 MB/s
-  [  885.965444] raid6: sse2x4   xor()  4259 MB/s
-  [  885.967221] raid6: using algorithm sse2x4 gen() 5015 MB/s
-  [  885.969261] raid6: .... xor() 4259 MB/s, rmw enabled
-  [  885.971148] raid6: using ssse3x2 recovery algorithm
-  [  886.162355] xor: measuring software checksum speed
-  [  886.174443]    prefetch64-sse:  5052.000 MB/sec
-  [  886.186461]    generic_sse:  4700.000 MB/sec
-  [  886.189273] xor: using function: prefetch64-sse (5052.000 MB/sec)
-  [  887.342147] Btrfs loaded, crc32c=crc32c-intel
-  [  887.489127] fuse init (API version 7.26)
-  
+  Generating grub configuration file ...
+  Found linux image: /boot/vmlinuz-4.15.3
+  Found initrd image: /boot/initramfs-4.15.3.img
+  Found linux image: /boot/vmlinuz-3.10.0-1160.el7.x86_64
+  Found initrd image: /boot/initramfs-3.10.0-1160.el7.x86_64.img
+  Found linux image: /boot/vmlinuz-0-rescue-9a873402a94f4530a872af79d68bdeb7
+  Found initrd image: /boot/initramfs-0-rescue-9a873402a94f4530a872af79d68bdeb7.img
+  [11739.860976] raid6: sse2x1   gen()  8378 MB/s
+  [11739.878973] raid6: sse2x1   xor()  5472 MB/s
+  [11739.896969] raid6: sse2x2   gen()  9300 MB/s
+  [11739.914965] raid6: sse2x2   xor()  7126 MB/s
+  [11739.932956] raid6: sse2x4   gen() 10828 MB/s
+  [11739.950962] raid6: sse2x4   xor()  7851 MB/s
+  [11739.952416] raid6: using algorithm sse2x4 gen() 10828 MB/s
+  [11739.954651] raid6: .... xor() 7851 MB/s, rmw enabled
+  [11739.956571] raid6: using ssse3x2 recovery algorithm
+  [11740.012830] xor: automatically using best checksumming function   avx       
+  [11740.269007] Btrfs loaded, crc32c=crc32c-intel
+  [11740.317649] fuse init (API version 7.26)
   done
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh | grep grub.cfg (設定ファイルを確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh AAA.cfg (設定ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--.  1 root   root   4.9K 12月 10 15:35 grub.cfg
+  -rw-r--r--. 1 root root 4.9K  4月 17 12:40 AAA.cfg
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo rm -f AAA.cfg (設定ファイルを削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [20]
-  ブートローダー(Grub 2) - 02
+  ブートローダー(Grub2) - 02
   
 [内容]
   ## 作業内容
-    ブートローダー(Grub 2)に搭載されているシェル機能でカーネルを手動起動してみる
+    ブートローダー(Grub2)のシェル機能でカーネルを手動起動する
   
   ## 使用マシン
-    HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ cat /proc/cmdline (システム起動時のカーネル引数)
+  vm11$ cd $HOME
+  vm11$ cat /proc/cmdline (システム起動時のカーネル引数)
   
   コマンドの実行結果
   --------------------------------------------------
   BOOT_IMAGE=/vmlinuz-4.15.3         // カーネルイメージ(/boot/vmlinuz-4.15.3)
   root=/dev/mapper/centos_vm11-root  // 起動デバイス
-  ro                                 // 読取専用
-  crashkernel=auto                   // 不明
-  rd.lvm.lv=centos_vm11/root         // おそらくルートファイルシステム
-  rd.lvm.lv=centos_vm11/swap         // 不明
-  console=ttyS0,115200n8             // 仮想マシン作成時にブートローダーに指定したコンソール接続のためのパラメータ
-  LANG=ja_JP.UTF-8                   // 言語・国・文字コード
+  ro
+  crashkernel=auto
+  rd.lvm.lv=centos_vm11/root  // ルートファイルシステム
+  rd.lvm.lv=centos_vm11/swap  // スワップ領域
+  console=ttyS0,115200n8      // コンソール接続
+  LANG=ja_JP.UTF-8            // 言語・国・文字コード
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo cat /boot/grub2/device.map (デバイスマッピングを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (hd0)  /dev/vda -> GRUB上では「/dev/vda」が「hd0」と表記
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo ls -lh /boot | grep -E 'vmlinuz|initram' (カーネルイメージと初期RAMディスクを確認)
+  vm11$ cd $HOME
+  vm11$ sudo cat /boot/grub2/device.map (デバイスマッピングを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-------. 1 root root  21M 12月  1 19:41 initramfs-3.10.0-1160.el7.x86_64.img  // 初期RAMディスク (3.10.0)
-  -rw-------. 1 root root  41M 12月  4 15:53 initramfs-4.15.3.img                  // 初期RAMディスク (4.15.3)
-  lrwxrwxrwx. 1 root root   20 12月  4 15:46 vmlinuz -> /boot/vmlinuz-4.15.3       // 最新カーネル (4.15.3) を指す
-  -rwxr-xr-x. 1 root root 6.5M 10月 20  2020 vmlinuz-3.10.0-1160.el7.x86_64        // カーネルイメージ (3.10.0)
-  -rw-r--r--. 1 root root 7.2M 12月  4 15:46 vmlinuz-4.15.3                        // カーネルイメージ (4.15.3)
+  (hd0)  /dev/vda -> GRUB2上では「/dev/vda」が「hd0」と表記
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ sudo ls -lh /boot | grep -E 'vmlinuz|initram' | grep $(uname -r) (カーネルイメージと初期RAMディスクを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  lrwxrwxrwx. 1 root root   20  4月 16 10:40 vmlinuz -> /boot/vmlinuz-4.15.3
+  -rw-r--r--. 1 root root 7.2M  4月 16 10:40 vmlinuz-4.15.3        // カーネルイメージ
+  -rw-------. 1 root root  40M  4月 16 10:44 initramfs-4.15.3.img  // 初期RAMディスク
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl reboot (システム再起動)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reboot (システム再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> システム選択時に「c」キー押下でシェル起動
   --------------------------------------------------
   
-  grub> 
-  grub> set root=(hd0,1) (操作上の起点を設定)
+  grub> (操作上の起点を設定)
+  grub> set root=(hd0,1)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> (hd0,1) = /dev/vda1 = /boot -> Grub Legacy のシェルと異なるので注意
   --------------------------------------------------
   
-  grub> 
-  grub> help (コマンド一覧を表示)
+  grub> (コマンド一覧を表示)
+  grub> help
   
   コマンドの実行結果
   --------------------------------------------------
-  acpi                                    all_functional_test 
-  authenticate [USERLIST]                 background_color 
-  background_image                        backtrace 
-  badram                                  blocklist 
-  bls_import                              boot (今回使用する)
-  break [NUM]                             cat 
-  cbmemc                                  chainloader 
-  clear                                   cmosclean 
-  cmosdump                                cmosset 
-  cmostest                                cmp 
-  configfile                              continue [NUM]
-  coreboot_boottime                       cpuid 
-  crc                                     cryptomount 
-  cutmem                                  date 
-  distrust                                drivemap 
-  dump                                    echo 
-  efiemu_loadcore                         efiemu_prepare 
-  efiemu_unload                           eval 
-  exit                                    export ENVVAR [ENVVAR] ...
-  extract_entries_configfile              extract_entries_source 
-  extract_legacy_entries_configfile       extract_legacy_entries_source 
-  extract_syslinux_entries_configfile     extract_syslinux_entries_source 
-  false                                   file 
-  freedos                                 functional_test 
-  gdbstub                                 gdbstub_break 
-  gdbstub_stop                            gettext STRING
-  gptsync                                 halt 
-  hashsum                                 hdparm 
-  hello                                   help [PATTERN ...]
-  hexdump                                 inb 
-  initrd (今回使用する)                     initrd16 
-  inl                                     insmod MODULE
-  inw                                     keymap 
-  keystatus                               kfreebsd 
-  kfreebsd_loadenv                        kfreebsd_module 
-  kfreebsd_module_elf                     knetbsd 
-  knetbsd_module                          knetbsd_module_elf 
-  kopenbsd                                kopenbsd_ramdisk 
-  legacy_check_password                   legacy_configfile 
-  legacy_initrd                           legacy_initrd_nounzip 
-  legacy_kernel                           legacy_password 
-  legacy_source                           linux (今回使用する)
-  linux16                                 list_env [-f FILE]
-  list_trusted                            load_env [-f FILE] [-s|--skip-sig] [va
-  loadfont                                loopback 
-  ls [-l|-h|-a] [FILE ...]                lsacpi 
-  lsapm                                   lscoreboot 
-  lsfonts                                 lsmmap 
-  lsmod                                   lspci 
-  macppcbless                             mactelbless 
-  md5sum                                  menuentry BLOCK
-  module                                  module2 
-  multiboot                               multiboot2 
-  nativedisk                              net_add_addr SHORTNAME CARD ADDRESS [H
-  net_add_dns DNSSERVER                   net_add_route SHORTNAME NET [INTERFACE
-  net_bootp [CARD]                        net_bootp6 [CARD]
-  net_del_addr SHORTNAME                  net_del_dns DNSSERVER
-  net_del_route SHORTNAME                 net_get_dhcp_option VAR INTERFACE NUMB
-  net_ipv6_autoconf [CARD [HWADDRESS]]    net_ls_addr 
-  net_ls_cards                            net_ls_dns 
-  net_ls_routes                           net_nslookup ADDRESS DNSSERVER
-  normal                                  normal_exit 
-  ntldr                                   outb 
-  outl                                    outw 
-  parttool                                password 
-  password_pbkdf2                         pcidump 
-  plan9                                   play 
-  probe                                   pxechainloader 
-  read                                    read_byte 
-  read_dword                              read_word 
-  reboot                                  regexp 
-  return [NUM]                            rmmod 
-  save_env [-f FILE] variable_name [...]  search 
-  search.file                             search.fs_label 
-  search.fs_uuid                          sendkey 
-  serial [OPTIONS...]                     set [ENVVAR=VALUE]
-  setparams [VALUE]...                    setpci 
-  sha1sum                                 sha256sum 
-  sha512sum                               shift [NUM]
-  sleep                                   source 
-  submenu BLOCK                           syslinux_configfile 
-  syslinux_source                         terminal_input [--append|--remove] [TE
-  terminal_output [--append|--remove] [T  terminfo [[-a|-u|-v] [-g WxH] TERM [TY
-  test EXPRESSION                         test_blockarg 
-  testload                                testspeed 
-  time                                    tr 
-  true                                    truecrypt 
-  trust                                   unset ENVVAR
-  usb                                     vbeinfo 
-  vbetest                                 verify_detached 
-  videoinfo                               videotest 
-  write_byte                              write_dword 
-  write_word                              xnu_devprop_load 
-  xnu_kernel                              xnu_kernel64 
-  xnu_kext                                xnu_kextdir 
-  xnu_mkext                               xnu_ramdisk 
-  xnu_resume                              xnu_splash 
-  xnu_uuid                                zfs-bootfs 
-  zfsinfo                                 zfskey 
+  (省略)
   --------------------------------------------------
   
-  grub> 
-  grub> (カーネルイメージとルートファイルシステムおよび他のパラメータを1行で指定) -> /proc/cmdline の内容と同一
-    linux (/boot)/vmlinuz-4.15.3       // カーネルイメージ
-    root=/dev/mapper/centos_vm11-root  // 起動デバイス
-    ro                                 // 読取専用
-    crashkernel=auto                   // 不明
-    rd.lvm.lv=centos_vm11/root         // おそらくルートファイルシステム
-    rd.lvm.lv=centos_vm11/swap         // 不明
-    console=ttyS0,115200n8             // 仮想マシン作成時にブートローダーに指定したコンソール接続のためのパラメータ
-    LANG=ja_JP.UTF-8                   // 言語・国・文字コード
+  grub> (カーネルイメージと起動デバイスおよび他のパラメータを1行で指定) -> /proc/cmdlineと同一
+  grub> linux
+      > (/boot)/vmlinuz-4.15.3             // カーネルイメージ
+      > root=/dev/mapper/centos_vm11-root  // 起動デバイス
+      > ro
+      > crashkernel=auto
+      > rd.lvm.lv=centos_vm11/root         // ルートファイルシステム
+      > rd.lvm.lv=centos_vm11/swap         // スワップ領域
+      > console=ttyS0,115200n8             // コンソール接続
+      > LANG=ja_JP.UTF-8                   // 言語・国・文字コード
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  grub> 
-  grub> initrd (/boot)/initramfs-4.15.3.img (初期RAMディスクを指定)
+  grub> (初期RAMディスクを指定)
+  grub> initrd (/boot)/initramfs-4.15.3.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  grub>
-  grub> boot (システム起動)
+  grub> (システム起動)
+  grub> boot
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1630,9 +1518,7 @@
     ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
     └─centos-home  253:2    0 411.1G  0 lvm  /home
   sdb                  8:16   1    15G  0 disk 
-  └─sdb1             8:17   1    15G  0 part /run/media/makoto/CentOS 7 x86_64
-  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
+  └─sdb1             8:17   1    15G  0 part /run/media/makoto/CentOS 7 x86_64 (接続したUSBメモリ)
   --------------------------------------------------
   
   $ cd $HOME
@@ -1659,7 +1545,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ LANG=C sudo parted /dev/sdb (日本語メッセージなし、対話モードでUSBメモリのパーティション修正)
+  $ LANG=C sudo parted /dev/sdb (対話モードでパーティション修正)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1667,43 +1553,32 @@
   Using /dev/sdb
   Welcome to GNU Parted! Type 'help' to view a list of commands.
   
-  // パーティション1を削除
   (parted) 
-  (parted) rm 1
+  (parted) rm 1 -> パーティション1を削除
   
-  // パーティション管理方式をmsdos(MBR方式)に変更
   (parted) 
-  (parted) mklabel msdos
+  (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に変更
   
-  // 確認メッセージ
-  Warning: The existing disk label on /dev/sdb will be destroyed and all data on
-  this disk will be lost. Do you want to continue?
-  Yes/No? Yes (Yesを入力)
+  Warning: The existing disk label on /dev/sdb will be destroyed and all data on this disk will be lost.
+  Do you want to continue? Yes/No? Yes (Yesを入力) -> 既存データが破壊されてもOK
   
-  // パーティション作成
   (parted) 
-  (parted) mkpart
+  (parted) mkpart -> パーティション作成
   
-  // パーティションのパラメータ入力
   Partition type?  primary/extended? primary
-  File system type?  [ext2]? fat32
-  Start? 0G
-  End? 100%
+  File system type?  [ext2]? fat32 -> USBメモリのファイルシステム
+  Start? 0G -> 開始セクタはUSBメモリの最初から
+  End? 100% -> 終了セクタはUSBメモリの最後まで
   
-  // パーティションにフラグ設定
   (parted) 
-  (parted) set 1 boot on
+  (parted) set 1 boot on -> 起動フラグを付与
   
-  // 対話モードを終了
   (parted) 
-  (parted) quit
-
-  // ファイル(/etc/fstab)の更新は必要なし
-  Information: You may need to update /etc/fstab.
+  (parted) quit -> 対話モード終了
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo mkfs.vfat /dev/sdb1 (パーティションのフォーマット)
+  $ sudo mkfs.vfat /dev/sdb1 (USBメモリのファイルシステムはFAT32)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1749,89 +1624,8 @@
     ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
     └─centos-home  253:2    0 411.1G  0 lvm  /home
   sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1   973M  0 part 
-  └─sdb2             8:18   1   8.6M  0 part (パーティションが増えている？)
-  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  --------------------------------------------------
-  
-  $ cd /mnt
-  $ sudo mkdir mp1 mp2 (マウントポイント作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mount -o ro /dev/sdb1 /mnt/mp1 (マウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mount -o ro /dev/sdb2 /mnt/mp2 (マウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lsblk (USBメモリを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sr0                 11:0    1  1024M  0 rom  
-  sda                  8:0    0 465.8G  0 disk 
-  ├─sda1             8:1    0     1G  0 part /boot
-  └─sda2             8:2    0 464.8G  0 part 
-    ├─centos-root  253:0    0    50G  0 lvm  /
-    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
-    └─centos-home  253:2    0 411.1G  0 lvm  /home
-  sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1   973M  0 part /mnt/mp1
-  └─sdb2             8:18   1   8.6M  0 part /mnt/mp2
-  loop0                7:0    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  loop1                7:1    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  --------------------------------------------------
-
-  $ cd /mnt/mp1
-  $ ls -lh (ファイル構成を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--.  2 root root   14 10月 30  2020 CentOS_BuildTag
-  drwxr-xr-x.  3 root root 2.0K 10月 27  2020 EFI
-  -rw-rw-r--. 15 root root  227  8月 30  2017 EULA
-  -rw-rw-r--. 15 root root  18K 12月 10  2015 GPL
-  drwxr-xr-x.  2 root root 2.0K 10月 27  2020 LiveOS
-  drwxr-xr-x.  2 root root  72K 11月  3  2020 Packages
-  -rw-rw-r--. 15 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-7
-  -rw-rw-r--. 15 root root 1.7K 12月 10  2015 RPM-GPG-KEY-CentOS-Testing-7
-  -r--r--r--.  1 root root 2.9K 11月  3  2020 TRANS.TBL
-  drwxr-xr-x.  3 root root 2.0K 10月 27  2020 images
-  drwxr-xr-x.  2 root root 2.0K 11月  3  2020 isolinux
-  drwxr-xr-x.  2 root root 4.0K 11月  3  2020 repodata
-  --------------------------------------------------
-  
-  $ cd /mnt/mp2
-  $ ls -lh (ファイル構成を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  drwxr-xr-x. 3 root root 2.0K 10月 27 2020 EFI -> 他パーティション管理に使用するシステムパーティション(EFI)が自動作成？
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo umount /mnt/mp1 /mnt/mp2 (USBメモリをアンマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> USBメモリをシステムから外すことが可能
+  ├─sdb1             8:17   1   973M  0 part (インストール内容)
+  └─sdb2             8:18   1   8.6M  0 part (パーティションが増える理由が不明)
   --------------------------------------------------
   
   以下の確認に続く
@@ -1845,8 +1639,8 @@
     Rocky-LinuxのインストールUSBの作成
   
   ## 使用マシン
-    HOST : localhost(Rocky-Linux)
-    IPV4 : 192.168.1.4
+    HOST : localhost
+    IPV4 : 192.168.1.3
     MEMO : ホスト
   
 [確認]
@@ -1865,6 +1659,7 @@
   コマンドの実行結果
   --------------------------------------------------
   NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sr0                 11:0    1  1024M  0 rom  
   sda                  8:0    0 465.8G  0 disk 
   ├─sda1             8:1    0     1G  0 part /boot
   └─sda2             8:2    0 464.8G  0 part 
@@ -1872,11 +1667,8 @@
     ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
     └─centos-home  253:2    0 411.1G  0 lvm  /home
   sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1   973M  0 part /run/media/makoto/CentOS 7 x86_64
+  ├─sdb1             8:17   1   973M  0 part /run/media/makoto/CentOS 7 x86_64 (接続したUSBメモリ)
   └─sdb2             8:18   1   8.6M  0 part 
-  sr0                 11:0    1  1024M  0 rom  
-  loop0                7:0    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  loop1                7:1    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
   --------------------------------------------------
   
   $ cd $HOME
@@ -1903,7 +1695,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ LANG=C sudo parted /dev/sdb (日本語メッセージなし、対話モードでUSBメモリのパーティション修正)
+  $ LANG=C sudo parted /dev/sdb (対話モードでパーティション修正)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1911,43 +1703,33 @@
   Using /dev/sdb
   Welcome to GNU Parted! Type 'help' to view a list of commands.
   
-  // パーティション2を削除
   (parted) 
-  (parted) rm 2
+  (parted) rm 2 -> パーティション2を削除
   
-  // パーティション管理方式をmsdos(MBR方式)に変更
   (parted) 
-  (parted) mklabel msdos
+  (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に変更
   
   // 確認メッセージ
-  Warning: The existing disk label on /dev/sdb will be destroyed and all data on
-  this disk will be lost. Do you want to continue?
-  Yes/No? Yes (Yesを入力)
+  Warning: The existing disk label on /dev/sdb will be destroyed and all data on this disk will be lost.
+  Do you want to continue? Yes/No? Yes (Yesを入力) -> 既存データが破壊されてもOK
   
-  // パーティション作成
   (parted) 
-  (parted) mkpart
+  (parted) mkpart -> パーティション作成
   
-  // パーティションのパラメータ入力
   Partition type?  primary/extended? primary
-  File system type?  [ext2]? fat32
-  Start? 0G
-  End? 100%
+  File system type?  [ext2]? fat32 -> USBメモリのファイルシステム
+  Start? 0G -> 開始セクタはUSBメモリの最初から
+  End? 100% -> 終了セクタはUSBメモリの最後まで
   
-  // パーティションにフラグ設定
   (parted) 
-  (parted) set 1 boot on
+  (parted) set 1 boot on -> 起動フラグを付与
   
-  // 対話モードを終了
   (parted) 
-  (parted) quit
-
-  // ファイル(/etc/fstab)の更新は必要なし
-  Information: You may need to update /etc/fstab.
+  (parted) quit -> 対話モード終了
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo mkfs.vfat /dev/sdb1 (パーティションのフォーマット)
+  $ sudo mkfs.vfat /dev/sdb1 (USBメモリのファイルシステムはFAT32)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1985,6 +1767,7 @@
   コマンドの実行結果
   --------------------------------------------------
   NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+  sr0                 11:0    1  1024M  0 rom  
   sda                  8:0    0 465.8G  0 disk 
   ├─sda1             8:1    0     1G  0 part /boot
   └─sda2             8:2    0 464.8G  0 part 
@@ -1992,86 +1775,8 @@
     ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
     └─centos-home  253:2    0 411.1G  0 lvm  /home
   sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1    10G  0 part 
-  └─sdb2             8:18   1   9.6M  0 part (パーティションが増えている？)
-  sr0                 11:0    1  1024M  0 rom  
-  loop0                7:0    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  loop1                7:1    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  --------------------------------------------------
-  
-  $ cd /mnt
-  $ sudo mkdir mp1 mp2 (マウントポイント作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mount -o ro /dev/sdb1 /mnt/mp1 (マウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo mount -o ro /dev/sdb2 /mnt/mp2 (マウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lsblk (USBメモリを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME               MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-  sda                  8:0    0 465.8G  0 disk 
-  ├─sda1             8:1    0     1G  0 part /boot
-  └─sda2             8:2    0 464.8G  0 part 
-    ├─centos-root  253:0    0    50G  0 lvm  /
-    ├─centos-swap  253:1    0   3.6G  0 lvm  [SWAP]
-    └─centos-home  253:2    0 411.1G  0 lvm  /home
-  sdb                  8:16   1    15G  0 disk 
-  ├─sdb1             8:17   1    10G  0 part /mnt/mp1  // マウント
-  └─sdb2             8:18   1   9.6M  0 part /mnt/mp2  // マウント
-  sr0                 11:0    1  1024M  0 rom  
-  loop0                7:0    0  99.4M  1 loop /var/lib/snapd/snap/core/11993
-  loop1                7:1    0 104.6M  1 loop /var/lib/snapd/snap/brackets/138
-  --------------------------------------------------
-
-  $ cd /mnt/mp1
-  $ ls -lh (ファイル構成を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dr-xr-xr-x. 4 root root 2.0K 11月 14 18:30 AppStream
-  dr-xr-xr-x. 4 root root 2.0K 11月 14 18:30 BaseOS
-  dr-xr-xr-x. 3 root root 2.0K 11月 14 18:30 EFI
-  -r--r--r--. 1 root root 2.2K 10月  9 08:30 LICENSE
-  -r--r--r--. 1 root root  883 11月 14 18:30 TRANS.TBL
-  dr-xr-xr-x. 3 root root 2.0K 11月 14 18:30 images
-  dr-xr-xr-x. 2 root root 2.0K 11月 14 18:30 isolinux
-  -r--r--r--. 1 root root   86 11月 14 18:29 media.repo
-  --------------------------------------------------
-  
-  $ cd /mnt/mp2
-  $ ls -lh (ファイル構成を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  drwxr-xr-x. 3 root root 2.0K 11月 14 18:02 EFI -> 他パーティション管理に使用するシステムパーティション(EFI)が自動作成？
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo umount /mnt/mp1 /mnt/mp2 (USBメモリをアンマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> USBメモリをシステムから外すことが可能
+  ├─sdb1             8:17   1    10G  0 part (インストール内容)
+  └─sdb2             8:18   1   9.6M  0 part (パーティションが増える理由が不明)
   --------------------------------------------------
   
   以下の確認に続く
@@ -2082,7 +1787,7 @@
   
 [内容]
   ## 作業内容
-    システムがHDDから起動不能を想定して、USB起動でシステム修復を行う
+    ハードディスクからのシステム起動が不能であることを想定して、レスキューモードでシステム修復を行う
   
   ## 使用マシン
     HOST : localhost
@@ -2126,10 +1831,10 @@
   メニューで「02」を選択の場合は、現在の読み書き可能でのマウントを読み取り専用でマウントします。
   メニューで「03」を選択の場合は、シェルまでの手順を一気にスキップします。
   
-  01) Continue (レスキューモード)
-  02) Read-only mount
-  03) Skip to shell
-  04) Quit (Reboot)
+  01: Continue (レスキューモード)
+  02: Read-only mount
+  03: Skip to shell
+  04: Quit (Reboot)
   -------------------------------------------------- 
   
   > 上記で「Continue」を選択
@@ -2137,35 +1842,35 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 以後はレスキューモードのシェルのプロンプトを「sh-4.2#」と記述する
+  (省略) -> 以後はレスキューモードのシェルプロンプトを「sh-4.2#」と記述する
   --------------------------------------------------
   
-  sh-4.2# cd $HOME
-  sh-4.2# chroot /mnt/sysimage (操作上の起点をHDDのルートディレクトリに変更)
+  sh-4.2# (操作起点をハードディスクのルートディレクトリに変更)
+  sh-4.2# chroot /mnt/sysimage
   
   コマンドの実行結果
   --------------------------------------------------
   (出力なし) -> サブシェル「/bin/bash」が起動、プロンプト「bash-4.2#」と記述する
   --------------------------------------------------
     
-    bash-4.2# 
-    bash-4.2# ls -lh (HDDのルートディレクトリ配下のファイル群を確認)
+    bash-4.2# (ハードディスクのルートディレクトリ配下のファイル群を確認)
+    bash-4.2# ls -lh
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> HDDのルートディレクトリ配下のファイル群を確認
+    (省略) -> ルートディレクトリ配下のファイル群を確認
     --------------------------------------------------
     
-    bash-4.2# 
-    bash-4.2# exit (作業終了後にサブシェルを抜ける)
+    bash-4.2# (作業終了後にサブシェルを抜ける)
+    bash-4.2# exit
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 親シェルに戻る
     --------------------------------------------------
     
-  sh-4.2# 
-  sh-4.2# shutdown -h now (シャットダウン)
+  sh-4.2# (シャットダウン)
+  sh-4.2# shutdown -h now
   
   コマンドの実行結果
   --------------------------------------------------
