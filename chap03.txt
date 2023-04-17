@@ -925,46 +925,46 @@
     永続的なジャーナル保持を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo find / -name journal (ジャーナルの保存場所を検索)
+  vm11$ cd $HOME
+  vm11$ sudo find / -name journal (ジャーナルの保存場所を検索)
   
   コマンドの実行結果
   --------------------------------------------------
-  /run/log/journal      -> 現状はこちらを使用、再起動でクリアされる
-  /run/systemd/journal  -> 不明
+  /run/log/journal -> ジャーナルの保存場所、再起動でクリアされる
+  /run/systemd/journal
   --------------------------------------------------
   
-  vm12$ cd /run/log/journal/$(cat /etc/machine-id)
-  vm12$ ls -lh (ジャーナルの保存場所の内部を調査)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rwxr-x---+ 1 root systemd-journal 6.2M 12月  9 11:01 system.journal -> 現在はこのファイルにジャーナルが保存
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkdir -p /var/log/journal (永続的なジャーナル保持用のディレクトリを作成)
+  vm11$ cd /run/log/journal/$(cat /etc/machine-id)
+  vm11$ ls -lh (ジャーナルの保存ファイル)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  -rwxr-x---+ 1 root systemd-journal 8.0M  4月 17 11:22 system.journal -> 現在はこのファイルにジャーナルが保存
   --------------------------------------------------
   
-  vm12$ cd /etc/systemd
-  vm12$ sudo cp -p journald.conf journald.conf.org (設定ファイルを退避)
+  vm11$ cd $HOME
+  vm11$ sudo mkdir -p /var/log/journal (永続的なジャーナル保持のディレクトリ作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /etc/systemd
-  vm12$ sudo vi journald.conf (設定ファイルを修正)
+  vm11$ cd /etc/systemd
+  vm11$ sudo cp -p journald.conf journald.conf.org (設定ファイルを退避)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd /etc/systemd
+  vm11$ sudo vi journald.conf (設定ファイルを修正)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -973,20 +973,20 @@
   SystemMaxUse=100M   // 修正 - 最大容量は100MB
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl restart systemd-journald (サービス再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl restart systemd-journald (サービス再起動)
   
   コマンドの実行結果
   --------------------------------------------------
-  [10049.555932] systemd-journald[511]: Received SIGTERM from PID 1 (systemd).
+  [ 7844.595919] systemd-journald[526]: Received SIGTERM from PID 1 (systemd).
   --------------------------------------------------
   
-  vm12$ cd /var/log/journal/$(cat /etc/machine-id)
-  vm12$ ls -lh (永続的なジャーナル保持用のファイルを確認)
+  vm11$ cd /var/log/journal/$(cat /etc/machine-id)
+  vm11$ ls -lh (永続的なジャーナル保持用のファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r-----. 1 root root 8.0M 12月  9 12:43 system.journal -> このファイルに以後のジャーナルが永続的に保存
+  -rw-r-----. 1 root root 8.0M  4月 17 12:05 system.journal -> このファイルに以後のジャーナルが永続的に保存
   --------------------------------------------------
   
   以下の確認に続く
