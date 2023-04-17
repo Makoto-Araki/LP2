@@ -799,129 +799,119 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME/SAMP5 -> 先にディレクトリ作成
-  vm12$ vi SAMP5.sh (シェルスクリプトを作成)
+  vm11$ cd $HOME/sample4 -> 先にディレクトリ作成
+  vm11$ vi sample4.sh (シェルスクリプトを作成)
   
   コマンドの実行結果
   --------------------------------------------------
   #!/bin/bash
   
   for i in $(seq 1 $1) ; do
-    echo "SAMP5 - $(date "+%Y/%m/%d %H:%M:%S") - $i"
+    echo "sample4 - $(date "+%Y/%m/%d %H:%M:%S") - $i"
     sleep 1
   done
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP5
-  vm12$ bash SAMP5.sh 3 (シェルスクリプトを実行)
+  vm11$ cd $HOME/sample4
+  vm11$ bash sample4.sh 3 (シェルスクリプトを実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  SAMP5 - 2021/12/09 10:16:21 - 1
-  SAMP5 - 2021/12/09 10:16:22 - 2
-  SAMP5 - 2021/12/09 10:16:23 - 3
+  sample4 - 2023/04/17 11:01:08 - 1
+  sample4 - 2023/04/17 11:01:09 - 2
+  sample4 - 2023/04/17 11:01:10 - 3
   --------------------------------------------------
   
-  vm12$ cd $HOME/SAMP5
-  vm12$ systemd-cat bash SAMP5.sh 50 & (コマンド実行結果をジャーナル出力)
+  vm11$ cd $HOME/sample4
+  vm11$ systemd-cat bash sample4.sh 50 & (コマンド実行結果をジャーナル出力)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> バックグラウンドで実行
+  [1] 5035 -> バックグラウンドで実行
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --follow(-f) | grep SAMP5 (ジャーナルの末尾を表示し続ける)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --follow(-f) | grep sample4 (末尾を表示し続ける)
  
   コマンドの実行結果
   --------------------------------------------------
-  12月 09 10:17:48 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:48 - 48
-  12月 09 10:17:49 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:49 - 49
-  12月 09 10:17:50 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:50 - 50
+  ...
   
-  // Ctrl + C でバックグラウンドプロセスを停止 -> tail -f の動作と似ている
-  
-  [1]+  終了        systemd-cat bash SAMP5.sh 50
+  Apr 17 11:05:48 vm11 bash[5035]: sample4 - 2023/04/17 11:05:48 - 48
+  Apr 17 11:05:49 vm11 bash[5035]: sample4 - 2023/04/17 11:05:49 - 49
+  Apr 17 11:05:50 vm11 bash[5035]: sample4 - 2023/04/17 11:05:50 - 50
+
+  Ctrl + C -> 終了
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --reverse(-r) | grep SAMP5 | head -n 3 (ジャーナルの末尾を先頭に表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --reverse(-r) | grep sample4 | head -n 3 (末尾を先頭に表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  12月 09 10:17:50 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:50 - 50
-  12月 09 10:17:49 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:49 - 49
-  12月 09 10:17:48 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:48 - 48
+  Apr 17 11:05:50 vm11 bash[5035]: sample4 - 2023/04/17 11:05:50 - 50
+  Apr 17 11:05:49 vm11 bash[5035]: sample4 - 2023/04/17 11:05:49 - 49
+  Apr 17 11:05:48 vm11 bash[5035]: sample4 - 2023/04/17 11:05:48 - 48
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --pager-end(-e) | grep SAMP5 | tail -n 3 (ジャーナルの末尾を表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  12月 09 10:17:48 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:48 - 48
-  12月 09 10:17:49 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:49 - 49
-  12月 09 10:17:50 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:50 - 50
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ journalctl --catalog(-x) | grep SAMP5 | tail -n 3 (ジャーナルを説明文付きで表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --pager-end(-e) | grep sample4 | tail -n 3 (末尾を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  12月 09 10:17:48 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:48 - 48
-  12月 09 10:17:49 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:49 - 49
-  12月 09 10:17:50 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:50 - 50
+  Apr 17 11:05:48 vm11 bash[5035]: sample4 - 2023/04/17 11:05:48 - 48
+  Apr 17 11:05:49 vm11 bash[5035]: sample4 - 2023/04/17 11:05:49 - 49
+  Apr 17 11:05:50 vm11 bash[5035]: sample4 - 2023/04/17 11:05:50 - 50
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --dmesg(-k) | tail -n 3 (ジャーナルのカーネルメッセージのみ表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  12月 09 09:56:52 vm12 kernel: IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
-  12月 09 09:56:53 vm12 kernel: nf_conntrack version 0.5.0 (8192 buckets, 32768 max)
-  12月 09 09:56:56 vm12 kernel: bridge: filtering via arp/ip/ip6tables is no longer available by default.
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ journalctl --no-pager --priority(-p) info | tail -n 3 (指定プライオリティ以上のメッセージを表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --dmesg(-k) | tail -n 3 (カーネルメッセージのみ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  12月 09 10:17:48 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:48 - 48
-  12月 09 10:17:49 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:49 - 49
-  12月 09 10:17:50 vm12 bash[1280]: SAMP5 - 2021/12/09 10:17:50 - 50
+  Apr 17 09:30:27 vm11 kernel: IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+  Apr 17 09:30:27 vm11 kernel: nf_conntrack version 0.5.0 (16384 buckets, 65536 max)
+  Apr 17 09:30:28 vm11 kernel: bridge: filtering via arp/ip/ip6tables is no longer available by default. ...
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl start SAMP4 (前に作成したサービス「SAMP4」起動)
-  vm12$ sudo systemctl start SAMP4 (前に作成したサービス「SAMP4」起動)
-  vm12$ sudo systemctl start SAMP4 (前に作成したサービス「SAMP4」起動)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --priority(-p) info | tail -n 3 (指定プライオリティ以上のメッセージ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Apr 17 11:10:01 vm11 systemd[1]: Started Session 14 of user root.
+  Apr 17 11:10:01 vm11 CROND[5145]: (root) CMD (/usr/lib64/sa/sa1 1 1)
+  Apr 17 11:10:01 vm11 systemd[1]: Removed slice User Slice of root.
+  --------------------------------------------------
+  
+  vm11$ cd $HOME (前に作成したサービス起動)
+  vm11$ sudo systemctl start sample3
+  vm11$ sudo systemctl start sample3
+  vm11$ sudo systemctl start sample3
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --no-pager --unit(-u) SAMP4 | tail -n 3 (指定サービスのジャーナル表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --unit(-u) sample3 | tail -n 3 (指定サービスのジャーナル表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  12月 09 10:31:45 vm12 systemd[1]: Started SAMP4.service.
-  12月 09 10:31:48 vm12 systemd[1]: Started SAMP4.service.
-  12月 09 10:32:06 vm12 systemd[1]: Started SAMP4.service.
+  Apr 17 11:16:21 vm11 systemd[1]: Started sample3.service.
+  Apr 17 11:16:24 vm11 systemd[1]: Started sample3.service.
+  Apr 17 11:16:24 vm11 systemd[1]: Started sample3.service.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ journalctl --no-pager --boot(-b) | tail -n 3 (システム起動のジャーナル表示)
+  vm11$ cd $HOME
+  vm11$ LANG=C journalctl --boot(-b) | tail -n 3 (システム起動のジャーナル表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  12月 09 10:32:06 vm12 systemd[1]: Started SAMP4.service.
-  12月 09 10:32:06 vm12 polkitd[644]: Unregistered Authentication Agent for unix-process:1462:214389
-  12月 09 10:32:06 vm12 sudo[1460]: pam_unix(sudo:session): session closed for user root
+  Apr 17 11:16:24 vm11 systemd[1]: Started sample3.service.
+  Apr 17 11:16:24 vm11 polkitd[709]: Unregistered Authentication Agent for unix-process:5190:667316 ...
+  Apr 17 11:16:24 vm11 sudo[5188]: pam_unix(sudo:session): session closed for user root
   --------------------------------------------------
   
   以下の確認に続く
@@ -932,7 +922,7 @@
   
 [内容]
   ## 作業内容
-    永続的なジャーナルの保持を行う
+    永続的なジャーナル保持を行う
   
   ## 使用マシン
     HOST : vm12
