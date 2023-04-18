@@ -1875,8 +1875,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME

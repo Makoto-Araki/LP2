@@ -138,8 +138,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -181,8 +181,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -225,8 +225,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -290,8 +290,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot -> マウント済
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -339,8 +339,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot -> マウント済
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -440,8 +440,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -611,8 +611,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -798,8 +798,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -953,8 +953,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -1108,8 +1108,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -1244,8 +1244,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -1353,8 +1353,8 @@
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
-│      |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-│      |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -1400,37 +1400,39 @@
     デバイスにファイルシステム(btrfs)を作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.304158 s, 345 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ losetup -f (使用可能なループバックデバイス名を表示)
+  vm11$ cd $HOME
+  vm11$ losetup -f (使用可能なループバックデバイス名を表示)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/loop0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs.btrfs /dev/loop0 (ファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t btrfs /dev/loop0 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1439,7 +1441,7 @@
   
   Performing full device TRIM /dev/loop0 (100.00MiB) ...
   Label:              (null)
-  UUID:               bf621404-8dd1-4b9c-99ba-e74565ccc233
+  UUID:               15df6ae2-0441-48c7-b166-ce3976afd55b
   Node size:          16384
   Sector size:        4096
   Filesystem size:    100.00MiB
@@ -1452,77 +1454,77 @@
   Number of devices:  1
   Devices:
     ID        SIZE  PATH
-    1    100.00MiB  /dev/loop0 // ループバックデバイス
+     1   100.00MiB  /dev/loop0
   
-  [50949.337981] raid6: sse2x1   gen()  3410 MB/s
-  [50949.356966] raid6: sse2x1   xor()  3376 MB/s
-  [50949.375930] raid6: sse2x2   gen()  5789 MB/s
-  [50949.393917] raid6: sse2x2   xor()  5460 MB/s
-  [50949.411923] raid6: sse2x4   gen()  6171 MB/s
-  [50949.429939] raid6: sse2x4   xor()  3714 MB/s
-  [50949.438023] raid6: using algorithm sse2x4 gen() 6171 MB/s
-  [50949.441282] raid6: .... xor() 3714 MB/s, rmw enabled
-  [50949.443605] raid6: using ssse3x2 recovery algorithm
-  [50949.606774] xor: measuring software checksum speed
-  [50949.620941]    prefetch64-sse: 10788.000 MB/sec
-  [50949.637917]    generic_sse:  9552.000 MB/sec
-  [50949.640479] xor: using function: prefetch64-sse (10788.000 MB/sec)
-  [50951.296426] Btrfs loaded, crc32c=crc32c-intel
-  [50951.299034] BTRFS: device fsid bf621404-8dd1-4b9c-99ba-e74565ccc233 devid 1 transid 5 /dev/loop0
+  [ 2541.093688] raid6: sse2x1   gen()  7500 MB/s
+  [ 2541.111862] raid6: sse2x1   xor()  5402 MB/s
+  [ 2541.130690] raid6: sse2x2   gen()  8441 MB/s
+  [ 2541.148670] raid6: sse2x2   xor()  6343 MB/s
+  [ 2541.166741] raid6: sse2x4   gen()  8558 MB/s
+  [ 2541.184732] raid6: sse2x4   xor()  4011 MB/s
+  [ 2541.186772] raid6: using algorithm sse2x4 gen() 8558 MB/s
+  [ 2541.189078] raid6: .... xor() 4011 MB/s, rmw enabled
+  [ 2541.191036] raid6: using ssse3x2 recovery algorithm
+  [ 2541.253285] xor: automatically using best checksumming function   avx       
+  [ 2541.627005] Btrfs loaded, crc32c=crc32c-intel
+  [ 2541.630352] BTRFS: device fsid 15df6ae2-0441-48c7-b166-ce3976afd55b devid 1 transid 5 /dev/loop0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt (マウントオプションはデフォルト、ファイルシステム指定でマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt (マウントオプションはデフォルト、ファイルシステム指定でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [51118.886280] BTRFS info (device loop0): disk space caching is enabled
-  [51118.888872] BTRFS info (device loop0): has skinny extents
-  [51118.890939] BTRFS info (device loop0): flagging fs with big metadata feature
-  [51118.898333] BTRFS info (device loop0): creating UUID tree
+  [ 2716.122926] BTRFS info (device loop0): disk space caching is enabled
+  [ 2716.125305] BTRFS info (device loop0): has skinny extents
+  [ 2716.127507] BTRFS info (device loop0): flagging fs with big metadata feature
+  [ 2716.132885] BTRFS info (device loop0): creating UUID tree
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0   10M  0 loop /mnt (マウントされたループバックデバイス)
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  /mnt -> ループバックデバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ mount | grep loop0 (マウント状況およびマウントオプションを確認)
+  vm11$ cd $HOME
+  vm11$ mount | grep loop0 (マウント状況およびマウントオプションを確認)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/loop0 on /mnt type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (ループバックデバイスをアンマウント)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (ループバックデバイスをアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1540,8 +1542,8 @@
     デバイスに指定ファイルシステムをコマンド(mkfs)で作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(mkfs)
@@ -1549,135 +1551,140 @@
     mkfs -c     // 不良ブロックをチェック
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image3.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image4.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image3.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image4.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.267291 s, 392 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
-  vm12$ sudo losetup /dev/loop2 image2.img
-  vm12$ sudo losetup /dev/loop3 image3.img
-  vm12$ sudo losetup /dev/loop4 image4.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext2 /dev/loop0
-  vm12$ sudo mkfs -t ext3 /dev/loop1
-  vm12$ sudo mkfs -t ext4 /dev/loop2
-  vm12$ sudo mkfs -t xfs /dev/loop3
-  vm12$ sudo mkfs -t btrfs /dev/loop4
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd /mnt
-  vm12$ sudo mkdir mp0 mp1 mp2 mp3 mp4
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext2 /dev/loop0 /mnt/mp0
-  vm12$ sudo mount -o defaults -t ext3 /dev/loop1 /mnt/mp1
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop2 /mnt/mp2
-  vm12$ sudo mount -o defaults -t xfs /dev/loop3 /mnt/mp3
-  vm12$ sudo mount -o defaults -t btrfs /dev/loop4 /mnt/mp4
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  loop0                     7:0    0  100M  0 loop /mnt/mp0 (マウントされたループバックデバイス)
-  loop1                     7:1    0  100M  0 loop /mnt/mp1 (マウントされたループバックデバイス)
-  loop2                     7:2    0  100M  0 loop /mnt/mp2 (マウントされたループバックデバイス)
-  loop3                     7:3    0  100M  0 loop /mnt/mp3 (マウントされたループバックデバイス)
-  loop4                     7:4    0  100M  0 loop /mnt/mp4 (マウントされたループバックデバイス)
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ df -mT (ブロックデバイス確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5422  11973   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/loop0                   ext2              97     2     91    2% /mnt/mp0 (マウントされたループバックデバイス)
-  /dev/loop1                   ext3              93     2     87    2% /mnt/mp1 (マウントされたループバックデバイス)
-  /dev/loop2                   ext4              93     2     85    2% /mnt/mp2 (マウントされたループバックデバイス)
-  /dev/loop3                   xfs               97     6     92    6% /mnt/mp3 (マウントされたループバックデバイス)
-  /dev/loop4                   btrfs            100    17     19   47% /mnt/mp4 (マウントされたループバックデバイス)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ mount | grep -E 'loop[0-4]' (マウント状況およびマウントオプションを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/loop0 on /mnt/mp0 type ext2 (rw,relatime,seclabel,block_validity,barrier,user_xattr,acl)
-  /dev/loop1 on /mnt/mp1 type ext3 (rw,relatime,seclabel,data=ordered)
-  /dev/loop2 on /mnt/mp2 type ext4 (rw,relatime,seclabel,data=ordered)
-  /dev/loop3 on /mnt/mp3 type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-  /dev/loop4 on /mnt/mp4 type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt/mp0
-  vm12$ sudo umount /mnt/mp1
-  vm12$ sudo umount /mnt/mp2
-  vm12$ sudo umount /mnt/mp3
-  vm12$ sudo umount /mnt/mp4
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
+  vm11$ sudo losetup /dev/loop2 image2.img
+  vm11$ sudo losetup /dev/loop3 image3.img
+  vm11$ sudo losetup /dev/loop4 image4.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext2 /dev/loop0
+  vm11$ sudo mkfs -t ext3 /dev/loop1
+  vm11$ sudo mkfs -t ext4 /dev/loop2
+  vm11$ sudo mkfs -t xfs /dev/loop3
+  vm11$ sudo mkfs -t btrfs /dev/loop4
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm11$ cd /mnt
+  vm11$ sudo mkdir loop0 loop1 loop2 loop3 loop4
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t ext2 /dev/loop0 /mnt/loop0
+  vm11$ sudo mount -o defaults -t ext3 /dev/loop1 /mnt/loop1
+  vm11$ sudo mount -o defaults -t ext4 /dev/loop2 /mnt/loop2
+  vm11$ sudo mount -o defaults -t xfs /dev/loop3 /mnt/loop3
+  vm11$ sudo mount -o defaults -t btrfs /dev/loop4 /mnt/loop4
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  /mnt/loop0 -> ループバックデバイス
+  loop1                         7:1     0   100M   0  loop  /mnt/loop1 -> ループバックデバイス
+  loop2                         7:2     0   100M   0  loop  /mnt/loop2 -> ループバックデバイス
+  loop3                         7:3     0   100M   0  loop  /mnt/loop3 -> ループバックデバイス
+  loop4                         7:4     0   100M   0  loop  /mnt/loop4 -> ループバックデバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        947     0        947    0%  /dev
+  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
+  tmpfs                         tmpfs           969     1        968    1%  /run
+  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6457      10938   38%  /
+  /dev/vda1                     xfs            1014   199        816   20%  /boot
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
+  /dev/loop0                    ext2             97     2         91    2%  /mnt/loop0 -> ループバックデバイス
+  /dev/loop1                    ext3             93     2         87    2%  /mnt/loop1 -> ループバックデバイス
+  /dev/loop2                    ext4             93     2         85    2%  /mnt/loop2 -> ループバックデバイス
+  /dev/loop3                    xfs              97     6         92    6%  /mnt/loop3 -> ループバックデバイス
+  /dev/loop4                    btrfs           100    17         19   47%  /mnt/loop4 -> ループバックデバイス
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ mount | grep -E 'loop[0-4]' (マウント状況およびマウントオプションを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/loop0 on /mnt/loop0 type ext2 (rw,relatime,seclabel,block_validity,barrier,user_xattr,acl)
+  /dev/loop1 on /mnt/loop1 type ext3 (rw,relatime,seclabel,data=ordered)
+  /dev/loop2 on /mnt/loop2 type ext4 (rw,relatime,seclabel,data=ordered)
+  /dev/loop3 on /mnt/loop3 type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+  /dev/loop4 on /mnt/loop4 type btrfs (rw,relatime,seclabel,space_cache,subvolid=5,subvol=/)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt/loop0
+  vm11$ sudo umount /mnt/loop1
+  vm11$ sudo umount /mnt/loop2
+  vm11$ sudo umount /mnt/loop3
+  vm11$ sudo umount /mnt/loop4
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-4].img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-4].img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1695,28 +1702,28 @@
     CD-ROMイメージ(ISO9660)の作成を行い、システムにマウント後にチェックする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(mkisofs)
     mkisofs -b     // ブート可能CD
     mkisofs -o XX  // イメージファイル(XX)を作成
     mkisofs -J     // Windows
-    mkisofs -r(R)  // LongName
+    mkisofs -r(R)  // UNIX(LongName)
     mkisofs -udf   // DVD
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install mkisofs (パッケージ追加)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install mkisofs (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME/HISTORY -> 先にディレクトリ作成
-  vm12$ vi 1234567890.12345
+  vm11$ cd $HOME/history -> 先にディレクトリ作成
+  vm11$ vi 1234567890.12345
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1725,12 +1732,12 @@
   1615年 大坂夏の陣
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ mkisofs -o HISTORY-CDROM1.iso HISTORY (CD-ROM でISOイメージ作成)
+  vm11$ cd $HOME
+  vm11$ mkisofs -o history-cdrom1.iso history (CD-ROM でISOイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  I: -input-charset not specified, using utf-8 (detected in locale settings)  // 文字コードはシステムのものを使用
+  I: -input-charset not specified, using utf-8 (detected in locale settings)
   Total translation table size: 0
   Total rockridge attributes bytes: 0
   Total directory bytes: 0
@@ -1739,8 +1746,8 @@
   175 extents written (0 MB)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ mkisofs -o HISTORY-CDROM2.iso -r(-R) HISTORY (LongName、CD-ROM でISOイメージ作成)
+  vm11$ cd $HOME
+  vm11$ mkisofs -o history-cdrom2.iso -r(-R) history (LongName、CD-ROM でISOイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1753,81 +1760,80 @@
   176 extents written (0 MB)
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo mkdir cdrom1 cdrom2 (マウントポイント作成)
+  vm11$ cd /mnt
+  vm11$ sudo mkdir cdrom1 cdrom2 (マウントポイント作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -r -t iso9660 HISTORY-CDROM1.iso /mnt/cdrom1 (CD-ROM用イメージを読取専用でマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -r -t iso9660 history-cdrom1.iso /mnt/cdrom1 (CD-ROM用イメージを読取専用でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 1429.225612] loop: module loaded
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -r -t iso9660 HISTORY-CDROM2.iso /mnt/cdrom2 (CD-ROM用イメージを読取専用でマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1455.303908] Buffer I/O error on dev loop1, logical block 0, async page read
-  [ 1455.307354] Buffer I/O error on dev loop1, logical block 0, async page read
-  [ 1455.310038] Buffer I/O error on dev loop1, logical block 0, async page read
-  [ 1455.312705] Buffer I/O error on dev loop1, logical block 0, async page read
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ sudo mount -r -t iso9660 history-cdrom2.iso /mnt/cdrom2 (CD-ROM用イメージを読取専用でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda1                252:1    0    1G  0 part /boot
-  └─vda2                252:2    0   19G  0 part 
-    ├─centos_vm11-root  253:0    0   17G  0 lvm  /
-    └─centos_vm11-swap  253:1    0    2G  0 lvm  [SWAP]
-  loop0                     7:0    0  350K  1 loop /mnt/cdrom1
-  loop1                     7:1    0  352K  1 loop /mnt/cdrom2
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ df -mT (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         484     0    484    0% /dev
-  tmpfs                        tmpfs            496     0    496    0% /dev/shm
-  tmpfs                        tmpfs            496     7    489    2% /run
-  tmpfs                        tmpfs            496     0    496    0% /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root xfs            17394  1384  16011    8% /
-  /dev/vda1                    xfs             1014   137    878   14% /boot
-  tmpfs                        tmpfs            100     0    100    0% /run/user/0
-  tmpfs                        tmpfs            100     0    100    0% /run/user/1000
-  /dev/loop0                   iso9660            1     1      0  100% /mnt/cdrom1
-  /dev/loop1                   iso9660            1     1      0  100% /mnt/cdrom2
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   350K   1  loop  /mnt/cdrom1 -> ISOイメージ
+  loop1                         7:1     0   352K   1  loop  /mnt/cdrom2 -> ISOイメージ
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh /mnt/cdrom[1-2]/ (CD-ROMイメージを確認)
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        947     0        947    0%  /dev
+  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
+  tmpfs                         tmpfs           969     1        968    1%  /run
+  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6439      10956   38%  /
+  /dev/vda1                     xfs            1014   199        816   20%  /boot
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
+  /dev/loop0                    iso9660           1     1          0  100%  /mnt/cdrom1 -> ISOイメージ
+  /dev/loop1                    iso9660           1     1          0  100%  /mnt/cdrom2 -> ISOイメージ
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ ls -lh /mnt/cdrom[1-2]/ (CD-ROMイメージを確認)
   
   コマンドの実行結果
   --------------------------------------------------
   // cdrom1 -> ファイル名が「8.3」形式に制限
-  -r-xr-xr-x. 1 root root 75  2月 13 16:20 12345678.123
+  -r-xr-xr-x. 1 root root 75  4月 18 11:00 12345678.123
   
   // cdrom2
-  -r--r--r--. 1 root root 75  2月 13 16:20 1234567890.12345
+  -r--r--r--. 1 root root 75  4月 18 11:00 1234567890.12345
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /mnt/cdrom[1-2]/* (ファイル内容を確認)
+  vm11$ cd $HOME
+  vm11$ cat /mnt/cdrom[1-2]/* (ファイル内容を確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1842,16 +1848,16 @@
   1615年 大坂夏の陣
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt/cdrom1 /mnt/cdrom2
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt/cdrom1 /mnt/cdrom2
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f *.iso (ISOイメージファイル削除)
+  vm11$ cd $HOME
+  vm11$ rm -f *.iso (ISOイメージファイル削除)
   
   コマンドの実行結果
   --------------------------------------------------
