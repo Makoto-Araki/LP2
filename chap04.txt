@@ -1699,7 +1699,7 @@
   
 [内容]
   ## 作業内容
-    CD-ROMイメージ(ISO9660)の作成を行い、システムにマウント後にチェックする
+    CD-ROM用のISOイメージ作成を行い、システムにマウント後にチェックする
   
   ## 使用マシン
     HOST : vm11
@@ -1872,11 +1872,11 @@
   
 [内容]
   ## 作業内容
-    DVD-ROMイメージ(ISO9660)の作成を行い、システムにマウント後にチェックする
+    DVD-ROM用のISOイメージ作成を行い、システムにマウント後にチェックする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(mkisofs)
@@ -1887,8 +1887,8 @@
     mkisofs -udf   // DVD
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ mkisofs -udf -o HISTORY-DVDROM1.iso HISTORY (DVD-ROM でISOイメージ作成)
+  vm11$ cd $HOME
+  vm11$ mkisofs -udf -o history-dvdrom1.iso history (DVD-ROM でISOイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1901,8 +1901,8 @@
   419 extents written (0 MB)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ mkisofs -udf -o HISTORY-DVDROM2.iso -r(-R) HISTORY (LongName、DVD-ROM でISOイメージ作成)
+  vm11$ cd $HOME
+  vm11$ mkisofs -udf -o history-dvdrom2.iso -r(-R) history (LongName、DVD-ROM でISOイメージ作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1915,80 +1915,80 @@
   420 extents written (0 MB)
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo mkdir dvdrom1 dvdrom2 (マウントポイント作成)
+  vm11$ cd /mnt
+  vm11$ sudo mkdir dvdrom1 dvdrom2 (マウントポイント作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -r -t iso9660 HISTORY-DVDROM1.iso /mnt/dvdrom1 (DVD-ROM用イメージを読取専用でマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -r -t iso9660 history-dvdrom1.iso /mnt/dvdrom1 (DVD-ROM用イメージを読取専用でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 7209.369367] Buffer I/O error on dev loop0, logical block 0, async page read
-  [ 7209.372646] Buffer I/O error on dev loop0, logical block 0, async page read
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -r -t iso9660 HISTORY-DVDROM2.iso /mnt/dvdrom2 (DVD-ROM用イメージを読取専用でマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 7237.076382] Buffer I/O error on dev loop1, logical block 0, async page read
-  [ 7237.079664] Buffer I/O error on dev loop1, logical block 0, async page read
-  [ 7237.083200] Buffer I/O error on dev loop1, logical block 0, async page read
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ sudo mount -r -t iso9660 history-dvdrom2.iso /mnt/dvdrom2 (DVD-ROM用イメージを読取専用でマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  vda                     252:0    0   20G  0 disk 
-  ├─vda1                252:1    0    1G  0 part /boot
-  └─vda2                252:2    0   19G  0 part 
-    ├─centos_vm11-root  253:0    0   17G  0 lvm  /
-    └─centos_vm11-swap  253:1    0    2G  0 lvm  [SWAP]
-  loop0                     7:0    0  838K  1 loop /mnt/dvdrom1
-  loop1                     7:1    0  840K  1 loop /mnt/dvdrom2
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ df -mT (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         484     0    484    0% /dev
-  tmpfs                        tmpfs            496     0    496    0% /dev/shm
-  tmpfs                        tmpfs            496     7    489    2% /run
-  tmpfs                        tmpfs            496     0    496    0% /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root xfs            17394  1386  16009    8% /
-  /dev/vda1                    xfs             1014   137    878   14% /boot
-  tmpfs                        tmpfs            100     0    100    0% /run/user/1000
-  /dev/loop0                   iso9660            1     1      0  100% /mnt/dvdrom1
-  /dev/loop1                   iso9660            1     1      0  100% /mnt/dvdrom2
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   838K   1  loop  /mnt/dvdrom1 -> ISOイメージ
+  loop1                         7:1     0   840K   1  loop  /mnt/dvdrom2 -> ISOイメージ
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
-
-  vm12$ cd $HOME
-  vm12$ ls -lh /mnt/dvdrom[1-2]/ (DVD-ROMイメージを確認)
+  
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        947     0        947    0%  /dev
+  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
+  tmpfs                         tmpfs           969     1        968    1%  /run
+  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6439      10956   38%  /
+  /dev/vda1                     xfs            1014   199        816   20%  /boot
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
+  /dev/loop0                    iso9660           1     1          0  100%  /mnt/dvdrom1 -> ISOイメージ
+  /dev/loop1                    iso9660           1     1          0  100%  /mnt/dvdrom2 -> ISOイメージ
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ ls -lh /mnt/dvdrom[1-2]/ (DVD-ROMイメージを確認)
   
   コマンドの実行結果
   --------------------------------------------------
   // dvdrom1 -> ファイル名が「8.3」形式に制限
-  -r-xr-xr-x. 1 root root 75  2月 13 16:20 12345678.123
+  -r-xr-xr-x. 1 root root 75  4月 18 11:00 12345678.123
   
   // dvdrom2
-  -r--r--r--. 1 root root 75  2月 13 16:20 1234567890.12345
+  -r--r--r--. 1 root root 75  4月 18 11:00 1234567890.12345
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /mnt/dvdrom[1-2]/* (ファイル内容を確認)
+  vm11$ cd $HOME
+  vm11$ cat /mnt/dvdrom[1-2]/* (ファイル内容を確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2003,16 +2003,16 @@
   1615年 大坂夏の陣
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt/dvdrom1 /mnt/dvdrom2
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt/dvdrom1 /mnt/dvdrom2
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f *.iso (ISOイメージファイル削除)
+  vm11$ cd $HOME
+  vm11$ rm -f *.iso (ISOイメージファイル削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2030,137 +2030,147 @@
     暗号化デバイスにファイルシステムを作成する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install cryptsetup (パッケージ追加)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install cryptsetup (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.167523 s, 626 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
+  vm11$ cd $HOME
+  vm11$ sudo cryptsetup create secret0(暗号化デバイス名) /dev/loop0 (ループバックデバイスを暗号化デバイスに変換)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Enter passphrase for /home/makoto/image0.img: (例えば ma0122ma と入力)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo cryptsetup create sec0(暗号化デバイス名) /dev/loop0 (ループバックデバイスを暗号化デバイスに変換)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Enter passphrase for /home/makoto/image0.img: (mikotoと入力)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─sec0                253:2    0  100M  0 crypt (暗号化デバイス)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  (ループバックデバイス)
+   |-- secret0                253:2     0   100M   0  crypt (暗号化デバイス)
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd /dev/mapper
-  vm12$ ls -lh (暗号化デバイスへのアクセスを調査)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx. 1 root root       7 12月 28 06:57 centos_vm11-root -> ../dm-0
-  lrwxrwxrwx. 1 root root       7 12月 28 06:57 centos_vm11-swap -> ../dm-1
-  crw-------. 1 root root 10, 236 12月 28 06:57 control
-  lrwxrwxrwx. 1 root root       7 12月 28 15:32 sec0 -> ../dm-2 (アクセスは「/dev/mapper/sec0」でOK)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/mapper/sec0 (暗号化デバイスにファイルシステム作成)
+  vm11$ cd /dev/mapper
+  vm11$ ls -lh (デバイスファイル確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  meta-data=/dev/mapper/sec0       isize=512    agcount=4, agsize=6400 blks
-           =                       sectsz=512   attr=2, projid32bit=1
-           =                       crc=1        finobt=0, sparse=0
-  data     =                       bsize=4096   blocks=25600, imaxpct=25
-           =                       sunit=0      swidth=0 blks
-  naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
-  log      =internal log           bsize=4096   blocks=855, version=2
-           =                       sectsz=512   sunit=0 blks, lazy-count=1
-  realtime =none                   extsz=4096   blocks=0, rtextents=0
+  lrwxrwxrwx. 1 root root       7  4月 18 09:38 centos_vm11-root -> ../dm-0
+  lrwxrwxrwx. 1 root root       7  4月 18 09:38 centos_vm11-swap -> ../dm-1
+  crw-------. 1 root root 10, 236  4月 18 09:38 control
+  lrwxrwxrwx. 1 root root       7  4月 18 12:23 secret0 -> ../dm-2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t xfs /dev/mapper/sec0 /mnt (暗号化デバイスをマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/mapper/secret0 (暗号化デバイスにファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  [31653.681464] XFS (dm-2): Mounting V5 Filesystem
-  [31653.738944] XFS (dm-2): Ending clean mount
+  (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─sec0                253:2    0  100M  0 crypt /mnt (暗号化デバイス)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ df -mT (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t xfs /dev/mapper/secret0 /mnt (暗号化デバイスをマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5500  11895   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/mapper/sec0             xfs               97     6     92    6% /mnt (暗号化デバイス)
+  [10955.614742] XFS (dm-2): Mounting V5 Filesystem
+  [10955.633464] XFS (dm-2): Ending clean mount
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ mount | grep sec0 (マウント状況およびマウントオプションを確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/mapper/sec0 on /mnt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  
+   |-- secret0                253:2     0   100M   0  crypt /mnt -> 暗号化デバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo cp -p HISTORY/*.txt /mnt/ (前記録で作成したファイルを暗号化デバイスにコピー)
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT (ブロックデバイス確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        947     0        947    0%  /dev
+  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
+  tmpfs                         tmpfs           969     1        968    1%  /run
+  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6538      10857   38%  /
+  /dev/vda1                     xfs            1014   199        816   20%  /boot
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
+  /dev/mapper/secret0           xfs              97     6         92    6%  /mnt -> 暗号化デバイス
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ mount | grep secret0 (マウント状況およびマウントオプションを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/mapper/secret0 on /mnt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
+  --------------------------------------------------
+  
+  vm11$ cd /history
+  vm11$ vi AAA.txt (ファイル作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  645年 大化の改新
+  710年 平城京遷都
+  794年 平安京遷都
+  --------------------------------------------------
+  
+  vm11$ cd /mnt
+  vm11$ sudo cp -p HISTORY/*.txt /mnt/ (前記録で作成したファイルを暗号化デバイスにコピー)
   
   コマンドの実行結果
   --------------------------------------------------
