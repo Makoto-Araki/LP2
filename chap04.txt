@@ -2159,7 +2159,7 @@
   /dev/mapper/secret0 on /mnt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
   --------------------------------------------------
   
-  vm11$ cd /history
+  vm11$ cd $HOME/history
   vm11$ vi AAA.txt (ファイル作成)
   
   コマンドの実行結果
@@ -2169,49 +2169,48 @@
   794年 平安京遷都
   --------------------------------------------------
   
+  vm11$ cd $HOME/history
+  vm11$ sudo cp -p AAA.txt /mnt (ファイルを暗号化デバイスにコピー)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   vm11$ cd /mnt
-  vm11$ sudo cp -p HISTORY/*.txt /mnt/ (前記録で作成したファイルを暗号化デバイスにコピー)
+  vm11$ ls -lh (暗号化デバイスにコピーが成功しているか確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto 69  4月 18 12:46 AAA.txt
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (暗号化デバイスをアンマウント)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [11864.247061] XFS (dm-2): Unmounting Filesystem
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo cryptsetup remove secret0 (暗号化デバイスからループバックデバイスに戻す)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ ls -lh (暗号化デバイスにコピーが成功しているか確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 75 12月 28 11:10 AAA.txt
-  -rw-rw-r--. 1 makoto makoto 72 12月 28 11:11 BBB.txt
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (暗号化デバイスをアンマウント)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [32478.990896] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo cryptsetup remove sec0 (暗号化デバイスからループバックデバイスに戻す)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2229,29 +2228,31 @@
     ファイルシステム(ext2,ext3,ext4)のスーパーブロックを調査する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.390861 s, 268 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2264,13 +2265,13 @@
   Stride=0 blocks, Stripe width=0 blocks
   25688 inodes, 102400 blocks
   5120 blocks (5.00%) reserved for the super user
-  First data block=1  // スーパーブロック
+  First data block=1 -> プライマリスーパーブロック
   Maximum filesystem blocks=33685504
   13 block groups
   8192 blocks per group, 8192 fragments per group
   1976 inodes per group
   Superblock backups stored on blocks: 
-   8193, 24577, 40961, 57345, 73729  // スーパーブロックのバックアップ
+    8193, 24577, 40961, 57345, 73729 -> バックアップスーパーブロック
   
   Allocating group tables: done                            
   Writing inode tables: done                            
@@ -2278,29 +2279,30 @@
   Writing superblocks and filesystem accounting information: done 
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo dumpe2fs /dev/loop0 | grep -i superblock (スーパーブロック確認)
+  vm11$ cd $HOME
+  vm11$ sudo dumpe2fs /dev/loop0 | grep -i superblock (スーパーブロック確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  Primary superblock at 1, Group descriptors at 2-2
-  Backup superblock at 8193, Group descriptors at 8194-8194
-  Backup superblock at 24577, Group descriptors at 24578-24578
-  Backup superblock at 40961, Group descriptors at 40962-40962
-  Backup superblock at 57345, Group descriptors at 57346-57346
-  Backup superblock at 73729, Group descriptors at 73730-73730
+  dumpe2fs 1.42.9 (28-Dec-2013)
+    Primary superblock at 1, Group descriptors at 2-2
+    Backup superblock at 8193, Group descriptors at 8194-8194
+    Backup superblock at 24577, Group descriptors at 24578-24578
+    Backup superblock at 40961, Group descriptors at 40962-40962
+    Backup superblock at 57345, Group descriptors at 57346-57346
+    Backup superblock at 73729, Group descriptors at 73730-73730
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2318,8 +2320,8 @@
     ファイルシステムチェックを行う (アンマウントまたは読取専用マウントの状態でないとファイルシステムが壊れる)
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(fsck)
@@ -2329,50 +2331,112 @@
     fsck -N     // 動作のシミュレートのみ
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 1.72486 s, 60.8 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
+  vm11$ sudo losetup /dev/loop1 image1.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
+  vm11$ sudo mkfs -t xfs /dev/loop1 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo fsck -t ext4 /dev/loop0 (ファイルシステムチェック)
+  vm11$ cd $HOME
+  vm11$ sudo fsck -t ext4 /dev/loop0 (ファイルシステムチェック)
   
   コマンドの実行結果
   --------------------------------------------------
   fsck from util-linux 2.23.2
-  e2fsck 1.42.9 (28-Dec-2013)
-  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks  // 異常なし
+  e2fsck 1.42.9 (28-Dec-2013) -> 内部でコマンド(e2fsck)を実行
+  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks -> 異常なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo fsck -r /dev/loop0 (対話的にファイルシステムチェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  fsck from util-linux 2.23.2
+  e2fsck 1.42.9 (28-Dec-2013) -> 内部でコマンド(e2fsck)を実行
+  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks -> 異常なし
+  /dev/loop0: status 0, rss 3088, real 0.036244, user 0.001382, sys 0.006858
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo fsck -t xfs /dev/loop1 (ファイルシステムチェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  fsck from util-linux 2.23.2
+  If you wish to check the consistency of an XFS filesystem or
+  repair a damaged filesystem, see xfs_repair(8). -> コマンド(xfs_repair)の使用推奨
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo xfs_repair /dev/loop1 (ファイルシステムチェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Phase 1 - find and verify superblock...
+  Phase 2 - using internal log
+          - zero log...
+          - scan filesystem freespace and inode maps...
+          - found root inode chunk
+  Phase 3 - for each AG...
+          - scan and clear agi unlinked lists...
+          - process known inodes and perform inode discovery...
+          - agno = 0
+          - agno = 1
+          - agno = 2
+          - agno = 3
+          - process newly discovered inodes...
+  Phase 4 - check for duplicate blocks...
+          - setting up duplicate extent list...
+          - check for inodes claiming duplicate blocks...
+          - agno = 0
+          - agno = 1
+          - agno = 2
+          - agno = 3
+  Phase 5 - rebuild AG headers and trees...
+          - reset superblock...
+  Phase 6 - check inode connectivity...
+          - resetting contents of realtime bitmap and summary inodes
+          - traversing filesystem ...
+          - traversal finished ...
+          - moving disconnected inodes to lost+found ...
+  Phase 7 - verify and correct link counts...
+  done
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-1].img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2390,8 +2454,8 @@
     ファイルシステムチェックを行う (アンマウントまたは読取専用マウントの状態でないとファイルシステムが壊れる)
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(e2fsck)
@@ -2403,45 +2467,34 @@
     e2fsck -n     // 問合せに「no」と回答
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.13457 s, 779 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (省略) -> スーパーブロックはメモしない、後でコマンド(dumpe2fs)で調査する
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo dumpe2fs /dev/loop0 | grep -i superblock (スーパーブロック確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Primary superblock at 1, Group descriptors at 2-2
-  Backup superblock at 8193, Group descriptors at 8194-8194
-  Backup superblock at 24577, Group descriptors at 24578-24578
-  Backup superblock at 40961, Group descriptors at 40962-40962
-  Backup superblock at 57345, Group descriptors at 57346-57346
-  Backup superblock at 73729, Group descriptors at 73730-73730
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo e2fsck /dev/loop0 (ファイルシステムチェック)
+  vm11$ cd $HOME
+  vm11$ sudo e2fsck /dev/loop0 (ファイルシステムチェック)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2449,13 +2502,14 @@
   /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo e2fsck -c /dev/loop0 (不良ブロックのチェック)
+  vm11$ cd $HOME
+  vm11$ sudo e2fsck -c -y /dev/loop0 (不良チェック、問合せにYES)
   
   コマンドの実行結果
   --------------------------------------------------
   e2fsck 1.42.9 (28-Dec-2013)
-  Checking for bad blocks (read-only test): 0.00% done, 0:00 elapsed. (0/0/0 errdone                                                 
+  Checking for bad blocks (read-only test): 0.00% done, 0:00 elapsed.
+  
   /dev/loop0: Updating bad block inode.
   Pass 1: Checking inodes, blocks, and sizes
   Pass 2: Checking directory structure
@@ -2467,13 +2521,36 @@
   /dev/loop0: 11/25688 files (9.1% non-contiguous), 8896/102400 blocks
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo e2fsck -b 8193 /dev/loop0 (スーパーブロックのバックアップ「8193」を使用してファイルシステム修復)
+  vm11$ cd $HOME
+  vm11$ sudo e2fsck -p /dev/loop0 (自動修復)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo dumpe2fs /dev/loop0 | grep -i superblock (スーパーブロック確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  dumpe2fs 1.42.9 (28-Dec-2013)
+    Primary superblock at 1, Group descriptors at 2-2
+    Backup superblock at 8193, Group descriptors at 8194-8194
+    Backup superblock at 24577, Group descriptors at 24578-24578
+    Backup superblock at 40961, Group descriptors at 40962-40962
+    Backup superblock at 57345, Group descriptors at 57346-57346
+    Backup superblock at 73729, Group descriptors at 73730-73730
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo e2fsck -b 8193 /dev/loop0 (バックアップ(8193)を使用してファイルシステム修復)
   
   コマンドの実行結果
   --------------------------------------------------
   e2fsck 1.42.9 (28-Dec-2013)
   /dev/loop0 was not cleanly unmounted, check forced.
+  
   Pass 1: Checking inodes, blocks, and sizes
   Pass 2: Checking directory structure
   Pass 3: Checking directory connectivity
@@ -2484,16 +2561,16 @@
   /dev/loop0: 11/25688 files (9.1% non-contiguous), 8896/102400 blocks
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2511,41 +2588,43 @@
     ファイルシステムチェックを行う (アンマウントまたは読取専用マウントの状態でないとファイルシステムが壊れる)
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(xfs_repair)
-    xfs_repair XX     // デバイス(XX)のファイルシステムチェックと修復
-    xfs_repair -n XX  // デバイス(XX)のファイルシステムチェックのみ
+    xfs_repair XX     // デバイス(XX)のチェックと修復
+    xfs_repair -n XX  // デバイス(XX)のチェックのみ
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.298024 s, 352 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/loop0 (ファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/loop0 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo xfs_repair -n /dev/loop0 (ファイルシステムチェック)
+  vm11$ cd $HOME
+  vm11$ sudo xfs_repair -n /dev/loop0 (チェックのみ実行)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2578,16 +2657,52 @@
   No modify flag set, skipping filesystem flush and exiting.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo xfs_repair /dev/loop0 (チェックと修復)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Phase 1 - find and verify superblock...
+  Phase 2 - using internal log
+          - zero log...
+          - scan filesystem freespace and inode maps...
+          - found root inode chunk
+  Phase 3 - for each AG...
+          - scan and clear agi unlinked lists...
+          - process known inodes and perform inode discovery...
+          - agno = 0
+          - agno = 1
+          - agno = 2
+          - agno = 3
+          - process newly discovered inodes...
+  Phase 4 - check for duplicate blocks...
+          - setting up duplicate extent list...
+          - check for inodes claiming duplicate blocks...
+          - agno = 0
+          - agno = 1
+          - agno = 2
+          - agno = 3
+  Phase 5 - rebuild AG headers and trees...
+          - reset superblock...
+  Phase 6 - check inode connectivity...
+          - resetting contents of realtime bitmap and summary inodes
+          - traversing filesystem ...
+          - traversal finished ...
+          - moving disconnected inodes to lost+found ...
+  Phase 7 - verify and correct link counts...
+  done
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2605,8 +2720,8 @@
     ファイルシステム管理を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(tune2fs)
@@ -2620,32 +2735,34 @@
     tune2fs -U XX  // UUID(XX)
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.125487 s, 836 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext2 /dev/loop0 (ファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext2 /dev/loop0 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo tune2fs -j /dev/loop0 (ext2 -> ext3)
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -j /dev/loop0 (ext2 -> ext3)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2653,8 +2770,8 @@
   Creating journal inode: done
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo tune2fs -m 1 /dev/loop0 (管理領域の割合を1%に変更)
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -m 1 /dev/loop0 (管理領域の割合を1%に変更)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2662,15 +2779,15 @@
   Setting reserved blocks percentage to 1% (1024 blocks)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo tune2fs -l /dev/loop0 (スーパーブロックの内容を表示)
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 (スーパーブロックの内容を表示)
   
   コマンドの実行結果
   --------------------------------------------------
   tune2fs 1.42.9 (28-Dec-2013)
   Filesystem volume name:   <none>
   Last mounted on:          <not available>
-  Filesystem UUID:          d91fda70-f127-4299-9973-758a316172c8
+  Filesystem UUID:          cad03a58-d968-454f-90f7-17a47f9d45f7
   Filesystem magic number:  0xEF53
   Filesystem revision #:    1 (dynamic)
   Filesystem features:      has_journal ext_attr resize_inode dir_index filetype sparse_super
@@ -2692,12 +2809,12 @@
   Fragments per group:      8192
   Inodes per group:         1976
   Inode blocks per group:   247
-  Filesystem created:       Tue Dec 28 22:37:45 2021
+  Filesystem created:       Tue Apr 18 18:36:28 2023
   Last mount time:          n/a
-  Last write time:          Tue Dec 28 22:38:50 2021
+  Last write time:          Tue Apr 18 18:38:47 2023
   Mount count:              0
   Maximum mount count:      -1
-  Last checked:             Tue Dec 28 22:37:45 2021
+  Last checked:             Tue Apr 18 18:36:28 2023
   Check interval:           0 (<none>)
   Reserved blocks uid:      0 (user root)
   Reserved blocks gid:      0 (group root)
@@ -2705,28 +2822,60 @@
   Inode size:               128
   Journal inode:            8
   Default directory hash:   half_md4
-  Directory Hash Seed:      0a04640e-5731-47c5-b94a-ee342dc76647
+  Directory Hash Seed:      31bbfd9e-0370-48f4-8b9f-24692375084a
   Journal backup:           inode blocks
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo tune2fs -L AAA /dev/loop0 (ボリュームラベルを「AAA」に変更)
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -L AAA /dev/loop0 (ボリュームラベルを「AAA」に変更)
   
   コマンドの実行結果
   --------------------------------------------------
-  tune2fs 1.42.9 (28-Dec-2013) -> 上記スーパーブロックの「Filesystem volume name」に更新された
+  tune2fs 1.42.9 (28-Dec-2013)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 | grep 'volume name' (ボリュームラベルを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem volume name: AAA
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 | grep 'UUID' (UUIDを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem UUID: cad03a58-d968-454f-90f7-17a47f9d45f7
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -U $(uuidgen) /dev/loop0 (UUIDを設定)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tune2fs 1.42.9 (28-Dec-2013)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 | grep 'UUID' (UUIDを確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem UUID: 477f05e5-45df-48e9-bf8b-17395e5fada0
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2744,8 +2893,8 @@
     ファイルシステム管理を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(badblocks)
@@ -2754,48 +2903,58 @@
     badblocks -w     // 書込モードでテスト -> ファイルシステム破壊？
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10 (ディスクイメージ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.17776 s, 590 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img (ディスクイメージとループバックデバイスを紐づけ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo badblocks -b 1024 /dev/loop0 (不良ブロックの検索)
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 | grep -i 'block size' (ブロックサイズの確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Block size: 1024
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo badblocks -b 1024 /dev/loop0 (不良ブロックの検索)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D (ループバックデバイスとディスクイメージの紐づけ解除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img (ディスクイメージ削除)
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img (ディスクイメージ削除)
   
   コマンドの実行結果
   --------------------------------------------------
