@@ -1,0 +1,314 @@
+================================================================================
+[01] コンテナエンジン
+[02] サンプルコンテナ
+[03] コンテナ基本動作 - 01 (イメージの取得)
+[04] コンテナ基本動作 - 02 (コンテナの起動と停止)
+[05] コンテナ基本動作 - 03 (コンテナのカスタマイズ)
+================================================================================
+[01]
+  コンテナエンジン
+  
+[内容]
+  ## 作業内容
+    ホスト内のコンテナエンジン(Podman)の状態を確認
+  
+  ## 使用マシン
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
+    MEMO : ホスト
+  
+[確認]
+  $ cd $HOME
+  $ podman --version (バージョン確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  podman version 4.2.0
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman images (コンテナイメージ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 列見出しのみ出力
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a (停止中のコンテナを含むコンテナ一覧)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 列見出しのみ出力
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[02]
+  サンプルコンテナ
+  
+[内容]
+  ## 作業内容
+    サンプルコンテナ(Hello-World)の自動ダウンロードとコンテナ実行 -> コマンド(run)で実現
+  
+  ## 使用マシン
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
+    MEMO : ホスト
+  
+[確認]
+  $ cd $HOME
+  $ podman run hello-world (自動ダウンロードとコンテナ実行)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Resolved "hello-world" as an alias (/etc/containers/registries.conf.d/000-shortnames.conf)
+  Trying to pull quay.io/podman/hello:latest...
+  Getting image source signatures
+  Copying blob fde3db991bb0 done
+  Copying config 03ed4cbdaa done  
+  Writing manifest to image destination
+  Storing signatures
+  ...
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman images (イメージ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY            TAG     IMAGE ID      CREATED       SIZE
+  quay.io/podman/hello  latest  03ed4cbdaa46  18 hours ago  82.1 kB
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a (停止中のコンテナを含むコンテナ一覧) -> ステータスが「Exited」で動作中ではない
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                        COMMAND               CREATED        STATUS                    PORTS  NAMES
+  55d863453907  quay.io/podman/hello:latest  /usr/local/bin/po...  2 minutes ago  Exited (0) 2 minutes ago         gallant_mahavira
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm 55d863453907 (コンテナの削除) -> 停止ではない
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  55d863453907484cb046e4c405ffdc01fc94214bb31739002efbb0d8d93f0d2d
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rmi 03ed4cbdaa46 (イメージの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Untagged: quay.io/podman/hello:latest
+  Deleted: 03ed4cbdaa464c7077ddd8581ea20064fcd6be3723a983fe41626c28c9d8976b
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[03]
+  コンテナ基本動作 - 01 (イメージの取得)
+  
+[内容]
+  ## 作業内容
+    イメージの取得 -> 今回は「Nginx」を使用
+  
+  ## 使用マシン
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
+    MEMO : ホスト
+  
+[確認]
+  $ cd $HOME
+  $ podman images (コンテナイメージ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 列見出しのみ出力
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman pull nginx (コンテナイメージ取得) -> docker.io/library/nginx:latest を選択
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying to pull docker.io/library/nginx:latest...
+  Getting image source signatures
+  Copying blob 8c767bdbc9ae done  
+  Copying blob 2019c71d5655 done  
+  Copying blob 26c5c85e47da done  
+  Copying blob 78e14bb05fd3 done  
+  Copying blob 4f3256bdf66b done  
+  Copying blob 75576236abf5 done  
+  Copying config 6efc10a051 done  
+  Writing manifest to image destination
+  Storing signatures
+  6efc10a0510f143a90b69dc564a914574973223e88418d65c1f8809e08dc0a1f
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman images (コンテナイメージ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY               TAG     IMAGE ID      CREATED     SIZE
+  docker.io/library/nginx  latest  6efc10a0510f  5 days ago  147 MB
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[04]
+  コンテナ基本動作 - 02 (コンテナの起動と停止)
+  
+[内容]
+  ## 作業内容
+    コンテナの起動と停止
+  
+  ## 使用マシン
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
+    MEMO : ホスト
+  
+[確認]
+  $ cd $HOME
+  $ podman ps -a (コンテナ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 列見出しのみ出力
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman run (コンテナの起動)
+  > -d                      // バックグラウンド実行
+  > --name nginx-container  // コンテナ名
+  > -p 8181:80              // ホスト側(8181):コンテナ側(80)
+  > nginx                   // イメージ名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  3f1ccd1bdf9d576aefbd67446d51280ee1ef937e388255769e1f378392ea8fcc
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a (コンテナ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
+  3f1ccd1bdf9d  docker.io/library/nginx:latest  nginx -g daemon o...  33 seconds ago  Up 33 seconds ago  0.0.0.0:8181->80/tcp  nginx-container
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ firefox -> http://localhost:8181 (ブラウザからコンテナへアクセス)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (ウェルカムページ表示)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman stop nginx-container (コンテナの停止) -> コンテナ名ではなくコンテナIDも可
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx-container
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a (コンテナ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                           COMMAND               CREATED        STATUS                         PORTS                 NAMES
+  3f1ccd1bdf9d  docker.io/library/nginx:latest  nginx -g daemon o...  6 minutes ago  Exited (0) About a minute ago  0.0.0.0:8181->80/tcp  nginx-container
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[05]
+  コンテナ基本動作 - 03 (コンテナのカスタマイズ)
+  
+[内容]
+  ## 作業内容
+    コンテナのカスタマイズ -> サンプルに従いコンテナ(CentOS7)に「Tomcat」をインストール
+  
+  ## 使用マシン
+    HOST : localhost(Rocky-Linux)
+    IPV4 : 192.168.1.4
+    MEMO : ホスト
+  
+[確認]
+  $ cd $HOME
+  $ podman pull centos:7 (コンテナイメージ取得)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Resolved "centos" as an alias (/etc/containers/registries.conf.d/000-shortnames.conf)
+  Trying to pull quay.io/centos/centos:7...
+  Getting image source signatures
+  Copying blob 2d473b07cdd5 done  
+  Copying config 8652b9f0cb done  
+  Writing manifest to image destination
+  Storing signatures
+  8652b9f0cb4c0599575e5a003f5906876e10c1ceb2ab9fe1786712dac14a50cf
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman images (コンテナイメージ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY               TAG     IMAGE ID      CREATED      SIZE
+  docker.io/library/nginx  latest  6efc10a0510f  5 days ago   147 MB
+  quay.io/centos/centos    7       8652b9f0cb4c  2 years ago  212 MB -> 取得イメージ
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ mkdir -p tomcat-container/logs (ディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman run (コンテナの起動)
+  > -it                                                // コンテナ内へログイン可能にする
+  > -d                                                 // バックグラウンド実行
+  > -p 18080:8080                                      // ホスト側(18080):コンテナ側(8080)
+  > -v /home/makoto/tomcat-container/logs:/share/logs  // ホスト側(/home/makoto/tomcat-container-logs):コンテナ側(/share/logs)
+  > --name tomcat                                      // コンテナ名
+  > centos:7                                           // イメージ名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a (コンテナ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.44/bin/apache-tomcat-9.0.44-deployer.tar.gz (ソフトウェアのダウンロード)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
