@@ -1,31 +1,29 @@
 ================================================================================
-[01] コンテナエンジン
-[02] サンプルコンテナ
-[03] コンテナ基本動作 - 01 (イメージの取得)
-[04] コンテナ基本動作 - 02 (コンテナの起動と停止)
-[05] コンテナ基本動作 - 03 (コンテナ内へ内部接続)
+[01] Nginx - 01 (イメージの取得)
+[02] Nginx - 02 (コンテナの起動と停止)
+[03] Nginx - 03 (コンテナ内へ内部接続)
+[04] Nginx - 04 (設定ファイルを閲覧)
 ================================================================================
 [01]
-  コンテナエンジン
+  Nginx - 01 (イメージの取得)
   
 [内容]
   ## 作業内容
-    ホスト内のコンテナエンジン(Podman)の状態を確認
+    イメージ(Nginx)の取得
   
   ## 使用マシン
-    HOST : localhost(Rocky-Linux)
+    HOST : localhost
     IPV4 : 192.168.1.4
     MEMO : ホスト
   
   ## コマンド
     podman --version : バージョン表示
     podman images    : ローカルのコンテナイメージ一覧
-    podman ps        : コンテナ一覧
-    podman ps -a     : コンテナ一覧に停止中のコンテナも含む
-
+    podman pull XX   : イメージ(XX)を取得
+  
 [確認]
   $ cd $HOME
-  $ podman --version (バージョン確認)
+  $ podman --version
   
   コマンドの実行結果
   --------------------------------------------------
@@ -33,110 +31,11 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman images (コンテナイメージ確認)
+  $ podman images
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 列見出しのみ出力
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman ps -a (停止中のコンテナを含むコンテナ一覧)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 列見出しのみ出力
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[02]
-  サンプルコンテナ
-  
-[内容]
-  ## 作業内容
-    サンプルコンテナ(Hello-World)の自動ダウンロードとコンテナ実行 -> コマンド(run)で実現
-  
-  ## 使用マシン
-    HOST : localhost(Rocky-Linux)
-    IPV4 : 192.168.1.4
-    MEMO : ホスト
-  
-  ## コマンド
-    podman run XX : コンテナ(XX)を自動ダウンロード後に実行
-    podman rm XX  : コンテナ(XX)を削除
-    podman rmi XX : イメージ(XX)を削除
-  
-[確認]
-  $ cd $HOME
-  $ podman run hello-world (自動ダウンロードとコンテナ実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman images (イメージ確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  REPOSITORY            TAG     IMAGE ID      CREATED       SIZE
-  quay.io/podman/hello  latest  03ed4cbdaa46  18 hours ago  82.1 kB
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman ps -a (停止中のコンテナを含むコンテナ一覧) -> ステータスが「Exited」で動作中ではない
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  CONTAINER ID  IMAGE                        COMMAND               CREATED        STATUS                    PORTS  NAMES
-  55d863453907  quay.io/podman/hello:latest  /usr/local/bin/po...  2 minutes ago  Exited (0) 2 minutes ago         gallant_mahavira
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman rm 55d863453907 (コンテナの削除) -> コンテナの停止は「podman stop」で行う
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  55d863453907484cb046e4c405ffdc01fc94214bb31739002efbb0d8d93f0d2d
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman rmi 03ed4cbdaa46 (イメージの削除)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Untagged: quay.io/podman/hello:latest
-  Deleted: 03ed4cbdaa464c7077ddd8581ea20064fcd6be3723a983fe41626c28c9d8976b
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[03]
-  コンテナ基本動作 - 01 (イメージの取得)
-  
-[内容]
-  ## 作業内容
-    イメージの取得 -> 今回は「Nginx」を使用
-  
-  ## 使用マシン
-    HOST : localhost(Rocky-Linux)
-    IPV4 : 192.168.1.4
-    MEMO : ホスト
-  
-  ## コマンド
-    podman pull XX : イメージ(XX)を取得
-
-[確認]
-  $ cd $HOME
-  $ podman images (コンテナイメージ確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 列見出しのみ出力
+  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
@@ -159,7 +58,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman images (コンテナイメージ確認)
+  $ podman images
   
   コマンドの実行結果
   --------------------------------------------------
@@ -170,30 +69,37 @@
   以下の確認に続く
   
 ================================================================================
-[04]
-  コンテナ基本動作 - 02 (コンテナの起動と停止)
+[02]
+  Nginx - 02 (コンテナの起動と停止)
   
 [内容]
   ## 作業内容
     コンテナの起動と停止
   
   ## 使用マシン
-    HOST : localhost(Rocky-Linux)
+    HOST : localhost
     IPV4 : 192.168.1.4
     MEMO : ホスト
   
   ## コマンド
+    podman ps            : コンテナ一覧
+    podman ps -a         : コンテナ一覧に停止中のコンテナも含む
     podman run -d        : バックグラウンド実行
     podman run -p XX:YY  : ホスト側のポート(XX)とコンテナ側のポート(YY)をリンク
-    podman run --name XX : コンテナを「XX」という名前で実行
-
+    podman run --name XX : コンテナ(XX)という名前で実行
+    podman run XX        : イメージ(XX)を実行
+    podman stop XX       : コンテナ(XX)を停止
+    podman start XX      : コンテナ(XX)を起動
+    podman rm XX         : コンテナ(XX)を削除
+    podman rmi XX        : イメージ(XX)を削除
+  
 [確認]
   $ cd $HOME
-  $ podman ps -a (コンテナ確認)
+  $ podman ps -a
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 列見出しのみ出力
+  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
@@ -201,28 +107,20 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  a259a44a437924cf6cf00f169d97af127a1510bcaee37235c499a49ce422d056
+  f3663f1aa30adea7fb6e51c4c82697b06360d4505f52a19a5934ee4d450fa636
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman ps -a (コンテナ確認)
+  $ podman ps -a
   
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
-  a259a44a4379  docker.io/library/nginx:latest  nginx -g daemon o...  17 seconds ago  Up 17 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  f3663f1aa30a  docker.io/library/nginx:latest  nginx -g daemon o...  14 seconds ago  Up 14 seconds ago  0.0.0.0:8181->80/tcp  mine01
   --------------------------------------------------
   
   $ cd $HOME
-  $ firefox -> http://localhost:8181 (ブラウザからコンテナへアクセス)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (ウェルカムページ表示)
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman stop mine01 (コンテナの停止) -> コンテナ名ではなくコンテナIDも可
+  $ podman stop mine01 -> コンテナ名ではなくコンテナIDも可
   
   コマンドの実行結果
   --------------------------------------------------
@@ -230,87 +128,118 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman ps -a (コンテナ確認)
+  $ podman ps -a
   
   コマンドの実行結果
   --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED        STATUS                       PORTS                 NAMES
-  a259a44a4379  docker.io/library/nginx:latest  nginx -g daemon o...  3 minutes ago  Exited (137) 33 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  CONTAINER ID  IMAGE                           COMMAND               CREATED             STATUS                      PORTS                 NAMES
+  f3663f1aa30a  docker.io/library/nginx:latest  nginx -g daemon o...  About a minute ago  Exited (137) 7 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman start mine01 -> コマンド(start)でも起動可能
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mine01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                           COMMAND               CREATED             STATUS            PORTS                 NAMES
+  f3663f1aa30a  docker.io/library/nginx:latest  nginx -g daemon o...  About a minute ago  Up 6 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman stop mine01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mine01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm mine01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  f3663f1aa30adea7fb6e51c4c82697b06360d4505f52a19a5934ee4d450fa636
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[05]
-  コンテナ基本動作 - 03 (コンテナ内へ内部接続)
+[03]
+  Nginx - 03 (コンテナ内へ内部接続)
   
 [内容]
   ## 作業内容
     コンテナ内へ内部接続
   
   ## 使用マシン
-    HOST : localhost(Rocky-Linux)
+    HOST : localhost
     IPV4 : 192.168.1.4
     MEMO : ホスト
   
   ## コマンド
     podman run -it : コンテナ内へ接続可能にする
-    podman run -d  : バックグラウンド実行
     podman exec XX : コンテナにコマンド(XX)実行
   
 [確認]
   $ cd $HOME
-  $ podman run -it -d -p 8181:80 --name mine02 nginx (コンテナ起動)
+  $ podman run -it -d -p 8181:80 --name mine02 nginx
   
   コマンドの実行結果
   --------------------------------------------------
-  6d766b5fd2da031f29710a12881015e62768a704f3533f43dd9e3240ddd5e0ae
+  fb35a6c56afe3340b5cafd1818a4551e62ef1602be1e5d05adc8e651ffe7f9e7
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman ps -a (コンテナ確認)
+  $ podman ps -a
   
   コマンドの実行結果
   --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS                      PORTS                 NAMES
-  a259a44a4379  docker.io/library/nginx:latest  nginx -g daemon o...  4 minutes ago   Exited (137) 2 minutes ago  0.0.0.0:8181->80/tcp  mine01
-  6d766b5fd2da  docker.io/library/nginx:latest  nginx -g daemon o...  15 seconds ago  Up 15 seconds ago           0.0.0.0:8181->80/tcp  mine02
+  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
+  fb35a6c56afe  docker.io/library/nginx:latest  nginx -g daemon o...  16 seconds ago  Up 16 seconds ago  0.0.0.0:8181->80/tcp  mine02
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman exec -it mine02 bash (コンテナ接続)
+  $ podman exec -it mine02 bash (コンテナ内へ内部接続)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> プロンプトが「root@6d766b5fd2da:/#」に変化
+  (省略) -> プロンプトが「root@6d766b5fd2da:/#」に変化 -> 「root@container-id:/#」と表記
   --------------------------------------------------
     
-    root@6d766b5fd2da:/# (ユーザー確認)
-    root@6d766b5fd2da:/# whoami
+    root@container-id:/# (ユーザー確認)
+    root@container-id:/# whoami
     
     コマンドの実行結果
     --------------------------------------------------
     root
     --------------------------------------------------
     
-    root@6d766b5fd2da:/# (カレントディレクトリ)
-    root@6d766b5fd2da:/# pwd
+    root@container-id:/# (カレントディレクトリ)
+    root@container-id:/# pwd
     
     コマンドの実行結果
     --------------------------------------------------
-    /
+    / (ルートディレクトリ)
     --------------------------------------------------
     
-    root@6d766b5fd2da:/# (カーネルバージョン)
-    root@6d766b5fd2da:/# uname -r
+    root@container-id:/# (カーネルバージョン)
+    root@container-id:/# uname -r
     
     コマンドの実行結果
     --------------------------------------------------
-    4.18.0-425.19.2.el8_7.x86_64 -> ホストと同一
+    4.18.0-425.19.2.el8_7.x86_64 -> ホストのカーネルバージョンと同一
     --------------------------------------------------
     
-    root@6d766b5fd2da:/# (ディレクトリ構成)
-    root@6d766b5fd2da:/# ls -lh
+    root@container-id:/# (ディレクトリ構成)
+    root@container-id:/# ls -lh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -337,8 +266,8 @@
     drwxr-xr-x.   1 root   root      19 Apr 11 00:00 var
     --------------------------------------------------
     
-    root@6d766b5fd2da:/# (ログアウト)
-    root@6d766b5fd2da:/# exit
+    root@container-id:/# (ログアウト)
+    root@container-id:/# exit
     
     コマンドの実行結果
     --------------------------------------------------
@@ -346,11 +275,167 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ podman stop mine02 (コンテナ停止)
+  $ podman stop mine02
   
   コマンドの実行結果
   --------------------------------------------------
   mine02
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm mine02
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  fb35a6c56afe3340b5cafd1818a4551e62ef1602be1e5d05adc8e651ffe7f9e7
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[04]
+  Nginx - 04 (設定ファイルを閲覧)
+  
+[内容]
+  ## 作業内容
+    設定ファイルを閲覧
+  
+  ## 使用マシン
+    HOST : localhost
+    IPV4 : 192.168.1.4
+    MEMO : ホスト
+  
+  ## コマンド
+    podman run -it : コンテナ内へ接続可能にする
+    podman exec XX : コンテナにコマンド(XX)実行
+  
+[確認]
+  $ cd $HOME
+  $ podman run -it -d -p 8181:80 --name mine03 nginx
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  733464389dcf7a58cf9b656b561a3911ba1301e4c9110c48c42b5ceaeb21cf93
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
+  733464389dcf  docker.io/library/nginx:latest  nginx -g daemon o...  19 seconds ago  Up 19 seconds ago  0.0.0.0:8181->80/tcp  mine03
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman exec -it mine03 bash
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> プロンプトが「root@733464389dcf:/#」に変化 -> 「root@container-id:/#」と表記
+  --------------------------------------------------
+    
+    root@container-id:/# (カレントディレクトリ)
+    root@container-id:/# pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    / (ルートディレクトリ)
+    --------------------------------------------------
+    
+    root@container-id:/# (ファイル検索)
+    root@container-id:/# find . -name nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /etc/nginx/nginx.conf
+    --------------------------------------------------
+    
+    root@container-id:/# (ファイル閲覧)
+    root@container-id:/# cat /etc/nginx/nginx.conf -> コメント削除など出力結果を整形済み
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user nginx;
+    worker_processes  auto;    
+    error_log /var/log/nginx/error.log notice;
+    pid /var/run/nginx.pid;
+    
+    events {
+      worker_connections  1024;
+    }
+    
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';      
+      access_log /var/log/nginx/access.log main;
+      sendfile on;
+      keepalive_timeout 65;
+      include /etc/nginx/conf.d/*.conf; -> 追加設定ファイルの格納ディレクトリ
+    }
+    --------------------------------------------------
+    
+    root@container-id:/# (ファイル確認)
+    root@container-id:/# ls -lh /etc/nginx/conf.d
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--. 1 root root 1.1K Apr 19 00:59 default.conf
+    --------------------------------------------------
+    
+    root@container-id:/# (ファイル閲覧)
+    root@container-id:/# cat /etc/nginx/conf.d/default.conf -> コメント削除など出力結果を整形済み
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    server {
+      listen 80;
+      listen [::]:80;
+      server_name localhost;
+      location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+      }
+      error_page 500 502 503 504 /50x.html;
+      location = /50x.html {
+        root /usr/share/nginx/html;
+      }
+    }
+    --------------------------------------------------
+    
+    root@container-id:/# (エディタ検索)
+    root@container-id:/# which vi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> コンテナ内でエディタからのファイル編集が不可
+    --------------------------------------------------
+    
+    root@container-id:/# (ログアウト)
+    root@container-id:/# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ podman stop mine03
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mine03
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm mine03
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  733464389dcf7a58cf9b656b561a3911ba1301e4c9110c48c42b5ceaeb21cf93
   --------------------------------------------------
   
   以下の確認に続く

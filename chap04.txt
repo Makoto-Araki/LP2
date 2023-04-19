@@ -3812,32 +3812,34 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.433394 s, 242 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/loop0
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/loop0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo xfs_repair /dev/loop0
+  vm11$ cd $HOME
+  vm11$ sudo xfs_repair /dev/loop0
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3872,16 +3874,16 @@
   done
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3899,55 +3901,75 @@
     ファイルシステム管理を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.12708 s, 825 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t btrfs /dev/loop0
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t btrfs /dev/loop0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo btrfs filesystem show (ファイルシステムの情報を表示)
+  vm11$ cd $HOME
+  vm11$ sudo btrfs filesystem show (ファイルシステムの情報を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  Label: none  uuid: 7e377e0a-c234-44f5-a1c4-79424773a392
+  Label: none  uuid: 33d15954-3b5c-4a95-9527-5bdd5a14483e
     Total devices 1 FS bytes used 112.00KiB
-    devid    1 size 100.00MiB used 88.00MiB path /dev/loop0
+    devid 1 size 100.00MiB used 88.00MiB path /dev/loop0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo btrfs filesystem df /mnt (マウントしたファイルシステムの使用状況)
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  /mnt -> マウントしたデバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo btrfs filesystem df /mnt (マウントしたファイルシステムの使用状況)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3957,9 +3979,9 @@
   GlobalReserve, single: total=16.00MiB, used=0.00B
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo btrfs subvolume create /mnt/sub1 (サブボリューム作成)
-  vm12$ sudo btrfs subvolume create /mnt/sub2 (サブボリューム作成)
+  vm11$ cd $HOME
+  vm11$ sudo btrfs subvolume create /mnt/sub1 (サブボリューム作成)
+  vm11$ sudo btrfs subvolume create /mnt/sub2 (サブボリューム作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3967,8 +3989,8 @@
   Create subvolume '/mnt/sub2'
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo btrfs subvolume list /mnt (作成したサブボリューム確認)
+  vm11$ cd $HOME
+  vm11$ sudo btrfs subvolume list /mnt (作成したサブボリューム確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3976,59 +3998,77 @@
   ID 257 gen 8 top level 5 path sub2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (予めトップレベルのボリュームをアンマウント)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (予めトップレベルのボリュームをアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults,subvolid=256 -t btrfs /dev/loop0 /mnt/mp1 (サブボリュームを個別にマウント)
-  vm12$ sudo mount -o defaults,subvolid=257 -t btrfs /dev/loop0 /mnt/mp2 (サブボリュームを個別にマウント)
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  (アンマウント済)
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults,subvolid=256 -t btrfs /dev/loop0 /mnt/loop1 (サブボリュームを個別にマウント)
+  vm11$ sudo mount -o defaults,subvolid=257 -t btrfs /dev/loop0 /mnt/loop2 (サブボリュームを個別にマウント)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ df -mT (lsblkだと/mnt/mp1が表示されない)
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT (lsblkだと/mnt/mp1が表示されない)
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root xfs            17394  5412  11983   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/loop0                   btrfs            100    17     19   47% /mnt/mp1 (サブボリューム)
-  /dev/loop0                   btrfs            100    17     19   47% /mnt/mp2 (サブボリューム)
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        947     0        947    0%  /dev
+  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
+  tmpfs                         tmpfs           969     1        968    1%  /run
+  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6448      10947   38%  /
+  /dev/vda1                     xfs            1014   199        816   20%  /boot
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/0
+  /dev/loop0                    btrfs           100    17         19   47%  /mnt/loop1 -> サブボリューム
+  /dev/loop0                    btrfs           100    17         19   47%  /mnt/loop2 -> サブボリューム
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt/mp1
-  vm12$ sudo umount /mnt/mp2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt/loop1 /mnt/loop2
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4046,37 +4086,39 @@
     ファイルシステム管理を行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.3301 s, 318 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 -b 4096 /dev/loop0
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 -b 4096 /dev/loop0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> ブロックサイズが4096未満の場合、後の「btrfs」への変換時にエラー出力
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo btrfs-convert /dev/loop0 (ext4 -> btrfs)
+  vm11$ cd $HOME
+  vm11$ sudo btrfs-convert /dev/loop0 (ext4 -> btrfs)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4089,48 +4131,48 @@
   conversion complete
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ df -mT
+  vm11$ cd $HOME
+  vm11$ LANG=C df -mT
   
   コマンドの実行結果
   --------------------------------------------------
-  ファイルシス                 タイプ   1M-ブロック  使用 使用可 使用% マウント位置
-  devtmpfs                     devtmpfs         466     0    466    0% /dev
-  tmpfs                        tmpfs            489     0    489    0% /dev/shm
-  tmpfs                        tmpfs            489     7    482    2% /run
-  tmpfs                        tmpfs            489     0    489    0% /sys/fs/cgroup
-  tmpfs                        tmpfs             98     0     98    0% /run/user/1000
-  /dev/mapper/centos_vm11-root xfs            17394  5413  11982   32% /
-  /dev/vda1                    xfs             1014   188    827   19% /boot
-  /dev/loop0                   btrfs            100    24     56   30% /mnt (マウントしたデバイス)
+  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
+  devtmpfs                      devtmpfs        947     0        947    0%  /dev
+  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
+  tmpfs                         tmpfs           969     1        968    1%  /run
+  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6450      10945   38%  /
+  /dev/vda1                     xfs            1014   199        816   20%  /boot
+  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
+  /dev/loop0                    btrfs           100    24         56   30%  /mnt -> btrfs を確認
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4149,43 +4191,45 @@
     ディレクトリ「/mnt/auto/dir1」に移動時にデバイス「/dev/loop1」を自動マウントする
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install autofs (パッケージ追加)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install autofs (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=loop0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=loop1.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=loop0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=loop1.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.215565 s, 486 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 loop0.img
-  vm12$ sudo losetup /dev/loop1 loop1.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 loop0.img
+  vm11$ sudo losetup /dev/loop1 loop1.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0
-  vm12$ sudo mkfs -t ext4 /dev/loop1
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0
+  vm11$ sudo mkfs -t ext4 /dev/loop1
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/auto.master (設定ファイルの修正)
+  vm11$ cd $HOME
+  vm11$ sudo vi /etc/auto.master (設定ファイルの修正)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4196,8 +4240,8 @@
   /mnt/auto /etc/auto.dir  // 追加 -> ディレクトリ「/mnt/auto」移動時に設定ファイル「/etc/auto.dir」の内容でマウント
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/auto.dir (設定ファイルの追加)
+  vm11$ cd $HOME
+  vm11$ sudo vi /etc/auto.dir (設定ファイルの追加)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4205,58 +4249,72 @@
   dir1  -fstype=ext4,rw  :/dev/loop1
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl restart autofs
+  vm11$ cd $HOME
+  vm11$ sudo systemctl restart autofs
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk (オートマウント前を確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (オートマウント前を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0  100M  0 loop (追加したデバイス)
-  loop1                     7:1    0  100M  0 loop (追加したデバイス)
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  (オートマウント前)
+  loop1                         7:1     0   100M   0  loop  (オートマウント前)
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cd /mnt/auto/dir0 (ディレクトリ移動)
-  vm12$ cd /mnt/auto/dir1 (ディレクトリ移動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [61117.673405] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
-  [61148.795227] EXT4-fs (loop1): mounted filesystem with ordered data mode. Opts: (null)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsblk (オートマウント後を確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh /mnt/auto (ディレクトリ確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0  100M  0 loop /mnt/auto/dir0 (オートマウント)
-  loop1                     7:1    0  100M  0 loop /mnt/auto/dir1 (オートマウント)
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt/auto/dir0
+  vm11$ cd $HOME
+  vm11$ cd /mnt/auto/dir0 (ディレクトリ移動)
+  vm11$ cd /mnt/auto/dir1 (ディレクトリ移動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [11051.588068] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null) -> cd /mnt/auto/dir0
+  [11114.060107] EXT4-fs (loop1): mounted filesystem with ordered data mode. Opts: (null) -> cd /mnt/auto/dir1
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk (オートマウント後を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  /mnt/auto/dir0 (オートマウント後)
+  loop1                         7:1     0   100M   0  loop  /mnt/auto/dir1 (オートマウント後)
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt/auto/dir0
   vm12$ sudo umount /mnt/auto/dir1
   
   コマンドの実行結果
@@ -4264,24 +4322,24 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f loop[0-1].img
+  vm11$ cd $HOME
+  vm11$ rm -f loop[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/auto.master (設定ファイル編集)
+  vm11$ cd $HOME
+  vm11$ sudo vi /etc/auto.master (設定ファイル編集)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4292,16 +4350,16 @@
   # /mnt/auto /etc/auto.dir  // コメントアウト
   --------------------------------------------------
   
-  vm12$ cd /etc
-  vm12$ sudo rm auto.dir (追加した設定ファイル削除)
+  vm11$ cd /etc
+  vm11$ sudo rm auto.dir (追加した設定ファイル削除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl restart autofs (サービス再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl restart autofs (サービス再起動)
   
   コマンドの実行結果
   --------------------------------------------------
