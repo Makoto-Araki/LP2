@@ -1,8 +1,8 @@
 ================================================================================
-[01] RAIDの構築と運用 - 01 (RAID 0)
-[02] RAIDの構築と運用 - 02 (RAID 1)
-[03] RAIDの構築と運用 - 03 (RAID 4)
-[04] RAIDの構築と運用 - 04 (RAID 5)
+[01] RAIDの構築と運用 - 01 (RAID-0)
+[02] RAIDの構築と運用 - 02 (RAID-1)
+[03] RAIDの構築と運用 - 03 (RAID-4)
+[04] RAIDの構築と運用 - 04 (RAID-5)
 [05] RAIDの構築と運用 - 05
 [06] RAIDの構築と運用 - 06
 [07] LVMの調査
@@ -15,78 +15,82 @@
 [14] iSCSI
 ================================================================================
 [01]
-  RAIDの構築と運用 - 01 (RAID 0)
+  RAIDの構築と運用 - 01 (RAID-0)
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 0)の作成後にマウントする
+    RAIDアレイ(RAID-0)の作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(mdadm) - 01
-    mdadm -C XX        // RAIDアレイ(XX)を作成 -> -C = --create
-    mdadm -C XX -a     // RAIDアレイ(XX)を作成、デバイスファイル自動作成
-    mdadm -C XX -c YY  // RAIDアレイ(XX)を作成、チャンクサイズ(YY)
-    mdadm -C XX -l YY  // RAIDアレイ(XX)を作成、RAIDレベル(YY) -> -l = --level
-    mdadm -C XX -n YY  // RAIDアレイ(XX)を作成、RAIDデバイス数(YY) -> -n = --raid-devices
-    mdadm -C XX -x YY  // RAIDアレイ(XX)を作成、スペアデバイス数(YY) -> -x == --spare-devices
+    mdadm --create(-C) XX                        : RAIDアレイ(XX)を作成
+    mdadm --create(-C) XX --auto(-a)             : RAIDアレイ(XX)を作成、デバイスファイル自動作成
+    mdadm --create(-C) XX --chunk(-c) YY         : RAIDアレイ(XX)を作成、チャンクサイズ(YY)
+    mdadm --create(-C) XX --level(-l) YY         : RAIDアレイ(XX)を作成、RAIDレベル(YY)
+    mdadm --create(-C) XX --raid-devices(-n) YY  : RAIDアレイ(XX)を作成、RAIDデバイス数(YY)
+    mdadm --create(-C) XX --spare-devices(-x) YY : RAIDアレイ(XX)を作成、スペアデバイス数(YY)
   
   ## コマンド(mdadm) - 02
-    mdadm --manage XX        // RAIDアレイ(XX)をメンテ
-    mdadm --manage XX -a YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を追加 -> -a = --add
-    mdadm --manage XX -r YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)を削除 -> -r = --remove
-    mdadm --manage XX -f YY  // RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク -> -f = --fail
+    mdadm --manage XX                 : RAIDアレイ(XX)をメンテ
+    mdadm --manage XX --add(-a) YY    : RAIDアレイ(XX)をメンテ、デバイス(YY)を追加
+    mdadm --manage XX --remove(-r) YY : RAIDアレイ(XX)をメンテ、デバイス(YY)を削除
+    mdadm --manage XX --fail(-f) YY   : RAIDアレイ(XX)をメンテ、デバイス(YY)に不良マーク
   
   ## コマンド(mdadm) - 03
-    mdadm --misc XX                // RAIDアレイ(XX)を問合せ
-    mdadm --misc -Q XX             // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -Q = --query
-    mdadm --misc -D XX             // RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示 -> -D = --detail
-    mdadm --misc -E XX             // RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示 -> -E = --examine
-    mdadm --misc --readonly XX     // RAIDアレイ(XX)を読み取り専用にする
-    mdadm --misc --readwrite XX    // RAIDアレイ(XX)を書き込み可能にする
-    mdadm --misc --stop XX         // RAIDアレイ(XX)を停止する
-    mdadm --misc --stop --scan XX  // 全てのRAIDアレイを停止する
+    mdadm --misc XX               : RAIDアレイ(XX)を問合せ
+    mdadm --misc --query(-Q) XX   : RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示
+    mdadm --misc --detail(-D) XX  : RAIDアレイ(XX)を問合せ、RAIDアレイ(XX)を状態を表示
+    mdadm --misc --examine(-E) XX : RAIDアレイ(XX)を問合せ、構成デバイスの状態を表示
+    mdadm --misc --readonly XX    : RAIDアレイ(XX)を読み取り専用にする
+    mdadm --misc --readwrite XX   : RAIDアレイ(XX)を書き込み可能にする
+    mdadm --misc --stop XX        : RAIDアレイ(XX)を停止する
+    mdadm --misc --stop --scan XX : RAIDアレイを停止する
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install mdadm
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install mdadm
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.112864 s, 929 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 0 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm -C /dev/md0 -l 0 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  mdadm: Defaulting to version 1.2 metadata
+  [ 1369.336766] md0: detected capacity change from 0 to 205520896
+  mdadm: array /dev/md0 started.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  vm11$ cd $HOME
+  vm11$ cat /proc/mdstat (RAIDアレイの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -98,68 +102,72 @@
   unused devices: <none>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 1470.927117] XFS (md0): Mounting V5 Filesystem
+  [ 1470.934903] XFS (md0): Ending clean mount
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid0 /mnt (RAIDアレイ)
-  loop1                     7:1    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid0 /mnt (RAIDアレイ)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (RAIDアレイのアンマウント)
+  vm11$ cd $HOME
+  vm11$ lsblk
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid0 /mnt -> RAID-0 デバイス
+  loop1                         7:1     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid0 /mnt -> RAID-0 デバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (RAIDアレイのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [31071.056750] md0: detected capacity change from 205520896 to 0
-  [31071.059426] md: md0 stopped.
+  [ 1753.266406] XFS (md0): Unmounting Filesystem
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 1809.532012] md0: detected capacity change from 205520896 to 0
+  [ 1809.533669] md: md0 stopped.
   mdadm: stopped /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-1].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -170,46 +178,55 @@
   
 ================================================================================
 [02]
-  RAIDの構築と運用 - 02 (RAID 1)
+  RAIDの構築と運用 - 02 (RAID-1)
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 1)の作成後にマウントする
+    RAIDアレイ(RAID-1)の作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.202848 s, 517 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 1 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm -C /dev/md0 -l 1 -n 2 /dev/loop0 /dev/loop1 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  mdadm: Defaulting to version 1.2 metadata
+  [ 2251.556485] md/raid1:md0: not clean -- starting background reconstruction
+  [ 2251.559599] md/raid1:md0: active with 2 out of 2 mirrors
+  [ 2251.561300] md0: detected capacity change from 0 to 103809024
+
+  mdadm: array /dev/md0 started.
+  [ 2251.578894] md: resync of RAID array md0
+  [ 2252.589286] md: md0: resync done.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  vm11$ cd $HOME
+  vm11$ cat /proc/mdstat (RAIDアレイの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -221,68 +238,72 @@
   unused devices: <none>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 2479.318358] XFS (md0): Mounting V5 Filesystem
+  [ 2479.350496] XFS (md0): Ending clean mount
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid1 /mnt (RAIDアレイ)
-  loop1                     7:1    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid1 /mnt (RAIDアレイ)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (RAIDアレイのアンマウント)
+  vm11$ cd $HOME
+  vm11$ lsblk
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  
+   |-- md0                      9:0     0    99M   0  raid1 /mnt -> RAID-1 デバイス
+  loop1                         7:1     0   100M   0  loop  
+   |-- md0                      9:0     0    99M   0  raid1 /mnt -> RAID-1 デバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (RAIDアレイのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [32725.335356] md0: detected capacity change from 103809024 to 0
-  [32725.338421] md: md0 stopped.
+  [ 2851.100053] XFS (md0): Unmounting Filesystem
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 2958.468756] md0: detected capacity change from 103809024 to 0
+  [ 2958.471012] md: md0 stopped.
   mdadm: stopped /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-1].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -293,48 +314,69 @@
   
 ================================================================================
 [03]
-  RAIDの構築と運用 - 03 (RAID 4)
+  RAIDの構築と運用 - 03 (RAID-4)
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 4)の作成後にマウントする
+    RAIDアレイ(RAID-4)の作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.155616 s, 674 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
-  vm12$ sudo losetup /dev/loop2 image2.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
+  vm11$ sudo losetup /dev/loop2 image2.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 4 -n 3 /dev/loop0 /dev/loop1 /dev/loop2 (RAIDアレイの作成)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm -C /dev/md0 -l 4 -n 3 /dev/loop0 /dev/loop1 /dev/loop2 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  mdadm: Defaulting to version 1.2 metadata
+  [ 3232.460434] raid6: sse2x1   gen()  4707 MB/s
+  [ 3232.478397] raid6: sse2x1   xor()  3615 MB/s
+  [ 3232.496396] raid6: sse2x2   gen()  7839 MB/s
+  [ 3232.514393] raid6: sse2x2   xor()  6031 MB/s
+  [ 3232.532396] raid6: sse2x4   gen()  9113 MB/s
+  [ 3232.550449] raid6: sse2x4   xor()  6230 MB/s
+  [ 3232.552481] raid6: using algorithm sse2x4 gen() 9113 MB/s
+  [ 3232.554223] raid6: .... xor() 6230 MB/s, rmw enabled
+  [ 3232.555957] raid6: using ssse3x2 recovery algorithm
+  [ 3232.565001] xor: automatically using best checksumming function   avx       
+  [ 3232.577689] async_tx: api initialized (async)
+  [ 3232.636678] md/raid:md0: device loop1 operational as raid disk 1
+  [ 3232.640295] md/raid:md0: device loop0 operational as raid disk 0
+  [ 3232.643657] md/raid:md0: raid level 4 active with 2 out of 3 devices, algorithm 0
+  [ 3232.645401] md0: detected capacity change from 0 to 205520896
+  
+  mdadm: array /dev/md0 started.
+  [ 3232.652537] md: recovery of RAID array md0
+  [ 3234.307549] md: md0: recovery done.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  vm11$ cd $HOME
+  vm11$ cat /proc/mdstat (RAIDアレイの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -346,70 +388,74 @@
   unused devices: <none>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 3477.219526] XFS (md0): Mounting V5 Filesystem
+  [ 3477.269358] XFS (md0): Ending clean mount
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid4 /mnt (RAIDアレイ)
-  loop1                     7:1    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid4 /mnt (RAIDアレイ)
-  loop2                     7:2    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid4 /mnt (RAIDアレイ)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (RAIDアレイのアンマウント)
+  vm11$ cd $HOME
+  vm11$ lsblk
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid4 /mnt -> RAID-4 デバイス
+  loop1                         7:1     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid4 /mnt -> RAID-4 デバイス
+  loop2                         7:2     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid4 /mnt -> RAID-4 デバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (RAIDアレイのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [35152.357976] md0: detected capacity change from 205520896 to 0
-  [35152.361074] md: md0 stopped.
+  [ 3773.481100] XFS (md0): Unmounting Filesystem
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 3804.621900] md0: detected capacity change from 205520896 to 0
+  [ 3804.624018] md: md0 stopped.
   mdadm: stopped /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-2].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-2].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -420,48 +466,58 @@
   
 ================================================================================
 [04]
-  RAIDの構築と運用 - 04 (RAID 5)
+  RAIDの構築と運用 - 04 (RAID-5)
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 5)の作成後にマウントする
+    RAIDアレイ(RAID-5)の作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.149676 s, 701 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
-  vm12$ sudo losetup /dev/loop2 image2.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
+  vm11$ sudo losetup /dev/loop2 image2.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 5 -n 3 /dev/loop0 /dev/loop1 /dev/loop2 (RAIDアレイの作成)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm -C /dev/md0 -l 5 -n 3 /dev/loop0 /dev/loop1 /dev/loop2 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  mdadm: Defaulting to version 1.2 metadata
+  [ 4135.195281] md/raid:md0: device loop1 operational as raid disk 1
+  [ 4135.199390] md/raid:md0: device loop0 operational as raid disk 0
+  [ 4135.205640] md/raid:md0: raid level 5 active with 2 out of 3 devices, algorithm 2
+  [ 4135.208846] md0: detected capacity change from 0 to 205520896
+  
+  mdadm: array /dev/md0 started.
+  [ 4135.217397] md: recovery of RAID array md0
+  [ 4136.732373] md: md0: recovery done.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  vm11$ cd $HOME
+  vm11$ cat /proc/mdstat (RAIDアレイの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -473,70 +529,74 @@
   unused devices: <none>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/md0 (RAIDアレイにファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t xfs /dev/md0 /mnt (RAIDアレイのマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 4297.524858] XFS (md0): Mounting V5 Filesystem
+  [ 4297.565537] XFS (md0): Ending clean mount
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom   
-  loop0                     7:0    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid5 /mnt (RAIDアレイ)
-  loop1                     7:1    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid5 /mnt (RAIDアレイ)
-  loop2                     7:2    0  100M  0 loop  
-  └─md0                   9:0    0  196M  0 raid5 /mnt (RAIDアレイ)
-  vda                     252:0    0   20G  0 disk  
-  ├─vda2                252:2    0   19G  0 part  
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm   [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm   /
-  └─vda1                252:1    0    1G  0 part  /boot
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt (RAIDアレイのアンマウント)
+  vm11$ cd $HOME
+  vm11$ lsblk
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid5 /mnt -> RAID-5 デバイス
+  loop1                         7:1     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid5 /mnt -> RAID-5 デバイス
+  loop2                         7:2     0   100M   0  loop  
+   |-- md0                      9:0     0   196M   0  raid5 /mnt -> RAID-5 デバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt (RAIDアレイのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  [37414.053884] md0: detected capacity change from 205520896 to 0
-  [37414.058113] md: md0 stopped.
+  [ 4587.382071] XFS (md0): Unmounting Filesystem
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 4621.258622] md0: detected capacity change from 205520896 to 0
+  [ 4621.262350] md: md0 stopped.
   mdadm: stopped /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-2].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-2].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -551,15 +611,15 @@
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 5)に対して「--misc」で様々な問合せ
+    RAIDアレイ(RAID-5)に対して「--misc」で様々な問合せ
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
+  vm11$ cd $HOME
   vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
   vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
   vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
