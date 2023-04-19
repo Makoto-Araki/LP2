@@ -620,35 +620,45 @@
   
 [確認]
   vm11$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.143406 s, 731 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
-  vm12$ sudo losetup /dev/loop2 image2.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
+  vm11$ sudo losetup /dev/loop2 image2.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 5 -n 3 /dev/loop0 /dev/loop1 /dev/loop2 (RAIDアレイの作成)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm -C /dev/md0 -l 5 -n 3 /dev/loop0 /dev/loop1 /dev/loop2 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  mdadm: Defaulting to version 1.2 metadata
+  [ 4973.355440] md/raid:md0: device loop1 operational as raid disk 1
+  [ 4973.357428] md/raid:md0: device loop0 operational as raid disk 0
+  [ 4973.360879] md/raid:md0: raid level 5 active with 2 out of 3 devices, algorithm 2
+  [ 4973.363657] md0: detected capacity change from 0 to 205520896
+  
+  mdadm: array /dev/md0 started.
+  [ 4973.371379] md: recovery of RAID array md0
+  [ 4974.948097] md: md0: recovery done.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  vm11$ cd $HOME
+  vm11$ cat /proc/mdstat (RAIDアレイの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -660,29 +670,29 @@
   unused devices: <none>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -Q(--query) /dev/md0 (RAIDアレイの状態)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -Q(--query) /dev/md0 (RAIDアレイの状態)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0: 196.00MiB raid5 3 devices, 0 spares. Use mdadm --detail for more detail.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0:
              Version : 1.2
-       Creation Time : Thu Dec 30 20:16:50 2021
+       Creation Time : Wed Apr 19 18:46:17 2023
           Raid Level : raid5
           Array Size : 200704 (196.00 MiB 205.52 MB)  // 300MB -> RAID5 -> 200MB
        Used Dev Size : 100352 (98.00 MiB 102.76 MB)
         Raid Devices : 3
        Total Devices : 3
          Persistence : Superblock is persistent
-         Update Time : Thu Dec 30 20:16:59 2021
+         Update Time : Wed Apr 19 18:46:19 2023
                State : clean 
       Active Devices : 3
      Working Devices : 3
@@ -691,44 +701,44 @@
               Layout : left-symmetric
           Chunk Size : 512K
   Consistency Policy : resync
-                Name : vm12:0  (local to host vm12)
-                UUID : ed63d447:4b582e62:dddebaa4:09e10b7c
+                Name : vm11:0  (local to host vm11)
+                UUID : 55615663:0baa8309:674bacc2:0de01c6c
               Events : 18
-
+  
   Number   Major   Minor   RaidDevice State
      0       7        0        0      active sync   /dev/loop0
      1       7        1        1      active sync   /dev/loop1
      3       7        2        2      active sync   /dev/loop2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -E(--examine) /dev/md0 (RAIDアレイの構成デバイスの状態)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -E(--examine) /dev/md0 (RAIDアレイの構成デバイスの状態)
   
   コマンドの実行結果
   --------------------------------------------------
   mdadm: No md superblock detected on /dev/md0.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
   
   コマンドの実行結果
   --------------------------------------------------
-  [39057.126761] md0: detected capacity change from 205520896 to 0
-  [39057.129506] md: md0 stopped.
+  [ 5801.861052] md0: detected capacity change from 205520896 to 0
+  [ 5801.863690] md: md0 stopped.
   mdadm: stopped /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-2].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-2].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -743,48 +753,58 @@
   
 [内容]
   ## 作業内容
-    RAIDアレイ(RAID 5)に対して「--manage」で予備デバイス操作
+    RAIDアレイ(RAID-5)に対して「--manage」で予備デバイス操作
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image2.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image3.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image4.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image3.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image4.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.150878 s, 695 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
-  vm12$ sudo losetup /dev/loop2 image2.img
-  vm12$ sudo losetup /dev/loop3 image3.img
-  vm12$ sudo losetup /dev/loop4 image4.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
+  vm11$ sudo losetup /dev/loop2 image2.img
+  vm11$ sudo losetup /dev/loop3 image3.img
+  vm11$ sudo losetup /dev/loop4 image4.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm -C /dev/md0 -l 5 -n 3 -x 1 /dev/loop0 /dev/loop1 /dev/loop2 /dev/loop3 (RAIDアレイの作成)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm -C /dev/md0 -l 5 -n 3 -x 1 /dev/loop0 /dev/loop1 /dev/loop2 /dev/loop3 (RAIDアレイの作成)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  mdadm: Defaulting to version 1.2 metadata
+  [ 6352.516200] md/raid:md0: device loop1 operational as raid disk 1
+  [ 6352.518321] md/raid:md0: device loop0 operational as raid disk 0
+  [ 6352.522921] md/raid:md0: raid level 5 active with 2 out of 3 devices, algorithm 2
+  [ 6352.524747] md0: detected capacity change from 0 to 205520896
+  
+  mdadm: array /dev/md0 started.
+  [ 6352.532228] md: recovery of RAID array md0
+  [ 6354.207883] md: md0: recovery done.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat /proc/mdstat (RAIDアレイの確認)
+  vm11$ cd $HOME
+  vm11$ cat /proc/mdstat (RAIDアレイの確認)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -796,29 +816,29 @@
   unused devices: <none>
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -Q(--query) /dev/md0 (RAIDアレイの状態)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -Q(--query) /dev/md0 (RAIDアレイの状態)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0: 196.00MiB raid5 3 devices, 1 spare. Use mdadm --detail for more detail.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0:
              Version : 1.2
-       Creation Time : Thu Dec 30 20:48:01 2021
+       Creation Time : Wed Apr 19 19:09:16 2023
           Raid Level : raid5
           Array Size : 200704 (196.00 MiB 205.52 MB)
        Used Dev Size : 100352 (98.00 MiB 102.76 MB)
         Raid Devices : 3
        Total Devices : 4
          Persistence : Superblock is persistent
-         Update Time : Thu Dec 30 20:48:10 2021
+         Update Time : Wed Apr 19 19:09:18 2023
                State : clean 
       Active Devices : 3
      Working Devices : 4
@@ -827,8 +847,8 @@
               Layout : left-symmetric
           Chunk Size : 512K
   Consistency Policy : resync
-                Name : vm12:0  (local to host vm12)
-                UUID : c2269194:66d72976:c85295a5:285702c8
+                Name : vm11:0  (local to host vm11)
+                UUID : 46daf9ec:5c7c8b93:2d418cdb:fe62b8bd
               Events : 18
   
   Number   Major   Minor   RaidDevice State
@@ -838,29 +858,35 @@
      3       7        3        -      spare         /dev/loop3
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --manage /dev/md0 -f(--fail) /dev/loop0 (RAIDアレイの構成デバイスに不良マーク)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --manage /dev/md0 -f(--fail) /dev/loop0 (RAIDアレイの構成デバイスに不良マーク)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 6988.991461] md/raid:md0: Disk failure on loop0, disabling device.
+  [ 6988.991461] md/raid:md0: Operation continuing on 2 devices.
+
+  mdadm: set /dev/loop0 faulty in /dev/md0
+
+  [ 6989.026994] md: recovery of RAID array md0
+  [ 6990.524411] md: md0: recovery done.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0:
              Version : 1.2
-       Creation Time : Thu Dec 30 20:48:01 2021
+       Creation Time : Wed Apr 19 19:09:16 2023
           Raid Level : raid5
           Array Size : 200704 (196.00 MiB 205.52 MB)
        Used Dev Size : 100352 (98.00 MiB 102.76 MB)
         Raid Devices : 3
        Total Devices : 4
          Persistence : Superblock is persistent
-         Update Time : Thu Dec 30 20:55:29 2021
+         Update Time : Wed Apr 19 19:19:54 2023
                State : clean 
       Active Devices : 3
      Working Devices : 3
@@ -869,8 +895,8 @@
               Layout : left-symmetric
           Chunk Size : 512K
   Consistency Policy : resync
-                Name : vm12:0  (local to host vm12)
-                UUID : c2269194:66d72976:c85295a5:285702c8
+                Name : vm11:0  (local to host vm11)
+                UUID : 46daf9ec:5c7c8b93:2d418cdb:fe62b8bd
               Events : 37
   
   Number   Major   Minor   RaidDevice State
@@ -880,29 +906,29 @@
      0       7        0        -      faulty        /dev/loop0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --manage /dev/md0 -r(--remove) /dev/loop0 (RAIDアレイの構成デバイスから不良デバイスを削除)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --manage /dev/md0 -r(--remove) /dev/loop0 (RAIDアレイの構成デバイスから不良デバイスを削除)
   
   コマンドの実行結果
   --------------------------------------------------
   mdadm: hot removed /dev/loop0 from /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0:
              Version : 1.2
-       Creation Time : Thu Dec 30 20:48:01 2021
+       Creation Time : Wed Apr 19 19:09:16 2023
           Raid Level : raid5
           Array Size : 200704 (196.00 MiB 205.52 MB)
        Used Dev Size : 100352 (98.00 MiB 102.76 MB)
         Raid Devices : 3
        Total Devices : 3
          Persistence : Superblock is persistent
-         Update Time : Thu Dec 30 21:02:54 2021
+         Update Time : Wed Apr 19 19:24:26 2023
                State : clean 
       Active Devices : 3
      Working Devices : 3
@@ -911,8 +937,8 @@
               Layout : left-symmetric
           Chunk Size : 512K
   Consistency Policy : resync
-                Name : vm12:0  (local to host vm12)
-                UUID : c2269194:66d72976:c85295a5:285702c8
+                Name : vm11:0  (local to host vm11)
+                UUID : 46daf9ec:5c7c8b93:2d418cdb:fe62b8bd
               Events : 38
   
   Number   Major   Minor   RaidDevice State
@@ -921,29 +947,29 @@
      4       7        2        2      active sync   /dev/loop2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --manage /dev/md0 -a(--add) /dev/loop4 (RAIDアレイの構成デバイスに新デバイスを追加)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --manage /dev/md0 -a(--add) /dev/loop4 (RAIDアレイの構成デバイスに新デバイスを追加)
   
   コマンドの実行結果
   --------------------------------------------------
   mdadm: added /dev/loop4
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm --misc -D(--detail) /dev/md0 (RAIDアレイの状態を詳細表示)
   
   コマンドの実行結果
   --------------------------------------------------
   /dev/md0:
              Version : 1.2
-       Creation Time : Thu Dec 30 20:48:01 2021
+       Creation Time : Wed Apr 19 19:09:16 2023
           Raid Level : raid5
           Array Size : 200704 (196.00 MiB 205.52 MB)
        Used Dev Size : 100352 (98.00 MiB 102.76 MB)
         Raid Devices : 3
        Total Devices : 4
          Persistence : Superblock is persistent
-         Update Time : Thu Dec 30 21:06:01 2021
+         Update Time : Wed Apr 19 19:27:02 2023
                State : clean 
       Active Devices : 3
      Working Devices : 4
@@ -952,8 +978,8 @@
               Layout : left-symmetric
           Chunk Size : 512K
   Consistency Policy : resync
-                Name : vm12:0  (local to host vm12)
-                UUID : c2269194:66d72976:c85295a5:285702c8
+                Name : vm11:0  (local to host vm11)
+                UUID : 46daf9ec:5c7c8b93:2d418cdb:fe62b8bd
               Events : 39
   
   Number   Major   Minor   RaidDevice State
@@ -963,26 +989,26 @@
      5       7        4        -      spare         /dev/loop4
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
+  vm11$ cd $HOME
+  vm11$ sudo mdadm (--misc) --stop /dev/md0 (RAIDアレイの停止)
   
   コマンドの実行結果
   --------------------------------------------------
-  [41681.078697] md0: detected capacity change from 205520896 to 0
-  [41681.081032] md: md0 stopped.
+  [ 7561.324230] md0: detected capacity change from 205520896 to 0
+  [ 7561.329377] md: md0 stopped.
   mdadm: stopped /dev/md0
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-4].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-4].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1000,38 +1026,55 @@
     仮想マシンのLVMについて調査
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ LANG=C sudo parted /dev/vda -s print (パーティション情報)
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /      -> LVMと判明
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP] -> LVMと判明
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ LANG=C sudo parted /dev/vda -s print (パーティション情報) -> /dev/vda2 と指定した場合はエラー
   
   コマンドの実行結果
   --------------------------------------------------
   Model: Virtio Block Device (virtblk)
-  Disk /dev/vda: 26.8GB
+  Disk /dev/vda: 21.5GB
   Sector size (logical/physical): 512B/512B
   Partition Table: msdos
   Disk Flags: 
   
   Number  Start   End     Size    Type     File system  Flags
-  1       1049kB  1075MB  1074MB  primary  xfs          boot -> /boot
-  2       1075MB  10.7GB  9663MB  primary               lvm  -> LVM を使用
+  1       1049kB  1075MB  1074MB  primary  xfs          boot
+  2       1075MB  21.5GB  20.4GB  primary               lvm -> LVMの構成 
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo lvscan (論理ボリューム探査)
+  vm11$ cd $HOME
+  vm11$ sudo lvscan (論理ボリューム探査)
   
   コマンドの実行結果
   --------------------------------------------------
-  ACTIVE  '/dev/centos_vm11/swap' [1.00 GiB] inherit
-  ACTIVE  '/dev/centos_vm11/root' [<8.00 GiB] inherit
+  ACTIVE  '/dev/centos_vm11/swap' [2.00 GiB] inherit
+  ACTIVE  '/dev/centos_vm11/root' [<17.00 GiB] inherit
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vgscan (ボリュームグループ探査)
+  vm11$ cd $HOME
+  vm11$ sudo vgscan (ボリュームグループ探査)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1039,29 +1082,28 @@
   Found volume group "centos_vm11" using metadata type lvm2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvscan (物理ボリューム探査)
+  vm11$ cd $HOME
+  vm11$ sudo pvscan (物理ボリューム探査)
   
   コマンドの実行結果
   --------------------------------------------------
-  PV /dev/vda2   VG centos_vm11   lvm2 [<9.00 GiB / 0   free]
-  ...(省略)
+  PV /dev/vda2   VG centos_vm11   lvm2 [<9.00 GiB / 0   free] -> 物理ボリュームは「/dev/vda2」と判明
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvdisplay /dev/vda2 (物理ボリューム詳細)
+  vm11$ cd $HOME
+  vm11$ sudo pvdisplay /dev/vda2 (物理ボリューム詳細)
   
   コマンドの実行結果
   --------------------------------------------------
-  PV Name               /dev/vda2 -> 元になったデバイスファイル名と同一
-  VG Name               centos_vm11 -> ボリュームグループ名
-  PV Size               <9.00 GiB / not usable 3.00 MiB
+  PV Name               /dev/vda2 -> デバイスファイルと同じ名前
+  VG Name               centos_vm11
+  PV Size               <19.00 GiB / not usable 3.00 MiB
   Allocatable           yes (but full)
   PE Size               4.00 MiB
-  Total PE              2303
+  Total PE              4863
   Free PE               0
-  Allocated PE          2303
-  PV UUID               YQHJ5V-PC6l-ZdEB-Xv6c-QeZs-23aK-rK4BYj
+  Allocated PE          4863
+  PV UUID               z5NZEY-ZvKV-c9Bj-wR3e-Vhbl-uJ38-I6zSS2
   --------------------------------------------------
   
   以下の確認に続く
@@ -1072,34 +1114,36 @@
   
 [内容]
   ## 作業内容
-    論理ボリュームの作成後にマウントする
+    論理ボリュームを作成後にマウントする
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm12$ dd if=/dev/zero of=image1.img bs=10M count=10
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  10+0 records in
+  10+0 records out
+  104857600 bytes (105 MB) copied, 0.144125 s, 728 MB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
-  vm12$ sudo losetup /dev/loop1 image1.img
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvcreate /dev/loop0 /dev/loop1 (物理ボリュームの初期化)
+  vm11$ cd $HOME
+  vm11$ sudo pvcreate /dev/loop0 /dev/loop1 (物理ボリュームの初期化)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1107,82 +1151,84 @@
   Physical volume "/dev/loop1" successfully created.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 (ボリュームグループの作成)
+  vm11$ cd $HOME
+  vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 (ボリュームグループの作成)
   
   コマンドの実行結果
   --------------------------------------------------
   Volume group "vg0" successfully created
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo lvcreate -L 50M -n lv0 vg0 (論理ボリュームの作成)
-  vm12$ sudo lvcreate -L 50M -n lv1 vg0 (論理ボリュームの作成)
-  vm12$ sudo lvcreate -L 50M -n lv2 vg0 (論理ボリュームの作成)
+  vm11$ cd $HOME
+  vm11$ sudo lvcreate -L 50M -n lv0 vg0 (論理ボリュームの作成)
+  vm11$ sudo lvcreate -L 50M -n lv1 vg0 (論理ボリュームの作成)
+  vm11$ sudo lvcreate -L 50M -n lv2 vg0 (論理ボリュームの作成)
   
   コマンドの実行結果
   --------------------------------------------------
   Rounding up size to full physical extent 52.00 MiB
-  Logical volume "lv[0-2])" created.
+  Logical volume "lv0" created.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t xfs /dev/vg0/lv0 (ファイルシステム作成)
-  vm12$ sudo mkfs -t xfs /dev/vg0/lv1 (ファイルシステム作成)
-  vm12$ sudo mkfs -t xfs /dev/vg0/lv2 (ファイルシステム作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/mp0 (論理ボリュームをマウント)
-  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/mp1 (論理ボリュームをマウント)
-  vm12$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/mp2 (論理ボリュームをマウント)
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t xfs /dev/vg0/lv0 (ファイルシステム作成)
+  vm11$ sudo mkfs -t xfs /dev/vg0/lv1 (ファイルシステム作成)
+  vm11$ sudo mkfs -t xfs /dev/vg0/lv2 (ファイルシステム作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ lsblk
+  vm11$ cd $HOME
+  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/loop0 (論理ボリュームをマウント)
+  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/loop1 (論理ボリュームをマウント)
+  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/loop2 (論理ボリュームをマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0  100M  0 loop 
-  ├─vg0-lv0             253:2    0   52M  0 lvm  /mnt/mp0 (論理ボリューム)
-  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
-  loop1                     7:1    0  100M  0 loop 
-  ├─vg0-lv1             253:3    0   52M  0 lvm  /mnt/mp1 (論理ボリューム)
-  └─vg0-lv2             253:4    0   52M  0 lvm  /mnt/mp2 (論理ボリューム)
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  [10536.272400] XFS (dm-2): Mounting V5 Filesystem
+  [10536.282739] XFS (dm-2): Ending clean mount
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvscan (物理ボリュームの表示)
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  
+   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2 -> 論理ボリューム
+   |-- vg0-lv0                253:2     0    52M   0  lvm   /mnt/loop0 -> 論理ボリューム
+  loop1                         7:1     0   100M   0  loop  
+   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2 -> 論理ボリューム
+   |-- vg0-lv1                253:3     0    52M   0  lvm   /mnt/loop1 -> 論理ボリューム
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo pvscan (物理ボリュームの表示)
   
   コマンドの実行結果
   --------------------------------------------------
   PV /dev/loop0   VG vg0             lvm2 [96.00 MiB / 0         free]
   PV /dev/loop1   VG vg0             lvm2 [96.00 MiB / 36.00 MiB free]
   PV /dev/vda2    VG centos_vm11     lvm2 [<19.00 GiB / 0    free]
-  Total: 3 [19.18 GiB] / in use: 3 [19.18 GiB] / in no VG: 0 [0   ]
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvdisplay /dev/loop0 (物理ボリュームの詳細を表示)
+  vm11$ cd $HOME
+  vm11$ sudo pvdisplay /dev/loop0 (物理ボリュームの詳細を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  --- Physical volume ---
   PV Name               /dev/loop0
   VG Name               vg0
   PV Size               100.00 MiB / not usable 4.00 MiB
@@ -1191,15 +1237,14 @@
   Total PE              24
   Free PE               0
   Allocated PE          24
-  PV UUID               IJ29N4-unyT-oNyf-asMk-eMqu-Pggt-ybN2hA
+  PV UUID               Cc9lde-1Zu3-EQvZ-HPMk-Zih2-yDQj-KKrZlG
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvdisplay /dev/loop1 (物理ボリュームの詳細を表示)
+  vm11$ cd $HOME
+  vm11$ sudo pvdisplay /dev/loop1 (物理ボリュームの詳細を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  --- Physical volume ---
   PV Name               /dev/loop1
   VG Name               vg0
   PV Size               100.00 MiB / not usable 4.00 MiB
@@ -1208,11 +1253,11 @@
   Total PE              24
   Free PE               9
   Allocated PE          15
-  PV UUID               LHjwwp-oI0Q-QJYi-9Dk1-1fuH-4QqG-lPzPWi
+  PV UUID               PmTv4a-qhzB-MwdA-ODJP-eqYJ-ro3K-fi2AdW
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vgscan (ボリュームグループの表示)
+  vm11$ cd $HOME
+  vm11$ sudo vgscan (ボリュームグループの表示)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1221,12 +1266,11 @@
   Found volume group "centos_vm11" using metadata type lvm2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vgdisplay vg0 (ボリュームグループの詳細を表示)
+  vm11$ cd $HOME
+  vm11$ sudo vgdisplay vg0 (ボリュームグループの詳細を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  --- Volume group ---
   VG Name               vg0
   System ID             
   Format                lvm2
@@ -1245,11 +1289,11 @@
   Total PE              48
   Alloc PE / Size       39 / 156.00 MiB
   Free  PE / Size       9 / 36.00 MiB
-  VG UUID               cJyLdQ-mgAW-gL45-g8at-N9Wk-ygWM-zC2mJh
+  VG UUID               Hps2Bi-1uI2-bMsz-Ovr1-Wca5-nrKP-1vtbnf
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo lvscan (論理ボリュームの表示)
+  vm11$ cd $HOME
+  vm11$ sudo lvscan (論理ボリュームの表示)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1260,105 +1304,103 @@
   ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo lvdisplay /dev/vg0/lv0 (論理ボリュームの詳細を表示)
+  vm11$ cd $HOME
+  vm11$ sudo lvdisplay /dev/vg0/lv0 (論理ボリュームの詳細を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  --- Logical volume ---
-  LV Path                /dev/vg0/lv0
-  LV Name                lv0
-  VG Name                vg0
-  LV UUID                TPNFXd-lFc3-dQUy-l4uf-F3CD-jHHg-pOIdqV
-  LV Write Access        read/write
-  LV Creation host, time vm12, 2021-12-31 07:41:20 +0900
-  LV Status              available
-  # open                 1
-  LV Size                52.00 MiB
-  Current LE             13
-  Segments               1
-  Allocation             inherit
-  Read ahead sectors     auto
-  - currently set to     8192
-  Block device           253:2
+  LV Path                 /dev/vg0/lv0
+  LV Name                 lv0
+  VG Name                 vg0
+  LV UUID                 NzpkHL-BeBh-LxeT-5ovo-2MlM-kCha-5IbZVi
+  LV Write Access         read/write
+  LV Creation host, time  vm11, 2023-04-19 20:10:34 +0900
+  LV Status               available
+  # open                  1
+  LV Size                 52.00 MiB
+  Current LE              13
+  Segments                1
+  Allocation              inherit
+  Read ahead sectors      auto
+  - currently set to      8192
+  Block device            253:2
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo lvdisplay /dev/vg0/lv1 (論理ボリュームの詳細を表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  --- Logical volume ---
-  LV Path                /dev/vg0/lv1
-  LV Name                lv1
-  VG Name                vg0
-  LV UUID                JyFnhh-H72W-VlJ2-x8aK-OmMJ-a6WE-oG9iEI
-  LV Write Access        read/write
-  LV Creation host, time vm12, 2021-12-31 07:41:35 +0900
-  LV Status              available
-  # open                 1
-  LV Size                52.00 MiB
-  Current LE             13
-  Segments               1
-  Allocation             inherit
-  Read ahead sectors     auto
-  - currently set to     8192
-  Block device           253:3
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo lvdisplay /dev/vg0/lv2 (論理ボリュームの詳細を表示)
+  vm11$ cd $HOME
+  vm11$ sudo lvdisplay /dev/vg0/lv1 (論理ボリュームの詳細を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  --- Logical volume ---
-  LV Path                /dev/vg0/lv2
-  LV Name                lv2
-  VG Name                vg0
-  LV UUID                2Ygyop-ciIa-4wgD-ns1T-mSTz-L0JK-vqDevD
-  LV Write Access        read/write
-  LV Creation host, time vm12, 2021-12-31 07:41:48 +0900
-  LV Status              available
-  # open                 1
-  LV Size                52.00 MiB
-  Current LE             13
-  Segments               2
-  Allocation             inherit
-  Read ahead sectors     auto
-  - currently set to     8192
-  Block device           253:4
+  LV Path                 /dev/vg0/lv1
+  LV Name                 lv1
+  VG Name                 vg0
+  LV UUID                 Z3WDe5-zfQq-MLsh-KFfb-6i9L-AQTW-8RwADa
+  LV Write Access         read/write
+  LV Creation host, time  vm11, 2023-04-19 20:11:19 +0900
+  LV Status               available
+  # open                  1
+  LV Size                 52.00 MiB
+  Current LE              13
+  Segments                1
+  Allocation              inherit
+  Read ahead sectors      auto
+  - currently set to      8192
+  Block device            253:3
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt/mp0 (論理ボリュームのアンマウント)
-  vm12$ sudo umount /mnt/mp1 (論理ボリュームのアンマウント)
-  vm12$ sudo umount /mnt/mp2 (論理ボリュームのアンマウント)
+  vm11$ cd $HOME
+  vm11$ sudo lvdisplay /dev/vg0/lv2 (論理ボリュームの詳細を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  LV Path                 /dev/vg0/lv2
+  LV Name                 lv2
+  VG Name                 vg0
+  LV UUID                 2rTDQZ-2wpz-pZ10-7lgf-SK3C-Z5Yy-X2ofu0
+  LV Write Access         read/write
+  LV Creation host, time  vm11, 2023-04-19 20:11:26 +0900
+  LV Status               available
+  # open                  1
+  LV Size                 52.00 MiB
+  Current LE              13
+  Segments                2
+  Allocation              inherit
+  Read ahead sectors      auto
+  - currently set to      8192
+  Block device            253:4
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo lvremove /dev/vg0/lv0 (論理ボリュームの削除)
-  vm12$ sudo lvremove /dev/vg0/lv1 (論理ボリュームの削除)
-  vm12$ sudo lvremove /dev/vg0/lv2 (論理ボリュームの削除)
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt/loop0 (論理ボリュームのアンマウント)
+  vm11$ sudo umount /mnt/loop1 (論理ボリュームのアンマウント)
+  vm11$ sudo umount /mnt/loop2 (論理ボリュームのアンマウント)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [12240.220671] XFS (dm-2): Unmounting Filesystem
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo vgremove vg0 (ボリュームグループの削除)
+  vm11$ cd $HOME
+  vm11$ sudo lvremove /dev/vg0/lv0 (論理ボリュームの削除)
+  vm11$ sudo lvremove /dev/vg0/lv1 (論理ボリュームの削除)
+  vm11$ sudo lvremove /dev/vg0/lv2 (論理ボリュームの削除)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Do you really want to remove active logical volume vg0/lv0? [y/n]: y
+    Logical volume "lv0" successfully removed
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo vgremove vg0 (ボリュームグループの削除)
   
   コマンドの実行結果
   --------------------------------------------------
   Volume group "vg0" successfully removed
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo pvremove /dev/loop0 /dev/loop1 (物理ボリュームの削除)
+  vm11$ cd $HOME
+  vm11$ sudo pvremove /dev/loop0 /dev/loop1 (物理ボリュームの削除)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1366,16 +1408,16 @@
   Labels on physical volume "/dev/loop1" successfully wiped.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rm -f image[0-1].img
+  vm11$ cd $HOME
+  vm11$ rm -f image[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1390,7 +1432,7 @@
   
 [内容]
   ## 作業内容
-    論理ボリュームがマウント状態での、ボリュームグループの拡張・縮小を試してみる
+    論理ボリュームがマウント状態で、ボリュームグループの拡張・縮小を試してみる
   
   ## 使用マシン
     HOST : vm12
