@@ -591,105 +591,91 @@
     バックアップをコマンド(cpio)で行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(cpio)
-    cpio -o  // アーカイブを作成
-    cpio -i  // アーカイブからファイル抽出
-    cpio -d  // 必要ならばディレクトリ作成
-    ls * | cpio -o -F XX     // アーカイブ(XX)を作成
-    ls * | cpio -o -F XX -A  // アーカイブ(XX)を作成、ファイル追加
-    cat XX | cpio -i         // アーカイブ(XX)からファイル抽出
-    cat XX | cpio -i -t      // アーカイブ(XX)からファイル抽出、コピーせず入力内容を一覧表示
-    cat XX | cpio -i -v      // アーカイブ(XX)からファイル抽出、ファイル名を一覧表示
+    cpio -o                  : アーカイブを作成
+    cpio -i                  : アーカイブからファイル抽出
+    cpio -d                  : 必要ならばディレクトリ作成
+    ls * | cpio -o -F XX     : アーカイブ(XX)を作成
+    ls * | cpio -o -F XX -A  : アーカイブ(XX)を作成、ファイル追加
+    cat XX | cpio -i         : アーカイブ(XX)からファイル抽出
+    cat XX | cpio -i -t      : アーカイブ(XX)からファイル抽出、コピーせず入力内容を一覧表示
+    cat XX | cpio -i -v      : アーカイブ(XX)からファイル抽出、ファイル名を一覧表示
   
 [確認]
-  vm12$ cd $HOME/HELLO -> 先にディレクトリ作成
-  vm12$ vi hello.h
+  vm11$ cd $HOME/hello -> 以前作成したファイル群
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  #ifndef HELLO_H_
-  
-  void Hello1(void);  // 関数プロトタイプ宣言
-  void Hello2(void);  // 関数プロトタイプ宣言
-  
-  #endif
+  -rw-rw-r--. 1 makoto makoto 265  4月 16 07:42 Makefile
+  -rw-rw-r--. 1 makoto makoto 123  4月 16 07:39 hello.c
+  -rw-rw-r--. 1 makoto makoto  64  4月 16 07:34 hello.h
+  -rw-rw-r--. 1 makoto makoto  75  4月 16 07:37 main.c
   --------------------------------------------------
   
-  vm12$ cd $HOME/HELLO
-  vm12$ vi hello.c
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #include <stdio.h>
-  #include "hello.h"
-  
-  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
-  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ ls HELLO/hello.c | cpio -o -F CPO (アーカイブ作成)
+  vm11$ cd $HOME
+  vm11$ ls hello/hello.c | cpio -o -F hello.cpio (アーカイブ作成)
   
   コマンドの実行結果
   --------------------------------------------------
   1 block
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat CPO | cpio -i -t (アーカイブ内のファイル確認)
+  vm11$ cd $HOME
+  vm11$ cat hello.cpio | cpio -i -t (アーカイブ内のファイル確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  HELLO/hello.c
+  hello/hello.c
   1 block
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls HELLO/hello.h | cpio -o -F CPO -A (アーカイブにファイル追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  1 block
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ cat CPO | cpio -i -t (アーカイブ内のファイル確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  HELLO/hello.c
-  HELLO/hello.h
-  1 block
-  --------------------------------------------------
-  
-  vm12$ cd $HOME -> 先に「$HOME/HELLO」のディレクトリ削除
-  vm12$ cat CPO | cpio -i -d (アーカイブからファイル抽出)
+  vm11$ cd $HOME
+  vm11$ ls hello/hello.h | cpio -o -F hello.cpio -A (アーカイブにファイル追加)
   
   コマンドの実行結果
   --------------------------------------------------
   1 block
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh HELLO/
+  vm11$ cd $HOME
+  vm11$ cat hello.cpio | cpio -i -t (アーカイブ内のファイル確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 157  1月  5 12:21 hello.c
-  -rw-rw-r--. 1 makoto makoto 134  1月  5 12:21 hello.h
+  hello/hello.c
+  hello/hello.h
+  1 block
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat CPO | cpio -i -t (アーカイブ内のファイル確認)
+  vm11$ cd $HOME/temp2 -> 予めディレクトリ作成
+  vm11$ cat ../hello.cpio | cpio -i -d (アーカイブからファイル抽出)
   
   コマンドの実行結果
   --------------------------------------------------
-  HELLO/hello.c
-  HELLO/hello.h
+  1 block
+  --------------------------------------------------
+  
+  vm11$ cd $HOME/temp2/hello
+  vm11$ ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-rw-r--. 1 makoto makoto 123  4月 21 17:58 hello.c
+  -rw-rw-r--. 1 makoto makoto  64  4月 21 17:58 hello.h
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ cat hello.cpio | cpio -i -t (アーカイブ内のファイル確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  hello/hello.c
+  hello/hello.h
   1 block
   --------------------------------------------------
   
@@ -704,62 +690,52 @@
     バックアップをコマンド(dd)で行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(dd)
-    dd if=XX  // 入力側ファイル(XX : デフォルトは標準入力)
-    dd of=XX  // 出力側ファイル(XX : デフォルトは標準出力)
-    dd bs=XX  // 入出力ブロックサイズ(XX)
-    dd count=XX  // 回数(XX)分のブロックをコピー
+    dd if=XX     : 入力側ファイル(XX : デフォルトは標準入力)
+    dd of=XX     : 出力側ファイル(XX : デフォルトは標準出力)
+    dd bs=XX     : 入出力ブロックサイズ(XX)
+    dd count=XX  : 回数(XX)分のブロックをコピー
   
 [確認]
-  vm12$ cd $HOME/HELLO -> 先にディレクトリ作成
-  vm12$ vi hello.h
+  vm11$ cd $HOME/hello -> 以前作成したファイル群
+  vm11$ ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
-  #ifndef HELLO_H_
-  
-  void Hello1(void);  // 関数プロトタイプ宣言
-  void Hello2(void);  // 関数プロトタイプ宣言
-  
-  #endif
+  -rw-rw-r--. 1 makoto makoto 265  4月 16 07:42 Makefile
+  -rw-rw-r--. 1 makoto makoto 123  4月 16 07:39 hello.c
+  -rw-rw-r--. 1 makoto makoto  64  4月 16 07:34 hello.h
+  -rw-rw-r--. 1 makoto makoto  75  4月 16 07:37 main.c
   --------------------------------------------------
   
-  vm12$ cd $HOME/HELLO
-  vm12$ vi hello.c
+  vm11$ cd $HOME
+  vm11$ mkdir temp3
   
   コマンドの実行結果
   --------------------------------------------------
-  #include <stdio.h>
-  #include "hello.h"
-  
-  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
-  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dd if=HELLO/hello.c of=DD1 (ファイル単位でコピー)
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=hello/hello.c of=temp3/hello.c (ファイル単位でコピー)
   
   コマンドの実行結果
   --------------------------------------------------
-  0+1 レコード入力
-  0+1 レコード出力
-  157 バイト (157 B) コピーされました、 0.00806405 秒、 19.5 kB/秒
+  0+1 records in
+  0+1 records out
+  123 bytes (123 B) copied, 0.00350602 s, 35.1 kB/s
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ cat DD1
+  vm11$ cd $HOME
+  vm11$ diff hello/hello.c temp3/hello.c
   
   コマンドの実行結果
   --------------------------------------------------
-  #include <stdio.h>
-  #include "hello.h"
-  
-  void Hello1(void) { printf("Hello1\n"); }  // 関数実装
-  void Hello2(void) { printf("Hello2\n"); }  // 関数実装
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
@@ -773,306 +749,327 @@
     バックアップをコマンド(dump)で行い、リストアをコマンド(restore)で行う
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(dump)
-    dump -(0-9)  // ダンプレベル
-    dump -u      // バックアップ時にファイル「/etc/dumpdates」更新
-    dump -f XX   // バックアップデバイス(XX)を指定
+    dump -(0-9)  : ダンプレベル
+    dump -u      : バックアップ時にファイル「/etc/dumpdates」更新
+    dump -f XX   : デバイス(XX)を指定
   
   ## コマンド(restore)
-    restore -r     // 全ファイルを取り出す
-    restore -i     // 対話的にファイルを取り出す
-    restore -f XX  // バックアップデバイス(XX)を指定
+    restore -r     : 全ファイルを取り出す
+    restore -i     : 対話的にファイルを取り出す
+    restore -f XX  : デバイス(XX)を指定
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install dump (パッケージ追加)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install dump (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dd if=/dev/zero of=image0.img bs=10M count=5
+  vm11$ cd $HOME
+  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=5
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  5+0 records in
+  5+0 records out
+  52428800 bytes (52 MB) copied, 0.0713719 s, 735 MB/s
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup /dev/loop0 image0.img
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo losetup /dev/loop0 image0.img
+  vm11$ cd $HOME
+  vm11$ sudo mkfs -t ext4 /dev/loop0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mkfs -t ext4 /dev/loop0
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 4058.290721] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ lsblk (ブロックデバイス確認)
+  vm11$ cd $HOME
+  vm11$ lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                      11:0    1 1024M  0 rom  
-  loop0                     7:0    0  100M  0 loop /mnt (マウントしたデバイス)
-  vda                     252:0    0   20G  0 disk 
-  ├─vda2                252:2    0   19G  0 part 
-  │ ├─centos_vm11-swap 253:1    0    2G  0 lvm  [SWAP]
-  │ └─centos_vm11-root 253:0    0   17G  0 lvm  /
-  └─vda1                252:1    0    1G  0 part /boot
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  
+   |-- vdb1                   252:17    0     1G   0  part  
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0    50M   0  loop  /mnt -> マウントしたデバイス
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo touch sample1.txt
+  vm11$ cd /mnt
+  vm11$ sudo touch sample1.txt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo dump -0 -u -f DUMP0.dump /dev/loop0 (全体バックアップ - レベル0)
+  vm11$ cd $HOME
+  vm11$ sudo dump -0 -u(記録ファイル更新) -f level0.dmp /dev/loop0 (全体バックアップ - レベル0)
   
   コマンドの実行結果
   --------------------------------------------------
-  DUMP: Date of this level 0 dump: Wed Jan  5 17:02:32 2022
-  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP0.dump
+  DUMP: Date of this level 0 dump: Fri Apr 21 18:40:12 2023
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to level0.dmp
   DUMP: Label: none
   DUMP: Writing 10 Kilobyte records
   DUMP: mapping (Pass I) [regular files]
   DUMP: mapping (Pass II) [directories]
   DUMP: estimated 26 blocks.
-  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:02:32 2022
+  DUMP: Volume 1 started with block 1 at: Fri Apr 21 18:40:12 2023
   DUMP: dumping (Pass III) [directories]
   DUMP: dumping (Pass IV) [regular files]
-  DUMP: Closing DUMP0.dump
-  DUMP: Volume 1 completed at: Wed Jan  5 17:02:32 2022
+  DUMP: Closing level0.dmp
+  DUMP: Volume 1 completed at: Fri Apr 21 18:40:12 2023
   DUMP: Volume 1 20 blocks (0.02MB)
   DUMP: 20 blocks (0.02MB) on 1 volume(s)
   DUMP: finished in less than a second
-  DUMP: Date of this level 0 dump: Wed Jan  5 17:02:32 2022
-  DUMP: Date this dump completed:  Wed Jan  5 17:02:32 2022
+  DUMP: Date of this level 0 dump: Fri Apr 21 18:40:12 2023
+  DUMP: Date this dump completed:  Fri Apr 21 18:40:12 2023
   DUMP: Average transfer rate: 0 kB/s
   DUMP: DUMP IS DONE
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  vm11$ cd $HOME
+  vm11$ cat /etc/dumpdates (記録ファイル)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  /dev/loop0 0 Fri Apr 21 18:40:12 2023 +0900
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo touch sample2.txt
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 5054.938781] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
+  --------------------------------------------------
+  
+  vm11$ cd /mnt
+  vm11$ sudo touch sample2.txt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo dump -1 -u -f DUMP1.dump /dev/loop0 (増分バックアップ - レベル1)
+  vm11$ cd $HOME
+  vm11$ sudo dump -1 -u(記録ファイル更新) -f level1.dmp /dev/loop0 (増分バックアップ - レベル1)
   
   コマンドの実行結果
   --------------------------------------------------
-  DUMP: Date of this level 1 dump: Wed Jan  5 17:04:54 2022
-  DUMP: Date of last level 0 dump: Wed Jan  5 17:02:32 2022
-  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP1.dump
+  DUMP: Date of this level 1 dump: Fri Apr 21 18:50:28 2023
+  DUMP: Date of last level 0 dump: Fri Apr 21 18:40:12 2023
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to level1.dmp
   DUMP: Label: none
   DUMP: Writing 10 Kilobyte records
   DUMP: mapping (Pass I) [regular files]
   DUMP: mapping (Pass II) [directories]
   DUMP: estimated 19 blocks.
-  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:04:54 2022
+  DUMP: Volume 1 started with block 1 at: Fri Apr 21 18:50:28 2023
   DUMP: dumping (Pass III) [directories]
   DUMP: dumping (Pass IV) [regular files]
-  DUMP: Closing DUMP1.dump
-  DUMP: Volume 1 completed at: Wed Jan  5 17:04:54 2022
+  DUMP: Closing level1.dmp
+  DUMP: Volume 1 completed at: Fri Apr 21 18:50:28 2023
   DUMP: Volume 1 20 blocks (0.02MB)
   DUMP: 20 blocks (0.02MB) on 1 volume(s)
   DUMP: finished in less than a second
-  DUMP: Date of this level 1 dump: Wed Jan  5 17:04:54 2022
-  DUMP: Date this dump completed:  Wed Jan  5 17:04:54 2022
+  DUMP: Date of this level 1 dump: Fri Apr 21 18:50:28 2023
+  DUMP: Date this dump completed:  Fri Apr 21 18:50:28 2023
   DUMP: Average transfer rate: 0 kB/s
   DUMP: DUMP IS DONE
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  vm11$ cd $HOME
+  vm11$ cat /etc/dumpdates (記録ファイル)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  /dev/loop0 0 Fri Apr 21 18:40:12 2023 +0900
+  /dev/loop0 1 Fri Apr 21 18:50:28 2023 +0900
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo touch sample3.txt
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 5404.829147] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
+  --------------------------------------------------
+  
+  vm11$ cd /mnt
+  vm11$ sudo touch sample3.txt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo dump -2 -u -f DUMP2.dump /dev/loop0 (増分バックアップ - レベル2)
+  vm11$ cd $HOME
+  vm11$ sudo dump -2 -u(記録ファイル更新) -f level2.dmp /dev/loop0 (増分バックアップ - レベル2)
   
   コマンドの実行結果
   --------------------------------------------------
-  DUMP: Date of this level 2 dump: Wed Jan  5 17:07:08 2022
-  DUMP: Date of last level 1 dump: Wed Jan  5 17:04:54 2022
-  DUMP: Dumping /dev/loop0 (an unlisted file system) to DUMP2.dump
+  DUMP: Date of this level 2 dump: Fri Apr 21 18:55:53 2023
+  DUMP: Date of last level 1 dump: Fri Apr 21 18:50:28 2023
+  DUMP: Dumping /dev/loop0 (an unlisted file system) to level2.dmp
   DUMP: Label: none
   DUMP: Writing 10 Kilobyte records
   DUMP: mapping (Pass I) [regular files]
   DUMP: mapping (Pass II) [directories]
   DUMP: estimated 19 blocks.
-  DUMP: Volume 1 started with block 1 at: Wed Jan  5 17:07:08 2022
+  DUMP: Volume 1 started with block 1 at: Fri Apr 21 18:55:53 2023
   DUMP: dumping (Pass III) [directories]
   DUMP: dumping (Pass IV) [regular files]
-  DUMP: Closing DUMP2.dump
-  DUMP: Volume 1 completed at: Wed Jan  5 17:07:08 2022
+  DUMP: Closing level2.dmp
+  DUMP: Volume 1 completed at: Fri Apr 21 18:55:53 2023
   DUMP: Volume 1 20 blocks (0.02MB)
   DUMP: 20 blocks (0.02MB) on 1 volume(s)
   DUMP: finished in less than a second
-  DUMP: Date of this level 2 dump: Wed Jan  5 17:07:08 2022
-  DUMP: Date this dump completed:  Wed Jan  5 17:07:08 2022
+  DUMP: Date of this level 2 dump: Fri Apr 21 18:55:53 2023
+  DUMP: Date this dump completed:  Fri Apr 21 18:55:53 2023
   DUMP: Average transfer rate: 0 kB/s
   DUMP: DUMP IS DONE
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  [ 5755.788234] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo rm sample[1-3].txt (誤ってファイルを全て削除した設定)
+  vm11$ cd /mnt
+  vm11$ sudo rm sample[1-3].txt (誤ってファイルを全て削除した設定)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo restore -r -f /home/makoto/DUMP0.dump (全体バックアップをレストア)
+  vm11$ cd /mnt
+  vm11$ sudo restore -r -f /home/makoto/level0.dmp (全体バックアップをレストア)
   
   コマンドの実行結果
   --------------------------------------------------
   restore: ./lost+found: File exists -> 初回だけ出力される模様
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ ls -lh | grep sample (レストア状況を確認)
+  vm11$ cd /mnt
+  vm11$ ls -lh | grep sample (レストア状況を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
+  -rw-r--r--. 1 root root   0  4月 21 18:37 sample1.txt
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ sudo restore -r -f /home/makoto/DUMP1.dump (増分バックアップをレストア)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /mnt
-  vm12$ ls -lh | grep sample (レストア状況を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
-  -rw-r--r--. 1 root root   0  1月  5 17:04 sample2.txt
-  --------------------------------------------------
-  
-  vm12$ cd /mnt
-  vm12$ sudo restore -r -f /home/makoto/DUMP2.dump (増分バックアップをレストア)
+  vm11$ cd /mnt
+  vm11$ sudo restore -r -f /home/makoto/level1.dmp (増分バックアップをレストア)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd /mnt
-  vm12$ ls -lh | grep sample (レストア状況を確認)
+  vm11$ cd /mnt
+  vm11$ ls -lh | grep sample (レストア状況を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--. 1 root root   0  1月  5 17:01 sample1.txt
-  -rw-r--r--. 1 root root   0  1月  5 17:04 sample2.txt
-  -rw-r--r--. 1 root root   0  1月  5 17:06 sample3.txt
+  -rw-r--r--. 1 root root   0  4月 21 18:37 sample1.txt
+  -rw-r--r--. 1 root root   0  4月 21 18:46 sample2.txt
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo losetup -D
+  vm11$ cd /mnt
+  vm11$ sudo restore -r -f /home/makoto/level2.dmp (増分バックアップをレストア)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  ディスクイメージ削除
-  vm12$ cd $HOME
-  vm12$ rm -f image0.img
+  vm11$ cd /mnt
+  vm11$ ls -lh | grep sample (レストア状況を確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root   0  4月 21 18:37 sample1.txt
+  -rw-r--r--. 1 root root   0  4月 21 18:46 sample2.txt
+  -rw-r--r--. 1 root root   0  4月 21 18:54 sample3.txt
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo umount /mnt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo losetup -D
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ rm -f image0.img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1090,36 +1087,32 @@
     バックアップをコマンド(mt)で行う
   
   ## 使用マシン
-    なし -> テープドライブを自宅導入した人のブログ内容を記述
-
+    ある資料から内容を抜粋
+  
   ## コマンド(mt)
-    mt -f XX status  // テープ(XX)の状態表示
-    mt -f XX tell    // テープ(XX)の現在位置表示
-    mt -f XX rewind  // テープ(XX)を先頭に巻き戻し
-    mt -f XX fsf YY  // テープ(XX)をYY個先のデータの先頭位置まで早送り
-    mt -f XX bsf YY  // テープ(XX)をYY個先のデータの末尾位置まで巻き戻し
-    mt -f XX compression 1  // ハードウェア圧縮
-    mt -f XX compression 0  // ハードウェア圧縮を使用しない
+    mt -f XX status         : テープ(XX)の状態表示
+    mt -f XX tell           : テープ(XX)の現在位置表示
+    mt -f XX rewind         : テープ(XX)を先頭に巻き戻し
+    mt -f XX fsf YY         : テープ(XX)をYY個先のデータの先頭位置まで早送り
+    mt -f XX bsf YY         : テープ(XX)をYY個先のデータの末尾位置まで巻き戻し
+    mt -f XX compression 1  : ハードウェア圧縮
+    mt -f XX compression 0  : ハードウェア圧縮を使用しない
   
   ## テープの構造
+    BOT : テープの冒頭部分
+    EOF : 各バックアップの終端マーク
+    EOD : 最終バックアップの終端マーク(EOF)
+    ### : 各バックアップの終端マークの直前部分
     
-    File-Number=0         File-Number=1           File-Number=2           File-Number=3
-      |                     |                       |                       |
-      +-------------------+---+-------------------+---+-------------------+---+---------------
-      |     tar 0         |   |     tar 1         |   |     tar 2         |   |     empty
-      +-------------------+---+-------------------+---+-------------------+---+---------------
-      |                     |                       |                       |
-    BOT(Begin of Tape)    EOF(End of File)        EOF(End of File)        EOT(End of Tape)
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3
+    |                   |                   |                   |
+    +-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     empty
+    +-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
   
 [確認]
-  # cd $HOME
-  # ls /dev | grep st0 (テープドライブ検索)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nst0 -> 書込完了後に次の書込位置にヘッド移動、st0(書込完了後に自動的に巻き戻し)
-  --------------------------------------------------
-  
   # cd $HOME
   # yum -y install mt-st (パッケージ追加)
   
@@ -1129,185 +1122,195 @@
   --------------------------------------------------
   
   # cd $HOME
-  # mt -f /dev/nst0 status (テープ状態を確認)
+  # ls /dev | grep st0 (テープドライブ検索)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nst0 -> 書込完了後に次の書込位置にヘッド移動、逆にst0は書込完了後に自動的に巻き戻し
+  --------------------------------------------------
+  
+  # cd $HOME
+  # mt -f /dev/nst0 rewind (テープ巻き戻し)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  # cd $HOME
+  # mt -f /dev/nst0 status (テープ確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=0, block number=0, partition=0.  // データ未保存のため次のファイル番号は「0」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
+  File number=0, block number=0, partition=0.
+  Tape block size 512 bytes. Density code 0x42 (no translation).
   Soft error count since last status=0
   General status bits on (41010000):
-  BOT ONLINE IM_REP_EN  // ヘッダ位置がBOT
+  BOT ONLINE IM_REP_EN
   --------------------------------------------------
   
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3
+    |                   |                   |                   |
+    +-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     empty
+    +-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
+    ● Tape Head
+  
   # cd $HOME
-  # tar cvf /dev/nst0 file0 (ファイルをテープに書込)
+  # mt -f /dev/nst0 fsf 1 (テープ早送り)
   
   コマンドの実行結果
   --------------------------------------------------
-  file0
+  (省略) -> 出力なし
   --------------------------------------------------
   
   # cd $HOME
-  # mt -f /dev/nst0 status (書込完了後にテープ状態を確認)
+  # mt -f /dev/nst0 status (テープ確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=1, block number=0, partition=0.  // 次のファイル番号は「1」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
+  File number=1, block number=0, partition=0.
+  Tape block size 512 bytes. Density code 0x42 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
-  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar0」のEOF
+  EOF ONLINE IM_REP_EN
   --------------------------------------------------
   
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3
+    |                   |                   |                   |
+    +-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     empty
+    +-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
+                        ● Tape Head
+  
   # cd $HOME
-  # tar cvf /dev/nst0 file1 (ファイルをテープに書込)
+  # tar xvf /dev/nst0 (ファイル復元)
   
   コマンドの実行結果
   --------------------------------------------------
-  file1
+  backup_1
   --------------------------------------------------
   
   # cd $HOME
-  # mt -f /dev/nst0 status (書込完了後にテープ状態を確認)
+  # mt -f /dev/nst0 status (テープ確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=2, block number=0, partition=0.  // 次のファイル番号は「2」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
+  File number=1, block number=20, partition=0.
+  Tape block size 512 bytes. Density code 0x42 (no translation).
+  Soft error count since last status=0
+  General status bits on (1010000):
+  ONLINE IM_REP_EN
+  --------------------------------------------------
+  
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3
+    |                   |                   |                   |
+    +-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     empty
+    +-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
+                                         ● Tape Head -> EOF直前で停止
+  
+  # cd $HOME
+  # mt -f /dev/nst0 fsf 1 (テープ早送り)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd $HOME
+  # mt -f /dev/nst0 status (テープ確認)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  SCSI 2 tape drive:
+  File number=2, block number=0, partition=0.
+  Tape block size 512 bytes. Density code 0x42 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
-  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar1」のEOF
+  EOF ONLINE IM_REP_EN
   --------------------------------------------------
   
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3
+    |                   |                   |                   |
+    +-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     empty
+    +-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
+                                            ● Tape Head
+  
   # cd $HOME
-  # mt -f /dev/nst0 rewind (テープの巻き戻し)
+  # mt -f /dev/nst0 eod (テープ末尾へ早送り)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  (省略) -> 出力なし
   --------------------------------------------------
   
   # cd $HOME
-  # mt -f /dev/nst0 status (テープ状態を確認)
+  # mt -f /dev/nst0 status (テープ確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=0, block number=0, partition=0.  // 次のファイル番号は「0」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
+  File number=3, block number=0, partition=0.
+  Tape block size 512 bytes. Density code 0x42 (no translation).
   Soft error count since last status=0
-  General status bits on (41010000):
-  BOT ONLINE IM_REP_EN  // ヘッダ位置がBOT
+  General status bits on (89010000):
+  EOF EOD ONLINE IM_REP_EN
   --------------------------------------------------
   
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3
+    |                   |                   |                   |
+    +-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     empty
+    +-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
+                                                                ● Tape Head
+  
   # cd $HOME
-  # mt -f /dev/nst0 fsf 1 (テープを一つ先のEOFへ早送り)
+  # tar -cvf /dev/nst0 backup_3 (テープ末尾から書き込み)
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  backup_3
   --------------------------------------------------
   
   # cd $HOME
-  # mt -f /dev/nst0 status (テープ状態を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  SCSI 2 tape drive:
-  File number=1, block number=0, partition=0.  // 次のファイル番号は「1」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
-  Soft error count since last status=0
-  General status bits on (81010000):
-  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar0」のEOF
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 eod (テープ末尾のEOFへ早送り)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 status (テープ状態を確認)
+  # mt -f /dev/nst0 status (テープ確認)
   
   コマンドの実行結果
   --------------------------------------------------
   SCSI 2 tape drive:
-  File number=2, block number=-1, partition=0.  // 次のファイル番号は「2」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
-  Soft error count since last status=0
-  General status bits on (9010000):
-  EOD ONLINE IM_REP_EN  // ヘッダ位置がテープ末尾のEOF
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 bsf 1 (ヘッダ位置を一つ前のEOFに移動後、アーカイブファイルの末尾にセット)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 status (テープ状態を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  SCSI 2 tape drive:
-  File number=1, block number=-1, partition=0.  // 次のファイル番号は「1」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
-  Soft error count since last status=0
-  General status bits on (9010000):
-  ONLINE IM_REP_EN  // ヘッダ位置がアーカイブファイルの末尾
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 asf 0 (テープを指定した「File number」に移動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 status (テープ状態を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  SCSI 2 tape drive:
-  File number=0, block number=0, partition=0.  // 次のファイル番号は「0」
-  Tape block size 0 bytes. Density code 0x58 (no translation).
+  File number=4, block number=0, partition=0.
+  Tape block size 512 bytes. Density code 0x42 (no translation).
   Soft error count since last status=0
   General status bits on (81010000):
-  EOF ONLINE IM_REP_EN  // ヘッダ位置が「tar0」のEOF
+  EOF ONLINE IM_REP_EN
   --------------------------------------------------
+  
+    File-Number=0       File-Number=1       File-Number=2       File-Number=3       File-Number=4
+    |                   |                   |                   |                   |
+    +-------------------+-------------------+-------------------+-------------------+---------------
+    |     backup_0   ###|     backup_1   ###|     backup_2   ###|     backup_3   ###|     empty
+    +-------------------+-------------------+-------------------+-------------------+---------------
+    |                   |                   |                   |                   |
+    BOT(Begin of Tape)  EOF(End of File)    EOF(End of File)    EOF(End of File)    EOF(End of File) = EOD(End of Data)
+                                                                                    ● Tape Head
   
   # cd $HOME
-  # tar tvf /dev/nst0 (テープ内容を表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r-- 1001/1001 3773378080 2014-01-12 19:41 file1
-  
-  // 直前のヘッダ位置がファイル「tar0」のEOF -> つまりファイル「tar1」の先頭のため
-  --------------------------------------------------
-  
-  # cd $HOME
-  # tar xvf /dev/nst0 (テープ内のデータ復元)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  file1
-  --------------------------------------------------
-  
-  # cd $HOME
-  # mt -f /dev/nst0 erase (テープ内容の全消去)
+  # mt -f /dev/nst0 erase (テープ消去)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1315,7 +1318,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # mt -f /dev/nst0 eject (テープドライブからテープ取出)
+  # mt -f /dev/nst0 eject (テープ取出)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1332,41 +1335,46 @@
   ## 作業内容
     バックアップをコマンド(rsync)で行う
   
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
   ## コマンド(rsync)
-    rsync -v  // コピー中のファイル表示
-    rsync -a  // ファイルやディレクトリ属性をそのままコピー
-    rsync -r  // ディレクトリ内を再帰的コピー
-    rsync -u  // 変更または追加されたファイルのみコピー
-    rsync -l  // シンボリックリンクをそのままコピー
-    rsync -H  // ハードリンクをそのままコピー
-    rsync -o  // 所有者を維持
-    rsync -g  // 所有グループを維持
-    rsync -t  // タイムスタンプを維持
-    rsync -n  // 動作確認テスト
-    rsync -z  // ファイル圧縮
-    rsync -e XX     // ターミナルソフト(XX)指定
-    rsync --delete  // コピー元ファイル削除はコピー先でも削除
+    rsync -v        : コピー中のファイル表示
+    rsync -a        : ファイルやディレクトリ属性をそのままコピー
+    rsync -r        : ディレクトリ内を再帰的コピー
+    rsync -u        : 変更または追加されたファイルのみコピー
+    rsync -l        : シンボリックリンクをそのままコピー
+    rsync -H        : ハードリンクをそのままコピー
+    rsync -o        : 所有者を維持
+    rsync -g        : 所有グループを維持
+    rsync -t        : タイムスタンプを維持
+    rsync -n        : 動作確認テスト
+    rsync -z        : ファイル圧縮
+    rsync -e XX     : 端末ソフト(XX)指定
+    rsync --delete  : コピー元ファイル削除はコピー先でも削除
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ mkdir dirA dirB (ディレクトリ作成)
+  vm11$ cd $HOME
+  vm11$ mkdir dirA dirB (ディレクトリ作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ echo 'AAA BBB CCC' > sample1.txt (ファイル作成)
-  vm12$ echo 'AAA BBB CCC' > sample2.txt (ファイル作成)
+  vm11$ cd $HOME/dirA
+  vm11$ echo 'AAA BBB CCC' > sample1.txt (ファイル作成)
+  vm11$ echo 'AAA BBB CCC' > sample2.txt (ファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
   AAA BBB CCC
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rsync -a -u --delete -v  dirA/ dirB/ (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示)
+  vm11$ cd $HOME
+  vm11$ rsync -a -u --delete -v  dirA/ dirB/ (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1379,48 +1387,48 @@
   total size is 24  speedup is 0.09
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh dirA/ dirB/ (バックアップ先の確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh dirA/ dirB/ (バックアップ先の確認)
   
   コマンドの実行結果
   --------------------------------------------------
   dirA/:
   合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 08:48 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 08:48 sample2.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample2.txt
   
   dirB/:
   合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 08:48 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 08:48 sample2.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample2.txt
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ vi sample1.txt (ファイル変更)
+  vm11$ cd $HOME/dirA
+  vm11$ vi sample1.txt (ファイル変更)
   
   コマンドの実行結果
   --------------------------------------------------
   AAA BBB CCC DDD(追加)
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ rm sample2.txt (ファイル削除)
+  vm11$ cd $HOME/dirA
+  vm11$ rm sample2.txt (ファイル削除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ echo 'AAA BBB CCC' > sample3.txt (ファイル追加)
+  vm11$ cd $HOME/dirA
+  vm11$ echo 'AAA BBB CCC' > sample3.txt (ファイル追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ rsync -a -u --delete -v  dirA/ dirB/ (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示)
+  vm11$ cd $HOME
+  vm11$ rsync -a -u --delete -v  dirA/ dirB/ (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1434,20 +1442,20 @@
   total size is 28  speedup is 0.09
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh dirA/ dirB/ (バックアップ先の確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh dirA/ dirB/ (バックアップ先の確認)
   
   コマンドの実行結果
   --------------------------------------------------
   dirA/:
   合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 16  1月  6 08:53 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 08:54 sample3.txt
+  -rw-rw-r--. 1 makoto makoto 16  4月 22 12:21 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:22 sample3.txt
   
   dirB/:
   合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 16  1月  6 08:53 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 08:54 sample3.txt
+  -rw-rw-r--. 1 makoto makoto 16  4月 22 12:21 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:22 sample3.txt
   --------------------------------------------------
   
   以下の確認に続く
@@ -1461,70 +1469,70 @@
     バックアップをコマンド(rsync)で行う
   
   ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+  ## 使用マシン
     HOST : vm12
     IPV4 : 192.168.122.12
     MEMO : 仮想マシン
   
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
   ## コマンド(rsync)
-    rsync -v  // コピー中のファイル表示
-    rsync -a  // ファイルやディレクトリ属性をそのままコピー
-    rsync -r  // ディレクトリ内を再帰的コピー
-    rsync -u  // 変更または追加されたファイルのみコピー
-    rsync -l  // シンボリックリンクをそのままコピー
-    rsync -H  // ハードリンクをそのままコピー
-    rsync -o  // 所有者を維持
-    rsync -g  // 所有グループを維持
-    rsync -t  // タイムスタンプを維持
-    rsync -n  // 動作確認テスト
-    rsync -z  // ファイル圧縮
-    rsync -e XX     // ターミナルソフト(XX)指定
-    rsync --delete  // コピー元ファイル削除はコピー先でも削除
+    rsync -v        : コピー中のファイル表示
+    rsync -a        : ファイルやディレクトリ属性をそのままコピー
+    rsync -r        : ディレクトリ内を再帰的コピー
+    rsync -u        : 変更または追加されたファイルのみコピー
+    rsync -l        : シンボリックリンクをそのままコピー
+    rsync -H        : ハードリンクをそのままコピー
+    rsync -o        : 所有者を維持
+    rsync -g        : 所有グループを維持
+    rsync -t        : タイムスタンプを維持
+    rsync -n        : 動作確認テスト
+    rsync -z        : ファイル圧縮
+    rsync -e XX     : 端末ソフト(XX)指定
+    rsync --delete  : コピー元ファイル削除はコピー先でも削除
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ mkdir dirA (ディレクトリ作成)
+  vm11$ cd $HOME
+  vm11$ mkdir dirC (ディレクトリ作成)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ echo 'AAA BBB CCC' > sample1.txt (ファイル作成)
-  vm12$ echo 'AAA BBB CCC' > sample2.txt (ファイル作成)
+  vm11$ cd $HOME/dirC
+  vm11$ echo 'AAA BBB CCC' > sample1.txt (ファイル作成)
+  vm11$ echo 'AAA BBB CCC' > sample2.txt (ファイル作成)
   
   コマンドの実行結果
   --------------------------------------------------
   AAA BBB CCC
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo yum -y install rsync (パッケージ追加)
+    vm12$ cd $HOME
+    vm12$ sudo yum -y install rsync (パッケージ追加)
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ mkdir dirB (ディレクトリ作成)
+    vm12$ cd $HOME
+    vm12$ mkdir dirC (ディレクトリ作成)
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-  vm12$ cd $HOME (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示、ターミナル指定)
-  vm12$ rsync -a -u --delete -v -e ssh dirA/ vm13:dirB/
+  vm11$ cd $HOME (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示、ターミナル指定)
+  vm11$ rsync -a -u --delete -v -e ssh dirC/ vm12:dirC/
   
   コマンドの実行結果
   --------------------------------------------------
-  makoto@vm13's password: (makoto@vm13のパスワード入力)
+  makoto@vm12's password: (makoto@vm12のパスワード入力)
   sending incremental file list
   ./
   sample1.txt
@@ -1534,80 +1542,80 @@
   total size is 24  speedup is 0.08
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh dirA/ (バックアップ元の確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh dirC/ (バックアップ元の確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 09:32 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 09:32 sample2.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:33 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:34 sample2.txt
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ ls -lh dirB/ (バックアップ先の確認)
+    vm12$ cd $HOME
+    vm12$ ls -lh dirC/ (バックアップ先の確認)
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-rw-r--. 1 makoto makoto 12  1月  6 09:32 sample1.txt
-    -rw-rw-r--. 1 makoto makoto 12  1月  6 09:32 sample2.txt
+    -rw-rw-r--. 1 makoto makoto 12  4月 22 12:33 sample1.txt
+    -rw-rw-r--. 1 makoto makoto 12  4月 22 12:34 sample2.txt
     --------------------------------------------------
     
-  vm12$ cd $HOME/dirA
-  vm12$ vi sample1.txt (ファイル変更)
+  vm11$ cd $HOME/dirC
+  vm11$ vi sample1.txt (ファイル変更)
   
   コマンドの実行結果
   --------------------------------------------------
   AAA BBB CCC DDD(追加)
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ rm sample2.txt (ファイル削除)
+  vm11$ cd $HOME/dirC
+  vm11$ rm sample2.txt (ファイル削除)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME/dirA
-  vm12$ echo 'AAA BBB CCC' > sample3.txt (ファイル追加)
+  vm11$ cd $HOME/dirC
+  vm11$ echo 'AAA BBB CCC' > sample3.txt (ファイル追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12$ cd $HOME (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示、ターミナル指定)
-  vm12$ rsync -a -u --delete -v -e ssh dirA/ vm13:dirB/
+  vm11$ cd $HOME (ファイル属性維持、ファイル変更反映、ファイル削除反映、反映ファイル表示、ターミナル指定)
+  vm11$ rsync -a -u --delete -v -e ssh dirC/ vm12:dirC/
   
   コマンドの実行結果
   --------------------------------------------------
-  makoto@vm13's password: (makoto@vm13のパスワード入力)
+  makoto@vm12's password: (makoto@vm12のパスワード入力)
   sending incremental file list
   deleting sample2.txt
   ./
   sample1.txt
   sample3.txt
   
-  sent 232 bytes  received 78 bytes  41.33 bytes/sec
+  sent 232 bytes  received 78 bytes  36.47 bytes/sec
   total size is 28  speedup is 0.09
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ ls -lh dirA/ (バックアップ元の確認)
+  vm11$ cd $HOME
+  vm11$ ls -lh dirC/ (バックアップ元の確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 16  1月  6 10:39 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  1月  6 10:39 sample3.txt
+  -rw-rw-r--. 1 makoto makoto 16  4月 22 12:39 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:39 sample3.txt
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ ls -lh dirB/ (バックアップ先の確認)
+    vm12$ cd $HOME
+    vm12$ ls -lh dirC/ (バックアップ先の確認)
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-rw-r--. 1 makoto makoto 16  1月  6 10:39 sample1.txt
-    -rw-rw-r--. 1 makoto makoto 12  1月  6 10:39 sample3.txt
+    -rw-rw-r--. 1 makoto makoto 16  4月 22 12:39 sample1.txt
+    -rw-rw-r--. 1 makoto makoto 12  4月 22 12:39 sample3.txt
     --------------------------------------------------
     
   以下の確認に続く
@@ -1621,34 +1629,32 @@
     ログイン前のメッセージをファイル(/etc/issue)で設定する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/issue (ファイル編集)
+  vm11$ cd $HOME
+  vm11$ sudo vi /etc/issue (ファイル編集)
   
   コマンドの実行結果
   --------------------------------------------------
-  #\S                  // 削除
-  #Kernel \r on an \m  // 削除
   System is \S         // 追加 \S = $(uname -s) = CentOS Linux 7 (Core)
   Kernel is \r         // 追加 \r = $(uname -r) = 4.15.3
   Architecture is \m   // 追加 \m = $(uname -m) = x86_64
-  Host is \n           // 追加 \n = $(uname -n) = vm12
+  Host is \n           // 追加 \n = $(uname -n) = vm11
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl reboot (システム再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reboot (システム再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   System is CentOS Linux 7 (Core)
   Kernel is 4.15.3
   Architecture is x86_64
-  Host is vm12
-  vm12 login: ■ (ログインプロンプト)
+  Host is vm11
+  vm11 login: ■ (ログインプロンプト)
   --------------------------------------------------
   
   以下の確認に続く
@@ -1662,31 +1668,31 @@
     ログイン後のメッセージをファイル(/etc/motd)で設定する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/motd (ファイル編集)
+  vm11$ cd $HOME
+  vm11$ sudo vi /etc/motd (ファイル編集)
   
   コマンドの実行結果
   --------------------------------------------------
   This machine is for LPIC 201.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ sudo systemctl reboot (システム再起動)
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reboot (システム再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   System is CentOS Linux 7 (Core)
   Kernel is 4.15.3
   Architecture is x86_64
-  Host is vm12
-  vm12 login: makoto (ユーザー名を入力)
+  Host is vm11
+  vm11 login: makoto (ユーザー名を入力)
   パスワード: (パスワードを入力)
-  最終ログイン: Thu Jan  6 11:07:52  ttyS0 上
+  最終ログイン: Sat Apr 22 12:52:28  ttyS0 上
   This machine is for LPIC 201.  // ログイン後のメッセージ
   --------------------------------------------------
   
