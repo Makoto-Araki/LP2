@@ -16,25 +16,25 @@
     コマンド(nslookup)でDNSサーバーに名前解決を依頼する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(nslookup)
-    nslookup -type=XX    // レコードタイプ(XX)を指定
-    nslookup -norecurse  // 再帰問合せをしない
+    nslookup -type=XX    : レコードタイプ(XX)を指定
+    nslookup -norecurse  : 再帰問合せをしない
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y bind-utils (パッケージ追加)
+  vm11$ cd $HOME
+  vm11$ sudo yum -y install bind-utils (パッケージ追加)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ nslookup -type=soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
+  vm11$ cd $HOME
+  vm11$ nslookup -type=soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -45,7 +45,7 @@
   yahoo.co.jp
     origin    = yahoo.co.jp
     mail addr = postmaster.yahoo.co.jp
-    serial    = 2201070009
+    serial    = 2304210026
     refresh   = 1800
     retry     = 900
     expire    = 86400
@@ -54,8 +54,8 @@
   Authoritative answers can be found from:
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ nslookup -type=ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
+  vm11$ cd $HOME
+  vm11$ nslookup -type=ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -63,20 +63,20 @@
   Address: 192.168.122.1#53
   
   Non-authoritative answer:
-  yahoo.co.jp  nameserver = ns02.yahoo.co.jp.
-  yahoo.co.jp  nameserver = ns11.yahoo.co.jp.
-  yahoo.co.jp  nameserver = ns12.yahoo.co.jp.
-  yahoo.co.jp  nameserver = ns01.yahoo.co.jp.
+  yahoo.co.jp	nameserver = ns11.yahoo.co.jp.
+  yahoo.co.jp	nameserver = ns12.yahoo.co.jp.
+  yahoo.co.jp	nameserver = ns01.yahoo.co.jp.
+  yahoo.co.jp	nameserver = ns02.yahoo.co.jp.
   
   Authoritative answers can be found from:
-  ns02.yahoo.co.jp  internet address = 118.151.254.149
-  ns11.yahoo.co.jp  internet address = 124.83.255.37
-  ns12.yahoo.co.jp  internet address = 124.83.255.101
-  ns01.yahoo.co.jp  internet address = 118.151.254.133
+  ns02.yahoo.co.jp	internet address = 118.151.254.149
+  ns11.yahoo.co.jp	internet address = 124.83.255.37
+  ns12.yahoo.co.jp	internet address = 124.83.255.101
+  ns01.yahoo.co.jp	internet address = 118.151.254.133
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ nslookup -type=mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
+  vm11$ cd $HOME
+  vm11$ nslookup -type=mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -84,16 +84,16 @@
   Address: 192.168.122.1#53
   
   Non-authoritative answer:
-  yahoo.co.jp  mail exchanger = 10 mx5.mail.yahoo.co.jp.
-  yahoo.co.jp  mail exchanger = 10 mx3.mail.yahoo.co.jp.
-  yahoo.co.jp  mail exchanger = 10 mx2.mail.yahoo.co.jp.
-  yahoo.co.jp  mail exchanger = 10 mx1.mail.yahoo.co.jp.
+  yahoo.co.jp	mail exchanger = 10 mx2.mail.yahoo.co.jp.
+  yahoo.co.jp	mail exchanger = 10 mx1.mail.yahoo.co.jp.
+  yahoo.co.jp	mail exchanger = 10 mx3.mail.yahoo.co.jp.
+  yahoo.co.jp	mail exchanger = 10 mx5.mail.yahoo.co.jp.
   
   Authoritative answers can be found from:
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ nslookup ns02.yahoo.co.jp (正引き名前解決)
+  vm11$ cd $HOME
+  vm11$ nslookup ns02.yahoo.co.jp (正引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -105,8 +105,8 @@
   Address: 118.151.254.149
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ nslookup 118.151.254.149 (逆引き名前解決)
+  vm11$ cd $HOME
+  vm11$ nslookup 118.151.254.149 (逆引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -126,36 +126,36 @@
     コマンド(host)でDNSサーバーに名前解決を依頼する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(host)
-    host -t XX  // レコードタイプ(XX)を指定
-    host -v     // 詳細情報を表示
+    host -t XX  : レコードタイプ(XX)を指定
+    host -v     : 詳細情報を表示
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ host -t soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
+  vm11$ cd $HOME
+  vm11$ host -t soa yahoo.co.jp (レコードタイプ(SOA)指定、ドメイン名指定)
   
   コマンドの実行結果
   --------------------------------------------------
-  yahoo.co.jp has SOA record yahoo.co.jp. postmaster.yahoo.co.jp. 2201070009 1800 900 86400 900
+  yahoo.co.jp has SOA record yahoo.co.jp. postmaster.yahoo.co.jp. 2304210026 1800 900 86400 900
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ host -t ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
+  vm11$ cd $HOME
+  vm11$ host -t ns yahoo.co.jp (レコードタイプ(NS)指定、ドメイン名指定)
   
   コマンドの実行結果
   --------------------------------------------------
-  yahoo.co.jp name server ns11.yahoo.co.jp.
+  yahoo.co.jp name server ns12.yahoo.co.jp.
   yahoo.co.jp name server ns01.yahoo.co.jp.
   yahoo.co.jp name server ns02.yahoo.co.jp.
-  yahoo.co.jp name server ns12.yahoo.co.jp.
+  yahoo.co.jp name server ns11.yahoo.co.jp.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ host -t mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
+  vm11$ cd $HOME
+  vm11$ host -t mx yahoo.co.jp (レコードタイプ(MX)指定、ドメイン名指定)
   
   コマンドの実行結果
   --------------------------------------------------
