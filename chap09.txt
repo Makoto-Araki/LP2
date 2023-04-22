@@ -63,16 +63,16 @@
   Address: 192.168.122.1#53
   
   Non-authoritative answer:
-  yahoo.co.jp	nameserver = ns11.yahoo.co.jp.
-  yahoo.co.jp	nameserver = ns12.yahoo.co.jp.
-  yahoo.co.jp	nameserver = ns01.yahoo.co.jp.
-  yahoo.co.jp	nameserver = ns02.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns11.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns12.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns01.yahoo.co.jp.
+  yahoo.co.jp  nameserver = ns02.yahoo.co.jp.
   
   Authoritative answers can be found from:
-  ns02.yahoo.co.jp	internet address = 118.151.254.149
-  ns11.yahoo.co.jp	internet address = 124.83.255.37
-  ns12.yahoo.co.jp	internet address = 124.83.255.101
-  ns01.yahoo.co.jp	internet address = 118.151.254.133
+  ns02.yahoo.co.jp  internet address = 118.151.254.149
+  ns11.yahoo.co.jp  internet address = 124.83.255.37
+  ns12.yahoo.co.jp  internet address = 124.83.255.101
+  ns01.yahoo.co.jp  internet address = 118.151.254.133
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -84,10 +84,10 @@
   Address: 192.168.122.1#53
   
   Non-authoritative answer:
-  yahoo.co.jp	mail exchanger = 10 mx2.mail.yahoo.co.jp.
-  yahoo.co.jp	mail exchanger = 10 mx1.mail.yahoo.co.jp.
-  yahoo.co.jp	mail exchanger = 10 mx3.mail.yahoo.co.jp.
-  yahoo.co.jp	mail exchanger = 10 mx5.mail.yahoo.co.jp.
+  yahoo.co.jp  mail  exchanger = 10 mx2.mail.yahoo.co.jp.
+  yahoo.co.jp  mail  exchanger = 10 mx1.mail.yahoo.co.jp.
+  yahoo.co.jp  mail  exchanger = 10 mx3.mail.yahoo.co.jp.
+  yahoo.co.jp  mail  exchanger = 10 mx5.mail.yahoo.co.jp.
   
   Authoritative answers can be found from:
   --------------------------------------------------
@@ -165,16 +165,16 @@
   yahoo.co.jp mail is handled by 10 mx1.mail.yahoo.co.jp.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ host ns02.yahoo.co.jp (正引き名前解決)
+  vm11$ cd $HOME
+  vm11$ host ns02.yahoo.co.jp (正引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
   ns02.yahoo.co.jp has address 118.151.254.149
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ host 118.151.254.149 (逆引き名前解決)
+  vm11$ cd $HOME
+  vm11$ host 118.151.254.149 (逆引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -192,33 +192,33 @@
     コマンド(dig)でDNSサーバーに名前解決を依頼する
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
   ## コマンド(dig)
-    dig -x      // 逆引き名前解決を行う
-    dig -p XX   // 問合先ポート(XX)を指定
-    dig +norec  // 再帰問合せをしない
-    dig +rec    // 再帰問合せをする
-    dig +noall  // 全セクション非表示
-    dig +all    // 全セクション表示
-    dig +noquestion  // 質問セクション非表示
-    dig +question    // 質問セクション表示
-    dig +noanswer    // 回答セクション非表示
-    dig +answer      // 回答セクション表示
+    dig -x           : 逆引き名前解決を行う
+    dig -p XX        : 問合先ポート(XX)を指定
+    dig +norec       : 再帰問合せをしない
+    dig +rec         : 再帰問合せをする
+    dig +noall       : 全セクション非表示
+    dig +all         : 全セクション表示
+    dig +noquestion  : 質問セクション非表示
+    dig +question    : 質問セクション表示
+    dig +noanswer    : 回答セクション非表示
+    dig +answer      : 回答セクション表示
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ dig +noall +answer yahoo.co.jp soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
+  vm11$ cd $HOME
+  vm11$ dig +noall +answer yahoo.co.jp soa (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(SOA)指定)
   
   コマンドの実行結果
   --------------------------------------------------
-  yahoo.co.jp.  900 IN  SOA yahoo.co.jp. postmaster.yahoo.co.jp. 2201070009 1800 900 86400 900
+  yahoo.co.jp. 900 IN SOA yahoo.co.jp. postmaster.yahoo.co.jp. 2304210026 1800 900 86400 900
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dig +noall +answer yahoo.co.jp ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
+  vm11$ cd $HOME
+  vm11$ dig +noall +answer yahoo.co.jp ns (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(NS)指定)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -228,8 +228,8 @@
   yahoo.co.jp.  900 IN  NS  ns02.yahoo.co.jp.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dig +noall +answer yahoo.co.jp mx (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(MX)指定)
+  vm11$ cd $HOME
+  vm11$ dig +noall +answer yahoo.co.jp mx (全セクション非表示、回答セクション表示、ドメイン名指定、レコード(MX)指定)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -239,8 +239,8 @@
   yahoo.co.jp.  900 IN  MX  10 mx2.mail.yahoo.co.jp.
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dig ns11.yahoo.co.jp (オプションなし、正引き名前解決)
+  vm11$ cd $HOME
+  vm11$ dig ns11.yahoo.co.jp (オプションなし、正引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -267,16 +267,16 @@
   ;; MSG SIZE  rcvd: 61
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dig +noall +answer ns11.yahoo.co.jp (全セクション非表示、回答セクション表示、正引き名前解決)
+  vm11$ cd $HOME
+  vm11$ dig +noall +answer ns11.yahoo.co.jp (全セクション非表示、回答セクション表示、正引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
   ns11.yahoo.co.jp. 498 IN A 124.83.255.37
   --------------------------------------------------
   
-  vm12$ cd $HOME
-  vm12$ dig +noall +answer -x 124.83.255.37 (全セクション非表示、回答セクション表示、逆引き名前解決)
+  vm11$ cd $HOME
+  vm11$ dig +noall +answer -x 124.83.255.37 (全セクション非表示、回答セクション表示、逆引き名前解決)
   
   コマンドの実行結果
   --------------------------------------------------
