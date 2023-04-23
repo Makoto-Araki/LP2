@@ -1,25 +1,42 @@
 ================================================================================
-[01] Nginx - 01 (イメージの取得)
-[02] Nginx - 02 (コンテナの起動と停止)
-[03] Nginx - 03 (コンテナ内へ内部接続)
+[01] 練習 - 01
+[02] 練習 - 02
+[03] 練習 - 03
 [04] Nginx - 04 (設定ファイルを閲覧)
 ================================================================================
 [01]
-  Nginx - 01 (イメージの取得)
+  練習 - 01
   
 [内容]
   ## 作業内容
-    イメージ(Nginx)の取得
+    ・イメージ取得
+    ・コンテナ起動と停止
+    ・コマンド実行
+    ・外部ネットワークへの通信
+    ・デタッチとアタッチ
+    ・追加インストール
   
-  ## 使用マシン
+  ## ホスト
     HOST : localhost
     IPV4 : 192.168.1.4
-    MEMO : ホスト
+    MEMO : 自宅ノートパソコン
+  
+  ## コンテナ
+    HOST : rock01
+    IPV$ : 10.0.2.100/24 -> 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
   
   ## コマンド
     podman --version : バージョン表示
-    podman images    : ローカルのコンテナイメージ一覧
+    podman search    : イメージ検索
     podman pull XX   : イメージ(XX)を取得
+    podman images    : イメージ一覧
+    podman run       : コンテナ起動
+    podman ps        : コンテナ一覧
+    podman exec XX   : コマンド(XX)を実行
+    podman stop XX   : コンテナ(XX)を停止
+    podman start XX  : コンテナ(XX)を起動
+    podman rm XX     : コンテナ(XX)を削除
   
 [確認]
   $ cd $HOME
@@ -31,30 +48,34 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman images
+  $ cat /etc/redhat-release
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Rocky Linux release 8.7 (Green Obsidian) -> Rocky Linux のイメージの使用決定
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman pull nginx (コンテナイメージ取得) -> docker.io/library/nginx:latest を選択
+  $ podman search --filter=is-official=true rocky -> 公式のみ検索
   
   コマンドの実行結果
   --------------------------------------------------
-  Trying to pull docker.io/library/nginx:latest...
+  NAME                          DESCRIPTION
+  docker.io/library/rockylinux  The official build of Rocky Linux.
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman pull rockylinux/rockylinux:8 -> docker.io/rockylinux/rockylinux:8 を選択
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying to pull docker.io/rockylinux/rockylinux:8...
   Getting image source signatures
-  Copying blob 8c767bdbc9ae done  
-  Copying blob 2019c71d5655 done  
-  Copying blob 26c5c85e47da done  
-  Copying blob 78e14bb05fd3 done  
-  Copying blob 4f3256bdf66b done  
-  Copying blob 75576236abf5 done  
-  Copying config 6efc10a051 done  
+  Copying blob 4eaab28a863f done  
+  Copying config e7368aa563 done  
   Writing manifest to image destination
   Storing signatures
-  6efc10a0510f143a90b69dc564a914574973223e88418d65c1f8809e08dc0a1f
+  e7368aa563ffb98f3ef977b07bee7c356282160bbeeb5586cef28aecd3f2cbc5
   --------------------------------------------------
   
   $ cd $HOME
@@ -62,36 +83,353 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  REPOSITORY               TAG     IMAGE ID      CREATED     SIZE
-  docker.io/library/nginx  latest  6efc10a0510f  5 days ago  147 MB
+  REPOSITORY                       TAG  IMAGE ID      CREATED       SIZE
+  docker.io/rockylinux/rockylinux  8    e7368aa563ff  2 months ago  203 MB
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman run
+  > -i                 // キー入力有効
+  > -t                 // シェルプロンプト表示
+  > --name rock01      // コンテナ名
+  > --hostname rock01  // ホスト名
+  > rockylinux:8       // イメージ名
+  > /bin/bash          // シェル指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化) -> アタッチモードでコンテナ内部にログインした状態から始まる
+  --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# whoami
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    root
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    / -> ルートディレクトリ
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# hostname
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rock01
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# uname -r
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    4.18.0-425.19.2.el8_7.x86_64 -> ホストと同じバージョン
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# cat /etc/redhat-release
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Rocky Linux release 8.7 (Green Obsidian)
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# cat /etc/hostname
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rock01
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# cat /etc/hosts
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1    localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1          localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.1.4  host.containers.internal
+    10.0.2.100   rock01 rock01 -> 割り当てられたIPv4が判明
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# [ Ctrl + P ] + [ Ctrl + Q ] -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ podman ps -a -> 停止コンテナも表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                              COMMAND    CREATED        STATUS            PORTS  NAMES
+  16808d7e46a8  docker.io/rockylinux/rockylinux:8  /bin/bash  7 minutes ago  Up 7 minutes ago         rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman exec -it rock01 /bin/bash -> コンテナへ再びアタッチ
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ping -c 3 localhost -> ループバックデバイスへ通信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING localhost(localhost (::1)) 56 data bytes
+    64 bytes from localhost (::1): icmp_seq=1 ttl=64 time=0.045 ms
+    64 bytes from localhost (::1): icmp_seq=2 ttl=64 time=0.089 ms
+    64 bytes from localhost (::1): icmp_seq=3 ttl=64 time=0.092 ms
+    
+    --- localhost ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2059ms
+    rtt min/avg/max/mdev = 0.045/0.075/0.092/0.022 ms
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ping -c 3 10.0.2.100 -> 自アドレスへ通信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING 10.0.2.100 (10.0.2.100) 56(84) bytes of data.
+    64 bytes from 10.0.2.100: icmp_seq=1 ttl=64 time=0.104 ms
+    64 bytes from 10.0.2.100: icmp_seq=2 ttl=64 time=0.079 ms
+    64 bytes from 10.0.2.100: icmp_seq=3 ttl=64 time=0.086 ms
+    
+    --- 10.0.2.100 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2066ms
+    rtt min/avg/max/mdev = 0.079/0.089/0.104/0.015 ms
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ping -c 3 192.168.1.1 -> 家庭用ルータへ通信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+    64 bytes from 192.168.1.1: icmp_seq=1 ttl=255 time=1.87 ms
+    64 bytes from 192.168.1.1: icmp_seq=2 ttl=255 time=1.23 ms
+    64 bytes from 192.168.1.1: icmp_seq=3 ttl=255 time=1.12 ms
+    
+    --- 192.168.1.1 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+    rtt min/avg/max/mdev = 1.117/1.405/1.873/0.333 ms
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ping -c 3 www.yahoo.co.jp -> インターネット上のサーバーへ通信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING edge12.g.yimg.jp (182.22.28.252) 56(84) bytes of data.
+    64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=1 ttl=255 time=6.16 ms
+    64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=2 ttl=255 time=6.04 ms
+    64 bytes from 182.22.28.252 (182.22.28.252): icmp_seq=3 ttl=255 time=6.29 ms
+    
+    --- edge12.g.yimg.jp ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+    rtt min/avg/max/mdev = 6.036/6.161/6.291/0.104 ms
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# exit -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ podman ps -a -> 停止コンテナも表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                              COMMAND    CREATED         STATUS             PORTS  NAMES
+  16808d7e46a8  docker.io/rockylinux/rockylinux:8  /bin/bash  12 minutes ago  Up 12 minutes ago         rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman stop rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a -> 停止コンテナも表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                              COMMAND    CREATED         STATUS                     PORTS  NAMES
+  16808d7e46a8  docker.io/rockylinux/rockylinux:8  /bin/bash  13 minutes ago  Exited (0) 17 seconds ago         rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman start rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a -> 停止コンテナも表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                              COMMAND    CREATED         STATUS             PORTS  NAMES
+  16808d7e46a8  docker.io/rockylinux/rockylinux:8  /bin/bash  15 minutes ago  Up 29 seconds ago         rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman exec -it rock01 /bin/bash -> コンテナへ再びアタッチ
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ifconfig
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    bash: ifconfig: command not found
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# netstat -i
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    bash: netstat: command not found
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# route
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    bash: route: command not found
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# dnf -y install net-tools -> 追加インストール
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ifconfig
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    tap0: flags=67<UP,BROADCAST,RUNNING>  mtu 65520
+        inet 10.0.2.100  netmask 255.255.255.0  broadcast 10.0.2.255
+        inet6 fd00::1c48:f8ff:fe83:91f0  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::1c48:f8ff:fe83:91f0  prefixlen 64  scopeid 0x20<link>
+        ether 1e:48:f8:83:91:f0  txqueuelen 1000  (Ethernet)
+        RX packets 72  bytes 346362 (338.2 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 52  bytes 4863 (4.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# netstat -i
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Kernel Interface table
+    Iface    MTU  RX-OK  RX-ERR  RX-DRP  RX-OVR  TX-OK  TX-ERR  TX-DRP  TX-OVR  Flg
+    lo     65536      0       0       0       0      0       0       0       0  LRU
+    tap0   65520     73       0       0       0     52       0       0       0  BRU
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# route
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Kernel IP routing table
+    Destination  Gateway   Genmask        Flags  Metric  Ref  Use  Iface
+    default      _gateway  0.0.0.0        UG     0       0    0    tap0
+    10.0.2.0     0.0.0.0   255.255.255.0  U      0       0    0    tap0
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# exit -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ podman stop rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  27d3a7afec9b7fc23673422d4a4119d87e2aacee8981adbcdf509ca0b49b120a
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [02]
-  Nginx - 02 (コンテナの起動と停止)
+  練習 - 02
   
 [内容]
   ## 作業内容
-    コンテナの起動と停止
+    コンテナとホスト間でファイルのコピー
   
-  ## 使用マシン
+  ## ホスト
     HOST : localhost
     IPV4 : 192.168.1.4
-    MEMO : ホスト
+    MEMO : 自宅ノートパソコン
+  
+  ## コンテナ
+    HOST : rock01
+    IPV$ : 10.0.2.100/24 -> 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
   
   ## コマンド
-    podman ps            : コンテナ一覧
-    podman ps -a         : コンテナ一覧に停止中のコンテナも含む
-    podman run -d        : バックグラウンド実行
-    podman run -p XX:YY  : ホスト側のポート(XX)とコンテナ側のポート(YY)をリンク
-    podman run --name XX : コンテナ(XX)という名前で実行
-    podman run XX        : イメージ(XX)を実行
-    podman stop XX       : コンテナ(XX)を停止
-    podman start XX      : コンテナ(XX)を起動
-    podman rm XX         : コンテナ(XX)を削除
-    podman rmi XX        : イメージ(XX)を削除
+    podman cp XX YY:ZZ : ファイル(XX)をコンテナ(YY)のコンテナ側のディレクトリ(ZZ)にコピー
+    podman cp XX:YY ZZ : コンテナ(XX)のファイル(YY)をホスト側のディレクトリ(ZZ)にコピー
   
 [確認]
   $ cd $HOME
@@ -103,77 +441,192 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman run -d -p 8181:80 --name mine01 nginx (コンテナ起動)
+  $ vi script01.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  f3663f1aa30adea7fb6e51c4c82697b06360d4505f52a19a5934ee4d450fa636
+  #!/bin/bash
+  
+  # 既存ログファイル削除
+  if test -f script.log ; then
+    rm -f script.log
+  fi
+  
+  # 指定回数ループ
+  for i in $(seq 1 5)
+  do
+    echo "script01 : $i" >> script.log
+    sleep 1
+  done
   --------------------------------------------------
   
+  $ cd $HOME
+  $ podman run
+  > -i                 // キー入力有効
+  > -t                 // シェルプロンプト表示
+  > -d                 // デタッチ -> アタッチモードで最初からコンテナにログインした状態を回避
+  > --name rock01      // コンテナ名
+  > --hostname rock01  // ホスト名
+  > rockylinux:8       // イメージ名
+  > /bin/bash          // シェル指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ddd5a8020d81e95f9475d4add4ec25a08ea181d2a50a8464a1c8dae44759a621
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman cp script01.sh rock01:/root -> コンテナへファイルをコピー
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman exec -it rock01 /bin/bash -> コンテナへアタッチ
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# cd root
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 ~]# pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /root
+    --------------------------------------------------
+    
+    [root@rock01 ~]# 
+    [root@rock01 ~]# ls -lh | grep script
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r--. 1 root root  197 Apr 23 02:14 script01.sh
+    --------------------------------------------------
+    
+    [root@rock01 ~]# 
+    [root@rock01 ~]# bash script01.sh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    [root@rock01 ~]# 
+    [root@rock01 ~]# ls -lh | grep script
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--. 1 root root   65 Apr 23 02:25 script.log
+    -rw-rw-r--. 1 root root  197 Apr 23 02:14 script01.sh
+    --------------------------------------------------
+    
+    [root@rock01 ~]# 
+    [root@rock01 ~]# cat script.log
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    script01 : 1
+    script01 : 2
+    script01 : 3
+    script01 : 4
+    script01 : 5
+    --------------------------------------------------
+    
+    [root@rock01 ~]# 
+    [root@rock01 ~]# exit -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
   $ cd $HOME
   $ podman ps -a
   
   コマンドの実行結果
   --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
-  f3663f1aa30a  docker.io/library/nginx:latest  nginx -g daemon o...  14 seconds ago  Up 14 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  CONTAINER ID  IMAGE                              COMMAND    CREATED        STATUS            PORTS  NAMES
+  ddd5a8020d81  docker.io/rockylinux/rockylinux:8  /bin/bash  8 minutes ago  Up 8 minutes ago         rock01
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman stop mine01 -> コンテナ名ではなくコンテナIDも可
+  $ ls -lh | grep script
   
   コマンドの実行結果
   --------------------------------------------------
-  mine01
+  -rw-rw-r--. 1 makoto makoto  197  4月 23 11:14 script01.sh
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman ps -a
+  $ podman cp rock01:/root/script.log . -> コンテナからファイルをコピー
   
   コマンドの実行結果
   --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED             STATUS                      PORTS                 NAMES
-  f3663f1aa30a  docker.io/library/nginx:latest  nginx -g daemon o...  About a minute ago  Exited (137) 7 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman start mine01 -> コマンド(start)でも起動可能
+  $ ls -lh | grep script
   
   コマンドの実行結果
   --------------------------------------------------
-  mine01
+  -rw-r--r--. 1 makoto makoto   65  4月 23 11:25 script.log
+  -rw-rw-r--. 1 makoto makoto  197  4月 23 11:14 script01.sh
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman ps -a
+  $ cat script.log
   
   コマンドの実行結果
   --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED             STATUS            PORTS                 NAMES
-  f3663f1aa30a  docker.io/library/nginx:latest  nginx -g daemon o...  About a minute ago  Up 6 seconds ago  0.0.0.0:8181->80/tcp  mine01
+  script01 : 1
+  script01 : 2
+  script01 : 3
+  script01 : 4
+  script01 : 5
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman stop mine01
+  $ podman stop rock01
   
   コマンドの実行結果
   --------------------------------------------------
-  mine01
+  rock01
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman rm mine01
+  $ podman rm rock01
   
   コマンドの実行結果
   --------------------------------------------------
-  f3663f1aa30adea7fb6e51c4c82697b06360d4505f52a19a5934ee4d450fa636
+  ddd5a8020d81e95f9475d4add4ec25a08ea181d2a50a8464a1c8dae44759a621
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ rm -f script*
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [03]
-  Nginx - 03 (コンテナ内へ内部接続)
+  練習 - 03
   
 [内容]
   ## 作業内容
