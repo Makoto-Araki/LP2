@@ -2,7 +2,7 @@
 [01] 練習 - 01
 [02] 練習 - 02
 [03] 練習 - 03
-[04] Nginx - 04 (設定ファイルを閲覧)
+[04] 練習 - 04
 ================================================================================
 [01]
   練習 - 01
@@ -630,24 +630,25 @@
   
 [内容]
   ## 作業内容
-    コンテナ内へ内部接続
+    ホスト側とコンテナのディレクトリ共有
   
-  ## 使用マシン
+  ## ホスト
     HOST : localhost
     IPV4 : 192.168.1.4
-    MEMO : ホスト
+    MEMO : 自宅ノートパソコン
   
-  ## コマンド
-    podman run -it : コンテナ内へ接続可能にする
-    podman exec XX : コンテナにコマンド(XX)実行
+  ## コンテナ
+    HOST : rock01
+    IPV$ : 10.0.2.100/24 -> 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
   
 [確認]
   $ cd $HOME
-  $ podman run -it -d -p 8181:80 --name mine02 nginx
+  $ mkdir -p container/rock01 -> 共有ディレクトリ作成
   
   コマンドの実行結果
   --------------------------------------------------
-  fb35a6c56afe3340b5cafd1818a4551e62ef1602be1e5d05adc8e651ffe7f9e7
+  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
@@ -655,220 +656,192 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
-  fb35a6c56afe  docker.io/library/nginx:latest  nginx -g daemon o...  16 seconds ago  Up 16 seconds ago  0.0.0.0:8181->80/tcp  mine02
+  (省略) -> 出力なし
   --------------------------------------------------
   
-  $ cd $HOME
-  $ podman exec -it mine02 bash (コンテナ内へ内部接続)
+  $ cd $HOME/container/rock01
+  $ vi script01.sh
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> プロンプトが「root@6d766b5fd2da:/#」に変化 -> 「root@container-id:/#」と表記
+  #!/bin/bash
+  
+  # 既存ログファイル削除
+  if test -f script.log ; then
+    rm -f script.log
+  fi
+  
+  # 指定回数ループ
+  for i in $(seq 1 5)
+  do
+    echo "script01 : $i" >> script.log
+    sleep 1
+  done
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman run
+  > -i
+  > -t
+  > -v /home/makoto/container/rock01:/opt:Z -> ホスト側 : コンテナ : Z(SELinuxの設定を自動変更)
+  > --name rock01
+  > --hostname rock01
+  > rockylinux:8
+  > /bin/bash
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
   --------------------------------------------------
     
-    root@container-id:/# (ユーザー確認)
-    root@container-id:/# whoami
+    [root@rock01 /]# 
+    [root@rock01 /]# cd opt
     
     コマンドの実行結果
     --------------------------------------------------
-    root
+    (省略) -> 出力なし
     --------------------------------------------------
     
-    root@container-id:/# (カレントディレクトリ)
-    root@container-id:/# pwd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    / (ルートディレクトリ)
-    --------------------------------------------------
-    
-    root@container-id:/# (カーネルバージョン)
-    root@container-id:/# uname -r
+    [root@rock01 opt]# 
+    [root@rock01 opt]# pwd
     
     コマンドの実行結果
     --------------------------------------------------
-    4.18.0-425.19.2.el8_7.x86_64 -> ホストのカーネルバージョンと同一
+    /opt
     --------------------------------------------------
     
-    root@container-id:/# (ディレクトリ構成)
-    root@container-id:/# ls -lh
+    [root@rock01 opt]# 
+    [root@rock01 opt]# ls -lh | grep script
     
     コマンドの実行結果
     --------------------------------------------------
-    drwxr-xr-x.   2 root   root    4.0K Apr 11 00:00 bin
-    drwxr-xr-x.   2 root   root       6 Dec  9 19:15 boot
-    drwxr-xr-x.   5 root   root     360 Apr 18 13:49 dev
-    drwxr-xr-x.   1 root   root      41 Apr 12 08:51 docker-entrypoint.d
-    -rwxrwxr-x.   1 root   root    1.6K Apr 12 08:51 docker-entrypoint.sh
-    drwxr-xr-x.   1 root   root      44 Apr 18 13:49 etc
-    drwxr-xr-x.   2 root   root       6 Dec  9 19:15 home
-    drwxr-xr-x.   1 root   root      45 Apr 11 00:00 lib
-    drwxr-xr-x.   2 root   root      34 Apr 11 00:00 lib64
-    drwxr-xr-x.   2 root   root       6 Apr 11 00:00 media
-    drwxr-xr-x.   2 root   root       6 Apr 11 00:00 mnt
-    drwxr-xr-x.   2 root   root       6 Apr 11 00:00 opt
-    dr-xr-xr-x. 300 nobody nogroup    0 Apr 18 13:49 proc
-    drwx------.   2 root   root      37 Apr 11 00:00 root
-    drwxr-xr-x.   1 root   root      59 Apr 18 13:49 run
-    drwxr-xr-x.   2 root   root    4.0K Apr 11 00:00 sbin
-    drwxr-xr-x.   2 root   root       6 Apr 11 00:00 srv
-    dr-xr-xr-x.  13 nobody nogroup    0 Apr 18 07:32 sys
-    drwxrwxrwt.   1 root   root       6 Apr 12 08:51 tmp
-    drwxr-xr-x.   1 root   root      66 Apr 11 00:00 usr
-    drwxr-xr-x.   1 root   root      19 Apr 11 00:00 var
+    -rw-rw-r--. 1 root root 197 Apr 23 03:26 script01.sh
     --------------------------------------------------
     
-    root@container-id:/# (ログアウト)
-    root@container-id:/# exit
+    [root@rock01 opt]# 
+    [root@rock01 opt]# bash script01.sh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    [root@rock01 opt]# 
+    [root@rock01 opt]# ls -lh | grep script
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--. 1 root root  65 Apr 23 03:55 script.log
+    -rw-rw-r--. 1 root root 197 Apr 23 03:26 script01.sh
+    --------------------------------------------------
+    
+    [root@rock01 opt]# 
+    [root@rock01 opt]# cat script.log
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    script01 : 1
+    script01 : 2
+    script01 : 3
+    script01 : 4
+    script01 : 5
+    --------------------------------------------------
+    
+    [root@rock01 opt]# 
+    [root@rock01 opt]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
     (プロンプトが元に戻る)
     --------------------------------------------------
-    
+  
   $ cd $HOME
-  $ podman stop mine02
+  $ ls -lh container/rock01
   
   コマンドの実行結果
   --------------------------------------------------
-  mine02
+  -rw-r--r--. 1 makoto makoto  65  4月 23 12:55 script.log
+  -rw-rw-r--. 1 makoto makoto 197  4月 23 12:26 script01.sh
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman rm mine02
+  $ cat container/rock01/script.log
   
   コマンドの実行結果
   --------------------------------------------------
-  fb35a6c56afe3340b5cafd1818a4551e62ef1602be1e5d05adc8e651ffe7f9e7
+  script01 : 1
+  script01 : 2
+  script01 : 3
+  script01 : 4
+  script01 : 5
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman stop rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  e1800afe52b724be6dbd8dedf58cf3ee4b7f15065dd87f0167ed012a817bd623
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [04]
-  Nginx - 04 (設定ファイルを閲覧)
+  練習 - 04
   
 [内容]
   ## 作業内容
-    設定ファイルを閲覧
+    コンテナをイメージ化
   
-  ## 使用マシン
+  ## ホスト
     HOST : localhost
     IPV4 : 192.168.1.4
-    MEMO : ホスト
+    MEMO : 自宅ノートパソコン
   
-  ## コマンド
-    podman run -it : コンテナ内へ接続可能にする
-    podman exec XX : コンテナにコマンド(XX)実行
+  ## コンテナ1
+    HOST : rock01
+    IPV$ : 10.0.2.100/24 -> 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
+  
+  ## コンテナ2
+    HOST : rock02
+    IPV$ : 10.0.2.100/24 -> 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
   
 [確認]
   $ cd $HOME
-  $ podman run -it -d -p 8181:80 --name mine03 nginx
+  $ podman run
+  > -i
+  > -t
+  > --name rock01
+  > --hostname rock01
+  > rockylinux:8
+  > /bin/bash
   
   コマンドの実行結果
   --------------------------------------------------
-  733464389dcf7a58cf9b656b561a3911ba1301e4c9110c48c42b5ceaeb21cf93
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman ps -a
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  CONTAINER ID  IMAGE                           COMMAND               CREATED         STATUS             PORTS                 NAMES
-  733464389dcf  docker.io/library/nginx:latest  nginx -g daemon o...  19 seconds ago  Up 19 seconds ago  0.0.0.0:8181->80/tcp  mine03
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ podman exec -it mine03 bash
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> プロンプトが「root@733464389dcf:/#」に変化 -> 「root@container-id:/#」と表記
+  (プロンプト変化)
   --------------------------------------------------
     
-    root@container-id:/# (カレントディレクトリ)
-    root@container-id:/# pwd
+    [root@rock01 /]# 
+    [root@rock01 /]# dnf -y install net-tools -> 差別化を図るため追加インストール
     
     コマンドの実行結果
     --------------------------------------------------
-    / (ルートディレクトリ)
+    (省略) -> 出力なし
     --------------------------------------------------
     
-    root@container-id:/# (ファイル検索)
-    root@container-id:/# find . -name nginx.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    /etc/nginx/nginx.conf
-    --------------------------------------------------
-    
-    root@container-id:/# (ファイル閲覧)
-    root@container-id:/# cat /etc/nginx/nginx.conf -> コメント削除など出力結果を整形済み
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    user nginx;
-    worker_processes  auto;    
-    error_log /var/log/nginx/error.log notice;
-    pid /var/run/nginx.pid;
-    
-    events {
-      worker_connections  1024;
-    }
-    
-    http {
-      include /etc/nginx/mime.types;
-      default_type application/octet-stream;
-      log_format main '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';      
-      access_log /var/log/nginx/access.log main;
-      sendfile on;
-      keepalive_timeout 65;
-      include /etc/nginx/conf.d/*.conf; -> 追加設定ファイルの格納ディレクトリ
-    }
-    --------------------------------------------------
-    
-    root@container-id:/# (ファイル確認)
-    root@container-id:/# ls -lh /etc/nginx/conf.d
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-r--r--. 1 root root 1.1K Apr 19 00:59 default.conf
-    --------------------------------------------------
-    
-    root@container-id:/# (ファイル閲覧)
-    root@container-id:/# cat /etc/nginx/conf.d/default.conf -> コメント削除など出力結果を整形済み
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    server {
-      listen 80;
-      listen [::]:80;
-      server_name localhost;
-      location / {
-        root /usr/share/nginx/html;
-        index index.html index.htm;
-      }
-      error_page 500 502 503 504 /50x.html;
-      location = /50x.html {
-        root /usr/share/nginx/html;
-      }
-    }
-    --------------------------------------------------
-    
-    root@container-id:/# (エディタ検索)
-    root@container-id:/# which vi
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (出力なし) -> コンテナ内でエディタからのファイル編集が不可
-    --------------------------------------------------
-    
-    root@container-id:/# (ログアウト)
-    root@container-id:/# exit
+    [root@rock01 /]# 
+    [root@rock01 /]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -876,19 +849,118 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ podman stop mine03
+  $ podman stop rock01
   
   コマンドの実行結果
   --------------------------------------------------
-  mine03
+  rock01
   --------------------------------------------------
   
   $ cd $HOME
-  $ podman rm mine03
+  $ podman commit rock01 rock01-image -> コンテナの構成をイメージ化
   
   コマンドの実行結果
   --------------------------------------------------
-  733464389dcf7a58cf9b656b561a3911ba1301e4c9110c48c42b5ceaeb21cf93
+  Getting image source signatures
+  Copying blob d6d602e436a8 skipped: already exists  
+  Copying blob b5c3d647cf44 done  
+  Copying config 655639a6dc done  
+  Writing manifest to image destination
+  Storing signatures
+  655639a6dc724f5bf2fd0e1c047646caf73c83800e99bc243420138da1c91384
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman images
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY                       TAG     IMAGE ID      CREATED         SIZE
+  localhost/rock01-image           latest  655639a6dc72  31 seconds ago  252 MB
+  docker.io/rockylinux/rockylinux  8       e7368aa563ff  2 months ago    203 MB
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman run
+  > -i
+  > -t
+  > --name rock02
+  > --hostname rock02
+  > rock01-image -> 新たに作成したイメージを使用
+  > /bin/bash
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    [root@rock02 /]# 
+    [root@rock02 /]# ifconfig -> 追加インストールのコマンドが最初から使用可能
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+    tap0: flags=67<UP,BROADCAST,RUNNING>  mtu 65520
+        inet 10.0.2.100  netmask 255.255.255.0  broadcast 10.0.2.255
+        inet6 fd00::37:6bff:fed2:747f  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::37:6bff:fed2:747f  prefixlen 64  scopeid 0x20<link>
+        ether 02:37:6b:d2:74:7f  txqueuelen 1000  (Ethernet)
+        RX packets 1  bytes 134 (134.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 5  bytes 430 (430.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    [root@rock02 /]# 
+    [root@rock02 /]# exit -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ podman stop rock02
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rock02
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman ps -a
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                              COMMAND    CREATED             STATUS                     PORTS  NAMES
+  84d28e864d3b  docker.io/rockylinux/rockylinux:8  /bin/bash  4 minutes ago       Exited (0) 4 minutes ago          rock01
+  0edbfbd37fc6  localhost/rock01-image:latest      /bin/bash  About a minute ago  Exited (0) 20 seconds ago         rock02
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm rock01 rock02
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  84d28e864d3b27dbf6ac8b2e865e91fa35cbb8fe4deb7379939b94db1f04c85d
+  0edbfbd37fc6aff612a5dd802e5385160cd23d2980cd865b0c82b5652e991a3c
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rmi rock01-image:latest
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Untagged: localhost/rock01-image:latest
+  Deleted: 655639a6dc724f5bf2fd0e1c047646caf73c83800e99bc243420138da1c91384
   --------------------------------------------------
   
   以下の確認に続く
