@@ -3,6 +3,7 @@
 [02] 練習 - 02
 [03] 練習 - 03
 [04] 練習 - 04
+[05] 練習 - 05
 ================================================================================
 [01]
   練習 - 01
@@ -644,7 +645,7 @@
   
 [確認]
   $ cd $HOME
-  $ mkdir -p container/rock01 -> 共有ディレクトリ作成
+  $ mkdir -p container/rock01 -> コンテナ用のディレクトリ作成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -907,7 +908,7 @@
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 0  bytes 0 (0.0 B)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
+    
     tap0: flags=67<UP,BROADCAST,RUNNING>  mtu 65520
         inet 10.0.2.100  netmask 255.255.255.0  broadcast 10.0.2.255
         inet6 fd00::37:6bff:fed2:747f  prefixlen 64  scopeid 0x0<global>
@@ -961,6 +962,141 @@
   --------------------------------------------------
   Untagged: localhost/rock01-image:latest
   Deleted: 655639a6dc724f5bf2fd0e1c047646caf73c83800e99bc243420138da1c91384
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[05]
+  練習 - 05
+  
+[内容]
+  ## 作業内容
+    ファイル「Dockerfile」でコンテナのカスタム化
+  
+  ## ホスト
+    HOST : localhost
+    IPV4 : 192.168.1.4
+    MEMO : 自宅ノートパソコン
+  
+  ## コンテナ1
+    HOST : rock01
+    IPV$ : 10.0.2.100/24 -> 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
+  
+[確認]
+  $ cd $HOME
+  $ mkdir -p container/rock01 -> コンテナ用のディレクトリ作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME/container/rock01
+  $ vi Dockerfile
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  FROM rockylinux:8
+  RUN dnf -y install net-tools
+  CMD ["/bin/bash"]
+  --------------------------------------------------
+  
+  $ cd $HOME/container/rock01
+  $ podman build -t rock:1 .(カレントディレクトリ)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  STEP 1/3: FROM rockylinux:8
+  STEP 2/3: RUN dnf -y install net-tools
+  Rocky Linux 8 - AppStream   11 MB/s |  11 MB  00:00
+  Rocky Linux 8 - BaseOS     7.7 MB/s | 6.1 MB  00:00
+  Rocky Linux 8 - Extras      21 kB/s |  14 kB  00:00
+  ...
+  --------------------------------------------------
+  
+  $ cd $HOME/container/rock01
+  $ podman images
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY                       TAG  IMAGE ID      CREATED             SIZE
+  localhost/rock                   1    f4ba5522f94d  About a minute ago  252 MB
+  docker.io/rockylinux/rockylinux  8    e7368aa563ff  2 months ago        203 MB
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman run
+  > -i
+  > -t
+  > --name rock01
+  > --hostname rock01
+  > rock:1 -> ビルドされたイメージ名
+  > /bin/bash
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# ifconfig -> コマンドが最初から使用可能
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    tap0: flags=67<UP,BROADCAST,RUNNING>  mtu 65520
+        inet 10.0.2.100  netmask 255.255.255.0  broadcast 10.0.2.255
+        inet6 fe80::c8c4:60ff:fe30:9e4a  prefixlen 64  scopeid 0x20<link>
+        inet6 fd00::c8c4:60ff:fe30:9e4a  prefixlen 64  scopeid 0x0<global>
+        ether ca:c4:60:30:9e:4a  txqueuelen 1000  (Ethernet)
+        RX packets 1  bytes 134 (134.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 5  bytes 430 (430.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    [root@rock01 /]# 
+    [root@rock01 /]# exit -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ podman stop rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  rock01
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rm rock01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  a515c47106321974dc442e12f1dbd53ea5df5dcb3a2c70f8bad5daaae867a743
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ podman rmi rock:1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Untagged: localhost/rock:1
+  Deleted: f4ba5522f94d8c998353651516799acd3a85495bdc71e3d1f50c9c46bb76e2bc
+  Deleted: 60d551fee320e3d94bd143b29616a7cfb0afec400a29a79c0b4bb7fe858532d3
   --------------------------------------------------
   
   以下の確認に続く
