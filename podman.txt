@@ -6,6 +6,7 @@
 [05] 練習 - 05
 [06] 練習 - 06
 [07] 練習 - 07
+[08] 練習 - 08
 ================================================================================
 [01]
   練習 - 01
@@ -25,7 +26,7 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
@@ -92,60 +93,60 @@
   
   # cd $HOME
   # podman run
-  > -i                 // キー入力有効
-  > -t                 // シェルプロンプト表示
-  > --name rock01      // コンテナ名
-  > --hostname rock01  // ホスト名
-  > rockylinux:8       // イメージ名
-  > /bin/bash          // シェル指定
+  > -i                  // キー入力有効
+  > -t                  // シェルプロンプト表示
+  > --name rocky01      // コンテナ名
+  > --hostname rocky01  // ホスト名
+  > rockylinux:8        // イメージ名
+  > /bin/bash           // シェル指定
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化) -> アタッチモードでコンテナ内部にログインした状態から始まる
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# whoami
+    [root@rocky01 /]# 
+    [root@rocky01 /]# whoami
     
     コマンドの実行結果
     --------------------------------------------------
     root
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# pwd
+    [root@rocky01 /]# 
+    [root@rocky01 /]# pwd
     
     コマンドの実行結果
     --------------------------------------------------
     / -> ルートディレクトリ
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# hostname
+    [root@rocky01 /]# 
+    [root@rocky01 /]# hostname
     
     コマンドの実行結果
     --------------------------------------------------
-    rock01
+    rocky01
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# uname -r
+    [root@rocky01 /]# 
+    [root@rocky01 /]# uname -r
     
     コマンドの実行結果
     --------------------------------------------------
     4.18.0-425.19.2.el8_7.x86_64 -> ホストと同じバージョン
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cat /etc/redhat-release
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cat /etc/redhat-release
     
     コマンドの実行結果
     --------------------------------------------------
     Rocky Linux release 8.7 (Green Obsidian)
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# [ Ctrl + P ] + [ Ctrl + Q ] -> デタッチ
+    [root@rocky01 /]# 
+    [root@rocky01 /]# [ Ctrl + P ] + [ Ctrl + Q ] -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -158,34 +159,34 @@
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                              COMMAND    CREATED         STATUS             PORTS  NAMES
-  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  50 seconds ago  Up 50 seconds ago         rock01
+  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  50 seconds ago  Up 50 seconds ago         rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman exec -it rock01 /bin/bash -> コンテナへ再びアタッチ
+  # podman exec -it rocky01 /bin/bash -> コンテナへ再びアタッチ
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ping -c 3 rock01 -> 自アドレスへ通信
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ping -c 3 rocky01 -> 自アドレスへ通信
     
     コマンドの実行結果
     --------------------------------------------------
-    PING rock01 (10.88.0.4) 56(84) bytes of data.
-    64 bytes from rock01 (10.88.0.4): icmp_seq=1 ttl=64 time=0.069 ms
-    64 bytes from rock01 (10.88.0.4): icmp_seq=2 ttl=64 time=0.108 ms
-    64 bytes from rock01 (10.88.0.4): icmp_seq=3 ttl=64 time=0.086 ms
+    PING rocky01 (10.88.0.4) 56(84) bytes of data.
+    64 bytes from rocky01 (10.88.0.4): icmp_seq=1 ttl=64 time=0.069 ms
+    64 bytes from rocky01 (10.88.0.4): icmp_seq=2 ttl=64 time=0.108 ms
+    64 bytes from rocky01 (10.88.0.4): icmp_seq=3 ttl=64 time=0.086 ms
     
-    --- rock01 ping statistics ---
+    --- rocky01 ping statistics ---
     3 packets transmitted, 3 received, 0% packet loss, time 2045ms
     rtt min/avg/max/mdev = 0.069/0.087/0.108/0.019 ms
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ping -c 3 192.168.1.1 -> 家庭用ルータへ通信
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ping -c 3 192.168.1.1 -> 家庭用ルータへ通信
     
     コマンドの実行結果
     --------------------------------------------------
@@ -199,8 +200,8 @@
     rtt min/avg/max/mdev = 0.861/0.900/0.947/0.049 ms
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ping -c 3 www.yahoo.co.jp -> インターネット上のサーバーへ通信
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ping -c 3 www.yahoo.co.jp -> インターネット上のサーバーへ通信
     
     コマンドの実行結果
     --------------------------------------------------
@@ -214,40 +215,40 @@
     rtt min/avg/max/mdev = 16.045/16.140/16.194/0.067 ms
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ifconfig
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ifconfig
     
     コマンドの実行結果
     --------------------------------------------------
     bash: ifconfig: command not found
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# traceroute
+    [root@rocky01 /]# 
+    [root@rocky01 /]# traceroute
     
     コマンドの実行結果
     --------------------------------------------------
     bash: traceroute: command not found
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# dnf -y install net-tools -> 追加インストール
+    [root@rocky01 /]# 
+    [root@rocky01 /]# dnf -y install net-tools -> 追加インストール
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# dnf -y install traceroute -> 追加インストール
+    [root@rocky01 /]# 
+    [root@rocky01 /]# dnf -y install traceroute -> 追加インストール
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ifconfig
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ifconfig
     
     コマンドの実行結果
     --------------------------------------------------
@@ -270,8 +271,8 @@
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# traceroute 192.168.1.1 -> 家庭用ルータまでの経路
+    [root@rocky01 /]# 
+    [root@rocky01 /]# traceroute 192.168.1.1 -> 家庭用ルータまでの経路
     
     コマンドの実行結果
     --------------------------------------------------
@@ -280,8 +281,8 @@
     2  ntt.setup (192.168.1.1)  0.856 ms  1.084 ms  1.279 ms
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# exit -> デタッチ
+    [root@rocky01 /]# 
+    [root@rocky01 /]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -294,15 +295,15 @@
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                              COMMAND    CREATED        STATUS            PORTS  NAMES
-  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  7 minutes ago  Up 7 minutes ago         rock01
+  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  7 minutes ago  Up 7 minutes ago         rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
@@ -311,15 +312,15 @@
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                              COMMAND    CREATED        STATUS                    PORTS  NAMES
-  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  8 minutes ago  Exited (0) 6 seconds ago         rock01
+  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  8 minutes ago  Exited (0) 6 seconds ago         rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman start rock01
+  # podman start rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
@@ -328,19 +329,19 @@
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                              COMMAND    CREATED        STATUS            PORTS  NAMES
-  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  8 minutes ago  Up 4 seconds ago         rock01
+  33ca3f8bf867  docker.io/rockylinux/rockylinux:8  /bin/bash  8 minutes ago  Up 4 seconds ago         rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01
+  # podman rm rocky01
   
   コマンドの実行結果
   --------------------------------------------------
@@ -363,7 +364,7 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
@@ -402,13 +403,13 @@
   
   # cd $HOME
   # podman run
-  > -i                 // キー入力有効
-  > -t                 // シェルプロンプト表示
-  > -d                 // デタッチ -> アタッチモードで最初からコンテナにログインした状態を回避
-  > --name rock01      // コンテナ名
-  > --hostname rock01  // ホスト名
-  > rockylinux:8       // イメージ名
-  > /bin/bash          // シェル指定
+  > -i                  // キー入力有効
+  > -t                  // シェルプロンプト表示
+  > -d                  // デタッチ -> アタッチモードで最初からコンテナにログインした状態を回避
+  > --name rocky01      // コンテナ名
+  > --hostname rocky01  // ホスト名
+  > rockylinux:8        // イメージ名
+  > /bin/bash           // シェル指定
   
   コマンドの実行結果
   --------------------------------------------------
@@ -416,7 +417,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # podman cp script01.sh rock01:/root -> コンテナへファイルをコピー
+  # podman cp script01.sh rocky01:/root -> コンテナへファイルをコピー
   
   コマンドの実行結果
   --------------------------------------------------
@@ -424,47 +425,47 @@
   --------------------------------------------------
   
   # cd $HOME
-  # podman exec -it rock01 /bin/bash -> コンテナへアタッチ
+  # podman exec -it rocky01 /bin/bash -> コンテナへアタッチ
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cd root
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cd root
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 ~]# pwd
+    [root@rocky01 /]# 
+    [root@rocky01 ~]# pwd
     
     コマンドの実行結果
     --------------------------------------------------
     /root
     --------------------------------------------------
     
-    [root@rock01 ~]# 
-    [root@rock01 ~]# ls -lh | grep script
+    [root@rocky01 ~]# 
+    [root@rocky01 ~]# ls -lh | grep script
     
     コマンドの実行結果
     --------------------------------------------------
     -rw-r--r--. 1 root root  197 Apr 24 03:21 script01.sh
     --------------------------------------------------
     
-    [root@rock01 ~]# 
-    [root@rock01 ~]# bash script01.sh
+    [root@rocky01 ~]# 
+    [root@rocky01 ~]# bash script01.sh
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 ~]# 
-    [root@rock01 ~]# ls -lh | grep script
+    [root@rocky01 ~]# 
+    [root@rocky01 ~]# ls -lh | grep script
     
     コマンドの実行結果
     --------------------------------------------------
@@ -472,8 +473,8 @@
     -rw-r--r--. 1 root root  197 Apr 24 03:21 script01.sh
     --------------------------------------------------
     
-    [root@rock01 ~]# 
-    [root@rock01 ~]# cat script.log
+    [root@rocky01 ~]# 
+    [root@rocky01 ~]# cat script.log
     
     コマンドの実行結果
     --------------------------------------------------
@@ -484,8 +485,8 @@
     script01 : 5
     --------------------------------------------------
     
-    [root@rock01 ~]# 
-    [root@rock01 ~]# exit -> デタッチ
+    [root@rocky01 ~]# 
+    [root@rocky01 ~]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -501,7 +502,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # podman cp rock01:/root/script.log .(カレントディレクトリ) -> コンテナからファイルをコピー
+  # podman cp rocky01:/root/script.log .(カレントディレクトリ) -> コンテナからファイルをコピー
   
   コマンドの実行結果
   --------------------------------------------------
@@ -530,15 +531,15 @@
   --------------------------------------------------
   
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01
+  # podman rm rocky01
   
   コマンドの実行結果
   --------------------------------------------------
@@ -569,13 +570,13 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
 [確認]
   # cd $HOME
-  # mkdir -p container/rock01 -> コンテナ用のディレクトリ作成
+  # mkdir -p container/rocky01 -> コンテナ用のディレクトリ作成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -590,7 +591,7 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # vi script01.sh
   
   コマンドの実行結果
@@ -614,9 +615,9 @@
   # podman run
   > -i
   > -t
-  > -v ./container/rock01:/opt:Z -> ホスト側 : コンテナ : Z(SELinuxの設定を自動変更)
-  > --name rock01
-  > --hostname rock01
+  > -v ./container/rocky01:/opt:Z -> ホスト側 : コンテナ : Z(SELinuxの設定を自動変更)
+  > --name rocky01
+  > --hostname rocky01
   > rockylinux:8
   > /bin/bash
   
@@ -625,40 +626,40 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cd opt
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cd opt
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 opt]# 
-    [root@rock01 opt]# pwd
+    [root@rocky01 opt]# 
+    [root@rocky01 opt]# pwd
     
     コマンドの実行結果
     --------------------------------------------------
     /opt
     --------------------------------------------------
     
-    [root@rock01 opt]# 
-    [root@rock01 opt]# ls -lh | grep script
+    [root@rocky01 opt]# 
+    [root@rocky01 opt]# ls -lh | grep script
     
     コマンドの実行結果
     --------------------------------------------------
     -rw-r--r--. 1 root root 197 Apr 24 03:33 script01.sh
     --------------------------------------------------
     
-    [root@rock01 opt]# 
-    [root@rock01 opt]# bash script01.sh
+    [root@rocky01 opt]# 
+    [root@rocky01 opt]# bash script01.sh
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 opt]# 
-    [root@rock01 opt]# ls -lh | grep script
+    [root@rocky01 opt]# 
+    [root@rocky01 opt]# ls -lh | grep script
     
     コマンドの実行結果
     --------------------------------------------------
@@ -666,8 +667,8 @@
     -rw-r--r--. 1 root root 197 Apr 24 03:33 script01.sh
     --------------------------------------------------
     
-    [root@rock01 opt]# 
-    [root@rock01 opt]# cat script.log
+    [root@rocky01 opt]# 
+    [root@rocky01 opt]# cat script.log
     
     コマンドの実行結果
     --------------------------------------------------
@@ -678,8 +679,8 @@
     script01 : 5
     --------------------------------------------------
     
-    [root@rock01 opt]# 
-    [root@rock01 opt]# exit -> デタッチ
+    [root@rocky01 opt]# 
+    [root@rocky01 opt]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -687,7 +688,7 @@
     --------------------------------------------------
   
   # cd $HOME
-  # ls -lh container/rock01
+  # ls -lh container/rocky01
   
   コマンドの実行結果
   --------------------------------------------------
@@ -696,7 +697,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # cat container/rock01/script.log
+  # cat container/rocky01/script.log
   
   コマンドの実行結果
   --------------------------------------------------
@@ -708,7 +709,7 @@
   --------------------------------------------------
   
   # cd $HOME
-  # rm  -f container/rock01/script.log
+  # rm  -f container/rocky01/script.log
   
   コマンドの実行結果
   --------------------------------------------------
@@ -720,15 +721,15 @@
   --------------------------------------------------
   
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01
+  # podman rm rocky01
   
   コマンドの実行結果
   --------------------------------------------------
@@ -751,12 +752,12 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ1
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
   ## コンテナ2
-    HOST : rock02
+    HOST : rocky02
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
@@ -765,8 +766,8 @@
   # podman run
   > -i
   > -t
-  > --name rock01
-  > --hostname rock01
+  > --name rocky01
+  > --hostname rocky01
   > rockylinux:8
   > /bin/bash
   
@@ -775,24 +776,24 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# dnf -y install net-tools -> 差別化を図るため追加インストール
+    [root@rocky01 /]# 
+    [root@rocky01 /]# dnf -y install net-tools -> 差別化を図るため追加インストール
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# dnf -y install traceroute -> 差別化を図るため追加インストール
+    [root@rocky01 /]# 
+    [root@rocky01 /]# dnf -y install traceroute -> 差別化を図るため追加インストール
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# exit -> デタッチ
+    [root@rocky01 /]# 
+    [root@rocky01 /]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -800,15 +801,15 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman commit rock01 image01 -> コンテナの構成をイメージ化
+  # podman commit rocky01 image01 -> コンテナの構成をイメージ化
   
   コマンドの実行結果
   --------------------------------------------------
@@ -835,8 +836,8 @@
   # podman run
   > -i
   > -t
-  > --name rock02
-  > --hostname rock02
+  > --name rocky02
+  > --hostname rocky02
   > image01 -> 新たに作成したイメージを使用
   > /bin/bash
   
@@ -845,24 +846,24 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# ifconfig -> 追加インストールのコマンドが最初から使用可能
+    [root@rocky02 /]# 
+    [root@rocky02 /]# ifconfig -> 追加インストールのコマンドが最初から使用可能
     
     コマンドの実行結果
     --------------------------------------------------
     (省略)
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# traceroute 192.168.1.1 -> 追加インストールのコマンドが最初から使用可能
+    [root@rocky02 /]# 
+    [root@rocky02 /]# traceroute 192.168.1.1 -> 追加インストールのコマンドが最初から使用可能
     
     コマンドの実行結果
     --------------------------------------------------
     (省略)
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# exit -> デタッチ
+    [root@rocky02 /]# 
+    [root@rocky02 /]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -870,11 +871,11 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman stop rock02
+  # podman stop rocky02
   
   コマンドの実行結果
   --------------------------------------------------
-  rock02
+  rocky02
   --------------------------------------------------
   
   # cd $HOME
@@ -883,12 +884,12 @@
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                              COMMAND    CREATED             STATUS                     PORTS  NAMES
-  7ac922df25c7  docker.io/rockylinux/rockylinux:8  /bin/bash  5 minutes ago       Exited (0) 4 minutes ago          rock01
-  3607fb870886  localhost/image01:latest           /bin/bash  About a minute ago  Exited (0) 51 seconds ago         rock02
+  7ac922df25c7  docker.io/rockylinux/rockylinux:8  /bin/bash  5 minutes ago       Exited (0) 4 minutes ago          rocky01
+  3607fb870886  localhost/image01:latest           /bin/bash  About a minute ago  Exited (0) 51 seconds ago         rocky02
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01 rock02
+  # podman rm rocky01 rocky02
   
   コマンドの実行結果
   --------------------------------------------------
@@ -921,12 +922,12 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ1
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
 [確認]
-  # cd $HOME/container/rock01 -> コンテナ用のディレクトリ
+  # cd $HOME/container/rocky01 -> コンテナ用のディレクトリ
   # ls -lh
   
   コマンドの実行結果
@@ -934,7 +935,7 @@
   -rw-r--r--. 1 root root 197  4月 24 12:33 script01.sh
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # vi Dockerfile
   
   コマンドの実行結果
@@ -946,8 +947,8 @@
   CMD ["/bin/bash"]
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
-  # podman build -t rock:1 .(カレントディレクトリ) -> 実行結果は重要部分のみ抜粋
+  # cd $HOME/container/rocky01
+  # podman build -t rocky:1 .(カレントディレクトリ) -> 実行結果は重要部分のみ抜粋
   
   コマンドの実行結果
   --------------------------------------------------
@@ -956,18 +957,18 @@
   STEP 3/5: RUN dnf -y install traceroute
   STEP 4/5: COPY script01.sh /opt/
   STEP 5/5: CMD ["/bin/bash"]
-  COMMIT rock:1
-  Successfully tagged localhost/rock:1
+  COMMIT rocky:1
+  Successfully tagged localhost/rocky:1
   3d911771884fc539352ad4e89ebb48cfca3ec98762af33cc271457cdeb538ced
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # podman images
   
   コマンドの実行結果
   --------------------------------------------------
   REPOSITORY                       TAG  IMAGE ID      CREATED             SIZE
-  localhost/rock                   1    3d911771884f  About a minute ago  281 MB
+  localhost/rocky                  1    3d911771884f  About a minute ago  281 MB
   docker.io/rockylinux/rockylinux  8    e7368aa563ff  2 months ago        203 MB
   --------------------------------------------------
   
@@ -975,9 +976,9 @@
   # podman run
   > -i
   > -t
-  > --name rock01
-  > --hostname rock01
-  > rock:1 -> ビルドされたイメージ名
+  > --name rocky01
+  > --hostname rocky01
+  > rocky:1 -> ビルドされたイメージ名
   > /bin/bash
   
   コマンドの実行結果
@@ -985,32 +986,32 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ifconfig -> コマンドが最初から使用可能
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ifconfig -> コマンドが最初から使用可能
     
     コマンドの実行結果
     --------------------------------------------------
     (省略)
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# traceroute 192.168.1.1 -> コマンドが最初から使用可能
+    [root@rocky01 /]# 
+    [root@rocky01 /]# traceroute 192.168.1.1 -> コマンドが最初から使用可能
     
     コマンドの実行結果
     --------------------------------------------------
     (省略)
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ls -lh /opt
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ls -lh /opt
     
     コマンドの実行結果
     --------------------------------------------------
     -rw-r--r--. 1 root root 197 Apr 24 03:33 script01.sh
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# exit -> デタッチ
+    [root@rocky01 /]# 
+    [root@rocky01 /]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1018,15 +1019,15 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01
+  # podman rm rocky01
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1034,18 +1035,18 @@
   --------------------------------------------------
   
   # cd $HOME
-  # podman rmi rock:1
+  # podman rmi rocky:1
   
   コマンドの実行結果
   --------------------------------------------------
-  Untagged: localhost/rock:1
+  Untagged: localhost/rocky:1
   Deleted: 3d911771884fc539352ad4e89ebb48cfca3ec98762af33cc271457cdeb538ced
   Deleted: 75ea3c52a541539aa2c65a75b1aa1802f17177521dd5d6055523c5bb1a55620e
   Deleted: f8030d0e258c4f99d57bd20d8ce225737fed5515f609c3c7cecaade32884e642
   Deleted: 1bf8dea2564962230a7d4cff755db902e9a5f7f60fa7df698e8cd4b3aeba1541
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # rm -f Dockerfile script01.sh -> 不要ファイル削除
   
   コマンドの実行結果
@@ -1069,12 +1070,12 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
 [確認]
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # mkdir disk01
   
   コマンドの実行結果
@@ -1082,7 +1083,7 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # tree
   
   コマンドの実行結果
@@ -1094,10 +1095,10 @@
   # podman run
   > -i
   > -t
-  > --name rock01
-  > --hostname rock01
+  > --name rocky01
+  > --hostname rocky01
   > --privileged -> SELinux が Enforcing の場合に必要
-  > -v ./container/rock01/disk01:/mnt -> ディレクトリ共有
+  > -v ./container/rocky01/disk01:/mnt -> ディレクトリ共有
   > rockylinux:8
   > /bin/bash
   
@@ -1106,8 +1107,8 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# df -mT
+    [root@rocky01 /]# 
+    [root@rocky01 /]# df -mT
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1120,16 +1121,16 @@
     tmpfs                tmpfs         1809     0       1809    0%  /sys/fs/cgroup
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cd mnt
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cd mnt
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 mnt]# 
-    [root@rock01 mnt]# vi sample.txt
+    [root@rocky01 mnt]# 
+    [root@rocky01 mnt]# vi sample.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1138,8 +1139,8 @@
     1615年 大坂夏の陣
     --------------------------------------------------
     
-    [root@rock01 mnt]# 
-    [root@rock01 mnt]# exit -> デタッチ
+    [root@rocky01 mnt]# 
+    [root@rocky01 mnt]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1147,22 +1148,22 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01
+  # podman rm rocky01
   
   コマンドの実行結果
   --------------------------------------------------
   09ae7b8f647fbda58b59f3e48998fd4543b3f8aaaf5b9c2f5adde8acfd3f5d8e
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # cat disk01/sample.txt
   
   コマンドの実行結果
@@ -1172,7 +1173,7 @@
   1615年 大坂夏の陣
   --------------------------------------------------
   
-  # cd $HOME/container/rock01
+  # cd $HOME/container/rocky01
   # rm -rf disk01
   
   コマンドの実行結果
@@ -1196,12 +1197,12 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
   ## コンテナ
-    HOST : rock02
+    HOST : rocky02
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
@@ -1256,8 +1257,8 @@
   # podman run
   > -i
   > -t
-  > --name rock01
-  > --hostname rock01
+  > --name rocky01
+  > --hostname rocky01
   > --privileged -> SELinux が Enforcing の場合に必要
   > -v volume01:/mnt -> データボリューム指定
   > rockylinux:8
@@ -1268,8 +1269,8 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# df -mT
+    [root@rocky01 /]# 
+    [root@rocky01 /]# df -mT
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1282,16 +1283,16 @@
     tmpfs                tmpfs         1809     0       1809    0%  /sys/fs/cgroup
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cd mnt
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cd mnt
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    [root@rock01 mnt]# 
-    [root@rock01 mnt]# vi sample.txt
+    [root@rocky01 mnt]# 
+    [root@rocky01 mnt]# vi sample.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1300,8 +1301,8 @@
     1615年 大坂夏の陣
     --------------------------------------------------
     
-    [root@rock01 mnt]# 
-    [root@rock01 mnt]# exit -> デタッチ
+    [root@rocky01 mnt]# 
+    [root@rocky01 mnt]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1309,15 +1310,15 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman stop rock01
+  # podman stop rocky01
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
+  rocky01
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01
+  # podman rm rocky01
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1328,8 +1329,8 @@
   # podman run
   > -i
   > -t
-  > --name rock02
-  > --hostname rock02
+  > --name rocky02
+  > --hostname rocky02
   > --privileged
   > -v volume01:/mnt -> 別コンテナでデータボリュームを使用
   > rockylinux:8
@@ -1340,8 +1341,8 @@
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# df -mT
+    [root@rocky02 /]# 
+    [root@rocky02 /]# df -mT
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1354,8 +1355,8 @@
     tmpfs                tmpfs         1809     0       1809    0%  /sys/fs/cgroup
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# cat /mnt/sample.txt
+    [root@rocky02 /]# 
+    [root@rocky02 /]# cat /mnt/sample.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1364,8 +1365,8 @@
     1615年 大坂夏の陣
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# exit -> デタッチ
+    [root@rocky02 /]# 
+    [root@rocky02 /]# exit -> デタッチ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1373,15 +1374,15 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman stop rock02
+  # podman stop rocky02
   
   コマンドの実行結果
   --------------------------------------------------
-  rock02
+  rocky02
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock02
+  # podman rm rocky02
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1412,12 +1413,12 @@
     MEMO : 自宅ノートパソコン
   
   ## コンテナ
-    HOST : rock01
+    HOST : rocky01
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
   ## コンテナ
-    HOST : rock02
+    HOST : rocky02
     IPV4 : 自動採番
     MEMO : イメージ「rockylinux:8」を元に生成
   
@@ -1464,8 +1465,8 @@
   # podman run
   > -i
   > -t
-  > --name rock01
-  > --hostname rock01
+  > --name rocky01
+  > --hostname rocky01
   > --network podman -> 所属ネットワーク指定
   > rockylinux:8
   > /bin/bash
@@ -1475,16 +1476,16 @@
   (省略) -> 出力なし
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cat /etc/hosts | grep rock
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cat /etc/hosts | grep rock
     
     コマンドの実行結果
     --------------------------------------------------
-    10.88.0.25  rock01 rock01
+    10.88.0.25  rocky01 rocky01
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# [ Ctrl + P ] + [ Ctrl + Q ]
+    [root@rocky01 /]# 
+    [root@rocky01 /]# [ Ctrl + P ] + [ Ctrl + Q ]
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1495,8 +1496,8 @@
   # podman run
   > -i
   > -t
-  > --name rock02
-  > --hostname rock02
+  > --name rocky02
+  > --hostname rocky02
   > --network podman -> 所属ネットワーク指定
   > rockylinux:8
   > /bin/bash
@@ -1506,16 +1507,16 @@
   (省略) -> 出力なし
   --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# cat /etc/hosts | grep rock
+    [root@rocky02 /]# 
+    [root@rocky02 /]# cat /etc/hosts | grep rock
     
     コマンドの実行結果
     --------------------------------------------------
-    10.88.0.26  rock02 rock02
+    10.88.0.26  rocky02 rocky02
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# [ Ctrl + P ] + [ Ctrl + Q ]
+    [root@rocky02 /]# 
+    [root@rocky02 /]# [ Ctrl + P ] + [ Ctrl + Q ]
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1528,52 +1529,52 @@
   コマンドの実行結果
   --------------------------------------------------
   CONTAINER ID  IMAGE                              COMMAND    CREATED             STATUS                 PORTS  NAMES
-  bb6779d4724a  docker.io/rockylinux/rockylinux:8  /bin/bash  7 minutes ago       Up 5 minutes ago              rock01
-  caf016626ed1  docker.io/rockylinux/rockylinux:8  /bin/bash  About a minute ago  Up About a minute ago         rock02
+  bb6779d4724a  docker.io/rockylinux/rockylinux:8  /bin/bash  7 minutes ago       Up 5 minutes ago              rocky01
+  caf016626ed1  docker.io/rockylinux/rockylinux:8  /bin/bash  About a minute ago  Up About a minute ago         rocky02
   --------------------------------------------------
   
   # cd $HOME
-  # podman exec -it rock01 /bin/bash
+  # podman exec -it rocky01 /bin/bash
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# vi /etc/hosts
+    [root@rocky01 /]# 
+    [root@rocky01 /]# vi /etc/hosts
     
     コマンドの実行結果
     --------------------------------------------------
     (省略)
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# cat /etc/hosts | grep rock
+    [root@rocky01 /]# 
+    [root@rocky01 /]# cat /etc/hosts | grep rock
     
     コマンドの実行結果
     --------------------------------------------------
-    10.88.0.25  rock01 rock01
-    10.88.0.26  rock02 rock02
+    10.88.0.25  rocky01 rocky01
+    10.88.0.26  rocky02 rocky02
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# ping -c 3 rock02
+    [root@rocky01 /]# 
+    [root@rocky01 /]# ping -c 3 rocky02
     
     コマンドの実行結果
     --------------------------------------------------
-    PING rock02 (10.88.0.26) 56(84) bytes of data.
-    64 bytes from rock02 (10.88.0.26): icmp_seq=1 ttl=64 time=0.097 ms
-    64 bytes from rock02 (10.88.0.26): icmp_seq=2 ttl=64 time=0.120 ms
-    64 bytes from rock02 (10.88.0.26): icmp_seq=3 ttl=64 time=0.123 ms
+    PING rocky02 (10.88.0.26) 56(84) bytes of data.
+    64 bytes from rocky02 (10.88.0.26): icmp_seq=1 ttl=64 time=0.097 ms
+    64 bytes from rocky02 (10.88.0.26): icmp_seq=2 ttl=64 time=0.120 ms
+    64 bytes from rocky02 (10.88.0.26): icmp_seq=3 ttl=64 time=0.123 ms
     
-    --- rock02 ping statistics ---
+    --- rocky02 ping statistics ---
     3 packets transmitted, 3 received, 0% packet loss, time 2064ms
     rtt min/avg/max/mdev = 0.097/0.113/0.123/0.014 ms
     --------------------------------------------------
     
-    [root@rock01 /]# 
-    [root@rock01 /]# [ Ctrl + P ] + [ Ctrl + Q ]
+    [root@rocky01 /]# 
+    [root@rocky01 /]# [ Ctrl + P ] + [ Ctrl + Q ]
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1581,47 +1582,47 @@
     --------------------------------------------------
     
   # cd $HOME
-  # podman exec -it rock02 /bin/bash
+  # podman exec -it rocky02 /bin/bash
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化)
   --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# vi /etc/hosts
+    [root@rocky02 /]# 
+    [root@rocky02 /]# vi /etc/hosts
     
     コマンドの実行結果
     --------------------------------------------------
     (省略)
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# cat /etc/hosts | grep rock
+    [root@rocky02 /]# 
+    [root@rocky02 /]# cat /etc/hosts | grep rock
     
     コマンドの実行結果
     --------------------------------------------------
-    10.88.0.25  rock01 rock01
-    10.88.0.26  rock02 rock02
+    10.88.0.25  rocky01 rocky01
+    10.88.0.26  rocky02 rocky02
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# ping -c 3 rock01
+    [root@rocky02 /]# 
+    [root@rocky02 /]# ping -c 3 rocky01
     
     コマンドの実行結果
     --------------------------------------------------
-    PING rock01 (10.88.0.25) 56(84) bytes of data.
-    64 bytes from rock01 (10.88.0.25): icmp_seq=1 ttl=64 time=0.095 ms
-    64 bytes from rock01 (10.88.0.25): icmp_seq=2 ttl=64 time=0.124 ms
-    64 bytes from rock01 (10.88.0.25): icmp_seq=3 ttl=64 time=0.124 ms
+    PING rocky01 (10.88.0.25) 56(84) bytes of data.
+    64 bytes from rocky01 (10.88.0.25): icmp_seq=1 ttl=64 time=0.095 ms
+    64 bytes from rocky01 (10.88.0.25): icmp_seq=2 ttl=64 time=0.124 ms
+    64 bytes from rocky01 (10.88.0.25): icmp_seq=3 ttl=64 time=0.124 ms
     
-    --- rock01 ping statistics ---
+    --- rocky01 ping statistics ---
     3 packets transmitted, 3 received, 0% packet loss, time 2070ms
     rtt min/avg/max/mdev = 0.095/0.114/0.124/0.016 ms
     --------------------------------------------------
     
-    [root@rock02 /]# 
-    [root@rock02 /]# [ Ctrl + P ] + [ Ctrl + Q ]
+    [root@rocky02 /]# 
+    [root@rocky02 /]# [ Ctrl + P ] + [ Ctrl + Q ]
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1629,16 +1630,16 @@
     --------------------------------------------------
   
   # cd $HOME
-  # podman stop rock01 rock02
+  # podman stop rocky01 rocky02
   
   コマンドの実行結果
   --------------------------------------------------
-  rock01
-  rock02
+  rocky01
+  rocky02
   --------------------------------------------------
   
   # cd $HOME
-  # podman rm rock01 rock02
+  # podman rm rocky01 rocky02
   
   コマンドの実行結果
   --------------------------------------------------
