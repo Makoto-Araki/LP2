@@ -7,6 +7,7 @@
 [06] 練習 - 06
 [07] 練習 - 07
 [08] 練習 - 08
+[09] 練習 - 09
 ================================================================================
 [01]
   練習 - 01
@@ -1645,6 +1646,176 @@
   --------------------------------------------------
   bb6779d4724a492b12e0fd46f9bb3a56c25ffa8d1a52fbd48c30231b24fcf3ed
   caf016626ed116d8b71f204adc5dc4a7762350ea6abbba7c716b7d4981ee65eb
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[09]
+  練習 - 09
+  
+[内容]
+  ## 作業内容
+    複数コンテナをファイル「docker-compose.yml」を使用してまとめて構築・起動・停止
+  
+  ## ホスト
+    HOST : localhost
+    IPV4 : 192.168.1.4
+    MEMO : 自宅ノートパソコン
+  
+  ## コンテナ1
+    HOST : rocky01
+    IPV4 : 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
+  
+  ## コンテナ2
+    HOST : rocky02
+    IPV4 : 自動採番
+    MEMO : イメージ「rockylinux:8」を元に生成
+  
+[確認]
+  # cd $HOME
+  # dnf list installed | grep -i podman-docker
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  podman-docker.noarch -> コマンド「docker」が使用可能なことが分かった
+  --------------------------------------------------
+  
+  # cd $HOME/container
+  # mkdir -p compose01/rocky01
+  # mkdir -p compose01/rocky02
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # vi rocky01/Dockerfile
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  FROM rockylinux:8
+  RUN dnf -y install net-tools
+  RUN dnf -y install traceroute
+  CMD ["/bin/bash"]
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # vi rocky02/Dockerfile
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  FROM rockylinux:8
+  RUN dnf -y install net-tools
+  RUN dnf -y install traceroute
+  CMD ["/bin/bash"]
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # vi docker-compose.yml -> ファイル行頭の空白は空白文字が二個
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  version: "3"
+  services:
+    rocky01:
+      build: ./rocky01
+    rocky02:
+      build: ./rocky02
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman-compose up -d -> コンテナをまとめて構築・起動
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman images -> コマンド「podman-compose」にはオプション「images」が存在しない
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY                       TAG     IMAGE ID      CREATED        SIZE
+  localhost/compose01_rocky02      latest  f8661a3e32c5  2 minutes ago  281 MB -> 作成されたイメージ
+  localhost/compose01_rocky01      latest  f8661a3e32c5  2 minutes ago  281 MB -> 作成されたイメージ
+  docker.io/rockylinux/rockylinux  8       e7368aa563ff  2 months ago   203 MB
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman-compose ps -> 起動した筈なのに「Exited」なのが不明、仕方無く続行する
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                               COMMAND    CREATED        STATUS                    PORTS  NAMES
+  2630c7d0e91a  localhost/compose01_rocky01:latest  /bin/bash  4 minutes ago  Exited (0) 4 minutes ago         compose01_rocky01_1
+  2ed82753b419  localhost/compose01_rocky02:latest  /bin/bash  4 minutes ago  Exited (0) 4 minutes ago         compose01_rocky02_1
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman-compose start -> ステータスが「Exited」なので起動コマンドを実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  podman start compose01_rocky01_1
+  compose01_rocky01_1
+  exit code: 0
+
+  podman start compose01_rocky02_1
+  compose01_rocky02_1
+  exit code: 0
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman-compose ps -> ステータスが「Exited」のままで変化なし
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  CONTAINER ID  IMAGE                               COMMAND    CREATED         STATUS                    PORTS       NAMES
+  2630c7d0e91a  localhost/compose01_rocky01:latest  /bin/bash  13 minutes ago  Exited (0) 2 minutes ago              compose01_rocky01_1
+  2ed82753b419  localhost/compose01_rocky02:latest  /bin/bash  13 minutes ago  Exited (0) 2 minutes ago              compose01_rocky02_1
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman-compose down -> コンテナをまとめて停止・削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  podman stop -t 10 compose01_rocky02_1
+  compose01_rocky02_1
+  exit code: 0
+
+  podman stop -t 10 compose01_rocky01_1
+  compose01_rocky01_1
+  exit code: 0
+
+  podman rm compose01_rocky02_1
+  f4867cec0343c843c9b404124c32536e0ee4edf73ea5137f61fc4fad35b41b96
+  exit code: 0
+
+  podman rm compose01_rocky01_1
+  e76a03569416beb9cdb207815fefca81792dd151a60a7231dedf299e27a47b2d
+  exit code: 0
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman rmi compose01_rocky01:latest
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Untagged: localhost/compose01_rocky01:latest
+  --------------------------------------------------
+  
+  # cd $HOME/container/compose01
+  # podman rmi compose01_rocky02:latest
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Untagged: localhost/compose01_rocky02:latest
+  Deleted: 76a22d58c534b64028cd135d7d6f18c2ec054a3397c3f5407fcabc0e5c8a988b
   --------------------------------------------------
   
   以下の確認に続く
