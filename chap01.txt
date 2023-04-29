@@ -42,12 +42,12 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    top -b     // バッチモード
-    top -d XX  // 更新間隔(XX 秒)
-    top -n XX  // 更新回数(XX 回)を越えた後で自動的に終了
-    top -u XX  // 指定ユーザーのプロセスのみ表示
-    top -p XX  // 指定PIDのプロセスのみ表示
-    top -w XX  // 出力幅(XX 桁数)
+    top -b     : バッチモード
+    top -d XX  : 更新間隔(XX 秒)
+    top -n XX  : 更新回数(XX 回)を越えた後で自動的に終了
+    top -u XX  : 指定ユーザーのプロセスのみ表示
+    top -p XX  : 指定PIDのプロセスのみ表示
+    top -w XX  : 出力幅(XX 桁数)
   
 [確認]
   vm11$ cd $HOME
@@ -83,45 +83,44 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 8002
+  [1] 1264
   --------------------------------------------------
   
   vm11$ cd $HOME (バッチモード、ユーザー指定、更新間隔1秒、更新回数9回、出力幅100)
-  vm11$ top -b -u makoto -d 1 -n 9 -w 100 | grep 8002
+  vm11$ top -b -u makoto -d 1 -n 9 -w 100 | grep 1264
   
   コマンドの実行結果
   --------------------------------------------------
   PID  USER      PR  NI    VIRT    RES    SHR S %CPU %MEM   TIME+   COMMAND
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.05 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.05 bash
-  8002 makoto    20   0  113284   1384   1196 S  1.0  0.1   0:00.06 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.06 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.06 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.06 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.06 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.06 bash
-  8002 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.06 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+  1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
   --------------------------------------------------
   
   vm11$ cd $HOME (バッチモード、PID指定、更新間隔1秒、更新回数9回)
-  vm11$ top -b -p 8002 -d 1 -n 9 | grep 8002
+  vm11$ top -b -p 1264 -d 1 -n 9 | grep 1264
   
   コマンドの実行結果
   --------------------------------------------------
-  PID  USER      PR  NI    VIRT    RES    SHR S %CPU %MEM   TIME+   COMMAND
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1392   1196 S  0.0  0.1   0:00.18 bash
-  8002 makoto    20   0  113284   1392   1196 S  1.0  0.1   0:00.19 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
+  1264 makoto    20   0  113284   1388   1196 S  1.0  0.1   0:00.14 bash
+  1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.14 bash
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ kill -term(15) 8002 (プロセス終了)
+  vm11$ kill -term(15) 1264 (プロセス終了)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -144,9 +143,9 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    vmstat XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    vmstat XX YY -S k  // 更新間隔(XX秒)、更新回数(YY回)、キロバイト単位
-    vmstat XX YY -S m  // 更新間隔(XX秒)、更新回数(YY回)、メガバイト単位
+    vmstat XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    vmstat XX YY -S k  : 更新間隔(XX秒)、更新回数(YY回)、キロバイト単位
+    vmstat XX YY -S m  : 更新間隔(XX秒)、更新回数(YY回)、メガバイト単位
   
 [確認]
   vm11$ cd $HOME
@@ -213,9 +212,9 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    vmstat XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    vmstat XX YY -S k  // 更新間隔(XX秒)、更新回数(YY回)、キロバイト単位
-    vmstat XX YY -S m  // 更新間隔(XX秒)、更新回数(YY回)、メガバイト単位
+    vmstat XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    vmstat XX YY -S k  : 更新間隔(XX秒)、更新回数(YY回)、キロバイト単位
+    vmstat XX YY -S m  : 更新間隔(XX秒)、更新回数(YY回)、メガバイト単位
   
 [確認]
   vm11$ cd $HOME
@@ -266,12 +265,12 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    iostat -c     // CPU情報のみ出力
-    iostat -d     // ディスクIOのみ出力
-    iostat -k     // ブロック単位ではなくキロバイト単位
-    iostat -m     // ブロック単位ではなくメガバイト単位
-    iostat -t     // 時刻を表示
-    iostat XX YY  // 更新間隔(XX秒)、更新回数(YY回)
+    iostat -c     : CPU情報のみ出力
+    iostat -d     : ディスクIOのみ出力
+    iostat -k     : ブロック単位ではなくキロバイト単位
+    iostat -m     : ブロック単位ではなくメガバイト単位
+    iostat -t     : 時刻を表示
+    iostat XX YY  : 更新間隔(XX秒)、更新回数(YY回)
   
 [確認]
   vm11$ cd $HOME
@@ -404,11 +403,11 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    iotop -b     // 対話モードでなくバッチモード
-    iotop -d XX  // 更新間隔(XX 秒)
-    iotop -n XX  // 更新回数(XX 回)を越えた後で自動的に終了
-    iotop -u XX  // 指定ユーザーのプロセスのみ表示
-    iotop -p XX  // 指定PIDのプロセスのみ表示
+    iotop -b     : 対話モードでなくバッチモード
+    iotop -d XX  : 更新間隔(XX 秒)
+    iotop -n XX  : 更新回数(XX 回)を越えた後で自動的に終了
+    iotop -u XX  : 指定ユーザーのプロセスのみ表示
+    iotop -p XX  : 指定PIDのプロセスのみ表示
   
 [確認]
   vm11$ cd $HOME
@@ -493,11 +492,11 @@
     MEMO : 仮想マシン
   
   ## 調査内容
-    /etc/sysconfig/sysstat  // 設定ファイル
-    /etc/cron.d/sysstat     // CRON
-    /var/log/sa/saXX        // 収集データの格納先
-    sar                     // コマンド - 収集データのレポート作成
-    sadf                    // コマンド - 収集データのレポート書式変更
+    /etc/sysconfig/sysstat  : 設定ファイル
+    /etc/cron.d/sysstat     : CRON
+    /var/log/sa/saXX        : 収集データの格納先
+    sar                     : コマンド - 収集データのレポート作成
+    sadf                    : コマンド - 収集データのレポート書式変更
   
 [確認]
   vm11$ cd $HOME
@@ -568,16 +567,16 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    sar -o XX       // 出力ファイル(XX)を指定
-    sar -u          // CPU
-    sar -r          // メモリ
-    sar -W          // スワップ
-    sar -b          // ディスクIO
-    sar -n DEV      // NIC
-    sar -n EDEV     // NICエラー
-    sar -f XX       // ログファイル(XX)を指定
-    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    sar -o XX       : 出力ファイル(XX)を指定
+    sar -u          : CPU
+    sar -r          : メモリ
+    sar -W          : スワップ
+    sar -b          : ディスクIO
+    sar -n DEV      : NIC
+    sar -n EDEV     : NICエラー
+    sar -f XX       : ログファイル(XX)を指定
+    sar -s XX -e YY : 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm11$ cd /var/log/sa
@@ -617,16 +616,16 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    sar -o XX       // 出力ファイル(XX)を指定
-    sar -u          // CPU
-    sar -r          // メモリ
-    sar -W          // スワップ
-    sar -b          // ディスクIO
-    sar -n DEV      // NIC
-    sar -n EDEV     // NICエラー
-    sar -f XX       // ログファイル(XX)を指定
-    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    sar -o XX       : 出力ファイル(XX)を指定
+    sar -u          : CPU
+    sar -r          : メモリ
+    sar -W          : スワップ
+    sar -b          : ディスクIO
+    sar -n DEV      : NIC
+    sar -n EDEV     : NICエラー
+    sar -f XX       : ログファイル(XX)を指定
+    sar -s XX -e YY : 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm11$ cd /var/log/sa
@@ -666,16 +665,16 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    sar -o XX       // 出力ファイル(XX)を指定
-    sar -u          // CPU
-    sar -r          // メモリ
-    sar -W          // スワップ
-    sar -b          // ディスクIO
-    sar -n DEV      // NIC
-    sar -n EDEV     // NICエラー
-    sar -f XX       // ログファイル(XX)を指定
-    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    sar -o XX       : 出力ファイル(XX)を指定
+    sar -u          : CPU
+    sar -r          : メモリ
+    sar -W          : スワップ
+    sar -b          : ディスクIO
+    sar -n DEV      : NIC
+    sar -n EDEV     : NICエラー
+    sar -f XX       : ログファイル(XX)を指定
+    sar -s XX -e YY : 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm11$ cd /var/log/sa
@@ -715,16 +714,16 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    sar -o XX       // 出力ファイル(XX)を指定
-    sar -u          // CPU
-    sar -r          // メモリ
-    sar -W          // スワップ
-    sar -b          // ディスクIO
-    sar -n DEV      // NIC
-    sar -n EDEV     // NICエラー
-    sar -f XX       // ログファイル(XX)を指定
-    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    sar -o XX       : 出力ファイル(XX)を指定
+    sar -u          : CPU
+    sar -r          : メモリ
+    sar -W          : スワップ
+    sar -b          : ディスクIO
+    sar -n DEV      : NIC
+    sar -n EDEV     : NICエラー
+    sar -f XX       : ログファイル(XX)を指定
+    sar -s XX -e YY : 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm11$ cd /var/log/sa
@@ -764,16 +763,16 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    sar -o XX       // 出力ファイル(XX)を指定
-    sar -u          // CPU
-    sar -r          // メモリ
-    sar -W          // スワップ
-    sar -b          // ディスクIO
-    sar -n DEV      // NIC
-    sar -n EDEV     // NICエラー
-    sar -f XX       // ログファイル(XX)を指定
-    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    sar -o XX       : 出力ファイル(XX)を指定
+    sar -u          : CPU
+    sar -r          : メモリ
+    sar -W          : スワップ
+    sar -b          : ディスクIO
+    sar -n DEV      : NIC
+    sar -n EDEV     : NICエラー
+    sar -f XX       : ログファイル(XX)を指定
+    sar -s XX -e YY : 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm11$ cd /var/log/sa
@@ -816,16 +815,16 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sar XX YY       // 更新間隔(XX秒)、更新回数(YY回)
-    sar -o XX       // 出力ファイル(XX)を指定
-    sar -u          // CPU
-    sar -r          // メモリ
-    sar -W          // スワップ
-    sar -b          // ディスクIO
-    sar -n DEV      // NIC
-    sar -n EDEV     // NICエラー
-    sar -f XX       // ログファイル(XX)を指定
-    sar -s XX -e YY // 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
+    sar XX YY       : 更新間隔(XX秒)、更新回数(YY回)
+    sar -o XX       : 出力ファイル(XX)を指定
+    sar -u          : CPU
+    sar -r          : メモリ
+    sar -W          : スワップ
+    sar -b          : ディスクIO
+    sar -n DEV      : NIC
+    sar -n EDEV     : NICエラー
+    sar -f XX       : ログファイル(XX)を指定
+    sar -s XX -e YY : 時刻XX(HH:MM:SS)から時刻YY(HH:MM:SS)を指定
   
 [確認]
   vm11$ cd /var/log/sa
@@ -868,9 +867,9 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    sadf -j -- sarコマンド  // JSON形式 -> ログファイル指定時に「-f」を使用したらエラー
-    sadf -x -- sarコマンド  // XML形式  -> ログファイル指定時に「-f」を使用したらエラー
-    sadf -t                 // ローカル日時
+    sadf -j -- sarコマンド  : JSON形式 -> ログファイル指定時に「-f」を使用したらエラー
+    sadf -x -- sarコマンド  : XML形式  -> ログファイル指定時に「-f」を使用したらエラー
+    sadf -t                 : ローカル日時
   
 [確認]
   vm11$ cd /var/log/sa
@@ -932,9 +931,9 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    w XX     // ユーザー(XX)のプロセス情報を出力
-    w -h XX  // ヘッダを非表示
-    w -s XX  // ログイン時刻、JCPU、PCPUを非表示
+    w XX     : ユーザー(XX)のプロセス情報を出力
+    w -h XX  : ヘッダを非表示
+    w -s XX  : ログイン時刻、JCPU、PCPUを非表示
   
   ## 項目説明
     TTY    : 端末名
@@ -990,17 +989,17 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    ps a      // 端末上の全プロセス表示
-    ps u      // 実行ユーザー表示
-    ps x      // 制御端末を持たないプロセスも表示
-    ps e      // 環境変数も表示
-    ps r      // 実行中プロセスのみ表示
-    ps l      // 長フォーマット
-    ps -e     // 全プロセス表示
-    ps -f     // 引数も含めた完全フォーマットで表示
-    ps -l     // 長フォーマット
-    ps -p XX  // XX(PID)を指定
-    ps -u XX  // XX(UID)を指定
+    ps a      : 端末上の全プロセス表示
+    ps u      : 実行ユーザー表示
+    ps x      : 制御端末を持たないプロセスも表示
+    ps e      : 環境変数も表示
+    ps r      : 実行中プロセスのみ表示
+    ps l      : 長フォーマット
+    ps -e     : 全プロセス表示
+    ps -f     : 引数も含めた完全フォーマットで表示
+    ps -l     : 長フォーマット
+    ps -p XX  : XX(PID)を指定
+    ps -u XX  : XX(UID)を指定
   
   ## 項目説明
     PID     : プロセスID
@@ -1057,17 +1056,17 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    ps a      // 端末上の全プロセス表示
-    ps u      // 実行ユーザー表示
-    ps x      // 制御端末を持たないプロセスも表示
-    ps e      // 環境変数も表示
-    ps r      // 実行中プロセスのみ表示
-    ps l      // 長フォーマット
-    ps -e     // 全プロセス表示
-    ps -f     // 引数も含めた完全フォーマットで表示
-    ps -l     // 長フォーマット
-    ps -p XX  // XX(PID)を指定
-    ps -u XX  // XX(UID)を指定
+    ps a      : 端末上の全プロセス表示
+    ps u      : 実行ユーザー表示
+    ps x      : 制御端末を持たないプロセスも表示
+    ps e      : 環境変数も表示
+    ps r      : 実行中プロセスのみ表示
+    ps l      : 長フォーマット
+    ps -e     : 全プロセス表示
+    ps -f     : 引数も含めた完全フォーマットで表示
+    ps -l     : 長フォーマット
+    ps -p XX  : XX(PID)を指定
+    ps -u XX  : XX(UID)を指定
   
   ## 項目説明
     PID     : プロセスID
@@ -1124,9 +1123,9 @@
     MEMO : 仮想マシン
   
   ## コマンド ##
-    pstree XX  // PID(XX)の親子関係をツリー状で表示
-    pstree -l  // 長フォーマット
-    pstree -p  // PID表示
+    pstree XX  : PID(XX)の親子関係をツリー状で表示
+    pstree -l  : 長フォーマット
+    pstree -p  : PID表示
   
 [確認]
   vm11$ cd $HOME
@@ -1167,16 +1166,16 @@
   
   ## 使用マシン
     HOST : localhost
-    IPV4 : 192.168.1.3
+    IPV4 : DHCP
     MEMO : ホスト
   
   ## コマンド
-    lsof        // プロセス情報をリスト表示
-    lsof -c XX  // コマンド(XX)に一致するプロセスのみ表示
-    lsof -i:XX  // ポート番号(XX)へ通信しているプロセスのみ表示
-    lsof -n     // DNS名前解決を行わない
-    lsof -p XX  // PID(XX)のプロセスのみ表示
-    lsof -u XX  // UID(XX)のプロセスのみ表示
+    lsof        : プロセス情報をリスト表示
+    lsof -c XX  : コマンド(XX)に一致するプロセスのみ表示
+    lsof -i:XX  : ポート番号(XX)へ通信しているプロセスのみ表示
+    lsof -n     : DNS名前解決を行わない
+    lsof -p XX  : PID(XX)のプロセスのみ表示
+    lsof -u XX  : UID(XX)のプロセスのみ表示
   
 [確認]
   $ cd $HOME
@@ -1215,13 +1214,13 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    free        // メモリとスワップの情報を表示
-    free -b     // バイト単位で表示
-    free -k     // キロバイト単位で表示
-    free -m     // メガバイト単位で表示
-    free -t     // 物理メモリとスワップの合計行も表示
-    free -s XX  // 更新間隔(XX)を指定
-    free -c XX  // 更新回数(XX)を指定
+    free        : メモリとスワップの情報を表示
+    free -b     : バイト単位で表示
+    free -k     : キロバイト単位で表示
+    free -m     : メガバイト単位で表示
+    free -t     : 物理メモリとスワップの合計行も表示
+    free -s XX  : 更新間隔(XX)を指定
+    free -c XX  : 更新回数(XX)を指定
   
 [確認]
   vm11$ cd $HOME
@@ -1321,13 +1320,13 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    df     // ディスク使用量の表示
-    df -a  // 全ファイルシステムのディスク使用量を表示
-    df -h  // 1MB=1024KB
-    df -H  // 1MB=1000KB
-    df -i  // iノードの使用状況
-    df -m  // メガバイト単位で表示
-    df -T  // ファイルシステムタイプを表示
+    df     : ディスク使用量の表示
+    df -a  : 全ファイルシステムのディスク使用量を表示
+    df -h  : 1MB=1024KB
+    df -H  : 1MB=1000KB
+    df -i  : iノードの使用状況
+    df -m  : メガバイト単位で表示
+    df -T  : ファイルシステムタイプを表示
   
 [確認]
   vm11$ cd $HOME
@@ -1361,13 +1360,13 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    df     // ディスク使用量の表示
-    df -a  // 全ファイルシステムのディスク使用量を表示
-    df -h  // 1MB=1024KB
-    df -H  // 1MB=1000KB
-    df -i  // iノードの使用状況
-    df -m  // メガバイト単位で表示
-    df -T  // ファイルシステムタイプを表示
+    df     : ディスク使用量の表示
+    df -a  : 全ファイルシステムのディスク使用量を表示
+    df -h  : 1MB=1024KB
+    df -H  : 1MB=1000KB
+    df -i  : iノードの使用状況
+    df -m  : メガバイト単位で表示
+    df -T  : ファイルシステムタイプを表示
   
 [確認]
   vm11$ cd $HOME
@@ -1402,9 +1401,9 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    netstat -i     // 全NIC情報を出力
-    netstat -I=XX  // NIC(XX)の情報を出力
-    netstat -s     // プロトコル毎の統計情報
+    netstat -i     : 全NIC情報を出力
+    netstat -I=XX  : NIC(XX)の情報を出力
+    netstat -s     : プロトコル毎の統計情報
   
 [確認]
   vm11$ cd $HOME
@@ -1452,9 +1451,9 @@
     MEMO : 仮想マシン
   
   ## コマンド
-    netstat -i     // 全NIC情報を出力
-    netstat -I=XX  // NIC(XX)の情報を出力
-    netstat -s     // プロトコル毎の統計情報
+    netstat -i     : 全NIC情報を出力
+    netstat -I=XX  : NIC(XX)の情報を出力
+    netstat -s     : プロトコル毎の統計情報
   
 [確認]
   vm11$ cd $HOME
@@ -1476,14 +1475,14 @@
     TCP接続とUDP接続を表示
   
   ## 使用マシン
-    HOST : localhost(Rocky-Linux)
-    IPV4 : 192.168.1.4
+    HOST : localhost
+    IPV4 : DHCP
     MEMO : ホスト
   
   ## コマンド
-    ss -t  // TCP接続を表示
-    ss -u  // UDP接続を表示
-    ss -s  // 統計情報を表示
+    ss -t  : TCP接続を表示
+    ss -u  : UDP接続を表示
+    ss -s  : 統計情報を表示
   
 [確認]
   $ cd $HOME
@@ -1516,14 +1515,14 @@
     接続状態の統計を表示
   
   ## 使用マシン
-    HOST : localhost(Rocky-Linux)
-    IPV4 : 192.168.1.4
+    HOST : localhost
+    IPV4 : DHCP
     MEMO : ホスト
   
   ## コマンド
-    ss -t  // TCP接続を表示
-    ss -u  // UDP接続を表示
-    ss -s  // 統計情報を表示
+    ss -t  : TCP接続を表示
+    ss -u  : UDP接続を表示
+    ss -s  : 統計情報を表示
   
 [確認]
   $ cd $HOME

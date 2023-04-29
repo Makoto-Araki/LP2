@@ -88,8 +88,8 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
   ## 設定ファイル(/etc/inittab)の書式
   --------------------------------------------------
@@ -106,41 +106,9 @@
     wait        : 指定ランレベルで一度のみ実行、プロセス終了後に次のプロセス起動
   --------------------------------------------------
   
-  ## 設定ファイル(/etc/inittab)の設定例
-  --------------------------------------------------
-  # Default Run Level
-  id:3:initdefault:(コマンドなし)
-  
-  # rc.sysinit
-  si:(なし):sysinit:/etc/rc.d/rc.sysinit
-  
-  # rc
-  l0:0:wait:/etc/rc.d/rc 0
-  l1:1:wait:/etc/rc.d/rc 1
-  l2:2:wait:/etc/rc.d/rc 2
-  l3:3:wait:/etc/rc.d/rc 3  // デフォルトランレベルが「3」なのでこの配下のスクリプトが実行
-  l4:4:wait:/etc/rc.d/rc 4
-  l5:5:wait:/etc/rc.d/rc 5
-  l6:6:wait:/etc/rc.d/rc 6
-  
-  # Ctrl + Alt + Del
-  ca:(なし):ctlaltdel:shutdown -r now
-  
-  # Console(tty1 - tty6)
-  1:12345:respawn:mingetty tty1
-  2:2345:respawn:mingetty tty2
-  3:2345:respawn:mingetty tty3
-  4:2345:respawn:mingetty tty4
-  5:2345:respawn:mingetty tty5
-  6:2345:respawn:mingetty tty6
-  
-  # X - GUIログイン画面起動
-  x:5:respawn:/etc/X11/prefdm -nodaemon
-  --------------------------------------------------
-  
 [確認]
-  vm16$ cd $HOME
-  vm16$ cat /etc/inittab (設定ファイルを確認)
+  vm16# cd $HOME
+  vm16# cat /etc/inittab | grep -vE '^#'
   
   コマンドの実行結果
   --------------------------------------------------
@@ -155,28 +123,61 @@
   
 [内容]
   ## 作業内容
-    ディレクトリ(/etc/rcXX.d)配下を確認
+    ディレクトリ(/etc/rcXX.d)配下の起動・停止スクリプトを確認
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd $HOME
-  vm16$ cat /etc/inittab (設定ファイルを確認)
+  vm16# cd $HOME
+  vm16# cat /etc/inittab | grep -vE '^#'
   
   コマンドの実行結果
   --------------------------------------------------
   id:3:initdefault: -> デフォルトランレベルは「3」と設定
   --------------------------------------------------
   
-  vm16$ cd /etc/rc3.d
-  vm16$ ls -lh | head -n 1 (ディレクトリ配下を確認)
+  vm16# cd /etc/rc3.d
+  vm16# ls -lh | grep sshd -> サンプルとして「sshd」サービスを確認
   
   コマンドの実行結果
   --------------------------------------------------
-  lrwxrwxrwx. 1 root root 19 12月 30 13:08 2019 K10saslauthd -> ../init.d/saslauthd  // 実体は「/etc/init.d」配下に存在
+  lrwxrwxrwx. 1 root root 14  4月 29 18:59 2023 S55sshd -> ../init.d/sshd
+  --------------------------------------------------
+  
+  vm16# cd /etc/init.d
+  vm16# head -n 10 sshd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  #
+  # sshd Start up the OpenSSH server daemon
+  #
+  # chkconfig: 2345 55 25 -> ランレベル「2,3,4,5」で開始スクリプト「S55」、終了スクリプト「K25」の名称
+  # description: SSH is a protocol for secure remote shell access. \
+  #              This service starts up the OpenSSH server daemon.
+  #
+  # processname: sshd
+  # config: /etc/ssh/ssh_host_key
+  --------------------------------------------------
+  
+  vm16# cd /etc/rc3.d
+  vm16# ls -lh S55* -> サンプルとして「sshd」サービスの開始スクリプトを確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 root root 14  4月 29 18:59 2023 S55sshd -> ../init.d/sshd
+  --------------------------------------------------
+  
+  vm16# cd /etc/rc0.d
+  vm16# ls -lh K25* -> サンプルとして「sshd」サービスの終了スクリプトを確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  lrwxrwxrwx. 1 root root 14  4月 29 18:59 2023 K25sshd -> ../init.d/sshd
   --------------------------------------------------
   
   以下の確認に続く
@@ -191,50 +192,44 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd /etc/init.d
-  vm16$ ls -lh (起動スクリプトを確認)
+  vm16# cd /etc/init.d
+  vm16# ls -lh sshd (起動スクリプトを確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxr-xr-x. 1 root root 3.5K  5月 11 15:17 2016 auditd
-  -r-xr-xr-x. 1 root root 1.4K  5月 11 19:18 2016 blk-availability
-  -rwxr-xr-x. 1 root root 2.8K 11月 10 19:14 2015 crond
-  ...
-  -rwxr-xr-x. 1 root root  647  4月 12 18:14 2016 single
-  -rwxr-xr-x. 1 root root 4.6K  5月 11 08:10 2016 sshd (このサービスで確認を行う)
-  -rwxr-xr-x. 1 root root 2.3K  5月 11 17:55 2016 udev-post
+  -rwxr-xr-x. 1 root root 4.6K  9月  1 02:40 2017 sshd -> このサービスで確認を行う
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo /etc/init.d/sshd status (サービス状態を確認)
+  vm16# cd $HOME
+  vm16# /etc/init.d/sshd status (サービス状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  openssh-daemon (pid  1102) を実行中...
+  openssh-daemon (pid  1137) を実行中...
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo /etc/init.d/sshd stop (サービス停止)
+  vm16# cd $HOME
+  vm16# /etc/init.d/sshd stop (サービス停止)
   
   コマンドの実行結果
   --------------------------------------------------
   sshd を停止中: [  OK  ]
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo /etc/init.d/sshd start (サービス開始)
+  vm16# cd $HOME
+  vm16# /etc/init.d/sshd start (サービス開始)
   
   コマンドの実行結果
   --------------------------------------------------
   sshd を起動中: [  OK  ]
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo /etc/init.d/sshd restart (サービス再起動)
+  vm16# cd $HOME
+  vm16# /etc/init.d/sshd restart (サービス再起動)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -242,13 +237,21 @@
   sshd を起動中: [  OK  ]
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo /etc/init.d/sshd condrestart (サービス起動時のみ再起動)
+  vm16# cd $HOME
+  vm16# /etc/init.d/sshd condrestart (サービス起動時のみ再起動)
   
   コマンドの実行結果
   --------------------------------------------------
   sshd を停止中: [  OK  ]
   sshd を起動中: [  OK  ]
+  --------------------------------------------------
+  
+  vm16# cd $HOME
+  vm16# /etc/init.d/sshd reload (設定の再読み込み)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sshd を再読み込み中: [  OK  ]
   --------------------------------------------------
   
   以下の確認に続く
@@ -263,36 +266,45 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd $HOME
-  vm16$ sudo service sshd status (サービス状態を確認)
+  vm16# cd $HOME
+  vm16# service sshd status (サービス状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
   openssh-daemon (pid  1102) を実行中...
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo service sshd stop (サービス停止)
+  vm16# cd $HOME
+  vm16# service sshd stop (サービス停止)
   
   コマンドの実行結果
   --------------------------------------------------
   sshd を停止中: [  OK  ]
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo service sshd start (サービス開始)
+  vm16# cd $HOME
+  vm16# service sshd start (サービス開始)
   
   コマンドの実行結果
   --------------------------------------------------
   sshd を起動中: [  OK  ]
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo service sshd restart (サービス再起動)
+  vm16# cd $HOME
+  vm16# service sshd restart (サービス再起動)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sshd を停止中: [  OK  ]
+  sshd を起動中: [  OK  ]
+  --------------------------------------------------
+  
+  vm16# cd $HOME
+  vm16# service sshd condrestart (サービス起動時のみ再起動)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -300,13 +312,12 @@
   sshd を起動中: [  OK  ]
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo service sshd condrestart (サービス起動時のみ再起動)
+  vm16# cd $HOME
+  vm16# service sshd reload (設定の再読み込み)
   
   コマンドの実行結果
   --------------------------------------------------
-  sshd を停止中: [  OK  ]
-  sshd を起動中: [  OK  ]
+  sshd を再読み込み中: [  OK  ]
   --------------------------------------------------
   
   以下の確認に続く
@@ -321,27 +332,38 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd /etc/init.d
-  vm16$ ls -lh (起動スクリプトを確認)
+  vm16# cd /etc/init.d
+  vm16# head -n 10 sshd
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxr-xr-x. 1 root root 3.5K  5月 11 15:17 2016 auditd
-  -r-xr-xr-x. 1 root root 1.4K  5月 11 19:18 2016 blk-availability
-  -rwxr-xr-x. 1 root root 2.8K 11月 10 19:14 2015 crond
-  ...
-  -rwxr-xr-x. 1 root root  647  4月 12 18:14 2016 single
-  -rwxr-xr-x. 1 root root 4.6K  5月 11 08:10 2016 sshd (このサービスで確認を行う)
-  -rwxr-xr-x. 1 root root 2.3K  5月 11 17:55 2016 udev-post
+  #!/bin/bash
+  #
+  # sshd Start up the OpenSSH server daemon
+  #
+  # chkconfig: 2345 55 25 -> ランレベル「2,3,4,5」で開始スクリプト「S55」、終了スクリプト「K25」の名称
+  # description: SSH is a protocol for secure remote shell access. \
+  #              This service starts up the OpenSSH server daemon.
+  #
+  # processname: sshd
+  # config: /etc/ssh/ssh_host_key
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo ln -s /etc/init.d/sshd /etc/rc3.d/S80sshd
-
+  vm16# cd $HOME
+  vm16# ln -s /etc/init.d/sshd /etc/rc3.d/S55sshd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm16# cd $HOME
+  vm16# ln -s /etc/init.d/sshd /etc/rc0.d/K25sshd
+  
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
@@ -359,46 +381,75 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd $HOME
-  vm16$ sudo chkconfig --list (全サービス・全ランレベルの自動起動設定を表示)
+  vm16# cd $HOME
+  vm16# chkconfig --list (全サービス・全ランレベルの自動起動設定を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  auditd             0:off    1:off    2:on     3:on     4:on     5:on     6:off
-  blk-availability   0:off    1:on     2:on     3:on     4:on     5:on     6:off
-  crond              0:off    1:off    2:on     3:on     4:on     5:on     6:off
-  ...
-  saslauthd          0:off    1:off    2:off    3:off    4:off    5:off    6:off
-  sshd               0:off    1:off    2:on     3:on     4:on     5:on     6:off
-  udev-post          0:off    1:on     2:on     3:on     4:on     5:on     6:off
+  auditd            0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  blk-availability  0:off  1:on   2:on   3:on   4:on   5:on   6:off
+  crond             0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  ip6tables         0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  iptables          0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  iscsi             0:off  1:off  2:off  3:on   4:on   5:on   6:off
+  iscsid            0:off  1:off  2:off  3:on   4:on   5:on   6:off
+  lvm2-monitor      0:off  1:on   2:on   3:on   4:on   5:on   6:off
+  mdmonitor         0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  multipathd        0:off  1:off  2:off  3:off  4:off  5:off  6:off
+  netconsole        0:off  1:off  2:off  3:off  4:off  5:off  6:off
+  netfs             0:off  1:off  2:off  3:on   4:on   5:on   6:off
+  network           0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  postfix           0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  rdisc             0:off  1:off  2:off  3:off  4:off  5:off  6:off
+  restorecond       0:off  1:off  2:off  3:off  4:off  5:off  6:off
+  rsyslog           0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  saslauthd         0:off  1:off  2:off  3:off  4:off  5:off  6:off
+  sshd              0:off  1:off  2:on   3:on   4:on   5:on   6:off
+  udev-post         0:off  1:on   2:on   3:on   4:on   5:on   6:off
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo chkconfig --list sshd (サービス指定・全ランレベルで自動起動設定を表示)
+  vm16# cd $HOME
+  vm16# chkconfig --list sshd (サービス指定・全ランレベルで自動起動設定を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  sshd               0:off    1:off    2:on     3:on     4:on     5:on     6:off
+  sshd              0:off  1:off  2:on   3:on   4:on   5:on   6:off
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo chkconfig --level 3 sshd off (ランレベル3でのサービスの自動起動を無効)
+  vm16# cd $HOME
+  vm16# chkconfig --level 3 sshd off (ランレベル3でのサービスの自動起動を無効)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ sudo chkconfig --level 3 sshd on (ランレベル3でのサービスの自動起動を有効)
+  vm16# cd $HOME
+  vm16# chkconfig --list sshd (サービス指定・全ランレベルで自動起動設定を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sshd              0:off  1:off  2:on   3:off  4:on   5:on   6:off
+  --------------------------------------------------
+  
+  vm16# cd $HOME
+  vm16# chkconfig --level 3 sshd on (ランレベル3でのサービスの自動起動を有効)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm16# cd $HOME
+  vm16# chkconfig --list sshd (サービス指定・全ランレベルで自動起動設定を表示)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  sshd              0:off  1:off  2:on   3:on   4:on   5:on   6:off
   --------------------------------------------------
   
   以下の確認に続く
@@ -693,20 +744,28 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm11$ cd $HOME/sample3 -> 先にディレクトリ作成
-  vm11$ vi sample3.sh (シェルスクリプトを作成)
+  vm11$ cd $HOME
+  vm11$ mkdir service1 (ディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME/service1
+  vm11$ vi service1.sh (シェルスクリプトを作成)
   
   コマンドの実行結果
   --------------------------------------------------
   #!/bin/bash
   
-  LOG=/home/makoto/sample3/sample3.log
+  LOG=/home/makoto/service1/service1.log
   
-  echo "sample3 - $(date "+%Y/%m/%d %H:%M:%S")" >> $LOG
+  echo "service1 - $(date "+%Y/%m/%d %H:%M:%S")" >> $LOG
   --------------------------------------------------
   
-  vm11$ cd $HOME/sample3
-  vm11$ chmod 777 sample3.sh (実行権限を付与)
+  vm11$ cd $HOME/service1
+  vm11$ chmod 777 service1.sh (実行権限を付与)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -714,16 +773,16 @@
   --------------------------------------------------
   
   vm11$ cd /usr/lib/systemd/system/multi-user.target.wants
-  vm11$ sudo vi sample3.service (サービスの作成)
+  vm11$ sudo vi service1.service (サービスの作成)
   
   コマンドの実行結果
   --------------------------------------------------
   [Unit]
-  Description=sample3.service
+  Description=service1.service
   
   [Service]
   Type=simple
-  ExecStart=/home/makoto/sample3/sample3.sh
+  ExecStart=/home/makoto/service1/service1.sh
   
   [Install]
   WantedBy=multi-user.target
@@ -738,49 +797,49 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ systemctl status sample3 (サービス状態を確認)
+  vm11$ systemctl status service1 (サービス状態を確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  ● sample3.service
-     Loaded: loaded (/usr/lib/systemd/system/multi-user.target.wants/sample3.service; bad; vendor preset: disabled)
+  ● service1.service
+     Loaded: loaded (/usr/lib/systemd/system/multi-user.target.wants/service1.service; bad; vendor preset: disabled)
      Active: inactive (dead)
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ systemctl list-dependencies multi-user.target | grep sample3
+  vm11$ systemctl list-dependencies multi-user.target | grep service1
   
   コマンドの実行結果
   --------------------------------------------------
-  ● ├─sample3.service -> ターゲット「multi-user.target」配下にサービスが存在
+  ● ├─service1.service -> ターゲット「multi-user.target」配下にサービスが存在
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo systemctl start sample3 (サービスの実行)
-  vm11$ sudo systemctl start sample3 (サービスの実行)
+  vm11$ sudo systemctl start service1 (サービスの実行)
+  vm11$ sudo systemctl start service1 (サービスの実行)
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm11$ cd $HOME/sample3
-  vm11$ cat sample3.log (ログ確認)
+  vm11$ cd $HOME/service1
+  vm11$ cat service1.log (ログ確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  sample3 - 2023/04/17 10:35:28
-  sample3 - 2023/04/17 10:38:32
+  service1 - 2023/04/29 22:21:57
+  service1 - 2023/04/29 22:21:59
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ LANG=C journalctl --no-pager -u sample3 (ジャーナル表示)
+  vm11$ LANG=C journalctl --no-pager -u service1 (ジャーナル表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  -- Logs begin at Mon 2023-04-17 09:30:15 JST, end at Mon 2023-04-17 10:38:32 JST. --
-  Apr 17 10:35:28 vm11 systemd[1]: Started sample3.service.
-  Apr 17 10:38:32 vm11 systemd[1]: Started sample3.service.
+  -- Logs begin at Sat 2023-04-29 19:40:06 JST, end at Sat 2023-04-29 22:21:59 JST. --
+  Apr 29 22:21:57 vm11 systemd[1]: Started service1.service.
+  Apr 29 22:21:59 vm11 systemd[1]: Started service1.service.
   --------------------------------------------------
   
   以下の確認に続く
@@ -799,95 +858,100 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm11$ cd $HOME/sample4 -> 先にディレクトリ作成
-  vm11$ vi sample4.sh (シェルスクリプトを作成)
+  vm11$ cd $HOME
+  vm11$ mkdir service2 (ディレクトリ作成)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME/service2
+  vm11$ vi service2.sh (シェルスクリプトを作成)
   
   コマンドの実行結果
   --------------------------------------------------
   #!/bin/bash
   
   for i in $(seq 1 $1) ; do
-    echo "sample4 - $(date "+%Y/%m/%d %H:%M:%S") - $i"
+    echo "service2 - $(date "+%Y/%m/%d %H:%M:%S") - $i"
     sleep 1
   done
   --------------------------------------------------
   
-  vm11$ cd $HOME/sample4
-  vm11$ bash sample4.sh 3 (シェルスクリプトを実行)
+  vm11$ cd $HOME/service2
+  vm11$ bash service2.sh 3 (シェルスクリプトを実行)
   
   コマンドの実行結果
   --------------------------------------------------
-  sample4 - 2023/04/17 11:01:08 - 1
-  sample4 - 2023/04/17 11:01:09 - 2
-  sample4 - 2023/04/17 11:01:10 - 3
+  service2 - 2023/04/29 22:29:41 - 1
+  service2 - 2023/04/29 22:29:42 - 2
+  service2 - 2023/04/29 22:29:43 - 3
   --------------------------------------------------
   
-  vm11$ cd $HOME/sample4
-  vm11$ systemd-cat bash sample4.sh 50 & (コマンド実行結果をジャーナル出力)
+  vm11$ cd $HOME/service2
+  vm11$ systemd-cat bash service2.sh 50 & (コマンド実行結果をジャーナル出力)
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 5035 -> バックグラウンドで実行
+  [1] 30969 -> バックグラウンドで実行
   --------------------------------------------------
   
-  vm11$ cd $HOME
+  vm11$ cd $HOME/service2
   vm11$ LANG=C journalctl --follow(-f) | grep sample4 (末尾を表示し続ける)
  
   コマンドの実行結果
   --------------------------------------------------
   ...
-  
-  Apr 17 11:05:48 vm11 bash[5035]: sample4 - 2023/04/17 11:05:48 - 48
-  Apr 17 11:05:49 vm11 bash[5035]: sample4 - 2023/04/17 11:05:49 - 49
-  Apr 17 11:05:50 vm11 bash[5035]: sample4 - 2023/04/17 11:05:50 - 50
-
-  Ctrl + C -> 終了
+  Apr 29 22:32:46 vm11 bash[30969]: service2 - 2023/04/29 22:32:46 - 48
+  Apr 29 22:32:47 vm11 bash[30969]: service2 - 2023/04/29 22:32:47 - 49
+  Apr 29 22:32:48 vm11 bash[30969]: service2 - 2023/04/29 22:32:48 - 50
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ LANG=C journalctl --reverse(-r) | grep sample4 | head -n 3 (末尾を先頭に表示)
+  vm11$ cd $HOME/service2
+  vm11$ LANG=C journalctl --reverse(-r) | grep service2 | head -n 3 (末尾を先頭に表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  Apr 17 11:05:50 vm11 bash[5035]: sample4 - 2023/04/17 11:05:50 - 50
-  Apr 17 11:05:49 vm11 bash[5035]: sample4 - 2023/04/17 11:05:49 - 49
-  Apr 17 11:05:48 vm11 bash[5035]: sample4 - 2023/04/17 11:05:48 - 48
+  Apr 29 22:32:48 vm11 bash[30969]: service2 - 2023/04/29 22:32:48 - 50
+  Apr 29 22:32:47 vm11 bash[30969]: service2 - 2023/04/29 22:32:47 - 49
+  Apr 29 22:32:46 vm11 bash[30969]: service2 - 2023/04/29 22:32:46 - 48
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ LANG=C journalctl --pager-end(-e) | grep sample4 | tail -n 3 (末尾を表示)
+  vm11$ cd $HOME/service2
+  vm11$ LANG=C journalctl --pager-end(-e) | grep service2 | tail -n 3 (末尾を表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  Apr 17 11:05:48 vm11 bash[5035]: sample4 - 2023/04/17 11:05:48 - 48
-  Apr 17 11:05:49 vm11 bash[5035]: sample4 - 2023/04/17 11:05:49 - 49
-  Apr 17 11:05:50 vm11 bash[5035]: sample4 - 2023/04/17 11:05:50 - 50
+  Apr 29 22:32:46 vm11 bash[30969]: service2 - 2023/04/29 22:32:46 - 48
+  Apr 29 22:32:47 vm11 bash[30969]: service2 - 2023/04/29 22:32:47 - 49
+  Apr 29 22:32:48 vm11 bash[30969]: service2 - 2023/04/29 22:32:48 - 50
   --------------------------------------------------
   
-  vm11$ cd $HOME
+  vm11$ cd $HOME/service2
   vm11$ LANG=C journalctl --dmesg(-k) | tail -n 3 (カーネルメッセージのみ表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  Apr 17 09:30:27 vm11 kernel: IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
-  Apr 17 09:30:27 vm11 kernel: nf_conntrack version 0.5.0 (16384 buckets, 65536 max)
-  Apr 17 09:30:28 vm11 kernel: bridge: filtering via arp/ip/ip6tables is no longer available by default. ...
+  Apr 29 20:30:32 vm11 kernel: P1 = 111
+  Apr 29 20:30:32 vm11 kernel: P2 = 222
+  Apr 29 20:31:56 vm11 kernel: module2 exit
   --------------------------------------------------
   
-  vm11$ cd $HOME
+  vm11$ cd $HOME/service2
   vm11$ LANG=C journalctl --priority(-p) info | tail -n 3 (指定プライオリティ以上のメッセージ)
   
   コマンドの実行結果
   --------------------------------------------------
-  Apr 17 11:10:01 vm11 systemd[1]: Started Session 14 of user root.
-  Apr 17 11:10:01 vm11 CROND[5145]: (root) CMD (/usr/lib64/sa/sa1 1 1)
-  Apr 17 11:10:01 vm11 systemd[1]: Removed slice User Slice of root.
+  Apr 29 22:32:46 vm11 bash[30969]: service2 - 2023/04/29 22:32:46 - 48
+  Apr 29 22:32:47 vm11 bash[30969]: service2 - 2023/04/29 22:32:47 - 49
+  Apr 29 22:32:48 vm11 bash[30969]: service2 - 2023/04/29 22:32:48 - 50
   --------------------------------------------------
   
   vm11$ cd $HOME (前に作成したサービス起動)
-  vm11$ sudo systemctl start sample3
-  vm11$ sudo systemctl start sample3
-  vm11$ sudo systemctl start sample3
+  vm11$ sudo systemctl start service1
+  vm11$ sudo systemctl start service1
+  vm11$ sudo systemctl start service1
   
   コマンドの実行結果
   --------------------------------------------------
@@ -895,13 +959,13 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ LANG=C journalctl --unit(-u) sample3 | tail -n 3 (指定サービスのジャーナル表示)
+  vm11$ LANG=C journalctl --unit(-u) service1 | tail -n 3 (指定サービスのジャーナル表示)
   
   コマンドの実行結果
   --------------------------------------------------
-  Apr 17 11:16:21 vm11 systemd[1]: Started sample3.service.
-  Apr 17 11:16:24 vm11 systemd[1]: Started sample3.service.
-  Apr 17 11:16:24 vm11 systemd[1]: Started sample3.service.
+  Apr 29 22:40:49 vm11 systemd[1]: Started service1.service.
+  Apr 29 22:40:51 vm11 systemd[1]: Started service1.service.
+  Apr 29 22:40:52 vm11 systemd[1]: Started service1.service.
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -909,9 +973,9 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Apr 17 11:16:24 vm11 systemd[1]: Started sample3.service.
-  Apr 17 11:16:24 vm11 polkitd[709]: Unregistered Authentication Agent for unix-process:5190:667316 ...
-  Apr 17 11:16:24 vm11 sudo[5188]: pam_unix(sudo:session): session closed for user root
+  Apr 29 22:40:52 vm11 systemd[1]: Started service1.service.
+  Apr 29 22:40:52 vm11 polkitd[706]: Unregistered Authentication Agent for unix-process:31120:1115203 ...
+  Apr 29 22:40:52 vm11 sudo[31118]: pam_unix(sudo:session): session closed for user root
   --------------------------------------------------
   
   以下の確認に続く
@@ -944,7 +1008,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxr-x---+ 1 root systemd-journal 8.0M  4月 17 11:22 system.journal -> 現在はこのファイルにジャーナルが保存
+  -rwxr-x---+ 1 root systemd-journal 8.0M  4月 17 11:22 system.journal -> このファイルにジャーナルが保存
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -978,7 +1042,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 7844.595919] systemd-journald[526]: Received SIGTERM from PID 1 (systemd).
+  [11620.144594] systemd-journald[526]: Received SIGTERM from PID 1 (systemd).
   --------------------------------------------------
   
   vm11$ cd /var/log/journal/$(cat /etc/machine-id)
@@ -1001,8 +1065,8 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
   ## 各ステージのファイル
     01. /boot/grub/stage1
@@ -1010,37 +1074,27 @@
     03. /boot/grub/stage2
   
 [確認]
-  vm16$ cd /boot/grub
-  vm16$ ls -lh stage1 (ステージ1のファイルを確認)
+  vm16# cd $HOME
+  vm16# ls -lh /boot/grub
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-r--r--. 1 root root 512  1月 24 17:07 2020 stage1
-  --------------------------------------------------
-  
-  vm16$ cd /boot/grub
-  vm16$ ls -lh *_stage1_5 (ステージ1.5のファイルを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 14K  1月 24 17:07 2020 e2fs_stage1_5
-  -rw-r--r--. 1 root root 13K  1月 24 17:07 2020 fat_stage1_5
-  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 ffs_stage1_5
-  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 iso9660_stage1_5
-  -rw-r--r--. 1 root root 13K  1月 24 17:07 2020 jfs_stage1_5
-  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 minix_stage1_5
-  -rw-r--r--. 1 root root 15K  1月 24 17:07 2020 reiserfs_stage1_5
-  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 ufs2_stage1_5
-  -rw-r--r--. 1 root root 12K  1月 24 17:07 2020 vstafs_stage1_5
-  -rw-r--r--. 1 root root 14K  1月 24 17:07 2020 xfs_stage1_5
-  --------------------------------------------------
-  
-  vm16$ cd /boot/grub
-  vm16$ ls -lh stage2 (ステージ2のファイルを確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 124K  1月 24 17:07 2020 stage2
+  -rw-r--r--. 1 root root   63  4月 29 19:00 2023 device.map -> デバイス(hd0) = /dev/vda
+  -rw-r--r--. 1 root root  14K  4月 29 19:00 2023 e2fs_stage1_5
+  -rw-r--r--. 1 root root  13K  4月 29 19:00 2023 fat_stage1_5
+  -rw-r--r--. 1 root root  12K  4月 29 19:00 2023 ffs_stage1_5
+  -rw-------. 1 root root  830  4月 29 19:05 2023 grub.conf -> 設定ファイル
+  -rw-r--r--. 1 root root  12K  4月 29 19:00 2023 iso9660_stage1_5
+  -rw-r--r--. 1 root root  13K  4月 29 19:00 2023 jfs_stage1_5
+  lrwxrwxrwx. 1 root root   11  4月 29 19:00 2023 menu.lst -> ./grub.conf -> 設定ファイル
+  -rw-r--r--. 1 root root  12K  4月 29 19:00 2023 minix_stage1_5
+  -rw-r--r--. 1 root root  15K  4月 29 19:00 2023 reiserfs_stage1_5
+  -rw-r--r--. 1 root root 1.4K 11月 15 03:01 2010 splash.xpm.gz
+  -rw-r--r--. 1 root root  512  4月 29 19:00 2023 stage1
+  -rw-r--r--. 1 root root 124K  4月 29 19:00 2023 stage2
+  -rw-r--r--. 1 root root  12K  4月 29 19:00 2023 ufs2_stage1_5
+  -rw-r--r--. 1 root root  12K  4月 29 19:00 2023 vstafs_stage1_5
+  -rw-r--r--. 1 root root  14K  4月 29 19:00 2023 xfs_stage1_5
   --------------------------------------------------
   
   以下の確認に続く
@@ -1055,61 +1109,61 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd $HOME
-  vm16$ lsblk (ブロックデバイス確認)
+  vm16# cd $HOME
+  vm16# lsblk (ブロックデバイス確認)
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                         MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-  sr0                           11:0    1 1024M  0 rom  
-  vda                          252:0    0    9G  0 disk 
-  ├─vda1                     252:1    0  500M  0 part /boot
-  └─vda2                     252:2    0  8.5G  0 part 
-    ├─vg_vm16-lv_root (dm-0) 253:0    0  7.6G  0 lvm  /
-    └─vg_vm16-lv_swap (dm-1) 253:1    0  920M  0 lvm  [SWAP]
+  NAME                             MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                               11:0     1  1024M   0  rom   
+  vda                              252:0     0    20G   0  disk  
+   |-- vda1                        252:1     0  500M    0  part  /boot
+   |-- vda2                        252:2     0  19.5G   0  part  
+        |-- vg_vm16-lv_root (dm-0) 253:0     0  17.6G   0  lvm   /
+        |-- vg_vm16-lv_swap (dm-1) 253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
-  vm16$ cd /boot/grub
-  vm16$ grep -vE '^#' device.map (マッピングファイル確認)
+  vm16# cd $HOME
+  vm16# grep -vE '^#' /boot/grub/device.map (マッピングファイル確認)
   
   コマンドの実行結果
   --------------------------------------------------
   (hd0)  /dev/vda -> GRUB上では「/dev/vda」が「hd0」と表記
   --------------------------------------------------
   
-  vm16$ cd $HOME
-  vm16$ grep -vE '^#' /boot/grub/menu.lst (設定ファイルを確認)
+  vm16# cd $HOME
+  vm16# grep -vE '^#' /boot/grub/menu.lst (設定ファイルを確認)
   
   コマンドの実行結果
   --------------------------------------------------
   default=0
   timeout=5
-  splashimage=(hd0,0)/grub/splash.xpm.gz  // (hd0,0) = /dev/vda1 = /boot
+  splashimage=(hd0,0)/grub/splash.xpm.gz
   hiddenmenu
-  
-  title CentOS 6 (2.6.32-642.el6.x86_64)  // エントリ(0)
-    root (hd0,0)                          // (hd0,0) = /dev/vda1 = /boot
-      kernel                              // カーネル設定 -> 配下の設定は1行にまとめること
-        /vmlinuz-2.6.32-642.el6.x86_64    // カーネルイメージ
-        ro
-        root=/dev/mapper/vg_vm16-lv_root
-          rd_LVM_LV=vg_ch16/lv_swap
-          rd_NO_LUKS
-          rd_NO_MD
-          rd_LVM_LV=vg_ch16/lv_root
-          crashkernel=auto
-          KEYBOARDTYPE=pc
-          KEYTABLE=jp106
-          LANG=ja_JP.UTF-8
-          rd_NO_DM
-          rhgb
-          quiet
-          console=tty0 console=ttyS0,115200n8      // コンソール接続(仮想マシン作成時に追加)
-      initrd /initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク
+  title CentOS 6 (2.6.32-754.el6.x86_64)
+    root (hd0,0)                       -> 起動デバイス(hd0,0) = /dev/vda1 = /boot
+    kernel                             -> カーネル設定
+      /vmlinuz-2.6.32-754.el6.x86_64   -> イメージファイル
+      ro
+      root=/dev/mapper/vg_vm16-lv_root -> ルートファイルシステム
+      rd_LVM_LV=vg_vm16/lv_swap
+      rd_NO_LUKS
+      rd_NO_MD
+      crashkernel=auto
+      KEYBOARDTYPE=pc
+      KEYTABLE=jp106
+      LANG=ja_JP.UTF-8
+      rd_LVM_LV=vg_vm16/lv_root
+      rd_NO_DM
+      rhgb
+      quiet
+      console=tty0 console=ttyS0,115200n8  -> コンソール接続
+    initrd                                 -> 初期RAMディスク設定
+      /initramfs-2.6.32-754.el6.x86_64.img -> 初期RAMディスクファイル
   --------------------------------------------------
   
   以下の確認に続く
@@ -1124,55 +1178,50 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
 [確認]
-  vm16$ cd $HOME
-  vm16$ sudo grub (シェルを起動)
+  vm16# cd $HOME
+  vm16# grub (シェルを起動)
   
   コマンドの実行結果
   --------------------------------------------------
-  Probing devices to guess BIOS drives. This may take a long time.
-  GNU GRUB  version 0.97  (640K lower / 3072K upper memory)
-  
-  ...
-  
-  grub> ■ (シェルのプロンプト表示)
+  (プロンプト変化)
   --------------------------------------------------
-  
-  grub> 
-  grub> help (コマンド一覧を表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  grub> 
-  grub> root (hd0,0) (操作上の起点を設定)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem type is ext2fs, partition type 0x83
-  --------------------------------------------------
-  
-  grub> 
-  grub> cat (/boot)/grub/device.map (ファイル内容を表示)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (hd0)  /dev/vda -> GRUB上では「/dev/vda」が「hd0」と表記
-  --------------------------------------------------
-  
-  grub> 
-  grub> quit (シェルを終了)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  quit -> OSに戻る
-  --------------------------------------------------
-  
+    
+    grub> 
+    grub> help -> コマンド一覧を表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    grub> 
+    grub> root (hd0,0) -> 操作上の起点を設定 -> /dev/vda1 = /boot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem type is ext2fs, partition type 0x83
+    --------------------------------------------------
+    
+    grub> 
+    grub> cat (/boot)/grub/device.map -> ファイル内容を表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (hd0)  /dev/vda -> GRUB上では「/dev/vda」が「hd0」と表記
+    --------------------------------------------------
+    
+    grub> 
+    grub> quit (シェルを終了)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    quit -> OSに戻る
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1185,8 +1234,8 @@
   
   ## 使用マシン
     HOST : vm16
-    IPV4 : 192.168.122.16
-    MEMO : 仮想マシン(CentOS6) -> 今は作成不可のため以前の操作メモから抜粋
+    IPV4 : なし
+    MEMO : 仮想マシン -> CentOS6
   
   ## 英語キーボード(101)と日本語キーボード(106)の対応表(一部)
     [Shift] + [2] -> @ (106)
