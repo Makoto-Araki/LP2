@@ -1974,7 +1974,7 @@
     --------------------------------------------------
     user  nginx;
     worker_processes  auto;
-    error_log  /var/log/nginx/error.log notice; -> /var/log/nginx をホスト側と共有する必要がある
+    error_log  /var/log/nginx/error.log notice; -> ホスト側と共有
     pid  /var/run/nginx.pid;
     
     events {
@@ -1987,7 +1987,7 @@
       log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                         '$status $body_bytes_sent "$http_referer" '
                         '"$http_user_agent" "$http_x_forwarded_for"';
-      access_log  /var/log/nginx/access.log  main; -> /var/log/nginx をホスト側と共有する必要がある
+      access_log  /var/log/nginx/access.log  main; -> ホスト側と共有
       sendfile  on;
       keepalive_timeout  65;
       include /etc/nginx/conf.d/*.conf;
@@ -2011,7 +2011,7 @@
       listen  80;
       server_name  localhost;
       location / {
-        root  /usr/share/nginx/html; -> /usr/share/nginx/html をホスト側と共有する必要がある
+        root  /usr/share/nginx/html; -> ホスト側と共有
         index  index.html index.htm;
       }
       error_page  500 502 503 504  /50x.html;
@@ -2396,7 +2396,7 @@
     </Directory>
     
     # ドキュメントルート
-    DocumentRoot "/usr/local/apache2/htdocs" ->  /usr/local/apache2/htdocs をホスト側と共有する必要がある
+    DocumentRoot "/usr/local/apache2/htdocs" ->  ホスト側と共有
     
     <Directory "/usr/local/apache2/htdocs">
       Options Indexes FollowSymLinks
@@ -2412,13 +2412,13 @@
       Require all denied
     </Files>
     
-    ErrorLog /proc/self/fd/2 -> /proc/self/fd をホスト側と共有する必要がある
+    ErrorLog /proc/self/fd/2 -> ホスト側と共有は不可
     LogLevel warn
     
     <IfModule log_config_module>
       LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
       LogFormat "%h %l %u %t \"%r\" %>s %b" common
-      CustomLog /proc/self/fd/1 common -> /proc/self/fd をホスト側と共有する必要がある
+      CustomLog /proc/self/fd/1 common -> ホスト側と共有は不可
       <IfModule logio_module>
         LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
       </IfModule>
@@ -2545,18 +2545,18 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  07b5609d2d3342ec0410e6f3edd9937e3b5af6a69cdce1eac4b8e5ac06c592a7
   --------------------------------------------------
   
   # cd $HOME
-  # mkdir -p container/nginx01 -> コンテナ用のディレクトリ作成
+  # mkdir -p container/httpd01 -> コンテナ用のディレクトリ作成
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  # cd $HOME/container/nginx01
+  # cd $HOME/container/httpd01
   # mkdir logs docs
   
   コマンドの実行結果
@@ -2564,7 +2564,7 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  # cd $HOME/container/nginx01
+  # cd $HOME/container/httpd01
   # vi docs/index.html
   
   コマンドの実行結果
@@ -2580,24 +2580,23 @@
   </html>
   --------------------------------------------------
   
-  # cd $HOME/container/nginx01
+  # cd $HOME/container/httpd01
   # podman run
-  > -i                                 // キー入力有効
-  > -t                                 // シェルプロンプト表示
-  > -d                                 // デタッチモード
-  > -p 8080:80                         // ホスト側 : コンテナ -> ポート番号
-  > -v ./docs:/usr/share/nginx/html:Z  // ホスト側 : コンテナ -> コンテンツ
-  > -v ./logs:/var/log/nginx:Z         // ホスト側 : コンテナ -> ログ出力先
-  > --name nginx01                     // コンテナ名
-  > --hostname nginx01                 // ホスト名
-  > nginx:latest                       // イメージ名
+  > -i                                     // キー入力有効
+  > -t                                     // シェルプロンプト表示
+  > -d                                     // デタッチモード
+  > -p 8080:80                             // ホスト側 : コンテナ -> ポート番号
+  > -v ./docs:/usr/local/apache2/htdocs:Z  // ホスト側 : コンテナ -> コンテンツ
+  > --name httpd01                         // コンテナ名
+  > --hostname httpd01                     // ホスト名
+  > httpd:latest                           // イメージ名
   
   コマンドの実行結果
   --------------------------------------------------
-  7856e2e069d49c07b5c1fa4abc73b7db8bae183ff4ee4075aa5177cf908b32ab
+  41ad5299a7a7aca222885e253feca70cc4d48e199e9bbf90dda62d309a42e429
   --------------------------------------------------
   
-  # cd $HOME/container/nginx01
+  # cd $HOME/container/httpd01
   # curl localhost:8080
   
   コマンドの実行結果
@@ -2613,54 +2612,20 @@
   </html>
   --------------------------------------------------
   
-  # cd $HOME/container/nginx01
-  # ls -lh logs
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root  90  4月 28 07:56 access.log -> アクセスログ
-  -rw-r--r--. 1 root root 632  4月 28 07:55 error.log -> エラーログ
-  --------------------------------------------------
-  
-  # cd $HOME/container/nginx01
-  # cat logs/access.log
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10.88.0.1 - - [27/Apr/2023:22:56:48 +0000] "GET / HTTP/1.1" 200 107 "-" "curl/7.61.1" "-"
-  --------------------------------------------------
-  
-  # cd $HOME/container/nginx01
-  # cat logs/error.log
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  2023/04/27 22:55:56 [notice] 1#1: using the "epoll" event method
-  2023/04/27 22:55:56 [notice] 1#1: nginx/1.23.4
-  2023/04/27 22:55:56 [notice] 1#1: built by gcc 10.2.1 20210110 (Debian 10.2.1-6) 
-  2023/04/27 22:55:56 [notice] 1#1: OS: Linux 4.18.0-425.19.2.el8_7.x86_64
-  2023/04/27 22:55:56 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
-  2023/04/27 22:55:56 [notice] 1#1: start worker processes
-  2023/04/27 22:55:56 [notice] 1#1: start worker process 28
-  2023/04/27 22:55:56 [notice] 1#1: start worker process 29
-  2023/04/27 22:55:56 [notice] 1#1: start worker process 30
-  2023/04/27 22:55:56 [notice] 1#1: start worker process 31
-  --------------------------------------------------
-  
-  # cd $HOME/container/nginx01
-  # podman stop nginx01
+  # cd $HOME/container/httpd01
+  # podman stop httpd01
   
   コマンドの実行結果
   --------------------------------------------------
   nginx01
   --------------------------------------------------
   
-  # cd $HOME/container/nginx01
-  # podman rm nginx01
+  # cd $HOME/container/httpd01
+  # podman rm httpd01
   
   コマンドの実行結果
   --------------------------------------------------
-  7856e2e069d49c07b5c1fa4abc73b7db8bae183ff4ee4075aa5177cf908b32ab
+  41ad5299a7a7aca222885e253feca70cc4d48e199e9bbf90dda62d309a42e429
   --------------------------------------------------
   
   以下の確認に続く
