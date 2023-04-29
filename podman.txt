@@ -2011,7 +2011,7 @@
       listen  80;
       server_name  localhost;
       location / {
-        root  /usr/share/nginx/html; -> ホスト側からコンテナにHTMLファイルをコピーする
+        root  /usr/share/nginx/html; -> /usr/share/nginx/html をホスト側と共有する必要がある
         index  index.html index.htm;
       }
       error_page  500 502 503 504  /50x.html;
@@ -2281,141 +2281,208 @@
   (プロンプト変化) -> アタッチモードでコンテナ内部にログインした状態から始まる
   --------------------------------------------------
     
-    root@httpd01:/#  
-    root@nginx01:/# whoami
+    root@httpd01:/usr/local/apache2#  
+    root@httpd01:/usr/local/apache2# whoami
     
     コマンドの実行結果
     --------------------------------------------------
     root
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# pwd
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# pwd
     
     コマンドの実行結果
     --------------------------------------------------
-    / -> ルートディレクトリ
+    /usr/local/apache2
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# hostname
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# hostname
     
     コマンドの実行結果
     --------------------------------------------------
-    nginx01
+    httpd01
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# ls -lh
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# ls -lh
     
     コマンドの実行結果
     --------------------------------------------------
-    drwxr-xr-x.   2 root root 4.0K Apr 11 00:00 bin
-    drwxr-xr-x.   2 root root    6 Dec  9 19:15 boot
-    drwxr-xr-x.   5 root root  360 Apr 27 13:27 dev
-    drwxr-xr-x.   1 root root   41 Apr 12 08:51 docker-entrypoint.d
-    -rwxrwxr-x.   1 root root 1.6K Apr 12 08:51 docker-entrypoint.sh
-    drwxr-xr-x.   1 root root   31 Apr 27 13:27 etc
-    drwxr-xr-x.   2 root root    6 Dec  9 19:15 home
-    drwxr-xr-x.   1 root root   45 Apr 11 00:00 lib
-    drwxr-xr-x.   2 root root   34 Apr 11 00:00 lib64
-    drwxr-xr-x.   2 root root    6 Apr 11 00:00 media
-    drwxr-xr-x.   2 root root    6 Apr 11 00:00 mnt
-    drwxr-xr-x.   2 root root    6 Apr 11 00:00 opt
-    dr-xr-xr-x. 295 root root    0 Apr 27 13:27 proc
-    drwx------.   2 root root   37 Apr 11 00:00 root
-    drwxr-xr-x.   1 root root   42 Apr 27 13:27 run
-    drwxr-xr-x.   2 root root 4.0K Apr 11 00:00 sbin
-    drwxr-xr-x.   2 root root    6 Apr 11 00:00 srv
-    dr-xr-xr-x.  13 root root    0 Apr 27 13:12 sys
-    drwxrwxrwt.   1 root root    6 Apr 12 08:51 tmp
-    drwxr-xr-x.   1 root root   66 Apr 11 00:00 usr
-    drwxr-xr-x.   1 root root   41 Apr 11 00:00 var
+    drwxr-xr-x. 2 root root 4.0K Apr 12 01:47 bin
+    drwxr-xr-x. 2 root root  167 Apr 12 01:47 build
+    drwxr-xr-x. 2 root root   78 Apr 12 01:47 cgi-bin
+    drwxr-xr-x. 4 root root   84 Apr 12 01:47 conf
+    drwxr-xr-x. 3 root root 4.0K Apr 12 01:47 error
+    drwxr-xr-x. 2 root root   24 Apr 12 01:47 htdocs
+    drwxr-xr-x. 3 root root 8.0K Apr 12 01:47 icons
+    drwxr-xr-x. 2 root root 4.0K Apr 12 01:47 include
+    drwxr-xr-x. 2 root root    6 Apr 12 01:47 logs
+    drwxr-xr-x. 2 root root 8.0K Apr 12 01:47 modules
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# find / -name nginx.conf -> 設定ファイルの検索
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# find ./ -name httpd.conf -> 設定ファイルの検索
     
     コマンドの実行結果
     --------------------------------------------------
-    /etc/nginx/nginx.conf
+    ./conf/httpd.conf -> こちらの設定ファイルを編集
+    ./conf/original/httpd.conf
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# ls -lh /etc/nginx -> ディレクトリ調査
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# ls -lh conf -> ディレクトリ調査
     
     コマンドの実行結果
     --------------------------------------------------
-    drwxr-xr-x. 2 root root   26 Apr 12 08:51 conf.d
-    -rw-r--r--. 1 root root 1007 Mar 28 15:01 fastcgi_params
-    -rw-r--r--. 1 root root 5.3K Mar 28 15:01 mime.types
-    lrwxrwxrwx. 1 root root   22 Mar 28 16:49 modules -> /usr/lib/nginx/modules
-    -rw-r--r--. 1 root root  648 Mar 28 16:49 nginx.conf
-    -rw-r--r--. 1 root root  636 Mar 28 15:01 scgi_params
-    -rw-r--r--. 1 root root  664 Mar 28 15:01 uwsgi_params
+    drwxr-xr-x. 2 root root 4.0K Apr 12 01:47 extra
+    -rw-r--r--. 1 root root  21K Apr 12 01:47 httpd.conf
+    -rw-r--r--. 1 root root  13K Apr 12 01:47 magic
+    -rw-r--r--. 1 root root  60K Apr 12 01:47 mime.types
+    drwxr-xr-x. 3 root root   37 Apr 12 01:47 original
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# cat /etc/nginx/nginx.conf -> 設定ファイル
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# cat conf/httpd.conf | grep -vE '^#|^$|^.*#' -> 設定ファイル
     
     コマンドの実行結果
     --------------------------------------------------
-    user  nginx;
-    worker_processes  auto;
-    error_log  /var/log/nginx/error.log notice; -> /var/log/nginx をホスト側と共有する必要がある
-    pid  /var/run/nginx.pid;
+    ServerRoot "/usr/local/apache2"
+    Listen 80
+    LoadModule mpm_event_module modules/mod_mpm_event.so
+    LoadModule authn_file_module modules/mod_authn_file.so
+    LoadModule authn_core_module modules/mod_authn_core.so
+    LoadModule authz_host_module modules/mod_authz_host.so
+    LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+    LoadModule authz_user_module modules/mod_authz_user.so
+    LoadModule authz_core_module modules/mod_authz_core.so
+    LoadModule access_compat_module modules/mod_access_compat.so
+    LoadModule auth_basic_module modules/mod_auth_basic.so
+    LoadModule reqtimeout_module modules/mod_reqtimeout.so
+    LoadModule filter_module modules/mod_filter.so
+    LoadModule mime_module modules/mod_mime.so
+    LoadModule log_config_module modules/mod_log_config.so
+    LoadModule env_module modules/mod_env.so
+    LoadModule headers_module modules/mod_headers.so
+    LoadModule setenvif_module modules/mod_setenvif.so
+    LoadModule version_module modules/mod_version.so
+    LoadModule unixd_module modules/mod_unixd.so
+    LoadModule status_module modules/mod_status.so
+    LoadModule autoindex_module modules/mod_autoindex.so
     
-    events {
-      worker_connections  1024;
-    }
+    <IfModule !mpm_prefork_module>
+      # 処理なし
+    </IfModule>
     
-    http {
-      include  /etc/nginx/mime.types;
-      default_type  application/octet-stream;
-      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                        '$status $body_bytes_sent "$http_referer" '
-                        '"$http_user_agent" "$http_x_forwarded_for"';
-      access_log  /var/log/nginx/access.log  main; -> /var/log/nginx をホスト側と共有する必要がある
-      sendfile  on;
-      keepalive_timeout  65;
-      include /etc/nginx/conf.d/*.conf;
-    }
+    <IfModule mpm_prefork_module>
+      # 処理なし
+    </IfModule>
+    
+    LoadModule dir_module modules/mod_dir.so
+    LoadModule alias_module modules/mod_alias.so
+    
+    <IfModule unixd_module>
+      User www-data
+      Group www-data
+    </IfModule>
+    
+    # 管理者メールアドレス
+    ServerAdmin you@example.com
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    # ドキュメントルート
+    DocumentRoot "/usr/local/apache2/htdocs" ->  /usr/local/apache2/htdocs をホスト側と共有する必要がある
+    
+    <Directory "/usr/local/apache2/htdocs">
+      Options Indexes FollowSymLinks
+      AllowOverride None
+      Require all granted
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    ErrorLog /proc/self/fd/2 -> /proc/self/fd をホスト側と共有する必要がある
+    LogLevel warn
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog /proc/self/fd/1 common -> /proc/self/fd をホスト側と共有する必要がある
+      <IfModule logio_module>
+        LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+      </IfModule>
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
+    </IfModule>
+    
+    <IfModule cgid_module>
+      # 処理なし
+    </IfModule>
+    
+    <Directory "/usr/local/apache2/cgi-bin">
+      AllowOverride None
+      Options None
+      Require all granted
+    </Directory>
+    
+    <IfModule headers_module>
+      RequestHeader unset Proxy early
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig conf/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+    </IfModule>
+    
+    <IfModule proxy_html_module>
+      Include conf/extra/proxy-html.conf
+    </IfModule>
+    
+    <IfModule ssl_module>
+      SSLRandomSeed startup builtin
+      SSLRandomSeed connect builtin
+    </IfModule>
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# ls -lh /etc/nginx/conf.d -> ディレクトリ調査
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# ls -lh conf/extra -> ディレクトリ調査
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r--. 1 root root 1.1K Mar 28 16:49 default.conf
+    -rw-r--r--. 1 root root 2.9K Apr 12 01:47 httpd-autoindex.conf
+    -rw-r--r--. 1 root root 1.8K Apr 12 01:47 httpd-dav.conf
+    -rw-r--r--. 1 root root 2.9K Apr 12 01:47 httpd-default.conf
+    -rw-r--r--. 1 root root 1.1K Apr 12 01:47 httpd-info.conf
+    -rw-r--r--. 1 root root 5.0K Apr 12 01:47 httpd-languages.conf
+    -rw-r--r--. 1 root root 1.4K Apr 12 01:47 httpd-manual.conf
+    -rw-r--r--. 1 root root 4.4K Apr 12 01:47 httpd-mpm.conf
+    -rw-r--r--. 1 root root 2.2K Apr 12 01:47 httpd-multilang-errordoc.conf
+    -rw-r--r--. 1 root root  13K Apr 12 01:47 httpd-ssl.conf
+    -rw-r--r--. 1 root root  694 Apr 12 01:47 httpd-userdir.conf
+    -rw-r--r--. 1 root root 1.5K Apr 12 01:47 httpd-vhosts.conf
+    -rw-r--r--. 1 root root 3.1K Apr 12 01:47 proxy-html.conf
     --------------------------------------------------
     
-    root@nginx01:/# 
-    root@nginx01:/# cat /etc/nginx/conf.d/default.conf | grep -vE '^#|^$|^.*#' -> 設定ファイル
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    server {
-      listen  80;
-      server_name  localhost;
-      location / {
-        root  /usr/share/nginx/html; -> ホスト側からコンテナにHTMLファイルをコピーする
-        index  index.html index.htm;
-      }
-      error_page  500 502 503 504  /50x.html;
-      location = /50x.html {
-        root  /usr/share/nginx/html;
-      }
-    }
-    --------------------------------------------------
-    
-    root@nginx01:/# 
-    root@nginx01:/# cat /usr/share/nginx/html/index.html -> HTMLファイル
+    root@httpd01:/usr/local/apache2# 
+    root@httpd01:/usr/local/apache2# cat htdocs/index.html -> HTMLファイル
     
     コマンドの実行結果
     --------------------------------------------------
-    <!DOCTYPE html>
-    ...
+    <html><body><h1>It works!</h1></body></html>
     --------------------------------------------------
     
     root@nginx01:/# 
