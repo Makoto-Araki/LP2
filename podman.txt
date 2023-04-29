@@ -9,6 +9,7 @@
 [08] 練習 - 08
 [09] 練習 - 09
 [10] 練習 - 10
+[11] 練習 - 11
 ================================================================================
 [01]
   練習 - 01
@@ -1893,6 +1894,394 @@
   --------------------------------------------------
     
     root@nginx01:/#  
+    root@nginx01:/# whoami
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    root
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    / -> ルートディレクトリ
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# hostname
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx01
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# ls -lh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxr-xr-x.   2 root root 4.0K Apr 11 00:00 bin
+    drwxr-xr-x.   2 root root    6 Dec  9 19:15 boot
+    drwxr-xr-x.   5 root root  360 Apr 27 13:27 dev
+    drwxr-xr-x.   1 root root   41 Apr 12 08:51 docker-entrypoint.d
+    -rwxrwxr-x.   1 root root 1.6K Apr 12 08:51 docker-entrypoint.sh
+    drwxr-xr-x.   1 root root   31 Apr 27 13:27 etc
+    drwxr-xr-x.   2 root root    6 Dec  9 19:15 home
+    drwxr-xr-x.   1 root root   45 Apr 11 00:00 lib
+    drwxr-xr-x.   2 root root   34 Apr 11 00:00 lib64
+    drwxr-xr-x.   2 root root    6 Apr 11 00:00 media
+    drwxr-xr-x.   2 root root    6 Apr 11 00:00 mnt
+    drwxr-xr-x.   2 root root    6 Apr 11 00:00 opt
+    dr-xr-xr-x. 295 root root    0 Apr 27 13:27 proc
+    drwx------.   2 root root   37 Apr 11 00:00 root
+    drwxr-xr-x.   1 root root   42 Apr 27 13:27 run
+    drwxr-xr-x.   2 root root 4.0K Apr 11 00:00 sbin
+    drwxr-xr-x.   2 root root    6 Apr 11 00:00 srv
+    dr-xr-xr-x.  13 root root    0 Apr 27 13:12 sys
+    drwxrwxrwt.   1 root root    6 Apr 12 08:51 tmp
+    drwxr-xr-x.   1 root root   66 Apr 11 00:00 usr
+    drwxr-xr-x.   1 root root   41 Apr 11 00:00 var
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# find / -name nginx.conf -> 設定ファイルの検索
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /etc/nginx/nginx.conf
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# ls -lh /etc/nginx -> ディレクトリ調査
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxr-xr-x. 2 root root   26 Apr 12 08:51 conf.d
+    -rw-r--r--. 1 root root 1007 Mar 28 15:01 fastcgi_params
+    -rw-r--r--. 1 root root 5.3K Mar 28 15:01 mime.types
+    lrwxrwxrwx. 1 root root   22 Mar 28 16:49 modules -> /usr/lib/nginx/modules
+    -rw-r--r--. 1 root root  648 Mar 28 16:49 nginx.conf
+    -rw-r--r--. 1 root root  636 Mar 28 15:01 scgi_params
+    -rw-r--r--. 1 root root  664 Mar 28 15:01 uwsgi_params
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# cat /etc/nginx/nginx.conf -> 設定ファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user  nginx;
+    worker_processes  auto;
+    error_log  /var/log/nginx/error.log notice; -> /var/log/nginx をホスト側と共有する必要がある
+    pid  /var/run/nginx.pid;
+    
+    events {
+      worker_connections  1024;
+    }
+    
+    http {
+      include  /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+      access_log  /var/log/nginx/access.log  main; -> /var/log/nginx をホスト側と共有する必要がある
+      sendfile  on;
+      keepalive_timeout  65;
+      include /etc/nginx/conf.d/*.conf;
+    }
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# ls -lh /etc/nginx/conf.d -> ディレクトリ調査
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--. 1 root root 1.1K Mar 28 16:49 default.conf
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# cat /etc/nginx/conf.d/default.conf | grep -vE '^#|^$|^.*#' -> 設定ファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    server {
+      listen  80;
+      server_name  localhost;
+      location / {
+        root  /usr/share/nginx/html; -> ホスト側からコンテナにHTMLファイルをコピーする
+        index  index.html index.htm;
+      }
+      error_page  500 502 503 504  /50x.html;
+      location = /50x.html {
+        root  /usr/share/nginx/html;
+      }
+    }
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# cat /usr/share/nginx/html/index.html -> HTMLファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <!DOCTYPE html>
+    ...
+    --------------------------------------------------
+    
+    root@nginx01:/# 
+    root@nginx01:/# [ Ctrl + P ] + [ Ctrl + Q ] -> デタッチ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (プロンプトが元に戻る)
+    --------------------------------------------------
+    
+  # cd $HOME
+  # podman stop nginx01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx01
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman rm nginx01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  237662ede0529863e3068cc59f3e837911beb28b75dfeaf3bc41d38a3de22fd9
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman run
+  > -i                  // キー入力有効
+  > -t                  // シェルプロンプト表示
+  > -d                  // デタッチモード
+  > -p 8080:80          // ホスト側 : コンテナ
+  > --name nginx01      // コンテナ名
+  > --hostname nginx01  // ホスト名
+  > nginx:latest        // イメージ名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  57c9b8f85aba767cb0a1d04dd0ee4d72d54ea6c9ab448a4645674d120bc31931
+  --------------------------------------------------
+  
+  # cd $HOME
+  # curl localhost:8080
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテンツ表示
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman stop nginx01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx01
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman rm nginx01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  57c9b8f85aba767cb0a1d04dd0ee4d72d54ea6c9ab448a4645674d120bc31931
+  --------------------------------------------------
+  
+  # cd $HOME
+  # mkdir -p container/nginx01 -> コンテナ用のディレクトリ作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # mkdir logs docs
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # vi docs/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <!DOCTYPE html>
+  <html>
+  <head>
+  <title>Hello World</title>
+  </head>
+  <body>
+  <p>Hello World</p>
+  </body>
+  </html>
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # podman run
+  > -i                                 // キー入力有効
+  > -t                                 // シェルプロンプト表示
+  > -d                                 // デタッチモード
+  > -p 8080:80                         // ホスト側 : コンテナ -> ポート番号
+  > -v ./docs:/usr/share/nginx/html:Z  // ホスト側 : コンテナ -> コンテンツ
+  > -v ./logs:/var/log/nginx:Z         // ホスト側 : コンテナ -> ログ出力先
+  > --name nginx01                     // コンテナ名
+  > --hostname nginx01                 // ホスト名
+  > nginx:latest                       // イメージ名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  7856e2e069d49c07b5c1fa4abc73b7db8bae183ff4ee4075aa5177cf908b32ab
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # curl localhost:8080
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <!DOCTYPE html>
+  <html>
+  <head>
+  <title>Hello World</title>
+  </head>
+  <body>
+  <p>Hello World</p>
+  </body>
+  </html>
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # ls -lh logs
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root  90  4月 28 07:56 access.log -> アクセスログ
+  -rw-r--r--. 1 root root 632  4月 28 07:55 error.log -> エラーログ
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # cat logs/access.log
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  10.88.0.1 - - [27/Apr/2023:22:56:48 +0000] "GET / HTTP/1.1" 200 107 "-" "curl/7.61.1" "-"
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # cat logs/error.log
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  2023/04/27 22:55:56 [notice] 1#1: using the "epoll" event method
+  2023/04/27 22:55:56 [notice] 1#1: nginx/1.23.4
+  2023/04/27 22:55:56 [notice] 1#1: built by gcc 10.2.1 20210110 (Debian 10.2.1-6) 
+  2023/04/27 22:55:56 [notice] 1#1: OS: Linux 4.18.0-425.19.2.el8_7.x86_64
+  2023/04/27 22:55:56 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+  2023/04/27 22:55:56 [notice] 1#1: start worker processes
+  2023/04/27 22:55:56 [notice] 1#1: start worker process 28
+  2023/04/27 22:55:56 [notice] 1#1: start worker process 29
+  2023/04/27 22:55:56 [notice] 1#1: start worker process 30
+  2023/04/27 22:55:56 [notice] 1#1: start worker process 31
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # podman stop nginx01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx01
+  --------------------------------------------------
+  
+  # cd $HOME/container/nginx01
+  # podman rm nginx01
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  7856e2e069d49c07b5c1fa4abc73b7db8bae183ff4ee4075aa5177cf908b32ab
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[11]
+  練習 - 11
+  
+[内容]
+  ## 作業内容
+    コンテナ「httpd」を使用してウェブページを表示
+  
+  ## ホスト
+    HOST : localhost
+    IPV4 : 192.168.1.4
+    MEMO : 自宅ノートパソコン
+  
+  ## コンテナ
+    HOST : httpd01
+    IPV4 : 自動採番
+    MEMO : イメージ「httpd:latest」を元に生成
+  
+[確認]
+  # cd $HOME
+  # podman search --filter=is-official=true httpd -> 公式のみ検索
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                     DESCRIPTION
+  docker.io/library/httpd  The Apache HTTP Server Project
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman pull httpd -> docker.io/library/httpd:latest を選択
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying to pull docker.io/library/httpd:latest...
+  Getting image source signatures
+  Copying blob 757908175415 done  
+  Copying blob 2d29d3837df5 done  
+  Copying blob e78016c4ba87 done  
+  Copying blob 26c5c85e47da skipped: already exists  
+  Copying blob 2483414a5e59 done  
+  Copying config 4b7fc736cb done  
+  Writing manifest to image destination
+  Storing signatures
+  4b7fc736cb48352ef2c989d63c74bed704fc5a0cd43eb5c7c7cf9ab7faf891d1
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman images
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  REPOSITORY                       TAG     IMAGE ID      CREATED       SIZE
+  docker.io/library/nginx          latest  6efc10a0510f  2 weeks ago   147 MB
+  docker.io/library/httpd          latest  4b7fc736cb48  2 weeks ago   150 MB
+  docker.io/rockylinux/rockylinux  8       e7368aa563ff  2 months ago  203 MB
+  --------------------------------------------------
+  
+  # cd $HOME
+  # podman run
+  > -i                  // キー入力有効
+  > -t                  // シェルプロンプト表示
+  > --name httpd01      // コンテナ名
+  > --hostname httpd01  // ホスト名
+  > httpd:latest        // イメージ名
+  > /bin/bash           // シェル指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化) -> アタッチモードでコンテナ内部にログインした状態から始まる
+  --------------------------------------------------
+    
+    root@httpd01:/#  
     root@nginx01:/# whoami
     
     コマンドの実行結果
