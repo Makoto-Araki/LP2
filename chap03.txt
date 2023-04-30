@@ -1215,7 +1215,7 @@
     --------------------------------------------------
     
     grub> 
-    grub> quit (シェルを終了)
+    grub> quit -> シェル終了
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1237,121 +1237,90 @@
     IPV4 : なし
     MEMO : 仮想マシン -> CentOS6
   
-  ## 英語キーボード(101)と日本語キーボード(106)の対応表(一部)
-              [^] -> = (106)
-              [:] -> ' (106)
-              [@] -> [ (106)
-              [[] -> ] (106)
-    [Shift] + [2] -> @ (106)
-    [Shift] + [7] -> & (106)
-    [Shift] + [8] -> * (106)
-    [Shift] + [9] -> ( (106)
-    [Shift] + [0] -> ) (106)
-    [Shift] + [^] -> + (106)
-    [Shift] + [;] -> : (106)
-    [Shift] + [@] -> { (106)
-    [Shift] + [[] -> } (106)
+  ## 日本語キーボード(106)と英語キーボード(101)の対応表 -> 英字は同じ
+    (106) 1         -> 1 (101)
+    (106) Shift + 1 -> ! (101)
+    (106) 2         -> 2 (101)
+    (106) Shift + 2 -> @ (101)
+    (106) 3         -> 3 (101)
+    (106) Shift + 3 -> # (101)
+    (106) 4         -> 4 (101)
+    (106) Shift + 4 -> $ (101)
+    (106) 5         -> 5 (101)
+    (106) Shift + 5 -> % (101)
+    (106) 6         -> 6 (101)
+    (106) Shift + 6 -> ^ (101)
+    (106) 7         -> 7 (101)
+    (106) Shift + 7 -> & (101)
+    (106) 8         -> 8 (101)
+    (106) Shift + 8 -> * (101)
+    (106) 9         -> 9 (101)
+    (106) Shift + 9 -> ( (101)
+    (106) 0         -> 0 (101)
+    (106) Shift + 0 -> ) (101)
+    (106) -         -> - (101)
+    (106) Shift + - -> _ (101)
+    (106) ^         -> = (101)
+    (106) Shift + ^ -> + (101)
+    (106) \         ->   (101) 該当キーなし
+    (106) Shift + \ ->   (101) 該当キーなし
+    (106) @         -> [ (101)
+    (106) Shift + @ -> { (101)
+    (106) [         -> ] (101)
+    (106) Shift + [ -> } (101)
+    (106) ;         -> ; (101)
+    (106) Shift + ; -> : (101)
+    (106) :         -> ' (101)
+    (106) Shift + : -> " (101)
+    (106) ]         -> \ (101)
+    (106) Shift + ] -> | (101)
+    (106) ,         -> , (101)
+    (106) Shift + , -> < (101)
+    (106) .         -> . (101)
+    (106) Shift + . -> > (101)
+    (106) /         -> / (101)
+    (106) Shift + / -> ? (101)
+    (106) \         ->   (101) 該当キーなし
+    (106) Shift + \ ->   (101) 該当キーなし
   
 [確認]
   vm16# cd $HOME
-  vm16# vi /boot/grub/menu.lst (設定ファイル編集)
+  vm16# shutdown -h now (シャットダウン)
   
   コマンドの実行結果
   --------------------------------------------------
-  default=0
-  timeout=5
-  splashimage=(hd0,0)/grub/splash.xpm.gz
-  hiddenmenu
-  
-  # キー設定追加
-  setkey at bracketleft
-  setkey doublequote at
-  setkey ampersand caret
-  setkey quote ampersand
-  setkey parenleft asterisk
-  setkey parenright parenleft
-  setkey tilde parenright
-  setkey equal underscore
-  setkey plus colon
-  setkey colon quote
-  setkey asterisk doublequote
-  setkey bracketleft bracketright
-  setkey braceleft braceright
-  setkey bracketright backslash
-  setkey braceright bar
-  setkey backslash equal
-  setkey underscore plus
-  setkey backslash bracketleft
-  setkey bar braceleft
-  setkey F9 equal
-  setkey F10 bracketleft
-  setkey equal k73
-  setkey bracketleft k7d
-  
-  title CentOS 6 (2.6.32-754.el6.x86_64)
-    root (hd0,0)                       -> 起動デバイス(hd0,0) = /dev/vda1 = /boot
-    kernel                             -> カーネル設定
-      /vmlinuz-2.6.32-754.el6.x86_64   -> イメージファイル
-      ro
-      root=/dev/mapper/vg_vm16-lv_root -> ルートファイルシステム
-      rd_LVM_LV=vg_vm16/lv_swap
-      rd_NO_LUKS
-      rd_NO_MD
-      crashkernel=auto
-      KEYBOARDTYPE=pc
-      KEYTABLE=jp106
-      LANG=ja_JP.UTF-8
-      rd_LVM_LV=vg_vm16/lv_root
-      rd_NO_DM
-      rhgb
-      quiet
-      console=tty0 console=ttyS0,115200n8  -> コンソール接続
-    initrd                                 -> 初期RAMディスク設定
-      /initramfs-2.6.32-754.el6.x86_64.img -> 初期RAMディスクファイル
+  (省略)
   --------------------------------------------------
   
-  vm16# cd $HOME
-  vm16# shutdown -r now (再起動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> システム選択時に「e」キーから「c」キーの順番でGRUBシェル起動
-  --------------------------------------------------
+  ==================================================
+  仮想端末ではシェル起動が上手くいかず、仮想マシンマネージャーから起動
+  ==================================================
+
+  > (システム選択時にキー「e」から「c」の順番で起動)
+  > シェル起動
     
-    grub> (操作上の起点を設定)
-    grub> root (hd0,0) -> (hd0,0) = /dev/vda1 = /boot
+    grub> (操作の起点)
+    grub> root (hd0,0)
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    grub> (コマンド引数にカーネルイメージと起動デバイスを指定)
+    grub> (カーネルを指定)
     grub> kernel
-        > /vmlinuz-2.6.32-642.el6.x86_64    // イメージファイル
+        > /vmlinuz-2.6.32-754.el6.x86_64
         > ro
-        > root=/dev/mapper/vg_vm16-lv_root  // ルートファイルシステム
-        > rd_LVM_LV=vg_vm16/lv_swap
-      rd_NO_LUKS
-      rd_NO_MD
-      crashkernel=auto
-      KEYBOARDTYPE=pc
-      KEYTABLE=jp106
-      LANG=ja_JP.UTF-8
-      rd_LVM_LV=vg_vm16/lv_root
-      rd_NO_DM
-      rhgb
-      quiet
-      console=tty0 console=ttyS0,115200n8  -> コンソール接続
+        > root=/dev/mapper/vg_vm16-lv_root
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    grub> (コマンド引数に初期RAMディスクを指定)
+    grub> (初期RAMディスクを指定)
     grub> initrd
-        > /initramfs-2.6.32-642.el6.x86_64.img  // 初期RAMディスク
+        > /initramfs-2.6.32-754.el6.x86_64.img
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1363,7 +1332,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) → ログインプロンプトが表示
+    (省略) -> ログインプロンプトが表示
     --------------------------------------------------
   
   以下の確認に続く
