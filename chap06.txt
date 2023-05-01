@@ -24,7 +24,7 @@
   
   ## 使用マシン
     HOST : localhost
-    IPV4 : 192.168.1.4
+    IPV4 : DHCP
     MEMO : ホスト
   
   ## 命名規則1
@@ -68,7 +68,7 @@
   
   ## 使用マシン
     HOST : localhost
-    IPV4 : 192.168.1.4
+    IPV4 : DHCP
     MEMO : ホスト
   
   ## 命名規則1
@@ -716,15 +716,6 @@
   Destination     Gateway   Genmask         Flags   MSS   Window   irtt   Iface
   default         gateway   0.0.0.0         UG        0        0      0   eth0
   192.168.122.0   0.0.0.0   255.255.255.0   U         0        0      0   eth0
-  
-  Destination  : 宛先ネットワークまたは宛先ホスト
-  Gateway      : ゲートウェイアドレス(*は未設定)
-  Genmask      : 宛先サブネットマスク(0.0.0.0=デフォルトゲートウェイ、255.255.255.0=ネットワーク、255.255.255.255=ホスト)
-  Flags        : U(有効な経路), H(ホスト), G(ゲートウェイ使用), !(無効な経路)
-  MSS          : 不明
-  Window       : 不明
-  irtt         : 不明
-  Iface        : 経路を使用するNIC
   --------------------------------------------------
     
   以下の確認に続く
@@ -805,7 +796,7 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ vi script05.sh (ポートスキャンのツール制作)
+  vm11$ vi script05.sh (ポートスキャンのツール作成)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -880,7 +871,7 @@
   Ncat: Version 7.50 ( https://nmap.org/ncat )
   Ncat: Connection to 127.0.0.1 failed: Connection refused.
   Ncat: Trying next address...
-  Ncat: Connection refused. -> ポートを開いても受け取るプログラムが無いからダメなのか？
+  Ncat: Connection refused. -> ポート開放しても受取プログラムが無いため失敗する模様
   
   localhost - 15002
   Ncat: Version 7.50 ( https://nmap.org/ncat )
@@ -1332,7 +1323,7 @@
   
   ## 使用マシン
     HOST : localhost
-    IPV4 : 192.168.1.4
+    IPV4 : DHCP
     MEMO : ホスト
   
   ## アクセスポイント(家庭用ルーター)

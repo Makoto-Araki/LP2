@@ -375,13 +375,13 @@
     MEMO : 仮想マシン
   
   ## コマンド(mount)
-    mount -a      // 設定ファイル(/etc/fstab)の全ファイルシステムをマウント
-    mount -o XX   // マウントオプション(XX)を指定
-    mount -U XX   // UUID(XX)を指定
-    mount -n      // 設定ファイル(/etc/mtab)に書き込まない
-    mount -r      // mount -o ro
-    mount -w      // mount -o rw
-    mount -t XX   // ファイルシステム種類(XX)を指定
+    mount -a      : 設定ファイル(/etc/fstab)の全ファイルシステムをマウント
+    mount -o XX   : マウントオプション(XX)を指定
+    mount -U XX   : UUID(XX)を指定
+    mount -n      : 設定ファイル(/etc/mtab)に書き込まない
+    mount -r      : mount -o ro
+    mount -w      : mount -o rw
+    mount -t XX   : ファイルシステム種類(XX)を指定
   
 [確認]
   vm11$ cd $HOME
@@ -508,8 +508,8 @@
     MEMO : 仮想マシン
   
   ## コマンド(umount)
-    umount -a     // 設定ファイル(/etc/mtab)の全ファイルシステムをアンマウント
-    umount -t XX  // ファイルシステム種類(XX)を指定
+    umount -a     : 設定ファイル(/etc/mtab)の全ファイルシステムをアンマウント
+    umount -t XX  : ファイルシステム種類(XX)を指定
   
 [確認]
   上記の「06」を参照
@@ -528,9 +528,9 @@
     MEMO : 仮想マシン
   
   ## コマンド(mkswap)
-    mkswap XX     // スワップ領域(XX)を作成
-    mkswap -c     // 不良ブロックをチェック
-    mkswap -L XX  // ラベル(XX)を付与
+    mkswap XX     : スワップ領域(XX)を作成
+    mkswap -c     : 不良ブロックをチェック
+    mkswap -L XX  : ラベル(XX)を付与
   
 [確認]
   vm11$ cd $HOME
@@ -655,9 +655,9 @@
     MEMO : 仮想マシン
   
   ## コマンド(swapon)
-    swapon XX     // スワップ領域(XX)を有効化
-    swapon -a     // 設定ファイル(/etc/fstab)の全スワップ領域を有効化
-    swapon -s     // 有効なスワップ領域を表示
+    swapon XX  : スワップ領域(XX)を有効化
+    swapon -a  : 設定ファイル(/etc/fstab)の全スワップ領域を有効化
+    swapon -s  : 有効なスワップ領域を表示
   
 [確認]
   上記の「08」を参照
@@ -676,8 +676,8 @@
     MEMO : 仮想マシン
   
   ## コマンド(swapoff)
-    swapoff XX    // スワップ領域(XX)を無効化
-    swapoff -a    // 設定ファイル(/etc/fstab)の全スワップ領域を無効化
+    swapoff XX  : スワップ領域(XX)を無効化
+    swapoff -a  : 設定ファイル(/etc/fstab)の全スワップ領域を無効化
   
 [確認]
   上記の「08」を参照
@@ -696,14 +696,14 @@
     MEMO : 仮想マシン
   
   ## コマンド(mke2fs)
-    mke2fs -b XX    // ブロックサイズ(XX)
-    mke2fs -c       // 不良ブロックのチェック
-    mke2fs -i XX    // iノードあたりのバイト数
-    mke2fs -j       // ファイルシステム(ext3)を作成
-    mke2fs -J       // ファイルシステム(ext4)を作成
-    mke2fs -m XX %  // root用の管理領域の割合(XX)%
-    mke2fs -n       // 動作のシミュレートのみ
-    mke2fs -t XX    // ファイルシステムの種類(ext2,ext3,ext4)
+    mke2fs -b XX    : ブロックサイズ(XX)
+    mke2fs -c       : 不良ブロックのチェック
+    mke2fs -i XX    : iノードあたりのバイト数
+    mke2fs -j       : ファイルシステム(ext3)を作成
+    mke2fs -J       : ファイルシステム(ext4)を作成
+    mke2fs -m XX %  : root用の管理領域の割合(XX)%
+    mke2fs -n       : 動作のシミュレートのみ
+    mke2fs -t XX    : ファイルシステムの種類(ext2,ext3,ext4)
   
 [確認]
   vm11$ cd $HOME
@@ -850,15 +850,15 @@
     MEMO : 仮想マシン
   
   ## コマンド(mke2fs)
-    mke2fs -b XX    // ブロックサイズ(XX)
-    mke2fs -c       // 不良ブロックのチェック
-    mke2fs -i XX    // iノードあたりのバイト数
-    mke2fs -j       // ファイルシステム(ext3)を作成
-    mke2fs -J       // ファイルシステム(ext4)を作成
-    mke2fs -m XX %  // root用の管理領域の割合(XX)%
-    mke2fs -n       // 動作のシミュレートのみ
-    mke2fs -t XX    // ファイルシステムの種類(ext2,ext3,ext4)
-
+    mke2fs -b XX    : ブロックサイズ(XX)
+    mke2fs -c       : 不良ブロックのチェック
+    mke2fs -i XX    : iノードあたりのバイト数
+    mke2fs -j       : ファイルシステム(ext3)を作成
+    mke2fs -J       : ファイルシステム(ext4)を作成
+    mke2fs -m XX %  : root用の管理領域の割合(XX)%
+    mke2fs -n       : 動作のシミュレートのみ
+    mke2fs -t XX    : ファイルシステムの種類(ext2,ext3,ext4)
+  
 [確認]
   vm11$ cd $HOME
   vm11$ LANG=C dd if=/dev/zero of=image0.img bs=1M count=10 (ディスクイメージ作成)
@@ -1005,14 +1005,14 @@
     MEMO : 仮想マシン
   
   ## コマンド(mke2fs)
-    mke2fs -b XX    // ブロックサイズ(XX)
-    mke2fs -c       // 不良ブロックのチェック
-    mke2fs -i XX    // iノードあたりのバイト数
-    mke2fs -j       // ファイルシステム(ext3)を作成
-    mke2fs -J       // ファイルシステム(ext4)を作成
-    mke2fs -m XX %  // root用の管理領域の割合(XX)%
-    mke2fs -n       // 動作のシミュレートのみ
-    mke2fs -t XX    // ファイルシステムの種類(ext2,ext3,ext4)
+    mke2fs -b XX    : ブロックサイズ(XX)
+    mke2fs -c       : 不良ブロックのチェック
+    mke2fs -i XX    : iノードあたりのバイト数
+    mke2fs -j       : ファイルシステム(ext3)を作成
+    mke2fs -J       : ファイルシステム(ext4)を作成
+    mke2fs -m XX %  : root用の管理領域の割合(XX)%
+    mke2fs -n       : 動作のシミュレートのみ
+    mke2fs -t XX    : ファイルシステムの種類(ext2,ext3,ext4)
 
 [確認]
   vm11$ cd $HOME
@@ -1160,15 +1160,15 @@
     MEMO : 仮想マシン
   
   ## コマンド(tune2fs)
-    tune2fs -c XX  // 最大マウント回数(XX)に達したらファイルシステムチェック -> 0の場合はチェックしない
-    tune2fs -C XX  // 現在のマウント回数を設定
-    tune2fs -i XX  // ファイルシステムチェック間隔(XX日) -> 0の場合はチェックしない
-    tune2fs -j     // ext2 -> ext3
-    tune2fs -O     // ext3 -> ext4
-    tune2fs -m XX  // root用予約領域(XX%)
-    tune2fs -l     // スーパーブロック内容を表示
-    tune2fs -L XX  // ファイルシステムのボリュームラベル(XX)
-    tune2fs -U XX  // UUID(XX)
+    tune2fs -c XX  : 最大マウント回数(XX)に達したらファイルシステムチェック -> 0の場合はチェックしない
+    tune2fs -C XX  : 現在のマウント回数を設定
+    tune2fs -i XX  : ファイルシステムチェック間隔(XX日) -> 0の場合はチェックしない
+    tune2fs -j     : ext2 -> ext3
+    tune2fs -O     : ext3 -> ext4
+    tune2fs -m XX  : root用予約領域(XX%)
+    tune2fs -l     : スーパーブロック内容を表示
+    tune2fs -L XX  : ファイルシステムのボリュームラベル(XX)
+    tune2fs -U XX  : UUID(XX)
   
 [確認]
   vm11$ cd $HOME
@@ -1547,8 +1547,8 @@
     MEMO : 仮想マシン
   
   ## コマンド(mkfs)
-    mkfs -t XX  // ファイルシステム(XX)を作成
-    mkfs -c     // 不良ブロックをチェック
+    mkfs -t XX  : ファイルシステム(XX)を指定
+    mkfs -c     : 不良ブロックをチェック
   
 [確認]
   vm11$ cd $HOME
@@ -1707,11 +1707,11 @@
     MEMO : 仮想マシン
   
   ## コマンド(mkisofs)
-    mkisofs -b     // ブート可能CD
-    mkisofs -o XX  // イメージファイル(XX)を作成
-    mkisofs -J     // Windows
-    mkisofs -r(R)  // UNIX(LongName)
-    mkisofs -udf   // DVD
+    mkisofs -b     : ブート可能CD
+    mkisofs -o XX  : イメージファイル(XX)を指定
+    mkisofs -J     : Windows
+    mkisofs -r(R)  : UNIX(LongName)
+    mkisofs -udf   : DVD
   
 [確認]
   vm11$ cd $HOME
@@ -1880,11 +1880,11 @@
     MEMO : 仮想マシン
   
   ## コマンド(mkisofs)
-    mkisofs -b     // ブート可能CD
-    mkisofs -o XX  // イメージファイル(XX)を作成
-    mkisofs -J     // Windows
-    mkisofs -r(R)  // LongName
-    mkisofs -udf   // DVD
+    mkisofs -b     : ブート可能CD
+    mkisofs -o XX  : イメージファイル(XX)を作成
+    mkisofs -J     : Windows
+    mkisofs -r(R)  : LongName
+    mkisofs -udf   : DVD
   
 [確認]
   vm11$ cd $HOME
@@ -2317,7 +2317,7 @@
   
 [内容]
   ## 作業内容
-    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントの状態でないとファイルシステムが壊れる)
+    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントでないとファイルシステムが壊れる)
   
   ## 使用マシン
     HOST : vm11
@@ -2325,10 +2325,10 @@
     MEMO : 仮想マシン
   
   ## コマンド(fsck)
-    fsck -r     // 対話的に修復を実行
-    fsck -t XX  // ファイルシステム種類(XX)のみ実行
-    fsck -A     // ファイル「/etc/fstab」の全ファイルシステムに実行
-    fsck -N     // 動作のシミュレートのみ
+    fsck -r     : 対話的に修復を実行
+    fsck -t XX  : ファイルシステム種類(XX)のみ実行
+    fsck -A     : ファイル「/etc/fstab」の全ファイルシステムに実行
+    fsck -N     : 動作のシミュレートのみ
   
 [確認]
   vm11$ cd $HOME
@@ -2451,7 +2451,7 @@
   
 [内容]
   ## 作業内容
-    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントの状態でないとファイルシステムが壊れる)
+    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントでないとファイルシステムが壊れる)
   
   ## 使用マシン
     HOST : vm11
@@ -2459,12 +2459,12 @@
     MEMO : 仮想マシン
   
   ## コマンド(e2fsck)
-    e2fsck -b XX  // 指定したスーパーブロックのバックアップ(XX)を使用してファイルシステム復元
-    e2fsck -c     // 不良ブロックをチェック
-    e2fsck -f     // ファイルシステムが「clean」でもチェック
-    e2fsck -p     // 不良ブロックを自動的に修復
-    e2fsck -y     // 問合せに「yes」と回答
-    e2fsck -n     // 問合せに「no」と回答
+    e2fsck -b XX  : 指定したスーパーブロックのバックアップ(XX)を使用してファイルシステム復元
+    e2fsck -c     : 不良ブロックをチェック
+    e2fsck -f     : ファイルシステムが「clean」でもチェック
+    e2fsck -p     : 不良ブロックを自動的に修復 -> preen(身だしなみの意味)
+    e2fsck -y     : 問合せに「yes」と回答
+    e2fsck -n     : 問合せに「no」と回答
   
 [確認]
   vm11$ cd $HOME
@@ -2593,8 +2593,8 @@
     MEMO : 仮想マシン
   
   ## コマンド(xfs_repair)
-    xfs_repair XX     // デバイス(XX)のチェックと修復
-    xfs_repair -n XX  // デバイス(XX)のチェックのみ
+    xfs_repair XX     : デバイス(XX)のチェックと修復
+    xfs_repair -n XX  : デバイス(XX)のチェックのみ
   
 [確認]
   vm11$ cd $HOME
@@ -2725,14 +2725,14 @@
     MEMO : 仮想マシン
   
   ## コマンド(tune2fs)
-    tune2fs -c XX  // 最大マウント回数(XX)でファイルシステムチェック -> 0はチェックしない
-    tune2fs -C XX  // 現在のマウント回数を設定
-    tune2fs -i XX  // ファイルシステムチェック間隔(XX日) -> 0はチェックしない
-    tune2fs -j     // ext2からext3に変換
-    tune2fs -m XX  // root用の管理領域の割合
-    tune2fs -l     // スーパーブロック内容を表示
-    tune2fs -L XX  // ファイルシステムのボリュームラベル(XX)
-    tune2fs -U XX  // UUID(XX)
+    tune2fs -c XX  : 最大マウント回数(XX)でファイルシステムチェック -> 0 はチェックしない
+    tune2fs -C XX  : 現在のマウント回数を設定
+    tune2fs -i XX  : ファイルシステムチェック間隔(XX日) -> 0 はチェックしない
+    tune2fs -j     : ext2からext3に変換
+    tune2fs -m XX  : root用の管理領域の割合
+    tune2fs -l     : スーパーブロック内容を表示
+    tune2fs -L XX  : ファイルシステムのボリュームラベル(XX)
+    tune2fs -U XX  : UUID(XX)
   
 [確認]
   vm11$ cd $HOME
@@ -2898,9 +2898,9 @@
     MEMO : 仮想マシン
   
   ## コマンド(badblocks)
-    badblocks -b XX  // ブロックサイズ(XX)を指定
-    badblocks -o XX  // 結果をファイル(XX)に出力
-    badblocks -w     // 書込モードでテスト -> ファイルシステム破壊？
+    badblocks -b XX  : ブロックサイズ(XX)を指定
+    badblocks -o XX  : 結果をファイル(XX)に出力
+    badblocks -w     : 書込モードでテスト -> ファイルシステム破壊？
   
 [確認]
   vm11$ cd $HOME
@@ -2977,8 +2977,8 @@
     MEMO : 仮想マシン
   
   ## コマンド(debugfs)
-    debugfs -w     // 書込可能モードで開く(デフォルトは読取専用)
-    debugfs -s XX  // スーパーブロック(XX)を指定
+    debugfs -w     : 書込可能モードで開く(デフォルトは読取専用)
+    debugfs -s XX  : スーパーブロック(XX)を指定
   
 [確認]
   vm11$ cd $HOME
@@ -3137,10 +3137,10 @@
     MEMO : ホスト
   
   ## コマンド(smartctl)
-    smartctl -a  // 自己診断情報を表示
-    smartctl -t  // セルフテスト実施
-    smartctl -l  // ログタイプ指定
-    smartctl -H  // 状態を表示
+    smartctl -a  : 自己診断情報を表示
+    smartctl -t  : セルフテスト実施
+    smartctl -l  : ログタイプ指定
+    smartctl -H  : 状態を表示
   
 [確認]
   $ cd $HOME
@@ -3201,10 +3201,10 @@
     MEMO : 仮想マシン
   
   ## コマンド(xfs_admin)
-    xfs_admin -u     // UUID表示
-    xfs_admin -U XX  // UUID(XX)を設定
-    xfs_admin -l     // ラベル表示
-    xfs_admin -L XX  // ラベル(XX)を設定
+    xfs_admin -u     : UUID表示
+    xfs_admin -U XX  : UUID(XX)を設定
+    xfs_admin -l     : ラベル表示
+    xfs_admin -L XX  : ラベル(XX)を設定
   
 [確認]
   vm11$ cd $HOME
@@ -3384,9 +3384,9 @@
     MEMO : 仮想マシン
   
   ## コマンド(xfsdump)
-    xfsdump -f XX  // 出力ファイル名(XX)を指定
-    xfsdump -l XX  // ダンプレベル(XX)を指定
-    xfsdump -J     // ダンプ情報データベース更新しない
+    xfsdump -f XX  : 出力ファイル名(XX)を指定
+    xfsdump -l XX  : ダンプレベル(XX)を指定
+    xfsdump -J     : ダンプ情報データベース更新しない
   
 [確認]
   vm11$ cd $HOME
@@ -3788,12 +3788,12 @@
     MEMO : 仮想マシン
   
   ## コマンド(xfsrestore)
-    xfsrestore -f XX  // バックアップファイル(XX)を指定
-    xfsrestore -S XX  // セッションID(XX)を指定
-    xfsrestore -L XX  // セッションラベル(XX)を指定
-    xfsrestore -r     // 増分バックアップからリストア
-    xfsrestore -i     // 対話的にリストア
-    xfsrestore -I     // 全ダンプのセッションIDとセッションラベルを表示
+    xfsrestore -f XX  : バックアップファイル(XX)を指定
+    xfsrestore -S XX  : セッションID(XX)を指定
+    xfsrestore -L XX  : セッションラベル(XX)を指定
+    xfsrestore -r     : 増分バックアップからリストア
+    xfsrestore -i     : 対話的にリストア
+    xfsrestore -I     : 全ダンプのセッションIDとセッションラベルを表示
   
 [確認]
   上記の「31」を参照
