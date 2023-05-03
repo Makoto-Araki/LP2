@@ -611,13 +611,13 @@
     cpio -o : アーカイブを作成
     cpio -i : アーカイブからファイル抽出
     cpio -d : 必要ならばディレクトリ作成
-
+    
     ls XX | cpio -o -v -F YY     : ファイル(XX)をアーカイブ(YY)にコピー
     ls XX | cpio -o -v -F YY -A  : ファイル(XX)をアーカイブ(YY)に追加
-
+    
     cat XX | cpio -i    : アーカイブ(XX)からファイル抽出
     cat XX | cpio -i -t : アーカイブ(XX)からファイル抽出、内容を一覧表示
-    cat XX | cpio -i -v : アーカイブ(XX)からファイル抽出、ファイル名を一覧表示
+    cat XX | cpio -i -d : アーカイブ(XX)からファイル抽出、ディレクトリ作成
   
 [確認]
   vm11$ cd $HOME
@@ -1386,7 +1386,7 @@
   
 [確認]
   vm11$ cd $HOME
-  vm11$ mkdir dirA dirB -> ディレクトリ作成
+  vm11$ mkdir dirA dirB
   
   コマンドの実行結果
   --------------------------------------------------
