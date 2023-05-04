@@ -327,8 +327,8 @@
   # 数秒待機
   sleep 1
   
-  # 起動からの統計省略、メガバイト単位、ディスクIOのみ表示、更新間隔1秒、更新回数9回
-  iostat -y -m -d 1 9
+  # 起動からの統計省略、メガバイト単位、更新間隔1秒、更新回数9回
+  iostat -y -m 1 9
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -336,61 +336,88 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 2023年04月15日 _x86_64_ (1 CPU)
+  Linux 4.15.3 (vm11) 2023年05月04日 _x86_64_ (1 CPU)
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00   98.28    0.00    1.72    0.00 -> HDD負荷開始で「%system」の数値上昇
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-  vda             150.00         0.00        73.68          0         28  // HDD負荷
+  vda             165.52         0.00       165.52          0         96 -> 書込リクエストがルートファイルシステムに殺到
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)     150.00         0.00        73.68          0         28  // HDD負荷
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0             84.48         0.00       165.52          0         96 -> 書込リクエストがルートファイルシステムに殺到
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00   94.64    0.00    5.36    0.00
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-  vda            1021.82         0.00       509.09          0        280  // HDD負荷
+  vda             207.14         0.00       207.47          0        116
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)    1021.82         0.00       509.09          0        280  // HDD負荷
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0            107.14         0.00       207.47          0        116
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00   92.19    0.00    7.81    0.00
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-  vda            1788.89         0.03       893.52          0        482  // HDD負荷
+  vda             200.00         0.00       200.00          0        128
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)    1974.07         0.03       985.19          0        532  // HDD負荷
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0            101.56         0.00       200.00          0        128
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00   93.18    0.00    2.27    4.55
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-  vda             487.50         0.00       242.61          0        213  // HDD負荷
+  vda              72.73         0.00        72.73          0         64
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)     446.59         0.00       222.73          0        196  // HDD負荷
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0             37.50         0.00        72.73          0         64
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             1.00    0.00    2.00    0.00    0.00   97.00 -> HDD負荷終了で「%idle」の数値上昇
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-  vda              66.67         0.00        33.33          0         32  // HDD負荷
+  vda               0.00         0.00         0.00          0          0 -> 書込リクエストも無くなる
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)       0.00         0.00         0.00          0          0  // HDD負荷
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0              0.00         0.00         0.00          0          0 -> 書込リクエストも無くなる
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00    2.02    0.00    1.01   96.97
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
   vda               0.00         0.00         0.00          0          0
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)       0.00         0.00         0.00          0          0
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0              0.00         0.00         0.00          0          0
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00    1.02    0.00    0.00   98.98
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
   vda               0.00         0.00         0.00          0          0
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)       0.00         0.00         0.00          0          0
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0              0.00         0.00         0.00          0          0
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00    1.02    0.00    0.00   98.98
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
   vda               0.00         0.00         0.00          0          0
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)       0.00         0.00         0.00          0          0
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0              0.00         0.00         0.00          0          0
+  dm-1              0.00         0.00         0.00          0          0
+  
+  avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+             0.00    0.00    2.04    0.00    0.00   97.96
   
   Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
   vda               0.00         0.00         0.00          0          0
   vdb               0.00         0.00         0.00          0          0
-  dm-0 (root)       0.00         0.00         0.00          0          0
-  dm-1 (swap)       0.00         0.00         0.00          0          0
+  dm-0              0.00         0.00         0.00          0          0
+  dm-1              0.00         0.00         0.00          0          0
   --------------------------------------------------
   
   以下の確認に続く
@@ -827,19 +854,163 @@
   
 [確認]
   vm11$ cd $HOME
+  vm11$ sar
+      > -u                   // CPU使用率
+      > -f /var/log/sa/sa30  // ログファイル
+      > -s 19:40:00          // 開始時刻
+      > -e 20:40:00          // 終了時刻
+      > 1200                 // 1200秒(20分)単位
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Linux 4.15.3 (vm11) 04/30/23 _x86_64_ (1 CPU)
+  
+  19:40:01        CPU     %user     %nice   %system   %iowait    %steal     %idle
+  20:00:01        all      0.04      0.00      0.05      0.00      0.02     99.88
+  20:20:01        all      0.04      0.00      0.03      0.00      0.04     99.90
+  Average:        all      0.04      0.00      0.04      0.00      0.03     99.89
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sadf              // CSV形式
+      > -t                // ローカル時刻
+      > /var/log/sa/sa30  // ログファイル
+      > --                // 以降はコマンド(sar)のオプション
+      > -u                // 統計対象(CPU)
+      > -s 19:40:00       // 開始時刻
+      > -e 20:40:00       // 終了時刻
+      > 1200              // 1200秒(20分)単位
+      > | tr '\t' ','     // タブ文字をカンマに変換
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11,1198,2023-04-30 20:00:01,all,%user,0.04
+  vm11,1198,2023-04-30 20:00:01,all,%nice,0.00
+  vm11,1198,2023-04-30 20:00:01,all,%system,0.05
+  vm11,1198,2023-04-30 20:00:01,all,%iowait,0.00
+  vm11,1198,2023-04-30 20:00:01,all,%steal,0.02
+  vm11,1198,2023-04-30 20:00:01,all,%idle,99.88
+  vm11,1199,2023-04-30 20:20:01,all,%user,0.04
+  vm11,1199,2023-04-30 20:20:01,all,%nice,0.00
+  vm11,1199,2023-04-30 20:20:01,all,%system,0.03
+  vm11,1199,2023-04-30 20:20:01,all,%iowait,0.00
+  vm11,1199,2023-04-30 20:20:01,all,%steal,0.04
+  vm11,1199,2023-04-30 20:20:01,all,%idle,99.90 -> 上記と比較して最後の「Average」部分が存在しない模様
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
   vm11$ sadf
       > -j                // 出力形式(JSON)
       > -t                // ローカル時刻
-      > /var/log/sa/sa15  // ログファイル
+      > /var/log/sa/sa30  // ログファイル
       > --                // 以降はコマンド(sar)のオプション
-      > -n DEV            // 統計対象(ネットワーク)
+      > -u                // 統計対象(CPU)
       > -s 19:40:00       // 開始時刻
       > -e 20:40:00       // 終了時刻
       > 1200              // 1200秒(20分)単位
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力形式(JSON)を確認
+  {
+    "sysstat": {
+      "sysdata-version": 2.16,
+      "hosts": [
+        {
+          "nodename": "vm11",
+          "sysname": "Linux",
+          "release": "4.15.3",
+          "machine": "x86_64",
+          "number-of-cpus": 1,
+          "file-date": "2023-04-30",
+          "statistics": [
+            {
+              // 空オブジェクト
+            },
+            {
+              "timestamp": { "date": "2023-04-30", "time": "20:00:01", "utc": 0, "interval": 1198 },
+              "cpu-load": [
+                {
+                  "cpu": "all",
+                  "user": 0.04,
+                  "nice": 0.00,
+                  "system": 0.05,
+                  "iowait": 0.00,
+                  "steal": 0.02,
+                  "idle": 99.88
+                }
+              ]
+            },
+            {
+              // 空オブジェクト
+            },
+            {
+              "timestamp": { "date": "2023-04-30", "time": "20:20:01", "utc": 0, "interval": 1199 },
+              "cpu-load": [
+                {
+                  "cpu": "all",
+                  "user": 0.04,
+                  "nice": 0.00,
+                  "system": 0.03,
+                  "iowait": 0.00,
+                  "steal": 0.04,
+                  "idle": 99.90
+                }
+              ]
+            },
+            {
+              // 空オブジェクト
+            },
+            {
+              // 空オブジェクト
+            }
+          ],
+          "restarts": []
+        }
+      ]
+    }
+  }
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sadf
+      > -x                // 出力形式(XML)
+      > -t                // ローカル時刻
+      > /var/log/sa/sa30  // ログファイル
+      > --                // 以降はコマンド(sar)のオプション
+      > -u                // 統計対象(CPU)
+      > -s 19:40:00       // 開始時刻
+      > -e 20:40:00       // 終了時刻
+      > 1200              // 1200秒(20分)単位
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE sysstat PUBLIC "DTD v2.16 sysstat //EN"
+  "http://pagesperso-orange.fr/sebastien.godard/sysstat-2.16.dtd">
+  <sysstat>
+    <sysdata-version>2.16</sysdata-version>
+    <host nodename="vm11">
+      <sysname>Linux</sysname>
+      <release>4.15.3</release>
+      <machine>x86_64</machine>
+      <number-of-cpus>1</number-of-cpus>
+      <file-date>2023-04-30</file-date>
+      <statistics>
+        <timestamp date="2023-04-30" time="20:00:01" utc="0" interval="1198">
+          <cpu-load>
+            <cpu number="all" user="0.04" nice="0.00" system="0.05" iowait="0.00" steal="0.02" idle="99.88"/>
+          </cpu-load>
+        </timestamp>
+        <timestamp date="2023-04-30" time="20:20:01" utc="0" interval="1199">
+          <cpu-load>
+            <cpu number="all" user="0.04" nice="0.00" system="0.03" iowait="0.00" steal="0.04" idle="99.90"/>
+          </cpu-load>
+        </timestamp>
+      </statistics>
+      <restarts>
+      </restarts>
+    </host>
+  </sysstat>
   --------------------------------------------------
   
   以下の確認に続く
@@ -1260,19 +1431,20 @@
   vm11$ cd $HOME
   vm11$ LANG=C
       > df
+      > -H  // 1MB=1000KB
       > -m  // メガバイト単位
       > -T  // ファイルシステムタイプ表示
   
   コマンドの実行結果
   --------------------------------------------------
   Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        884     0        884    0%  /dev
-  tmpfs                         tmpfs           895     0        895    0%  /dev/shm
-  tmpfs                         tmpfs           895     9        887    1%  /run
-  tmpfs                         tmpfs           895     0        895    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394  1470      15925    9%  /
-  /dev/vda1                     xfs            1014   150        865   15%  /boot
-  tmpfs                         tmpfs            99     0         99    0%  /run/user/1000
+  devtmpfs                      devtmpfs        701     0        701    0%  /dev
+  tmpfs                         tmpfs           723     0        723    0%  /dev/shm
+  tmpfs                         tmpfs           723     1        722    1%  /run
+  tmpfs                         tmpfs           723     0        723    0%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs           17394  6328      11067   37%  /
+  /dev/vda1                     xfs            1014   197        818   20%  /boot
+  tmpfs                         tmpfs           105     0        105    0%  /run/user/1000
   --------------------------------------------------
   
   以下の確認に続く
@@ -1294,20 +1466,20 @@
   vm11$ cd $HOME
   vm11$ LANG=C 
       > df
+      > -H  // 1MB=1000KB
       > -i  // 使用状況(iノード)
       > -T  // ファイルシステムタイプ表示
   
   コマンドの実行結果
   --------------------------------------------------
-  Filesystem                    Type      Inodes  IUsed    IFree  IUse%  Mounted on
-  devtmpfs                      devtmpfs  226150    355   225795     1%  /dev
-  tmpfs                         tmpfs     229082      1   229081     1%  /dev/shm
-  tmpfs                         tmpfs     229082    476   228606     1%  /run
-  tmpfs                         tmpfs     229082     16   229066     1%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs      8910848  27618  8883230     1%  /
-  /dev/vda1                     xfs       524288    327   523961     1%  /boot
-  tmpfs                         tmpfs     126682      1   126681     1%  /run/user/1000
-  tmpfs                         tmpfs     126682      1   126681     1%  /run/user/0
+  Filesystem                    Type      Inodes  IUsed  IFree  IUse%  Mounted on
+  devtmpfs                      devtmpfs    180k    351   179k     1%  /dev
+  tmpfs                         tmpfs       185k      1   185k     1%  /dev/shm
+  tmpfs                         tmpfs       185k    455   185k     1%  /run
+  tmpfs                         tmpfs       185k     14   185k     1%  /sys/fs/cgroup
+  /dev/mapper/centos_vm11-root  xfs         9.0M   149k   8.8M     2%  /
+  /dev/vda1                     xfs         525k    333   524k     1%  /boot
+  tmpfs                         tmpfs       134k      1   134k     1%  /run/user/1000
   --------------------------------------------------
   
   以下の確認に続く
