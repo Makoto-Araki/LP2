@@ -1110,6 +1110,15 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
+  vm11$ sudo mount -o defaults /dev/loop1 /mnt/loop1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 6903.129064] EXT4-fs (loop1): mounting ext3 file system using the ext4 subsystem
+  [ 6903.141801] EXT4-fs (loop1): mounted filesystem with ordered data mode. Opts: (null)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
   vm11$ lsblk
   
   コマンドの実行結果
