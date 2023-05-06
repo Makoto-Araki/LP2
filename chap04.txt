@@ -50,68 +50,56 @@
   
   ## 設定ファイル(/etc/fstab)の書式
   --------------------------------------------------
-  (デバイス名 or UUID or ラベル名)  (マウントポイント)  (ファイルシステム)  (マウントオプション)  (DUMP対象)  (FSCK順序)
+  書式
+    [デバイス名 or UUID or ラベル名]  [マウントポイント]  [ファイルシステム]  [オプション]  [DUMP対象]  [FSCK順序]
   
-  設定例1
+  設定例01
     /dev/sda1  /boot  xfs  defaults  0  0
     /dev/sda2  /      xfs  defaults  0  0
   
-  設定例2
+  設定例02
     UUID=1d5e0998-fe61-4a82-83be-96a01cfbbd31  /boot  xfs  defaults  0  0
     UUID=1d5e0998-fe61-4a82-83be-96a01cfbbd99  /      xfs  defaults  0  0
   
-  設定例3
+  設定例03
     LABEL=sda1  /boot  xfs  defaults  0  0
     LABEL=sda2  /      xfs  defaults  0  0
   
-  ファイルシステム
-    EXT2      : EXTの拡張版
-    EXT3      : ジャーナリング機能付加
-    EXT4      : 機能拡張
-    ReiserFS  : Linux用ジャーナリングファイルシステム
-    JFS       : IBM製ジャーナリングファイルシステム
-    XFS       : SGI製ジャーナリングファイルシステム -> CentOS7のデフォルト
-    btrfs     : 先進的ファイルシステム
-    ISO9660   : CD-ROM用
-    UDF       : DVD用
-    F2FS      : SSD用
-    MSDOS     : MS-DOS用
-    FAT/FAT32 : フラッシュメモリ用(USB)
-    NTFS      : WindowsNT/2000以降
-    HPFS      : OS/2用
-    HFS       : MacOS用
-    HFS+      : MacOS8.1以降
-    NFS       : ファイル共有(Linux)
-    CIFS      : ファイル共有(Windows)
-    procfs    : プロセス情報を扱う仮想ファイルシステム(/proc)
-    sysfs     : デバイス情報を扱う仮想ファイルシステム
-    tmpfs     : 仮想メモリを扱う仮想ファイルシステム
-    devpts    : 疑似端末制御のための仮想ファイルシステム
-    usbfs     : USBデバイス監視用
-    cramfs    : 組込システム用
-    swap      : スワップ領域
+  入出力同期
+    async     : 非同期
+    sync      : 同期
   
-  マウントオプション
-    async     : 入出力同期  // 非同期
-    sync      : 入出力同期  // 同期
-    atime     : Iノードアクセス時刻更新  // 更新
-    relatime  : Iノードアクセス時刻更新  // 一定時間後に更新
-    noatime   : Iノードアクセス時刻更新  // 更新しない(ディスクアクセス高速化)
-    auto      : コマンド「mount -a」の実行時の動作  // マウント
-    noauto    : コマンド「mount -a」の実行時の動作  // マウントしない
-    exec      : バイナリ実行を許可
-    noexec    : バイナリ実行を禁止
-    suid      : SUID, SGID
-    nosuid    : SUID, SGID
-    ro        : 読み取り専用
-    rw        : 書き込み可能
-    user      : 一般ユーザーマウント許可、アンマウントはマウント操作したユーザーのみ
-    users     : 一般ユーザーマウント許可、アンマウントもマウント操作したユーザー以外で許可
-    nouser    : 一般ユーザーマウント禁止
-    owner     : その他  // デバイスファイル所有者のマウント許可
+  アクセス時刻更新
+    atime     : 更新
+    relatime  : 一定時間後に更新
+    noatime   : 更新しない -> ディスクアクセス高速化
+  
+  自動マウント
+    auto      : コマンド(mount -a)でマウント
+    noauto    : コマンド(mount -a)でマウントしない
+  
+  バイナリ実行
+    exec      : 許可
+    noexec    : 禁止
+  
+  SUID/SGID
+    suid      : 許可
+    nosuid    : 禁止
+  
+  読取専用
+    ro        : 読取専用
+    rw        : 書込可能
+  
+  マウント操作
+    user      : マウント許可、アンマウントは該当ユーザーのみ
+    users     : マウント許可、アンマウントも該当ユーザー以外で許可
+    nouser    : マウント禁止
+    owner     : デバイス所有者のマウント許可
+    group     : マウント許可 -> 条件がある
+  
+  その他
     defaults  : その他  // async, auto, dev, exec, nouser, rw, suid
     dev       : その他  // ファイルシステム上のデバイスファイル使用可
-    group     : その他  // 条件「ユーザーのグループ = デバイスファイルの所有グループ」が満たされた場合にマウント許可
     uid=UID   : その他  // 全ファイル所有者を指定UIDにする
     gid=GID   : その他  // 全ファイル所有グループを指定GIDにする
   
@@ -143,7 +131,7 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ cat /etc/fstab | grep -vE '^#|^$'
+  vm11$ cat /etc/fstab | grep -vE '^#|^$' -> 仮想マシンの設定ファイル(/etc/fstab)を確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -152,41 +140,8 @@
   /dev/mapper/centos_vm11-swap               swap   swap  defaults  0  0
   --------------------------------------------------
   
-  以下の確認に続く
-  
-================================================================================
-[02]
-  ファイルシステムの情報 - 02 (blkid)
-  
-[内容]
-  ## 作業内容
-    デバイスのUUIDを確認
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-[確認]
   vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo blkid
+  vm11$ sudo blkid -> デバイスのUUIDを確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -196,41 +151,8 @@
   /dev/mapper/centos_vm11-swap: UUID="9731028d-89e7-42c4-bb1e-b2fc27ba45b8" TYPE="swap" 
   --------------------------------------------------
   
-  以下の確認に続く
-  
-================================================================================
-[03]
-  ファイルシステムの情報 - 03 (cat /proc/filesystems)
-  
-[内容]
-  ## 作業内容
-    カーネルサポートのファイルシステムを表示
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-[確認]
   vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /proc/filesystems
+  vm11$ cat /proc/filesystems -> カーネルサポートのファイルシステム表示
   
   コマンドの実行結果
   --------------------------------------------------
@@ -261,7 +183,55 @@
          xfs
   --------------------------------------------------
   
+  vm11$ cd $HOME
+  vm11$ cat /etc/mtab | grep vda -> マウント済みのファイルシステムを表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ cat /proc/mounts | grep vda -> マウント済みのファイルシステムを表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+  --------------------------------------------------
+  
   以下の確認に続く
+  
+================================================================================
+[02]
+  ファイルシステムの情報 - 02 (blkid)
+  
+[内容]
+  ## 作業内容
+    デバイスのUUIDを確認
+  
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+[確認]
+  上記「01」を参照
+  
+================================================================================
+[03]
+  ファイルシステムの情報 - 03 (cat /proc/filesystems)
+  
+[内容]
+  ## 作業内容
+    カーネルサポートのファイルシステムを表示
+  
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+[確認]
+  上記「01」を参照
   
 ================================================================================
 [04]
@@ -277,40 +247,7 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /etc/mtab | grep vda
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /etc/mtab | grep centos_vm11-root
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/mapper/centos_vm11-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  --------------------------------------------------
-  
-  以下の確認に続く
+  上記「01」を参照
   
 ================================================================================
 [05]
@@ -326,40 +263,7 @@
     MEMO : 仮想マシン
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /proc/mounts | grep vda
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/vda1 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /proc/mounts | grep centos_vm11-root
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/mapper/centos_vm11-root / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
-  --------------------------------------------------
-  
-  以下の確認に続く
+  上記「01」を参照
   
 ================================================================================
 [06]
@@ -385,48 +289,6 @@
   
 [確認]
   vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  10485760 bytes (100 MB) copied, 0.0116401 s, 901 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ losetup -f
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/loop0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [  569.178031] loop: module loaded
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0 -> ファイルシステム作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> ブロック割当のメッセージが多数出力されるが成功
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt -> デバイスマウント
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [  673.076609] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
   vm11$ lsblk
   
   コマンドの実行結果
@@ -436,7 +298,6 @@
    |-- vdb2                   252:18    0   975M   0  part  
    |-- vdb1                   252:17    0     1G   0  part  
   sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0    10M   0  loop  /mnt
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
@@ -445,31 +306,17 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ mount | grep loop0
+  vm11$ sudo mkfs -t ext4 /dev/vdb1 -> ファイルシステム作成
+  vm11$ sudo mkfs -t ext4 /dev/vdb2 -> ファイルシステム作成
   
   コマンドの実行結果
   --------------------------------------------------
-  /dev/loop0 on /mnt type ext4 (rw,relatime,seclabel,data=ordered)
+  (省略)
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ cat /etc/mtab | grep loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/loop0 /mnt ext4 rw,seclabel,relatime,data=ordered 0 0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /proc/mounts | grep loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/loop0 /mnt ext4 rw,seclabel,relatime,data=ordered 0 0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt -> アンマウント
+  vm11$ sudo mkdir -p /mnt/mp1 -> マウントポイント作成
+  vm11$ sudo mkdir -p /mnt/mp2 -> マウントポイント作成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -477,7 +324,45 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo losetup -D
+  vm11$ sudo vi /etc/fstab -> 設定ファイル(/etc/fstab)を編集
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  UUID=7c5f5868-f985-4022-8bfc-c748dde563db  /boot     xfs   defaults  0  0
+  /dev/mapper/centos_vm11-root               /         xfs   defaults  0  0
+  /dev/mapper/centos_vm11-swap               swap      swap  defaults  0  0
+  /dev/vdb1                                  /mnt/mp1  ext4  defaults  0  0  (追加)
+  /dev/vdb2                                  /mnt/mp2  ext4  defaults  0  0  (追加)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をマウント
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 3643.371102] EXT4-fs (vdb1): mounted filesystem with ordered data mode. Opts: (null)
+  [ 3643.390767] EXT4-fs (vdb2): mounted filesystem with ordered data mode. Opts: (null)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2 (マウント確認)
+   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1 (マウント確認)
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo umount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をアンマウント
   
   コマンドの実行結果
   --------------------------------------------------
@@ -485,11 +370,45 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ rm -f image0.img
+  vm11$ lsblk
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  (アンマウント確認)
+   |-- vdb1                   252:17    0     1G   0  part  (アンマウント確認)
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo systemctl reboot -> 再起動後に設定ファイル(etc/fstab)のオプション(auto)通りにマウントされるか確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> makotoでログイン
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2 (マウント確認)
+   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1 (マウント確認)
+  sr0                          11:0     1  1024M   0  rom   
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   以下の確認に続く
@@ -534,13 +453,20 @@
   
 [確認]
   vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ dd if=/dev/zero of=image1.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  10485760 bytes (100 MB) copied, 0.0251526 s, 417 MB/s
+  // image0.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.145578 秒、 720 MB/秒
+
+  // image1.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.145578 秒、 720 MB/秒
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -553,6 +479,7 @@
   
   vm11$ cd $HOME
   vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop1 image1.img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -560,21 +487,69 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ LANG=C sudo mkswap -c -L swap0 /dev/loop0 -> 不良ブロックのチェック、ラベル名指定でスワップ領域作成
+  vm11$ sudo mkswap /dev/loop0  -> スワップ領域を作成
+  vm11$ sudo mkswap /dev/loop1  -> スワップ領域を作成
   
   コマンドの実行結果
   --------------------------------------------------
-  0 bad pages
-  Setting up swapspace version 1, size = 10236 KiB
-  LABEL=swap0, UUID=e81c826a-c6d2-406c-b71c-5abd6485965c
+  // loop0
+  スワップ空間バージョン1を設定します、サイズ = 102396 KiB
+  ラベルはありません, UUID=cd28706a-7911-49aa-8778-fb92b66228de
+  
+  // loop1
+  スワップ空間バージョン1を設定します、サイズ = 102396 KiB
+  ラベルはありません, UUID=5fbf5f62-a566-4e3e-a2de-32e181f6cdae
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2
+   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  (スワップ領域予定)
+  loop1                         7:1     0   100M   0  loop  (スワップ領域予定)
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
   vm11$ sudo swapon /dev/loop0 -> スワップ領域の有効化
+  vm11$ sudo swapon /dev/loop1 -> スワップ領域の有効化
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 1158.256520] Adding 10236k swap on /dev/loop0.  Priority:-3 extents:1 across:10236k FS
+  // loop0
+  [ 4092.146551] Adding 102396k swap on /dev/loop0.  Priority:-3 extents:1 across:102396k FS
+  
+  // loop1
+  [ 4121.141813] Adding 102396k swap on /dev/loop1.  Priority:-4 extents:1 across:102396k FS
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  vdb                         252:16    0     2G   0  disk  
+   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2
+   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1
+  sr0                          11:0     1  1024M   0  rom   
+  loop0                         7:0     0   100M   0  loop  [SWAP] -> スワップ領域
+  loop1                         7:1     0   100M   0  loop  [SWAP] -> スワップ領域
+  vda                         252:0     0    20G   0  disk  
+   |-- vda1                   252:1     0     1G   0  part  /boot
+   |-- vda2                   252:2     0    19G   0  part  
+        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
+        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -585,6 +560,7 @@
   Filename     Type        Size      Used   Priority
   /dev/dm-1    partition   2097148   0      -2
   /dev/loop0   partition   10236     0      -3
+  /dev/loop1   partition   10236     0      -4
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -595,6 +571,16 @@
   Filename     Type        Size      Used   Priority
   /dev/dm-1    partition   2097148   0      -2
   /dev/loop0   partition   10236     0      -3
+  /dev/loop1   partition   10236     0      -4
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo swapoff /dev/loop0 -> スワップ領域の無効化
+  vm11$ sudo swapoff /dev/loop1 -> スワップ領域の無効化
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -604,23 +590,16 @@
   --------------------------------------------------
   NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
   vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
+   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2
+   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1
   sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0    10M   0  loop  [SWAP] -> スワップ領域化したループバックデバイス
+  loop0                         7:0     0   100M   0  loop  (スワップ領域を無効化)
+  loop1                         7:1     0   100M   0  loop  (スワップ領域を無効化)
   vda                         252:0     0    20G   0  disk  
    |-- vda1                   252:1     0     1G   0  part  /boot
    |-- vda2                   252:2     0    19G   0  part  
         |-- centos_vm11-root  253:0     0    17G   0  lvm   /
         |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo swapoff /dev/loop0 -> スワップ領域の無効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -632,7 +611,7 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ rm -f image0.img
+  vm11$ rm -f image[0-1].img
   
   コマンドの実行結果
   --------------------------------------------------
@@ -697,7 +676,8 @@
   
   ## コマンド(mke2fs)
     mke2fs -b XX    : ブロックサイズ(XX)
-    mke2fs -c       : 不良ブロックのチェック
+    mke2fs -c       : 不良チェック
+    mke2fs -L XX    : ボリュームラベル(XX)
     mke2fs -i XX    : iノードあたりのバイト数
     mke2fs -j       : ファイルシステム(ext3)を作成
     mke2fs -J       : ファイルシステム(ext4)を作成
@@ -707,13 +687,44 @@
   
 [確認]
   vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  vm11$ dd if=/dev/zero of=image0.img bs=10M count=10 -> ext2
+  vm11$ dd if=/dev/zero of=image1.img bs=10M count=10 -> ext3
+  vm11$ dd if=/dev/zero of=image2.img bs=10M count=10 -> ext4
+  vm11$ dd if=/dev/zero of=image3.img bs=10M count=10 -> xfs
+  vm11$ dd if=/dev/zero of=image4.img bs=10M count=10 -> btrfs
+  vm11$ dd if=/dev/zero of=image5.img bs=10M count=10 -> btrfs
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  10485760 bytes (100 MB) copied, 0.0196277 s, 534 MB/s
+  // image0.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 1.28711 秒、 81.5 MB/秒
+
+  // image1.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.553625 秒、 189 MB/秒
+
+  // image2.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.18012 秒、 582 MB/秒
+
+  // image3.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.277572 秒、 378 MB/秒
+  
+  // image4.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.365677 秒、 287 MB/秒
+  
+  // image5.img
+  10+0 レコード入力
+  10+0 レコード出力
+  104857600 バイト (105 MB) コピーされました、 0.513911 秒、 204 MB/秒
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -725,7 +736,12 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
+  vm11$ sudo losetup /dev/loop0 image0.img -> ext2
+  vm11$ sudo losetup /dev/loop1 image1.img -> ext3
+  vm11$ sudo losetup /dev/loop2 image2.img -> ext4
+  vm11$ sudo losetup /dev/loop3 image3.img -> xfs
+  vm11$ sudo losetup /dev/loop4 image4.img -> btrfs
+  vm11$ sudo losetup /dev/loop5 image5.img -> btrfs
   
   コマンドの実行結果
   --------------------------------------------------
@@ -733,55 +749,364 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo mke2fs -b 4096 -c -m 1 /dev/loop0 -n -> 動作シミュレートのみ
+  vm11$ sudo mkdir -p /mnt/loop0 -> ext2
+  vm11$ sudo mkdir -p /mnt/loop1 -> ext3
+  vm11$ sudo mkdir -p /mnt/loop2 -> ext4
+  vm11$ sudo mkdir -p /mnt/loop3 -> xfs
+  vm11$ sudo mkdir -p /mnt/loop4 -> btrfs
   
   コマンドの実行結果
   --------------------------------------------------
-  mke2fs 1.42.9 (28-Dec-2013)
-  Filesystem label=
-  OS type: Linux
-  Block size=4096 (log=2) -> ブロックサイズ4096バイト
-  Fragment size=4096 (log=2)
-  Stride=0 blocks, Stripe width=0 blocks
-  2560 inodes, 2560 blocks
-  25 blocks (0.98%) reserved for the super user -> 予約領域(1%)
-  First data block=0
-  1 block group
-  32768 blocks per group, 32768 fragments per group
-  2560 inodes per group
+  (省略) -> 出力なし
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo mke2fs -b 4096 -c -m 1 /dev/loop0 -> ファイルシステム作成
+  vm11$ sudo mke2fs
+      > -b 4096        // ブロックサイズ
+      > -c             // 不良チェック
+      > -L loop0-ext2  // ラベル
+      > -m 1           // 管理領域(1%)
+      > -n             // 動作シミュレートのみ
+      > /dev/loop0     // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Filesystem label=loop0-ext2 -> ラベル
+  OS type: Linux
+  Block size=4096 (log=2) -> ブロックサイズ(4096)
+  Fragment size=4096 (log=2)
+  Stride=0 blocks, Stripe width=0 blocks
+  25600 inodes, 25600 blocks
+  256 blocks (1.00%) reserved for the super user
+  First data block=0
+  Maximum filesystem blocks=29360128
+  1 block group
+  32768 blocks per group, 32768 fragments per group
+  25600 inodes per group
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mke2fs
+      > -b 4096        // ブロックサイズ
+      > -c             // 不良チェック
+      > -L loop0-ext2  // ラベル
+      > -m 1           // 管理領域(1%)
+      > /dev/loop0     // デバイスファイル
   
   コマンドの実行結果
   --------------------------------------------------
   mke2fs 1.42.9 (28-Dec-2013)
-  Filesystem label=
+  Discarding device blocks: done
+  Filesystem label=loop0-ext2 -> ラベル
   OS type: Linux
-  Block size=4096 (log=2) -> ブロックサイズ4096バイト
+  Block size=4096 (log=2) -> ブロックサイズ(4096)
   Fragment size=4096 (log=2)
   Stride=0 blocks, Stripe width=0 blocks
-  2560 inodes, 2560 blocks
-  25 blocks (0.98%) reserved for the super user -> 予約領域(1%)
+  25600 inodes, 25600 blocks
+  256 blocks (1.00%) reserved for the super user -> 管理領域(1%)
   First data block=0
+  Maximum filesystem blocks=29360128
   1 block group
   32768 blocks per group, 32768 fragments per group
-  2560 inodes per group
+  25600 inodes per group
   
-  Checking for bad blocks (read-only test):   0.00% done, 0:00 elapsed. -> 不良ブロックのチェック
+  Checking for bad blocks (read-only test): 0.00% done, 0:00 elapsed. -> 不良チェック
   Allocating group tables: done
   Writing inode tables: done
   Writing superblocks and filesystem accounting information: done
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t ext2 /dev/loop0 /mnt
+  vm11$ sudo dumpe2fs /dev/loop0 -> スーパーブロックの内容確認
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 2232.600419] EXT4-fs (loop0): mounting ext2 file system using the ext4 subsystem
-  [ 2232.618772] EXT4-fs (loop0): mounted filesystem without journal. Opts: (null)
+  dumpe2fs 1.42.9 (28-Dec-2013)
+  Filesystem volume name:   loop0-ext2 -> ラベル
+  Last mounted on:          <not available>
+  Filesystem UUID:          6702150a-53af-475e-9000-8e157c2bbd2e
+  Filesystem magic number:  0xEF53
+  Filesystem revision #:    1 (dynamic)
+  Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file
+  Filesystem flags:         signed_directory_hash 
+  Default mount options:    user_xattr acl
+  Filesystem state:         clean -> これが dirty なら整合性チェックでエラー
+  Errors behavior:          Continue
+  Filesystem OS type:       Linux
+  Inode count:              25600
+  Block count:              25600
+  Reserved block count:     256
+  Free blocks:              24784
+  Free inodes:              25589
+  First block:              0
+  Block size:               4096 -> ブロックサイズ(4096)
+  Fragment size:            4096
+  Reserved GDT blocks:      6
+  Blocks per group:         32768
+  Fragments per group:      32768
+  Inodes per group:         25600
+  Inode blocks per group:   800
+  Filesystem created:       Sat May  6 12:02:41 2023
+  Last mount time:          n/a
+  Last write time:          Sat May  6 12:02:41 2023
+  Mount count:              0
+  Maximum mount count:      -1
+  Last checked:             Sat May  6 12:02:41 2023
+  Check interval:           0 (<none>)
+  Reserved blocks uid:      0 (user root)
+  Reserved blocks gid:      0 (group root)
+  First inode:              11
+  Inode size:               128
+  Default directory hash:   half_md4
+  Directory Hash Seed:      14688dd2-c39d-4bae-8b18-07dffb78c6e0
+  
+  Group 0: (Blocks 0-25599)
+    Primary superblock at 0, Group descriptors at 1-1
+    Reserved GDT blocks at 2-7
+    Block bitmap at 8 (+8), Inode bitmap at 9 (+9)
+    Inode table at 10-809 (+10)
+    24784 free blocks, 25589 free inodes, 2 directories
+    Free blocks: 816-25599
+    Free inodes: 12-25600
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 -> スーパーブロックの内容確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tune2fs 1.42.9 (28-Dec-2013)
+  Filesystem volume name:   loop0-ext2
+  Last mounted on:          <not available>
+  Filesystem UUID:          6702150a-53af-475e-9000-8e157c2bbd2e
+  Filesystem magic number:  0xEF53
+  Filesystem revision #:    1 (dynamic)
+  Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file
+  Filesystem flags:         signed_directory_hash 
+  Default mount options:    user_xattr acl
+  Filesystem state:         clean
+  Errors behavior:          Continue
+  Filesystem OS type:       Linux
+  Inode count:              25600
+  Block count:              25600
+  Reserved block count:     256
+  Free blocks:              24784
+  Free inodes:              25589
+  First block:              0
+  Block size:               4096
+  Fragment size:            4096
+  Reserved GDT blocks:      6
+  Blocks per group:         32768
+  Fragments per group:      32768
+  Inodes per group:         25600
+  Inode blocks per group:   800
+  Filesystem created:       Sat May  6 12:02:41 2023
+  Last mount time:          n/a
+  Last write time:          Sat May  6 12:02:41 2023
+  Mount count:              0
+  Maximum mount count:      -1
+  Last checked:             Sat May  6 12:02:41 2023
+  Check interval:           0 (<none>)
+  Reserved blocks uid:      0 (user root)
+  Reserved blocks gid:      0 (group root)
+  First inode:              11
+  Inode size:               128
+  Default directory hash:   half_md4
+  Directory Hash Seed:      14688dd2-c39d-4bae-8b18-07dffb78c6e0
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs
+      > -L loop0-ext2-tuned  // ラベル変更
+      > -U $(uuidgen)        // UUID
+      > -m 5                 // 管理領域(5%)
+      > /dev/loop0           // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tune2fs 1.42.9 (28-Dec-2013)
+  Setting reserved blocks percentage to 5% (1280 blocks)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo dumpe2fs /dev/loop0 -> スーパーブロックの内容確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  dumpe2fs 1.42.9 (28-Dec-2013)
+  Filesystem volume name:   loop0-ext2-tuned -> 変更を確認
+  Last mounted on:          <not available>
+  Filesystem UUID:          c619cd77-f338-47d3-ab57-1b19773e8145 -> 変更を確認
+  Filesystem magic number:  0xEF53
+  Filesystem revision #:    1 (dynamic)
+  Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file
+  Filesystem flags:         signed_directory_hash 
+  Default mount options:    user_xattr acl
+  Filesystem state:         clean
+  Errors behavior:          Continue
+  Filesystem OS type:       Linux
+  Inode count:              25600
+  Block count:              25600
+  Reserved block count:     1280 -> 変更を確認
+  Free blocks:              24784
+  Free inodes:              25589
+  First block:              0
+  Block size:               4096
+  Fragment size:            4096
+  Reserved GDT blocks:      6
+  Blocks per group:         32768
+  Fragments per group:      32768
+  Inodes per group:         25600
+  Inode blocks per group:   800
+  Filesystem created:       Sat May  6 12:02:41 2023
+  Last mount time:          n/a
+  Last write time:          Sat May  6 12:50:47 2023
+  Mount count:              0
+  Maximum mount count:      -1
+  Last checked:             Sat May  6 12:02:41 2023
+  Check interval:           0 (<none>)
+  Reserved blocks uid:      0 (user root)
+  Reserved blocks gid:      0 (group root)
+  First inode:              11
+  Inode size:               128
+  Default directory hash:   half_md4
+  Directory Hash Seed:      14688dd2-c39d-4bae-8b18-07dffb78c6e0
+  
+  Group 0: (Blocks 0-25599)
+    Primary superblock at 0, Group descriptors at 1-1
+    Reserved GDT blocks at 2-7
+    Block bitmap at 8 (+8), Inode bitmap at 9 (+9)
+    Inode table at 10-809 (+10)
+    24784 free blocks, 25589 free inodes, 2 directories
+    Free blocks: 816-25599
+    Free inodes: 12-25600
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs -l /dev/loop0 -> スーパーブロックの内容確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tune2fs 1.42.9 (28-Dec-2013)
+  Filesystem volume name:   loop0-ext2-tuned -> 変更を確認
+  Last mounted on:          <not available>
+  Filesystem UUID:          c619cd77-f338-47d3-ab57-1b19773e8145 -> 変更を確認
+  Filesystem magic number:  0xEF53
+  Filesystem revision #:    1 (dynamic)
+  Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file
+  Filesystem flags:         signed_directory_hash 
+  Default mount options:    user_xattr acl
+  Filesystem state:         clean
+  Errors behavior:          Continue
+  Filesystem OS type:       Linux
+  Inode count:              25600
+  Block count:              25600
+  Reserved block count:     1280 -> 変更を確認
+  Free blocks:              24784
+  Free inodes:              25589
+  First block:              0
+  Block size:               4096
+  Fragment size:            4096
+  Reserved GDT blocks:      6
+  Blocks per group:         32768
+  Fragments per group:      32768
+  Inodes per group:         25600
+  Inode blocks per group:   800
+  Filesystem created:       Sat May  6 12:02:41 2023
+  Last mount time:          n/a
+  Last write time:          Sat May  6 12:50:47 2023
+  Mount count:              0
+  Maximum mount count:      -1
+  Last checked:             Sat May  6 12:02:41 2023
+  Check interval:           0 (<none>)
+  Reserved blocks uid:      0 (user root)
+  Reserved blocks gid:      0 (group root)
+  First inode:              11
+  Inode size:               128
+  Default directory hash:   half_md4
+  Directory Hash Seed:      14688dd2-c39d-4bae-8b18-07dffb78c6e0
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults /dev/loop0 /mnt/loop0
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 5466.913933] EXT4-fs (loop0): mounting ext2 file system using the ext4 subsystem
+  [ 5466.930251] EXT4-fs (loop0): mounted filesystem without journal. Opts: (null)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mke2fs
+      > -b 4096        // ブロックサイズ
+      > -j             // ext3
+      > -c             // 不良チェック
+      > -L loop1-ext3  // ラベル
+      > -m 1           // 管理領域(1%)
+      > -n             // 動作シミュレートのみ
+      > /dev/loop1     // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mke2fs 1.42.9 (28-Dec-2013)
+  Filesystem label=loop1-ext3 -> ラベル
+  OS type: Linux
+  Block size=4096 (log=2) -> ブロックサイズ
+  Fragment size=4096 (log=2)
+  Stride=0 blocks, Stripe width=0 blocks
+  25600 inodes, 25600 blocks
+  256 blocks (1.00%) reserved for the super user -> 管理領域(1%)
+  First data block=0
+  Maximum filesystem blocks=29360128
+  1 block group
+  32768 blocks per group, 32768 fragments per group
+  25600 inodes per group
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mke2fs
+      > -b 4096        // ブロックサイズ
+      > -j             // ext3
+      > -c             // 不良チェック
+      > -L loop1-ext3  // ラベル
+      > -m 1           // 管理領域(1%)
+      > /dev/loop1     // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mke2fs 1.42.9 (28-Dec-2013)
+  Discarding device blocks: done
+  Filesystem label=loop1-ext3 -> ラベル
+  OS type: Linux
+  Block size=4096 (log=2) -> ブロックサイズ(4096)
+  Fragment size=4096 (log=2)
+  Stride=0 blocks, Stripe width=0 blocks
+  25600 inodes, 25600 blocks
+  256 blocks (1.00%) reserved for the super user -> 管理領域(1%)
+  First data block=0
+  Maximum filesystem blocks=29360128
+  1 block group
+  32768 blocks per group, 32768 fragments per group
+  25600 inodes per group
+  
+  Checking for bad blocks (read-only test): 0.00% done, 0:00 elapsed.
+  Allocating group tables: done
+  Writing inode tables: done
+  Creating journal (1024 blocks): done
+  Writing superblocks and filesystem accounting information: done
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs
+      > -L loop1-ext3-tuned  // ラベル変更
+      > -U $(uuidgen)        // UUID
+      > -m 5                 // 管理領域(5%)
+      > /dev/loop1           // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tune2fs 1.42.9 (28-Dec-2013)
+  Setting reserved blocks percentage to 5% (1280 blocks)
   --------------------------------------------------
   
   vm11$ cd $HOME
