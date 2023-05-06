@@ -680,8 +680,7 @@
     mke2fs -L XX    : ボリュームラベル(XX)
     mke2fs -i XX    : iノードあたりのバイト数
     mke2fs -j       : ファイルシステム(ext3)を作成
-    mke2fs -J       : ファイルシステム(ext4)を作成
-    mke2fs -m XX %  : root用の管理領域の割合(XX)%
+    mke2fs -m XX %  : 管理領域の割合(XX)%
     mke2fs -n       : 動作のシミュレートのみ
     mke2fs -t XX    : ファイルシステムの種類(ext2,ext3,ext4)
   
@@ -1116,6 +1115,87 @@
   --------------------------------------------------
   [ 6903.129064] EXT4-fs (loop1): mounting ext3 file system using the ext4 subsystem
   [ 6903.141801] EXT4-fs (loop1): mounted filesystem with ordered data mode. Opts: (null)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mke2fs
+      > -b 4096        // ブロックサイズ
+      > -t ext4        // ext4
+      > -c             // 不良チェック
+      > -L loop2-ext4  // ラベル
+      > -m 1           // 管理領域(1%)
+      > -n             // 動作シミュレートのみ
+      > /dev/loop2     // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mke2fs 1.42.9 (28-Dec-2013)
+  Filesystem label=loop2-ext4 -> ラベル
+  OS type: Linux
+  Block size=4096 (log=2) -> ブロックサイズ(4096)
+  Fragment size=4096 (log=2)
+  Stride=0 blocks, Stripe width=0 blocks
+  25600 inodes, 25600 blocks
+  256 blocks (1.00%) reserved for the super user -> 管理領域(1%)
+  First data block=0
+  Maximum filesystem blocks=27262976
+  1 block group
+  32768 blocks per group, 32768 fragments per group
+  25600 inodes per group
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mke2fs
+      > -b 4096        // ブロックサイズ
+      > -t ext4        // ext4
+      > -c             // 不良チェック
+      > -L loop2-ext4  // ラベル
+      > -m 1           // 管理領域(1%)
+      > /dev/loop2     // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mke2fs 1.42.9 (28-Dec-2013)
+  Discarding device blocks: done
+  Filesystem label=loop2-ext4 -> ラベル
+  OS type: Linux
+  Block size=4096 (log=2) -> ブロックサイズ(4096)
+  Fragment size=4096 (log=2)
+  Stride=0 blocks, Stripe width=0 blocks
+  25600 inodes, 25600 blocks
+  256 blocks (1.00%) reserved for the super user -> 管理領域(1%)
+  First data block=0
+  Maximum filesystem blocks=27262976
+  1 block group
+  32768 blocks per group, 32768 fragments per group
+  25600 inodes per group
+  
+  Checking for bad blocks (read-only test):   0.00% done, 0:00 elapsed. -> 不良チェック
+  Allocating group tables: done
+  Writing inode tables: done
+  Creating journal (1024 blocks): done
+  Writing superblocks and filesystem accounting information: done
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo tune2fs
+      > -L loop2-ext4-tuned  // ラベル変更
+      > -U $(uuidgen)        // UUID
+      > -m 5                 // 管理領域(5%)
+      > /dev/loop2           // デバイスファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  tune2fs 1.42.9 (28-Dec-2013)
+  Setting reserved blocks percentage to 5% (1280 blocks)
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults /dev/loop2 /mnt/loop2
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [ 8857.817503] EXT4-fs (loop2): mounted filesystem with ordered data mode. Opts: (null)
   --------------------------------------------------
   
   vm11$ cd $HOME
