@@ -1204,15 +1204,32 @@
   コマンドの実行結果
   --------------------------------------------------
   Discarding blocks...Done.
-  meta-data=/dev/loop3             isize=512    agcount=4, agsize=6400 blks
-           =                       sectsz=512   attr=2, projid32bit=1
-           =                       crc=1        finobt=0, sparse=0
-  data     =                       bsize=4096   blocks=25600, imaxpct=25
-           =                       sunit=0      swidth=0 blks
-  naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
-  log      =internal log           bsize=4096   blocks=855, version=2
-           =                       sectsz=512   sunit=0 blks, lazy-count=1
-  realtime =none                   extsz=4096   blocks=0, rtextents=0
+  meta-data=/dev/loop3    isize=512    agcount=4, agsize=6400 blks
+           =              sectsz=512   attr=2, projid32bit=1
+           =              crc=1        finobt=0, sparse=0
+  data     =              bsize=4096   blocks=25600, imaxpct=25
+           =              sunit=0      swidth=0 blks
+  naming   =version 2     bsize=4096   ascii-ci=0 ftype=1
+  log      =internal log  bsize=4096   blocks=855, version=2
+           =              sectsz=512   sunit=0 blks, lazy-count=1
+  realtime =none          extsz=4096   blocks=0, rtextents=0
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo xfs_info /dev/loop3 -> ファイルシステム(xfs)を調査
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  xfs_info: /dev/loop3 is not a mounted XFS filesystem -> マウント状態でないと失敗する
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo mount -o defaults /dev/loop3 /mnt/loop3 -> ファイルシステム(xfs)をマウント
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [10950.660730] XFS (loop3): Mounting V5 Filesystem
+  [10950.669486] XFS (loop3): Ending clean mount
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -1236,36 +1253,19 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  xfs_info: /dev/loop3 is not a mounted XFS filesystem -> マウント状態でないためエラー
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults /dev/loop3 /mnt/loop3
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [10950.660730] XFS (loop3): Mounting V5 Filesystem
-  [10950.669486] XFS (loop3): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_info /dev/loop3 -> ファイルシステム(xfs)を調査
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  meta-data=/dev/loop3             isize=512    agcount=4, agsize=6400 blks
-           =                       sectsz=512   attr=2, projid32bit=1
-           =                       crc=1        finobt=0 spinodes=0
-  data     =                       bsize=4096   blocks=25600, imaxpct=25
-           =                       sunit=0      swidth=0 blks
-  naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
-  log      =internal               bsize=4096   blocks=855, version=2
-           =                       sectsz=512   sunit=0 blks, lazy-count=1
-  realtime =none                   extsz=4096   blocks=0, rtextents=0
+  meta-data=/dev/loop3  isize=512    agcount=4, agsize=6400 blks
+           =            sectsz=512   attr=2, projid32bit=1
+           =            crc=1        finobt=0 spinodes=0
+  data     =            bsize=4096   blocks=25600, imaxpct=25
+           =            sunit=0      swidth=0 blks
+  naming   =version 2   bsize=4096   ascii-ci=0 ftype=1
+  log      =internal    bsize=4096   blocks=855, version=2
+           =            sectsz=512   sunit=0 blks, lazy-count=1
+  realtime =none        extsz=4096   blocks=0, rtextents=0
   --------------------------------------------------
   
   //
-
+  
   vm11$ cd $HOME
   vm11$ lsblk
   
