@@ -29,6 +29,1386 @@
 [28] ネットワークトラフィックの測定 - 05 (netperf)
 [29] ネットワークトラフィックの測定 - 06 (iptraf-ng)
 ================================================================================
+[X01]
+  準備 - 構築予定の仮想マシン一覧
+  
+[内容]
+  ## ホスト
+    HOST : rock
+    IPV4 : dhcp
+    MEMO : client1
+  
+  ## 仮想マシン1
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : server
+  
+  ## 仮想マシン2
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : client2
+  
+[確認]
+  実機での確認なし
+  
+================================================================================
+[X02]
+  準備 - ホスト側の設定
+  
+[内容]
+  ## 作業内容
+    システム基本調査とホスト名の設定
+  
+[確認]
+  $ cd $HOME
+  $ cat /etc/redhat-release -> OSバージョン
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Rocky Linux release 8.8 (Green Obsidian)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ cat /etc/machine-id -> マシンID
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  74e75651bd5b4069bb8767871ac6dbab
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ uname -r -> カーネルバージョン
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  4.18.0-477.10.1.el8_8.x86_64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ uname -m -> CPUアーキテクチャ
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  x86_64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ whoami -> ユーザー名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  makoto
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ cat /etc/group | grep $(whoami) | grep wheel -> ユーザーがwheelグループ所属か確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  wheel:x:10:makoto
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo visudo -> パスワード無しでsudoコマンドを実行可能にする
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  %wheel   ALL=(ALL)   NOPASSWD: ALL -> コメントアウト解除
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ hostnamectl
+  
+  コマンドの実行結果
+  --------------------------------------------------
+   Static hostname: localhost.localdomain -> rockに変更する
+         Icon name: computer-laptop
+           Chassis: laptop
+        Machine ID: 74e75651bd5b4069bb8767871ac6dbab
+           Boot ID: a1214fe388ef4a0da9cc27fe1f76e473
+  Operating System: Rocky Linux 8.8 (Green Obsidian)
+       CPE OS Name: cpe:/o:rocky:rocky:8:GA
+            Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+      Architecture: x86-64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ hostnamectl set-hostname rock
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ hostnamectl
+  
+  コマンドの実行結果
+  --------------------------------------------------
+   Static hostname: rock
+         Icon name: computer-laptop
+           Chassis: laptop
+        Machine ID: 74e75651bd5b4069bb8767871ac6dbab
+           Boot ID: a1214fe388ef4a0da9cc27fe1f76e473
+  Operating System: Rocky Linux 8.8 (Green Obsidian)
+       CPE OS Name: cpe:/o:rocky:rocky:8:GA
+            Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+      Architecture: x86-64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ip addr show -> NIC確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+      valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+      valid_lft forever preferred_lft forever
+  
+  2: enp0s25: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 70:58:12:26:ac:cf brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.4/24 brd 192.168.1.255 scope global dynamic noprefixroute enp0s25
+      valid_lft 10600sec preferred_lft 10600sec
+    inet6 2400:4052:20c0:bc00:7258:12ff:fe26:accf/64 scope global dynamic noprefixroute 
+      valid_lft 14202sec preferred_lft 12402sec
+    inet6 fe80::7258:12ff:fe26:accf/64 scope link noprefixroute 
+      valid_lft forever preferred_lft forever
+  
+  3: wlp3s0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether ae:2f:c1:10:64:81 brd ff:ff:ff:ff:ff:ff permaddr 64:80:99:3b:2e:5c
+  
+  4: virbr0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default qlen 1000
+    link/ether 52:54:00:6f:51:3b brd ff:ff:ff:ff:ff:ff
+    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0
+      valid_lft forever preferred_lft forever
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ cat /etc/sysconfig/network-scripts/ifcfg-enp0s25
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  TYPE=Ethernet
+  PROXY_METHOD=none
+  BROWSER_ONLY=no
+  BOOTPROTO=dhcp -> 起動時にDHCPでIPV4の割当
+  DEFROUTE=yes
+  IPV4_FAILURE_FATAL=no
+  IPV6INIT=yes
+  IPV6_AUTOCONF=yes
+  IPV6_DEFROUTE=yes
+  IPV6_FAILURE_FATAL=no
+  NAME=enp0s25
+  UUID=2d5c2599-5e1e-4093-b26e-078d12c153ea
+  DEVICE=enp0s25
+  ONBOOT=yes
+  IPV6_PRIVACY=no
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X02]
+  準備 - 仮想環境のパッケージをインストール
+  
+[内容]
+  ## 作業内容
+    仮想環境のパッケージをインストール
+  
+[確認]
+  $ cd $HOME
+  $ grep -E 'svm|vmx' /proc/cpuinfo -> CPUの仮想環境(KVM)対応を確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 該当語句(vmx)が強調表示、CPUが仮想環境(KVM)に対応
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo dnf -y install qemu-kvm qemu-img libvirt virt-install virt-manager
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo systemctl start libvirtd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo systemctl enable libvirtd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X03]
+  準備 - イメージファイル取得
+  
+[内容]
+  ## 作業内容
+    イメージファイル取得
+  
+[確認]
+  $ cd $HOME
+  $ sudo dnf -y install wget
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  $ cd /user/local/src
+  $ sudo wget http://ftp.riken.jp/Linux/rocky/8.8/isos/x86_64/Rocky-8.8-x86_64-minimal.iso
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X04]
+  準備 - キックスタートファイル作成
+  
+[内容]
+  ## 作業内容
+    キックスタートファイル作成
+  
+[確認]
+  $ cd $HOME
+  $ mkdir kickfile
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi kickfile/vm11-ks.cfg
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #version=RHEL8
+  
+  # Use text install
+  text
+  
+  # License agreement
+  eula --agreed
+  
+  # Package
+  repo --name="Minimal" --baseurl=file:///run/install/sources/mount-0000-cdrom/Minimal
+  
+  %packages
+  @^minimal-environment
+  kexec-tools
+  %end
+  
+  # Keyboard layouts
+  keyboard --xlayouts='jp'
+  
+  # System language
+  lang ja_JP.UTF-8
+  
+  # Network information
+  network --hostname=vm11 --bootproto=static --device=enp1s0 --gateway=192.168.122.1 --ip=192.168.122.11 --nameserver=192.168.122.1 --netmask=255.255.255.0 --noipv6 --activate
+  
+  # Use CDROM installation media
+  cdrom
+  
+  # Run the Setup Agent on first boot
+  firstboot --enable
+  
+  # Ignore disk is vda
+  ignoredisk --only-use=vda
+  
+  # System bootloader configuration
+  autopart
+  
+  # Partition clearing information
+  clearpart --none --initlabel
+  
+  # System timezone
+  timezone Asia/Tokyo --isUtc --nontp
+  
+  # Root password
+  rootpw --plaintext rt0122ma
+  
+  # User add
+  user --groups=wheel --name=makoto --password=ma0122ma --gecos="makoto"
+  
+  # Disable SELinux
+  selinux --disabled
+  
+  %addon ADDON_placeholder --enable --reserve-mb=auto
+  %end
+  
+  %anaconda
+  pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+  pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
+  pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
+  %end
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi kickfile/vm12-ks.cfg
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (IPV4を192.168.122.12に変更、vm11をvm12に変更)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ksvalidator kickfile/vm11-ks.cfg -> キックスタートファイル検証
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> OKの場合は何も出力されない
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ksvalidator kickfile/vm12-ks.cfg -> キックスタートファイル検証
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> OKの場合は何も出力されない
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X05]
+  準備 - スクリプト作成と仮想マシン構築
+  
+[内容]
+  ## 作業内容
+    スクリプト作成と仮想マシン構築
+  
+[確認]
+  $ cd $HOME/kickfile
+  $ vi vm11-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  # オプション部分(--)は一行にまとめないとエラー
+  
+  virt-install                                            # 使用コマンド
+  --name=vm11                                             # 仮想マシン名
+  --location=/usr/local/src/Rocky-8.8-x86_64-minimal.iso  # イメージファイル
+  --disk path=/home/vm11.qcow2,size=30,format=qcow2       # 仮想ディスク(30GB)
+  --os-type=linux                                         # タイプ
+  --os-variant=rocky8.6                                   # ディストリビューション
+  --vcpus=1                                               # 仮想CPU数
+  --ram=1600                                              # 割当メモリ量(MB) -> 1534以下ではエラー
+  --network network=default                               # ネットワーク(default)
+  --graphics none                                         # GUI不使用
+  --initrd-inject /home/makoto/kickfile/vm11-ks.cfg       # キックスタートファイル
+  --extra-args                                            # 追加パラメータ
+    "ks=file:vm11-ks.cfg                                  # 追加パラメータ -> キックスタートファイル
+    console=tty0 console=ttyS0,115200n8"                  # 追加パラメータ -> コンソール接続
+  --------------------------------------------------
+  
+  $ cd $HOME/kickfile
+  $ vi vm12-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (vm11をvm12に変更)
+  --------------------------------------------------
+  
+  $ cd $HOME/kickfile
+  $ sudo bash vm11-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (コマンド実行後に自動インストール開始 -> ログイン画面 -> makotoでログイン)
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ hostname
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    vm11
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ip addr show
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+      link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+      inet 127.0.0.1/8 scope host lo
+        valid_lft forever preferred_lft forever
+      inet6 ::1/128 scope host 
+        valid_lft forever preferred_lft forever
+    
+    2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+      link/ether 52:54:00:3a:2d:5f brd ff:ff:ff:ff:ff:ff
+      inet 192.168.122.11/24 brd 192.168.122.255 scope global noprefixroute enp1s0
+        valid_lft forever preferred_lft forever
+      inet6 fe80::5054:ff:fe3a:2d5f/64 scope link 
+        valid_lft forever preferred_lft forever
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# ping -c 3 192.168.1.1 -> 家庭用ルーターまでパケット到達
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.45 ms
+    64 bytes from 192.168.1.1: icmp_seq=2 ttl=254 time=1.13 ms
+    64 bytes from 192.168.1.1: icmp_seq=3 ttl=254 time=1.19 ms
+    
+    --- 192.168.1.1 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+    rtt min/avg/max/mdev = 1.133/1.255/1.446/0.139 ms
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl is-active sshd -> SSH確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi .vimrc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    set tabstop=2 -> タブ幅の修正
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト -> ログインプロンプト表示 -> 「Ctrl + ]」 でホスト側のシェルに戻る
+    --------------------------------------------------
+    
+  $ cd $HOME/kickfile
+  $ sudo bash vm12-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (コマンド実行後に自動インストール開始 -> ログイン画面 -> makotoでログイン)
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ hostname
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    vm12
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ ip addr show
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+      link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+      inet 127.0.0.1/8 scope host lo
+        valid_lft forever preferred_lft forever
+      inet6 ::1/128 scope host 
+        valid_lft forever preferred_lft forever
+    
+    2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+      link/ether 52:54:00:e5:eb:ba brd ff:ff:ff:ff:ff:ff
+      inet 192.168.122.12/24 brd 192.168.122.255 scope global noprefixroute enp1s0
+        valid_lft forever preferred_lft forever
+      inet6 fe80::5054:ff:fee5:ebba/64 scope link 
+        valid_lft forever preferred_lft forever
+    --------------------------------------------------
+    
+    vm12# cd $HOME
+    vm12# ping -c 3 192.168.1.1 -> 家庭用ルーターまでパケット到達
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.83 ms
+    64 bytes from 192.168.1.1: icmp_seq=2 ttl=254 time=1.27 ms
+    64 bytes from 192.168.1.1: icmp_seq=3 ttl=254 time=1.23 ms
+    
+    --- 192.168.1.1 ping statistics ---
+    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+    rtt min/avg/max/mdev = 1.226/1.439/1.826/0.275 ms
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ systemctl is-active sshd -> SSH確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ vi .vimrc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    set tabstop=2 -> タブ幅の修正
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト -> ログインプロンプト表示 -> 「Ctrl + ]」 でホスト側のシェルに戻る
+    --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X06]
+  準備 - 仮想マシンへSSH接続
+  
+[内容]
+  ## 作業内容
+    仮想マシンへSSH接続
+  
+[確認]
+  $ cd $HOME
+  $ sudo vi /etc/hosts -> 仮想マシンのエントリ追加
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11 -> 追加
+  192.168.122.12 vm12 -> 追加
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh-keygen
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Generating public/private rsa key pair.
+  Enter file in which to save the key (/home/makoto/.ssh/id_rsa): (Enter)
+  Enter passphrase (empty for no passphrase): (Enter)             -> パスフレーズ無し
+  Enter same passphrase again: (Enter)                            -> パスフレーズ無し
+  Your identification has been saved in /home/makoto/.ssh/id_rsa. -> 秘密鍵
+  Your public key has been saved in /home/makoto/.ssh/id_rsa.pub. -> 公開鍵
+  The key fingerprint is:
+  SHA256:z2YWBSFA/dZwjyignp3w4+RVJApkK1xyUM85GetFwy0 makoto@rock
+  The key's randomart image is:
+  ...
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ scp .ssh/id_rsa.pub makoto@vm11:id_rsa.pub -> 公開鍵を仮想マシンにSSH転送
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 初回接続時のみホスト認証用鍵をvm11から受取 -> .ssh/known_hostsに保存
+  
+  makoto@vm11's password: (makotoパスワード)
+  id_rsa.pub               100%  565   308.2KB/s   00:00
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ scp .ssh/id_rsa.pub makoto@vm12:id_rsa.pub -> 公開鍵を仮想マシンにSSH転送
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 初回接続時のみホスト認証用鍵をvm11から受取 -> .ssh/known_hostsに保存
+  
+  makoto@vm12's password: (makotoパスワード)
+  id_rsa.pub               100%  565   308.2KB/s   00:00
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11 -> パスワード認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  makoto@vm11's password: (makotoパスワード)
+  Last login: Sun May 28 11:49:44 2023
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ mkdir .ssh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ chmod 700 .ssh -> 規定ファイルのアクセス権をmakotoのみ読書可能に設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat id_rsa.pub >> .ssh/authorized_keys -> 転送した公開鍵を規定ファイルに書き込む
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ chmod 600 .ssh/authorized_keys -> 規定ファイルのアクセス権をrootのみ読書可能に設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/ssh/sshd_config -> 設定ファイルの編集
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# cat /etc/ssh/sshd_config | grep -vE '^#|^$'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    HostKey /etc/ssh/ssh_host_rsa_key
+    HostKey /etc/ssh/ssh_host_ecdsa_key
+    HostKey /etc/ssh/ssh_host_ed25519_key
+    SyslogFacility AUTHPRIV
+    
+    PermitRootLogin yes -> 変更前
+    PermitRootLogin no  -> 変更後
+    
+    #PubkeyAuthentication yes -> 変更前
+    PubkeyAuthentication yes  -> 変更後 - 公開鍵認証を有効化
+    
+    // 公開鍵格納用の規定ファイル
+    AuthorizedKeysFile .ssh/authorized_keys
+    
+    PasswordAuthentication yes -> 変更前
+    PasswordAuthentication no  -> 変更後 - パスワード認証を無効化
+    
+    ChallengeResponseAuthentication no
+    GSSAPIAuthentication yes
+    GSSAPICleanupCredentials no
+    UsePAM yes
+    X11Forwarding yes
+    PrintMotd no
+    AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+    AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+    AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+    AcceptEnv XMODIFIERS
+    Subsystem sftp /usr/libexec/openssh/sftp-server
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# sudo systemctl reload sshd -> 設定ファイルを読み込み
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> パスワード認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  makoto@vm12's password: (makotoパスワード)
+  Last login: Sun May 28 11:49:44 2023
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ mkdir .ssh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ chmod 700 .ssh -> 規定ファイルのアクセス権をmakotoのみ読書可能に設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ cat id_rsa.pub >> .ssh/authorized_keys -> 転送した公開鍵を規定ファイルに書き込む
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ chmod 600 .ssh/authorized_keys -> 規定ファイルのアクセス権をrootのみ読書可能に設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /etc/ssh/sshd_config -> 設定ファイルの編集
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm12# cd $HOME
+    vm12# cat /etc/ssh/sshd_config | grep -vE '^#|^$'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    HostKey /etc/ssh/ssh_host_rsa_key
+    HostKey /etc/ssh/ssh_host_ecdsa_key
+    HostKey /etc/ssh/ssh_host_ed25519_key
+    SyslogFacility AUTHPRIV
+    
+    PermitRootLogin yes -> 変更前
+    PermitRootLogin no  -> 変更後
+    
+    #PubkeyAuthentication yes -> 変更前
+    PubkeyAuthentication yes  -> 変更後 - 公開鍵認証を有効化
+    
+    // 公開鍵格納用の規定ファイル
+    AuthorizedKeysFile .ssh/authorized_keys
+    
+    PasswordAuthentication yes -> 変更前
+    PasswordAuthentication no  -> 変更後 - パスワード認証を無効化
+    
+    ChallengeResponseAuthentication no
+    GSSAPIAuthentication yes
+    GSSAPICleanupCredentials no
+    UsePAM yes
+    X11Forwarding yes
+    PrintMotd no
+    AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+    AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+    AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+    AcceptEnv XMODIFIERS
+    Subsystem sftp /usr/libexec/openssh/sftp-server
+    --------------------------------------------------
+    
+    vm12# cd $HOME
+    vm12# sudo systemctl reload sshd -> 設定ファイルを読み込み
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12# cd $HOME
+    vm12# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh list --all -> 仮想マシン一覧
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Id   名前   状態
+  2    vm11   実行中
+  4    vm12   実行中
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh destroy vm11 -> 仮想マシン停止
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm11' destroyed
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh destroy vm12 -> 仮想マシン停止
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm12' destroyed
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh start vm11 -> 仮想マシン起動
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm11' started
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh start vm12 -> 仮想マシン起動
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm12' started
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun May 28 14:34:52 2023 from 192.168.122.1 -> パスワード入力が要求されなくなる
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun May 28 14:34:07 2023 -> パスワード入力が要求されなくなる
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X07]
+  準備 - 構成管理ツールをインストール
+  
+[内容]
+  ## 作業内容
+    構成管理ツールをインストール
+  
+[確認]
+  $ cd $HOME
+  $ sudo dnf -y install ansible
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 自分の環境では競合エラーが発生
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo ansible --version -> 本コマンドでパッケージを個別にインストールしていくことができた
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ansible [core 2.14.2]
+    config file = /etc/ansible/ansible.cfg
+    configured module search path = ['/root/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+    ansible python module location = /usr/lib/python3.11/site-packages/ansible
+    ansible collection location = /root/.ansible/collections:/usr/share/ansible/collections
+    executable location = /usr/bin/ansible
+    python version = 3.11.2 (main, Feb 18 2023, 08:12:16) [GCC 8.5.0 20210514 (Red Hat 8.5.0-18)] (/usr/bin/python3.11)
+    jinja version = 3.1.2
+    libyaml = True
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X08]
+  準備 - コマンドラインで仮想マシンへ指示
+  
+[内容]
+  ## 作業内容
+    構成管理ツール(Ansible)からコマンドラインで仮想マシンへ指示
+  
+[確認]
+  $ cd $HOME
+  $ sudo vi /etc/ansible/hosts -> インベントリ修正
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  # cd $HOME
+  # cat /etc/ansible/hosts | grep -vE '^#|^$'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  [vms]
+  192.168.122.11
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible vms --list-hosts -> 所属ホストを出力
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  hosts (1):
+    192.168.122.11
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible vms -m ping -> 所属ホストにPing
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+  }
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible vms -m setup -> 所属ホストから情報取得
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | SUCCESS => {
+    "ansible_facts": {
+      "ansible_all_ipv4_addresses": [
+        "192.168.122.11"
+      ],
+      ...
+    }
+  }
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible vms -m command -a 'lsblk' -> 所属ホストでコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | CHANGED | rc=0 >>
+  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                      11:0     1  1024M   0  rom   
+  vda                     252:0     0    30G   0  disk  
+   |-- vda1               252:1     0     1G   0  part  /boot
+   |-- vda2               252:2     0    29G   0  part  
+        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X11]
+  動作確認の準備
+  
+[内容]
+  ## 作業内容
+    インベントリの作成
+  
+[確認]
+  # cd $HOME
+  # vi myhost.yml -> YAML形式でインベントリの作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---                                 # 開始宣言 "---"
+  all:                                # グループ "all" を宣言
+    hosts:                            # グループ "all" の所属ホスト
+      vm11:                           # ホスト名
+        ansible_host: 192.168.122.11  # IPアドレス
+        ansible_user: root            # ユーザー
+        ansible_password: rt0122ma    # パスワード
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible all -i myhost.yml -m command -a 'lsblk' -> グループ全体にコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | CHANGED | rc=0 >>
+  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                      11:0     1  1024M   0  rom   
+  vda                     252:0     0    30G   0  disk  
+   |-- vda1               252:1     0     1G   0  part  /boot
+   |-- vda2               252:2     0    29G   0  part  
+        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible vm11 -i myhost.yml -m command -a 'lsblk' -> 指定ホストのみにコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | CHANGED | rc=0 >>
+  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                      11:0     1  1024M   0  rom   
+  vda                     252:0     0    30G   0  disk  
+   |-- vda1               252:1     0     1G   0  part  /boot
+   |-- vda2               252:2     0    29G   0  part  
+        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X12]
+  動作確認の準備
+  
+[内容]
+  ## 作業内容
+    モジュール名を正式名称で指定
+  
+[確認]
+  # cd $HOME
+  # ansible all -i myhost.yml -m command -a 'lsblk'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | CHANGED | rc=0 >>
+  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                      11:0     1  1024M   0  rom   
+  vda                     252:0     0    30G   0  disk  
+   |-- vda1               252:1     0     1G   0  part  /boot
+   |-- vda2               252:2     0    29G   0  part  
+        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'lsblk' -> モジュール名を正式名称で指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | CHANGED | rc=0 >>
+  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+  sr0                      11:0     1  1024M   0  rom   
+  vda                     252:0     0    30G   0  disk  
+   |-- vda1               252:1     0     1G   0  part  /boot
+   |-- vda2               252:2     0    29G   0  part  
+        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X13]
+  動作確認の準備
+  
+[内容]
+  ## 作業内容
+    コマンド実行時にエラー
+  
+[確認]
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts | head -n 1' -> コマンド実行時にエラー
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | FAILED | rc=1 >>
+     1  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+     2  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6cat: '|': No such file or directory
+  cat: head: No such file or directory
+  cat: 1: No such file or directorynon-zero return code
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X14]
+  動作確認の準備
+  
+[内容]
+  ## 作業内容
+    管理者権限でコマンド実行
+  
+[確認]
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts' -b -> 管理者権限でコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X15]
+  動作確認の準備
+  
+[内容]
+  ## 作業内容
+    ファイルコピーのモジュール使用
+  
+[確認]
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'ls -l'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+  合計 12
+  -rw-------. 1 root root 1271  5月 24 15:12 anaconda-ks.cfg
+  -rw-r--r--  1 root root  563  5月 24 19:41 id_rsa.pub
+  -rw-------. 1 root root 1267  5月 24 15:12 original-ks.cfg
+  --------------------------------------------------
+  
+  # cd $HOME
+  # touch AAA.txt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.copy -a "src='./AAA.txt' dest='~/'" -> ファイルコピーのモジュール使用
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "dest": "/root/AAA.txt",
+    "gid": 0,
+    "group": "root",
+    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
+    "mode": "0644",
+    "owner": "root",
+    "size": 0,
+    "src": "/root/.ansible/tmp/ansible-tmp-1685071858.3930466-9472-160279755787734/source",
+    "state": "file",
+    "uid": 0
+  }
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible all -i myhost.yml -m ansible.builtin.command -a 'ls -l'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+  合計 12
+  -rw-r--r--  1 root root    0  5月 26 12:30 AAA.txt -> ファイルコピー確認
+  -rw-------. 1 root root 1271  5月 24 15:12 anaconda-ks.cfg
+  -rw-r--r--  1 root root  563  5月 24 19:41 id_rsa.pub
+  -rw-------. 1 root root 1267  5月 24 15:12 original-ks.cfg
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X16]
+  動作確認の準備
+  
+[内容]
+  ## 作業内容
+    構築手順書(プレイブック)の作成
+  
+[確認]
+  # cd $HOME
+  # ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri May 26 12:34:27 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# dnf list installed | grep -i net-tools -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# dnf list installed | grep -i traceroute -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+  
+  # cd $HOME
+  # cat myhost.yml -> インベントリ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---                                 # 開始宣言 "---"
+  all:                                # グループ "all" を宣言
+    hosts:                            # グループ "all" の所属ホスト
+      vm11:                           # ホスト名
+        ansible_host: 192.168.122.11  # IPアドレス
+        ansible_user: root            # ユーザー
+        ansible_password: rt0122ma    # パスワード
+  --------------------------------------------------
+  
+  # cd $HOME
+  # vi mybook.yml -> プレイブック作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  - name: Install Packages                # 手順名
+    hosts: all                            # 対象ホスト -> インベントリ参照
+    gather_facts: no                      # ファクト変数の収集なし
+  
+    tasks:
+      - name: Install net-tools package   # タスク名
+        ansible.builtin.dnf:              # モジュール
+          name: net-tools                 # パッケージ
+          state: present                  # 未インストール時のみインストール
+        become: yes                       # 管理者権限で実行
+      
+      - name: Install traceroute package  # タスク名
+        ansible.builtin.dnf:              # モジュール
+          name: traceroute                # パッケージ
+          state: present                  # 未インストール時のみインストール
+        become: yes                       # 管理者権限で実行
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible-playbook -i myhost.yml mybook.yml -> プレイブック実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  PLAY [Install Packages]
+  
+  TASK [Install net-tools package]
+  changed: [vm11] -> パッケージがインストールされたので changed のステータス
+  
+  TASK [Install traceroute package]
+  changed: [vm11] -> パッケージがインストールされたので changed のステータス
+  
+  PLAY RECAP
+  vm11 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ansible-playbook -i myhost.yml mybook.yml -> プレイブック実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  PLAY [Install Packages]
+  
+  TASK [Install net-tools package]
+  ok: [vm11] -> パッケージが既にインストールされているので ok のステータス
+  
+  TASK [Install traceroute package]
+  ok: [vm11] -> パッケージが既にインストールされているので ok のステータス
+  
+  PLAY RECAP
+  vm11 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  --------------------------------------------------
+  
+  # cd $HOME
+  # ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri May 26 14:18:58 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# dnf list installed | grep -i net-tools -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    net-tools.x86_64   2.0-0.52.20160912git.el8   @baseos
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# dnf list installed | grep -i traceroute -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    traceroute.x86_64   3:2.1.0-6.el8   @baseos 
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
 [01]
   総合的なリソース使用率の測定 - 01 (top)
   
