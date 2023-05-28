@@ -1406,35 +1406,67 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Fri May 26 12:34:27 2023 from 192.168.122.1
+  Last login: Sun May 28 19:00:41 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm11# cd $HOME
-    vm11# dnf list installed | grep -i net-tools -> パッケージのインストール確認
+    vm11$ cd $HOME
+    vm11$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm11# cd $HOME
-    vm11# dnf list installed | grep -i traceroute -> パッケージのインストール確認
+    vm11$ cd $HOME
+    vm11$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm11# cd $HOME
-    vm11# exit
+    vm11$ cd $HOME
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
     Connection to vm11 closed.
     --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
   
-  # cd $HOME
-  # cat myhost.yml -> インベントリ確認
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun May 28 18:41:41 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm12 closed.
+    --------------------------------------------------
+  
+  $ cd $HOME
+  $ cat ansible/myhost.yml -> インベントリ確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1443,12 +1475,16 @@
     hosts:                            # グループ "all" の所属ホスト
       vm11:                           # ホスト名
         ansible_host: 192.168.122.11  # IPアドレス
-        ansible_user: root            # ユーザー
-        ansible_password: rt0122ma    # パスワード
+        ansible_user: makoto          # ユーザー
+        ansible_password: ma0122ma    # パスワード
+      vm12:                           # ホスト名
+        ansible_host: 192.168.122.12  # IPアドレス
+        ansible_user: makoto          # ユーザー
+        ansible_password: ma0122ma    # パスワード
   --------------------------------------------------
   
-  # cd $HOME
-  # vi mybook.yml -> プレイブック作成
+  $ cd $HOME
+  $ vi ansible/mybook01.yml -> プレイブック作成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1471,66 +1507,100 @@
         become: yes                       # 管理者権限で実行
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible-playbook -i myhost.yml mybook.yml -> プレイブック実行
+  $ cd $HOME
+  $ ansible-playbook -i ansible/myhost.yml ansible/mybook01.yml -> プレイブック実行
   
   コマンドの実行結果
   --------------------------------------------------
-  PLAY [Install Packages]
-  
   TASK [Install net-tools package]
-  changed: [vm11] -> パッケージがインストールされたので changed のステータス
+  changed: [vm11]
+  changed: [vm12]
   
   TASK [Install traceroute package]
-  changed: [vm11] -> パッケージがインストールされたので changed のステータス
+  changed: [vm12]
+  changed: [vm11]
   
   PLAY RECAP
-  vm11 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm11 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm12 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible-playbook -i myhost.yml mybook.yml -> プレイブック実行
+  $ cd $HOME
+  $ ansible-playbook -i ansible/myhost.yml ansible/mybook01.yml -> 再実行
   
   コマンドの実行結果
   --------------------------------------------------
-  PLAY [Install Packages]
-  
   TASK [Install net-tools package]
-  ok: [vm11] -> パッケージが既にインストールされているので ok のステータス
+  ok: [vm11] -> 既にインストールされているためokと出力
+  ok: [vm12] -> 既にインストールされているためokと出力
   
   TASK [Install traceroute package]
-  ok: [vm11] -> パッケージが既にインストールされているので ok のステータス
+  ok: [vm11] -> 既にインストールされているためokと出力
+  ok: [vm12] -> 既にインストールされているためokと出力
   
   PLAY RECAP
-  vm11 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm11 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm12 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
   --------------------------------------------------
   
-  # cd $HOME
-  # ssh vm11 -> 公開鍵認証でSSH接続
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Fri May 26 14:18:58 2023 from 192.168.122.1
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm11# cd $HOME
-    vm11# dnf list installed | grep -i net-tools -> パッケージのインストール確認
+    vm11$ cd $HOME
+    vm11$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
     
     コマンドの実行結果
     --------------------------------------------------
     net-tools.x86_64   2.0-0.52.20160912git.el8   @baseos
     --------------------------------------------------
     
-    vm11# cd $HOME
-    vm11# dnf list installed | grep -i traceroute -> パッケージのインストール確認
+    vm11$ cd $HOME
+    vm11$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
     
     コマンドの実行結果
     --------------------------------------------------
     traceroute.x86_64   3:2.1.0-6.el8   @baseos 
     --------------------------------------------------
     
-    vm11# cd $HOME
-    vm11# exit
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    net-tools.x86_64   2.0-0.52.20160912git.el8   @baseos
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    traceroute.x86_64   3:2.1.0-6.el8   @baseos 
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1547,11 +1617,6 @@
   ## 作業内容
     プロセスをコマンド(top)で測定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド
     top -b     : バッチモード
     top -d XX  : 更新間隔(XX 秒)
@@ -1561,8 +1626,8 @@
     top -w XX  : 出力幅(XX 桁数)
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ top -> 対話モード
+  $ cd $HOME
+  $ top -> 対話モード
   
   コマンドの実行結果
   --------------------------------------------------
