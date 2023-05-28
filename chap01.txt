@@ -498,6 +498,14 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
+    vm11$ sudo visudo -> パスワード無しでsudoコマンドを実行可能にする
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    %wheel   ALL=(ALL)   NOPASSWD: ALL -> コメントアウト解除
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
     vm11$ exit
     
     コマンドの実行結果
@@ -570,6 +578,14 @@
     コマンドの実行結果
     --------------------------------------------------
     set tabstop=2 -> タブ幅の修正
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo visudo -> パスワード無しでsudoコマンドを実行可能にする
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    %wheel   ALL=(ALL)   NOPASSWD: ALL -> コメントアウト解除
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -969,17 +985,34 @@
   (省略)
   --------------------------------------------------
   
-  # cd $HOME
-  # cat /etc/ansible/hosts | grep -vE '^#|^$'
+  $ cd $HOME
+  $ cat /etc/ansible/hosts | grep -vE '^#|^$'
   
   コマンドの実行結果
   --------------------------------------------------
   [vms]
   192.168.122.11
+  192.168.122.12
+  
+  [server1]
+  192.168.122.11
+  
+  [client2]
+  192.168.122.12
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible vms --list-hosts -> 所属ホストを出力
+  $ cd $HOME
+  $ ansible vms --list-hosts -> 所属ホストを出力
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  hosts (2):
+    192.168.122.11
+    192.168.122.12
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible server1 --list-hosts -> 所属ホストを出力
   
   コマンドの実行結果
   --------------------------------------------------
@@ -987,22 +1020,67 @@
     192.168.122.11
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible vms -m ping -> 所属ホストにPing
+  $ cd $HOME
+  $ ansible client2 --list-hosts -> 所属ホストを出力
   
   コマンドの実行結果
   --------------------------------------------------
+  hosts (1):
+    192.168.122.12
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible vms -m ping -> 所属ホストにPing
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.12 | SUCCESS => {
+    "ansible_facts": {
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+  }
+  
   192.168.122.11 | SUCCESS => {
     "ansible_facts": {
-        "discovered_interpreter_python": "/usr/libexec/platform-python"
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
     },
     "changed": false,
     "ping": "pong"
   }
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible vms -m setup -> 所属ホストから情報取得
+  $ cd $HOME
+  $ ansible server1 -m ping -> 所属ホストにPing
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.11 | SUCCESS => {
+    "ansible_facts": {
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+  }
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible client2 -m ping -> 所属ホストにPing
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.12 | SUCCESS => {
+    "ansible_facts": {
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+  }
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible server1 -m setup -> 所属ホストから情報取得
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1011,39 +1089,65 @@
       "ansible_all_ipv4_addresses": [
         "192.168.122.11"
       ],
+      "ansible_all_ipv6_addresses": [
+        "fe80::5054:ff:fe3a:2d5f"
+      ],
       ...
     }
   }
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible vms -m command -a 'lsblk' -> 所属ホストでコマンド実行
+  $ cd $HOME
+  $ ansible vms -m command -a 'hostnamectl' -> 所属ホストでコマンド実行
   
   コマンドの実行結果
   --------------------------------------------------
   192.168.122.11 | CHANGED | rc=0 >>
-  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  sr0                      11:0     1  1024M   0  rom   
-  vda                     252:0     0    30G   0  disk  
-   |-- vda1               252:1     0     1G   0  part  /boot
-   |-- vda2               252:2     0    29G   0  part  
-        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
-        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+    Static hostname: vm11
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 92d5bec8979048b0b1af10ed812a4356
+            Boot ID: 6c733aba0ffe4ebab2b0ced124110419
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  
+  192.168.122.12 | CHANGED | rc=0 >>
+    Static hostname: vm12
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 9e52818a469b4bec95fdf15bcac46f9a
+            Boot ID: 98911c1d7e564a3c8b5d38a10370180c
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[X11]
-  動作確認の準備
+[X09]
+  準備 - インベントリ作成
   
 [内容]
   ## 作業内容
-    インベントリの作成
+    インベントリ作成
   
 [確認]
-  # cd $HOME
-  # vi myhost.yml -> YAML形式でインベントリの作成
+  $ cd $HOME
+  $ mkdir ansible
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi ansible/myhost.yml -> YAML形式でインベントリ作成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1052,143 +1156,174 @@
     hosts:                            # グループ "all" の所属ホスト
       vm11:                           # ホスト名
         ansible_host: 192.168.122.11  # IPアドレス
-        ansible_user: root            # ユーザー
-        ansible_password: rt0122ma    # パスワード
+        ansible_user: makoto          # ユーザー
+        ansible_password: ma0122ma    # パスワード
+      vm12:                           # ホスト名
+        ansible_host: 192.168.122.12  # IPアドレス
+        ansible_user: makoto          # ユーザー
+        ansible_password: ma0122ma    # パスワード
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible all -i myhost.yml -m command -a 'lsblk' -> グループ全体にコマンド実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  192.168.122.11 | CHANGED | rc=0 >>
-  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  sr0                      11:0     1  1024M   0  rom   
-  vda                     252:0     0    30G   0  disk  
-   |-- vda1               252:1     0     1G   0  part  /boot
-   |-- vda2               252:2     0    29G   0  part  
-        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
-        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  # cd $HOME
-  # ansible vm11 -i myhost.yml -m command -a 'lsblk' -> 指定ホストのみにコマンド実行
+  $ cd $HOME
+  $ ansible all -i ansible/myhost.yml -m command -a 'hostnamectl' -> グループ全体にコマンド実行
   
   コマンドの実行結果
   --------------------------------------------------
-  192.168.122.11 | CHANGED | rc=0 >>
-  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  sr0                      11:0     1  1024M   0  rom   
-  vda                     252:0     0    30G   0  disk  
-   |-- vda1               252:1     0     1G   0  part  /boot
-   |-- vda2               252:2     0    29G   0  part  
-        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
-        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+  vm12 | CHANGED | rc=0 >>
+    Static hostname: vm12
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 9e52818a469b4bec95fdf15bcac46f9a
+            Boot ID: 98911c1d7e564a3c8b5d38a10370180c
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  
+  vm11 | CHANGED | rc=0 >>
+    Static hostname: vm11
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 92d5bec8979048b0b1af10ed812a4356
+            Boot ID: 6c733aba0ffe4ebab2b0ced124110419
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m command -a 'hostnamectl' -> 指定ホストのみにコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+    Static hostname: vm11
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 92d5bec8979048b0b1af10ed812a4356
+            Boot ID: 6c733aba0ffe4ebab2b0ced124110419
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible vm12 -i ansible/myhost.yml -m command -a 'hostnamectl' -> 指定ホストのみにコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm12 | CHANGED | rc=0 >>
+    Static hostname: vm12
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 9e52818a469b4bec95fdf15bcac46f9a
+            Boot ID: 98911c1d7e564a3c8b5d38a10370180c
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X10]
+  準備 - モジュールを正式名称で指定
+  
+[内容]
+  ## 作業内容
+    モジュールを正式名称で指定
+  
+[確認]
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m command -a 'hostnamectl'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+    Static hostname: vm11
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 92d5bec8979048b0b1af10ed812a4356
+            Boot ID: 6c733aba0ffe4ebab2b0ced124110419
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.command -a 'hostnamectl' -> モジュールを正式名称で指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | CHANGED | rc=0 >>
+    Static hostname: vm11
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 92d5bec8979048b0b1af10ed812a4356
+            Boot ID: 6c733aba0ffe4ebab2b0ced124110419
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X11]
+  準備 - パイプで処理をつなげるとエラー
+  
+[内容]
+  ## 作業内容
+    パイプで処理をつなげるとエラー
+  
+[確認]
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.command -a 'cat /etc/passwd | head -n 5'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) '|': No such file or directory -> パイプの解釈ができない？
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
 [X12]
-  動作確認の準備
-  
-[内容]
-  ## 作業内容
-    モジュール名を正式名称で指定
-  
-[確認]
-  # cd $HOME
-  # ansible all -i myhost.yml -m command -a 'lsblk'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  192.168.122.11 | CHANGED | rc=0 >>
-  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  sr0                      11:0     1  1024M   0  rom   
-  vda                     252:0     0    30G   0  disk  
-   |-- vda1               252:1     0     1G   0  part  /boot
-   |-- vda2               252:2     0    29G   0  part  
-        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
-        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'lsblk' -> モジュール名を正式名称で指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  192.168.122.11 | CHANGED | rc=0 >>
-  NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  sr0                      11:0     1  1024M   0  rom   
-  vda                     252:0     0    30G   0  disk  
-   |-- vda1               252:1     0     1G   0  part  /boot
-   |-- vda2               252:2     0    29G   0  part  
-        |-- rl_vm11-root  253:0     0    26G   0  lvm   /
-        |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X13]
-  動作確認の準備
-  
-[内容]
-  ## 作業内容
-    コマンド実行時にエラー
-  
-[確認]
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  vm11 | CHANGED | rc=0 >>
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  --------------------------------------------------
-  
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts | head -n 1' -> コマンド実行時にエラー
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  vm11 | FAILED | rc=1 >>
-     1  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-     2  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6cat: '|': No such file or directory
-  cat: head: No such file or directory
-  cat: 1: No such file or directorynon-zero return code
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X14]
-  動作確認の準備
+  準備 - 管理者権限でコマンド実行
   
 [内容]
   ## 作業内容
     管理者権限でコマンド実行
   
 [確認]
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts'
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.command -a 'cat /etc/shadow'
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11 | FAILED | rc=1 >>
+  cat: /etc/shadow: Permission deniednon-zero return code
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.command -a 'cat /etc/shadow' -b -> 管理者権限でコマンド実行
   
   コマンドの実行結果
   --------------------------------------------------
   vm11 | CHANGED | rc=0 >>
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  --------------------------------------------------
-  
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'cat /etc/hosts' -b -> 管理者権限でコマンド実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  vm11 | CHANGED | rc=0 >>
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  root:$6$VOR.vNeNpwLfqJTp$Qbwu0LtTrfh...dq2lpJd4Hsi4JmTiwhIdxiNuUWjqEiCi.::0:99999:7:::
+  ...
   --------------------------------------------------
   
   以下の確認に続く
