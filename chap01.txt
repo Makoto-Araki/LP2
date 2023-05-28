@@ -1329,84 +1329,80 @@
   以下の確認に続く
   
 ================================================================================
-[X15]
-  動作確認の準備
+[X13]
+  準備 - ファイルコピーのモジュール使用
   
 [内容]
   ## 作業内容
     ファイルコピーのモジュール使用
   
 [確認]
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'ls -l'
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.command -a 'ls -l'
   
   コマンドの実行結果
   --------------------------------------------------
   vm11 | CHANGED | rc=0 >>
-  合計 12
-  -rw-------. 1 root root 1271  5月 24 15:12 anaconda-ks.cfg
-  -rw-r--r--  1 root root  563  5月 24 19:41 id_rsa.pub
-  -rw-------. 1 root root 1267  5月 24 15:12 original-ks.cfg
+  合計 4
+  -rw-r--r-- 1 makoto makoto 565  5月 28 12:52 id_rsa.pub
   --------------------------------------------------
   
-  # cd $HOME
-  # touch AAA.txt
+  $ cd $HOME
+  $ vi sample.txt
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Hello World
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.copy -a "src='./AAA.txt' dest='~/'" -> ファイルコピーのモジュール使用
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.copy -a "src='./sample.txt' dest='~/'" -> ファイルコピーのモジュール使用
   
   コマンドの実行結果
   --------------------------------------------------
   vm11 | CHANGED => {
     "ansible_facts": {
-        "discovered_interpreter_python": "/usr/libexec/platform-python"
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
     },
     "changed": true,
-    "checksum": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-    "dest": "/root/AAA.txt",
-    "gid": 0,
-    "group": "root",
-    "md5sum": "d41d8cd98f00b204e9800998ecf8427e",
-    "mode": "0644",
-    "owner": "root",
-    "size": 0,
-    "src": "/root/.ansible/tmp/ansible-tmp-1685071858.3930466-9472-160279755787734/source",
+    "checksum": "648a6a6ffffdaa0badb23b8baf90b6168dd16b3a",
+    "dest": "/home/makoto/sample.txt",
+    "gid": 1000,
+    "group": "makoto",
+    "md5sum": "e59ff97941044f85df5297e1c302d260",
+    "mode": "0664",
+    "owner": "makoto",
+    "size": 12,
+    "src": "/home/makoto/.ansible/tmp/ansible-tmp-1685267941.3333616-24592-201430333515689/source",
     "state": "file",
-    "uid": 0
+    "uid": 1000
   }
   --------------------------------------------------
   
-  # cd $HOME
-  # ansible all -i myhost.yml -m ansible.builtin.command -a 'ls -l'
+  $ cd $HOME
+  $ ansible vm11 -i ansible/myhost.yml -m ansible.builtin.command -a 'ls -l'
   
   コマンドの実行結果
   --------------------------------------------------
   vm11 | CHANGED | rc=0 >>
-  合計 12
-  -rw-r--r--  1 root root    0  5月 26 12:30 AAA.txt -> ファイルコピー確認
-  -rw-------. 1 root root 1271  5月 24 15:12 anaconda-ks.cfg
-  -rw-r--r--  1 root root  563  5月 24 19:41 id_rsa.pub
-  -rw-------. 1 root root 1267  5月 24 15:12 original-ks.cfg
+  合計 8
+  -rw-r--r-- 1 makoto makoto 565  5月 28 12:52 id_rsa.pub
+  -rw-rw-r-- 1 makoto makoto  12  5月 28 18:59 sample.txt -> ファイルコピー確認
   --------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[X16]
-  動作確認の準備
+[X14]
+  準備 - プレイブック作成(01)
   
 [内容]
   ## 作業内容
-    構築手順書(プレイブック)の作成
+    プレイブック作成(01)
   
 [確認]
-  # cd $HOME
-  # ssh vm11 -> 公開鍵認証でSSH接続
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
