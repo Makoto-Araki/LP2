@@ -985,6 +985,19 @@
     libyaml = True
   --------------------------------------------------
   
+  $ cd $HOME
+  $ sudo ansible-galaxy collection install ansible.posix -> 追加モジュールをインストール
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Starting galaxy collection install process
+  Process install dependency map
+  Starting collection install process
+  Downloading https://galaxy.ansible.com/download/ansible-posix-1.5.4.tar.gz to /home/makoto/.ansible/tmp/ansible-local-22257csqns1ry/tmpg37_88ft/ansible-posix-1.5.4-8zmbodjl
+  Installing 'ansible.posix:1.5.4' to '/home/makoto/.ansible/collections/ansible_collections/ansible/posix'
+  ansible.posix:1.5.4 was installed successfully
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1836,73 +1849,52 @@
   コマンドの実行結果
   --------------------------------------------------
   ---
-  - name: Install Packages
-    hosts: vm11
+  - name: Install Packages and Open Ports
+    hosts: all
     gather_facts: no
-  
+    
     tasks:
-      - name: Install stress package
+      - name: Install netperf package
         ansible.builtin.dnf:
-          name: stress
+          name: netperf
           state: present
         become: yes
-      
-      - name: Install sysstat package
-        ansible.builtin.dnf:
-          name: sysstat
-          state: present
+    
+      - name: Open port 12865
+        ansible.posix.firewalld:
+          port: 12865/tcp
+          permanent: yes
+          state: enabled
         become: yes
       
-      - name: Install iotop package
-        ansible.builtin.dnf:
-          name: iotop
-          state: present
-        become: yes
-      
-      - name: Install psmisc package
-        ansible.builtin.dnf:
-          name: psmisc
-          state: present
-        become: yes
-      
-      - name: Install lsof package
-        ansible.builtin.dnf:
-          name: lsof
-          state: present
-        become: yes
-      
-      - name: Install iptraf-ng package
-        ansible.builtin.dnf:
-          name: iptraf-ng
-          state: present
+      - name: Open port 12866
+        ansible.posix.firewalld:
+          port: 12866/tcp
+          permanent: yes
+          state: enabled
         become: yes
   --------------------------------------------------
   
   $ cd $HOME
-  $ ansible-playbook -i ansible/myhost.yml ansible/mybook03.yml -> プレイブック実行
+  $ ansible-playbook -i ansible/myhost.yml ansible/mybook04.yml -> プレイブック実行
   
   コマンドの実行結果
   --------------------------------------------------
-  TASK [Install stress package]
+  TASK [Install netperf package]
+  changed: [vm12]
   changed: [vm11]
   
-  TASK [Install sysstat package]
+  TASK [Open port 12865]
   changed: [vm11]
+  changed: [vm12]
   
-  TASK [Install iotop package]
-  changed: [vm11]
-  
-  TASK [Install psmisc package]
-  ok: [vm11] -> 既にインストール済みの模様
-  
-  TASK [Install lsof package]
-  changed: [vm11]
-  
-  TASK [Install iptraf-ng package]
+  TASK [Open port 12866]
+  changed: [vm12]
   changed: [vm11]
   
   PLAY RECAP
-  vm11 : ok=6    changed=5    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm11 : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm12 : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
   --------------------------------------------------
   
   以下の確認に続く
@@ -3558,120 +3550,94 @@
   ## 作業内容
     ホスト間でネットワークのスループット測定
   
-  ## 使用マシン1
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-  ## 仮想マシン2
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install wget
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rpm -ivh netperf-2.7.0-1.el7.lux.x86_64.rpm
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --add-port=12865/tcp --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --add-port=12866/tcp --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo netserver -> サーバー起動
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Starting netserver with host 'IN(6)ADDR_ANY' port '12865' and family AF_UNSPEC
+  Last login: Wed May 31 21:12:30 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo yum -y install wget
+    vm11$ cd $HOME
+    vm11$ sudo netserver -> サーバー起動
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
+    Starting netserver with host 'IN(6)ADDR_ANY' port '12865' and family AF_UNSPEC
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo rpm -ivh netperf-2.7.0-1.el7.lux.x86_64.rpm
+    vm11$ cd $HOME
+    vm11$ sudo firewall-cmd --reload
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
+    success -> プレイブックの記述方法が不明
     --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Wed May 31 21:12:30 2023 from 192.168.122.1
+  --------------------------------------------------
     
     vm12$ cd $HOME
     vm12$ netperf -H 192.168.122.11 -p 12865 -- -P 12866
     
     コマンドの実行結果
     --------------------------------------------------
-    MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 12866 AF_INET to 192.168.122.12 () port 12866 AF_INET
-
-    Recv   Send    Send                          
-    Socket Socket  Message  Elapsed              
-    Size   Size    Size     Time     Throughput
-    bytes  bytes   bytes    secs.    10^6bits/sec
-
-    87380  16384   16384    10.00    6297.77 -> 6300M(Bits) / 8 -> 787M(Bytes) / 秒
+    MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 12866 AF_INET to 192.168.122.11 () port 12866 AF_INET ...
+    
+    Recv    Send    Send                          
+    Socket  Socket  Message  Elapsed              
+    Size    Size    Size     Time     Throughput  
+    bytes   bytes   bytes    secs.    10^6bits/sec  
+    
+    87380   16384   16384    10.00    3219.92 -> 3200M(Bits) / 8 -> 400MB
     --------------------------------------------------
     
-  vm11$ cd $HOME
-  vm11$ sudo pkill netserver -> サーバー停止
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm12 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Wed May 31 21:58:23 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo pkill netserver -> サーバー停止
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
