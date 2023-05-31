@@ -1804,6 +1804,110 @@
   以下の確認に続く
   
 ================================================================================
+[X17]
+  準備 - プレイブック作成(04)
+  
+[内容]
+  ## 作業内容
+    プレイブック作成(04)
+  
+[確認]
+  $ cd $HOME
+  $ cat ansible/myhost.yml -> インベントリ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  all:
+    hosts:
+      vm11:
+        ansible_host: 192.168.122.11
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm12:
+        ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi ansible/mybook04.yml -> プレイブック作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  - name: Install Packages
+    hosts: vm11
+    gather_facts: no
+  
+    tasks:
+      - name: Install stress package
+        ansible.builtin.dnf:
+          name: stress
+          state: present
+        become: yes
+      
+      - name: Install sysstat package
+        ansible.builtin.dnf:
+          name: sysstat
+          state: present
+        become: yes
+      
+      - name: Install iotop package
+        ansible.builtin.dnf:
+          name: iotop
+          state: present
+        become: yes
+      
+      - name: Install psmisc package
+        ansible.builtin.dnf:
+          name: psmisc
+          state: present
+        become: yes
+      
+      - name: Install lsof package
+        ansible.builtin.dnf:
+          name: lsof
+          state: present
+        become: yes
+      
+      - name: Install iptraf-ng package
+        ansible.builtin.dnf:
+          name: iptraf-ng
+          state: present
+        become: yes
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible-playbook -i ansible/myhost.yml ansible/mybook03.yml -> プレイブック実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  TASK [Install stress package]
+  changed: [vm11]
+  
+  TASK [Install sysstat package]
+  changed: [vm11]
+  
+  TASK [Install iotop package]
+  changed: [vm11]
+  
+  TASK [Install psmisc package]
+  ok: [vm11] -> 既にインストール済みの模様
+  
+  TASK [Install lsof package]
+  changed: [vm11]
+  
+  TASK [Install iptraf-ng package]
+  changed: [vm11]
+  
+  PLAY RECAP
+  vm11 : ok=6    changed=5    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
 [01]
   総合的なリソース使用率の測定 - 01 (top)
   
@@ -3266,7 +3370,7 @@
   --------------------------------------------------
   Last login: Wed May 31 18:48:27 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
     vm11$ cd $HOME
     vm11$ LANG=C 
         > df
@@ -3310,35 +3414,43 @@
     netstat -s     : プロトコル毎の統計情報
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install net-tools
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Wed May 31 18:55:34 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ netstat -i
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Kernel Interface table
-  Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
-  eth0      1500     1496         0         9         0      698         0         0         0    BMRU
-  lo       65536       32         0         0         0       32         0         0         0     LRU
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ netstat -I=eth0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Kernel Interface table
-  Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
-  eth0      1500     1580         0         9         0      706         0         0         0    BMRU
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ netstat -i
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Kernel Interface table
+    Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
+    enp1s0    1500    27384         0     14798         0     6149         0         0         0    BMRU
+    lo       65536        0         0         0         0        0         0         0         0     LRU
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ netstat -I=enp1s0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Kernel Interface table
+    Iface      MTU    RX-OK    RX-ERR    RX-DRP    RX-OVR    TX-OK    TX-ERR    TX-DRP    TX-OVR     Flg
+    enp1s0    1500    27551         0     14903         0     6177         0         0         0    BMRU
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3349,20 +3461,31 @@
   ## 作業内容
     プロトコル毎の統計情報をコマンド(netstat)で測定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ netstat -s
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> IP, ICMP, TCP, UDP ... の統計情報を確認
+  Last login: Wed May 31 19:09:51 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ netstat -s
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> IP, ICMP, TCP, UDP ... の統計情報を確認
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3372,11 +3495,6 @@
 [内容]
   ## 作業内容
     TCP接続とUDP接続を表示
-  
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
   
   ## コマンド
     ss -t  : TCP接続を表示
@@ -3413,11 +3531,6 @@
   ## 作業内容
     接続状態の統計を表示
   
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
-  
 [確認]
   $ cd $HOME
   $ ss -s -> プロトコル毎の統計情報
@@ -3427,12 +3540,12 @@
   Total: 1154
   TCP: 14 (estab 1, closed 6, orphaned 0, timewait 0)
   
-  Transport  Total     IP        IPv6
-  RAW        1         0         1        
-  UDP        12        8         4        
-  TCP        8         4         4        
-  INET       21        12        9        
-  FRAG       0         0         0        
+  Transport    Total     IP        IPv6
+  RAW          1         0         1        
+  UDP          12        8         4        
+  TCP          8         4         4        
+  INET         21        12        9        
+  FRAG         0         0         0        
   --------------------------------------------------
   
   以下の確認に続く
