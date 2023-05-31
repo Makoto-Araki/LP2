@@ -3125,62 +3125,74 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Wed May 31 14:51:13 2023 from 192.168.122.1
+  Last login: Wed May 31 15:12:04 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-  vm11$ cat /proc/meminfo
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  MemTotal:        1013456 kB
-  MemFree:          572196 kB
-  MemAvailable:     681372 kB
-  Buffers:            2108 kB
-  Cached:           235040 kB
-  SwapCached:            0 kB
-  Active:           172540 kB
-  Inactive:         128512 kB
-  Active(anon):      64156 kB
-  Inactive(anon):     8452 kB
-  Active(file):     108384 kB
-  Inactive(file):   120060 kB
-  Unevictable:           0 kB
-  Mlocked:               0 kB
-  SwapTotal:       2097148 kB
-  SwapFree:        2097148 kB
-  Dirty:                 0 kB
-  Writeback:             0 kB
-  AnonPages:         63924 kB
-  Mapped:            22292 kB
-  Shmem:              8704 kB
-  Slab:              48092 kB
-  SReclaimable:      23404 kB
-  SUnreclaim:        24688 kB
-  KernelStack:        1808 kB
-  PageTables:         3508 kB
-  NFS_Unstable:          0 kB
-  Bounce:                0 kB
-  WritebackTmp:          0 kB
-  CommitLimit:     2603876 kB
-  Committed_AS:     272724 kB
-  VmallocTotal:   34359738367 kB
-  VmallocUsed:      270100 kB
-  VmallocChunk:   34358947836 kB
-  Percpu:              520 kB
-  HardwareCorrupted:     0 kB
-  AnonHugePages:     10240 kB
-  CmaTotal:              0 kB
-  CmaFree:               0 kB
-  HugePages_Total:       0
-  HugePages_Free:        0
-  HugePages_Rsvd:        0
-  HugePages_Surp:        0
-  Hugepagesize:       2048 kB
-  DirectMap4k:       61284 kB
-  DirectMap2M:     1986560 kB
-  --------------------------------------------------
-  
+    vm11$ cat /proc/meminfo
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    MemTotal:        1368664 kB
+    MemFree:          971668 kB
+    MemAvailable:    1090216 kB
+    Buffers:            4204 kB
+    Cached:           239496 kB
+    SwapCached:            0 kB
+    Active:           144768 kB
+    Inactive:         164492 kB
+    Active(anon):        304 kB
+    Inactive(anon):    73896 kB
+    Active(file):     144464 kB
+    Inactive(file):    90596 kB
+    Unevictable:           0 kB
+    Mlocked:               0 kB
+    SwapTotal:       3145724 kB
+    SwapFree:        3145724 kB
+    Dirty:                 4 kB
+    Writeback:             0 kB
+    AnonPages:         65564 kB
+    Mapped:            47028 kB
+    Shmem:              8640 kB
+    KReclaimable:      25004 kB
+    Slab:              46784 kB
+    SReclaimable:      25004 kB
+    SUnreclaim:        21780 kB
+    KernelStack:        1868 kB
+    PageTables:         4144 kB
+    NFS_Unstable:          0 kB
+    Bounce:                0 kB
+    WritebackTmp:          0 kB
+    CommitLimit:     3830056 kB
+    Committed_AS:     238100 kB
+    VmallocTotal:   34359738367 kB
+    VmallocUsed:       15156 kB
+    VmallocChunk:          0 kB
+    Percpu:              420 kB
+    HardwareCorrupted:     0 kB
+    AnonHugePages:     16384 kB
+    ShmemHugePages:        0 kB
+    ShmemPmdMapped:        0 kB
+    FileHugePages:         0 kB
+    FilePmdMapped:         0 kB
+    HugePages_Total:       0
+    HugePages_Free:        0
+    HugePages_Rsvd:        0
+    HugePages_Surp:        0
+    Hugepagesize:       2048 kB
+    Hugetlb:               0 kB
+    DirectMap4k:       77680 kB
+    DirectMap2M:     1560576 kB
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3190,11 +3202,6 @@
 [内容]
   ## 作業内容
     ディスク使用量をコマンド(df)で測定する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド
     df     : ディスク使用量の表示
@@ -3206,25 +3213,41 @@
     df -T  : ファイルシステムタイプを表示
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > df
-      > -H  // 1MB=1000KB
-      > -m  // メガバイト単位
-      > -T  // ファイルシステムタイプ表示
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        701     0        701    0%  /dev
-  tmpfs                         tmpfs           723     0        723    0%  /dev/shm
-  tmpfs                         tmpfs           723     1        722    1%  /run
-  tmpfs                         tmpfs           723     0        723    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394  6328      11067   37%  /
-  /dev/vda1                     xfs            1014   197        818   20%  /boot
-  tmpfs                         tmpfs           105     0        105    0%  /run/user/1000
+  Last login: Wed May 31 15:19:57 2023 from 192.168.122.1
   --------------------------------------------------
   
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > df
+        > -h  // 1MB=1024KB
+        > -m  // メガバイト単位
+        > -T  // ファイルシステムタイプ表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem                Type      1M-blocks  Used  Available  Use%  Mounted on
+    devtmpfs                  devtmpfs        650     0        650    0%  /dev
+    tmpfs                     tmpfs           669     0        669    0%  /dev/shm
+    tmpfs                     tmpfs           669     9        660    2%  /run
+    tmpfs                     tmpfs           669     0        669    0%  /sys/fs/cgroup
+    /dev/mapper/rl_vm11-root  xfs           26608  2088      24520    8%  /
+    /dev/vda1                 xfs            1014   191        824   19%  /boot
+    tmpfs                     tmpfs           134     0        134    0%  /run/user/1000
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3235,31 +3258,42 @@
   ## 作業内容
     iノード使用状況をコマンド(df)で測定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C 
-      > df
-      > -H  // 1MB=1000KB
-      > -i  // 使用状況(iノード)
-      > -T  // ファイルシステムタイプ表示
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Filesystem                    Type      Inodes  IUsed  IFree  IUse%  Mounted on
-  devtmpfs                      devtmpfs    180k    351   179k     1%  /dev
-  tmpfs                         tmpfs       185k      1   185k     1%  /dev/shm
-  tmpfs                         tmpfs       185k    455   185k     1%  /run
-  tmpfs                         tmpfs       185k     14   185k     1%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs         9.0M   149k   8.8M     2%  /
-  /dev/vda1                     xfs         525k    333   524k     1%  /boot
-  tmpfs                         tmpfs       134k      1   134k     1%  /run/user/1000
+  Last login: Wed May 31 18:48:27 2023 from 192.168.122.1
   --------------------------------------------------
   
+    vm11$ cd $HOME
+    vm11$ LANG=C 
+        > df
+        > -h  // 1MB=1024KB
+        > -i  // 使用状況(iノード)
+        > -T  // ファイルシステムタイプ表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem                Type      Inodes  IUsed  IFree  IUse%  Mounted on
+    devtmpfs                  devtmpfs    163K    336   162K     1%  /dev
+    tmpfs                     tmpfs       168K      1   168K     1%  /dev/shm
+    tmpfs                     tmpfs       168K    462   167K     1%  /run
+    tmpfs                     tmpfs       168K     17   168K     1%  /sys/fs/cgroup
+    /dev/mapper/rl_vm11-root  xfs          13M    33K    13M     1%  /
+    /dev/vda1                 xfs         512K    310   512K     1%  /boot
+    tmpfs                     tmpfs       168K      5   168K     1%  /run/user/1000
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3269,11 +3303,6 @@
 [内容]
   ## 作業内容
     NIC情報をコマンド(netstat)で測定する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド
     netstat -i     : 全NIC情報を出力
