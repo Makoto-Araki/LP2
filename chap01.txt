@@ -324,8 +324,17 @@
   # System language
   lang ja_JP.UTF-8
   
-  # Network information
-  network --hostname=vm11 --bootproto=static --device=enp1s0 --gateway=192.168.122.1 --ip=192.168.122.11 --nameserver=192.168.122.1 --netmask=255.255.255.0 --noipv6 --activate
+  # Network information -> オプション部分(--)は一行にまとめないとエラー
+  network
+    --hostname=vm11
+    --bootproto=static
+    --device=enp1s0
+    --gateway=192.168.122.1
+    --ip=192.168.122.11
+    --nameserver=192.168.122.1
+    --netmask=255.255.255.0
+    --noipv6
+    --activate
   
   # Use CDROM installation media
   cdrom
@@ -362,6 +371,14 @@
   pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
   pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
   %end
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ cp kickfile/vm11-ks.cfg kickfile/vm12-ks.cfg
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
   --------------------------------------------------
   
   $ cd $HOME
@@ -404,9 +421,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  # オプション部分(--)は一行にまとめないとエラー
-  
-  virt-install                                            # 使用コマンド
+  virt-install                                            # オプション部分(--)は一行にまとめないとエラー
   --name=vm11                                             # 仮想マシン名
   --location=/usr/local/src/Rocky-8.8-x86_64-minimal.iso  # イメージファイル
   --disk path=/home/vm11.qcow2,size=30,format=qcow2       # 仮想ディスク(30GB)
@@ -482,7 +497,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ systemctl is-active sshd -> SSH確認
+    vm11$ systemctl is-active sshd -> SSH稼働
     
     コマンドの実行結果
     --------------------------------------------------
@@ -503,6 +518,17 @@
     コマンドの実行結果
     --------------------------------------------------
     %wheel   ALL=(ALL)   NOPASSWD: ALL -> コメントアウト解除
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/hosts -> 仮想マシンのエントリ追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11 -> 追加
+    192.168.122.12 vm12 -> 追加
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -565,7 +591,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ systemctl is-active sshd -> SSH確認
+    vm12$ systemctl is-active sshd -> SSH稼働
     
     コマンドの実行結果
     --------------------------------------------------
@@ -586,6 +612,17 @@
     コマンドの実行結果
     --------------------------------------------------
     %wheel   ALL=(ALL)   NOPASSWD: ALL -> コメントアウト解除
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /etc/hosts -> 仮想マシンのエントリ追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11 -> 追加
+    192.168.122.12 vm12 -> 追加
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -643,7 +680,7 @@
   (省略) -> 初回接続時のみホスト認証用鍵をvm11から受取 -> .ssh/known_hostsに保存
   
   makoto@vm11's password: (makotoパスワード)
-  id_rsa.pub               100%  565   308.2KB/s   00:00
+  id_rsa.pub  100%  565   308.2KB/s   00:00
   --------------------------------------------------
   
   $ cd $HOME
@@ -654,7 +691,7 @@
   (省略) -> 初回接続時のみホスト認証用鍵をvm11から受取 -> .ssh/known_hostsに保存
   
   makoto@vm12's password: (makotoパスワード)
-  id_rsa.pub               100%  565   308.2KB/s   00:00
+  id_rsa.pub  100%  565   308.2KB/s   00:00
   --------------------------------------------------
   
   $ cd $HOME
@@ -675,7 +712,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ chmod 700 .ssh -> 規定ファイルのアクセス権をmakotoのみ読書可能に設定
+    vm11$ chmod 700 .ssh -> アクセス権をmakotoのみ読書可能に設定
     
     コマンドの実行結果
     --------------------------------------------------
@@ -691,7 +728,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ chmod 600 .ssh/authorized_keys -> 規定ファイルのアクセス権をrootのみ読書可能に設定
+    vm11$ chmod 600 .ssh/authorized_keys -> アクセス権をmakotoのみ読書可能に設定
     
     コマンドの実行結果
     --------------------------------------------------
@@ -715,19 +752,10 @@
     HostKey /etc/ssh/ssh_host_ecdsa_key
     HostKey /etc/ssh/ssh_host_ed25519_key
     SyslogFacility AUTHPRIV
-    
-    PermitRootLogin yes -> 変更前
-    PermitRootLogin no  -> 変更後
-    
-    #PubkeyAuthentication yes -> 変更前
-    PubkeyAuthentication yes  -> 変更後 - 公開鍵認証を有効化
-    
-    // 公開鍵格納用の規定ファイル
-    AuthorizedKeysFile .ssh/authorized_keys
-    
-    PasswordAuthentication yes -> 変更前
-    PasswordAuthentication no  -> 変更後 - パスワード認証を無効化
-    
+    PermitRootLogin no                      // YESからNOに変更
+    PubkeyAuthentication yes                // コメントアウト解除
+    AuthorizedKeysFile .ssh/authorized_keys // 公開鍵保存ファイルはそのまま
+    PasswordAuthentication no               // YESからNOに変更
     ChallengeResponseAuthentication no
     GSSAPIAuthentication yes
     GSSAPICleanupCredentials no
@@ -742,7 +770,7 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# sudo systemctl reload sshd -> 設定ファイルを読み込み
+    vm11# sudo systemctl reload sshd -> 設定ファイルを再ロード
     
     コマンドの実行結果
     --------------------------------------------------
@@ -775,7 +803,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ chmod 700 .ssh -> 規定ファイルのアクセス権をmakotoのみ読書可能に設定
+    vm12$ chmod 700 .ssh -> アクセス権をmakotoのみ読書可能に設定
     
     コマンドの実行結果
     --------------------------------------------------
@@ -791,7 +819,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ chmod 600 .ssh/authorized_keys -> 規定ファイルのアクセス権をrootのみ読書可能に設定
+    vm12$ chmod 600 .ssh/authorized_keys -> アクセス権をmakotoのみ読書可能に設定
     
     コマンドの実行結果
     --------------------------------------------------
@@ -815,19 +843,10 @@
     HostKey /etc/ssh/ssh_host_ecdsa_key
     HostKey /etc/ssh/ssh_host_ed25519_key
     SyslogFacility AUTHPRIV
-    
-    PermitRootLogin yes -> 変更前
-    PermitRootLogin no  -> 変更後
-    
-    #PubkeyAuthentication yes -> 変更前
-    PubkeyAuthentication yes  -> 変更後 - 公開鍵認証を有効化
-    
-    // 公開鍵格納用の規定ファイル
-    AuthorizedKeysFile .ssh/authorized_keys
-    
-    PasswordAuthentication yes -> 変更前
-    PasswordAuthentication no  -> 変更後 - パスワード認証を無効化
-    
+    PermitRootLogin no                      // YESからNOに変更
+    PubkeyAuthentication yes                // コメントアウト解除
+    AuthorizedKeysFile .ssh/authorized_keys // 公開鍵保存ファイルはそのまま
+    PasswordAuthentication no               // YESからNOに変更
     ChallengeResponseAuthentication no
     GSSAPIAuthentication yes
     GSSAPICleanupCredentials no
@@ -842,7 +861,7 @@
     --------------------------------------------------
     
     vm12# cd $HOME
-    vm12# sudo systemctl reload sshd -> 設定ファイルを読み込み
+    vm12# sudo systemctl reload sshd -> 設定ファイルを再ロード
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1470,17 +1489,17 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ---                                 # 開始宣言 "---"
-  all:                                # グループ "all" を宣言
-    hosts:                            # グループ "all" の所属ホスト
-      vm11:                           # ホスト名
-        ansible_host: 192.168.122.11  # IPアドレス
-        ansible_user: makoto          # ユーザー
-        ansible_password: ma0122ma    # パスワード
-      vm12:                           # ホスト名
-        ansible_host: 192.168.122.12  # IPアドレス
-        ansible_user: makoto          # ユーザー
-        ansible_password: ma0122ma    # パスワード
+  ---
+  all:
+    hosts:
+      vm11:
+        ansible_host: 192.168.122.11
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm12:
+        ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -1714,7 +1733,7 @@
   --------------------------------------------------
   ---
   - name: Install Packages
-    hosts: vm11  // 対象はvm11のみ注意！
+    hosts: vm11  // 対象はvm11のみ！
     gather_facts: no
   
     tasks:
@@ -1806,7 +1825,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  Last login: Wed May 31 08:23:41 2023
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1818,31 +1837,38 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
+    vm11$ mkdir scripts
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
     vm11$ vi scripts/script01.sh
     
     コマンドの実行結果
     --------------------------------------------------
     #!/bin/bash
     
-    # 既存ログファイル削除
     if test -f script.log ; then
       rm -f script.log
+      touch script.log
     fi
     
-    # 無限ループ
-    while :(ヌルコマンド)
+    while :
     do
-      echo AAA >> script.log
-      sleep 1  // プロセス内では「echo」より「sleep」の時間が圧倒的に長い
+      echo $(date +%Y/%m/%d-%H:%M:%S) >> script.log
+      sleep 1
     done
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script01.sh & -> バックグラウンド実行
+    vm11$ bash scripts/script01.sh & -> バックグラウンド実行
     
     コマンドの実行結果
     --------------------------------------------------
-    [1] 1264
+    [1] 1542
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1852,49 +1878,49 @@
         > -d 1         // 更新間隔１秒
         > -n 9         // 更新回数９回
         > -w 100       // 出力幅100
-        > | grep 1264  // 該当プロセスのみ表示
+        > | grep 1542  // 該当プロセスのみ表示
     
     コマンドの実行結果
     --------------------------------------------------
-    PID  USER      PR  NI    VIRT    RES    SHR S %CPU %MEM   TIME+   COMMAND
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
-    1264 makoto    20   0  113284   1384   1196 S  0.0  0.1   0:00.04 bash
+    PID   USER    PR  NI  VIRT    RES   SHR   S  %CPU  %MEM  TIME+    COMMAND
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.08  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.08  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.08  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.08  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.08  bash
+    1542  makoto  20   0  222532  3060  2796  S  1.0   0.2   0:00.09  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.09  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.09  bash
+    1542  makoto  20   0  222532  3060  2796  S  0.0   0.2   0:00.09  bash
     --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ top
         > -b           // バッチモード
-        > -p 1264      // プロセスID指定
+        > -p 1542      // プロセスID指定
         > -d 1         // 更新間隔１秒
         > -n 9         // 更新回数９回
-        > | grep 1264  // プロセス欄のみ表示
+        > | grep 1542  // プロセス欄のみ表示
     
     コマンドの実行結果
     --------------------------------------------------
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.13 bash
-    1264 makoto    20   0  113284   1388   1196 S  1.0  0.1   0:00.14 bash
-    1264 makoto    20   0  113284   1388   1196 S  0.0  0.1   0:00.14 bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.62  bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.62  bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.62  bash
+    1542  makoto  20  0  222532  3060  2796  R  0.0   0.2   0:00.62  bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.62  bash
+    1542  makoto  20  0  222532  3060  2796  S  1.0   0.2   0:00.63  bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.63  bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.63  bash
+    1542  makoto  20  0  222532  3060  2796  S  0.0   0.2   0:00.63  bash
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ kill -term(15) 1264
+    vm11$ kill -term(15) 1542
     
     コマンドの実行結果
     --------------------------------------------------
-    [1]+  Terminated              bash script01.sh
+    [1]+  Terminated  bash  scripts/script01.sh
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1926,11 +1952,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  Last login: Wed May 31 08:50:32 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ vi script02.sh
+    vm11$ vi scripts/script02.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1944,7 +1970,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script02.sh
+    vm11$ bash scripts/script02.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1979,22 +2005,17 @@
   ## 作業内容
     メモリ負荷をコマンド(vmstat)で測定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
   $ cd $HOME
   $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  Last login: Wed May 31 09:15:22 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ vi script03.sh
+    vm11$ vi scripts/script03.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2008,7 +2029,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script03.sh
+    vm11$ bash scripts/script03.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2057,7 +2078,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  Last login: Wed May 31 09:18:30 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2065,30 +2086,35 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-    sr0                          11:0     1  1024M   0  rom   
-    vda                         252:0     0    20G   0  disk  
-     |-- vda1                   252:1     0     1G   0  part  /boot
-     |-- vda2                   252:2     0    19G   0  part  
-          |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-          |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-    vdb                         252:16    0     2G   0  disk  
-     |-- vdb1                   252:17    0     1G   0  part  
-     |-- vdb2                   252:18    0   975M   0  part  
+    NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+    sr0                      11:0     1  1024M   0  rom   
+    vda                     252:0     0    30G   0  disk  
+     |-- vda1               252:1     0     1G   0  part  /boot
+     |-- vda2               252:2     0    29G   0  part  
+          |-- rl_vm11-root  253:0     0    26G   0  lvm   /       // 実体は/dev/dm-0
+          |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]  // 実体は/dev/dm-1
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ ls -lh /dev/mapper
+    vm11$ ls -lh /dev/mapper | grep vm11
     
     コマンドの実行結果
     --------------------------------------------------
-    lrwxrwxrwx. 1 root root       7  4月 15 18:17 centos_vm11-root -> ../dm-0  (/dev/dm-0)
-    lrwxrwxrwx. 1 root root       7  4月 15 18:17 centos_vm11-swap -> ../dm-1  (/dev/dm-1)
-    crw-------. 1 root root 10, 236  4月 15 18:17 control
+    lrwxrwxrwx 1 root root       7  5月 31 08:21 rl_vm11-root -> ../dm-0  // 実体は/dev/dm-0
+    lrwxrwxrwx 1 root root       7  5月 31 08:21 rl_vm11-swap -> ../dm-1  // 実体は/dev/dm-1
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ vi script04.sh
+    vm11$ ls -lh /dev | grep dm-
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    brw-rw---- 1 root disk    253,   0  5月 31 08:21 dm-0  // デバイスファイルは実在
+    brw-rw---- 1 root disk    253,   1  5月 31 08:21 dm-1  // デバイスファイルは実在
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi scripts/script04.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2105,7 +2131,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script04.sh
+    vm11$ bash scripts/script04.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2115,9 +2141,9 @@
                0.00    0.00   98.28    0.00    1.72    0.00 -> HDD負荷開始で「%system」の数値上昇
     
     Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-    vda             165.52         0.00       165.52          0         96 -> リクエストがファイルシステムに殺到
+    vda             165.52         0.00       165.52          0         96 -> リクエストがデバイスに殺到
     vdb               0.00         0.00         0.00          0          0
-    dm-0             84.48         0.00       165.52          0         96 -> リクエストがファイルシステムに殺到
+    dm-0             84.48         0.00       165.52          0         96 -> リクエストがデバイスに殺到
     dm-1              0.00         0.00         0.00          0          0
     
     avg-cpu:  %user   %nice %system %iowait  %steal   %idle
@@ -2224,7 +2250,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  Last login: Wed May 31 09:22:46 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2236,11 +2262,11 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script01.sh & -> バックグラウンド実行
+    vm11$ bash scripts/script01.sh & -> バックグラウンド実行
     
     コマンドの実行結果
     --------------------------------------------------
-    [1] 16205
+    [1] 2882
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2249,52 +2275,52 @@
         > -u makoto     // ユーザー指定
         > -d 1          // 更新間隔１秒
         > -n 9          // 更新回数９回
-        > | grep 16205  // 該当プロセスのみ表示
+        > | grep 2882   // 該当プロセスのみ表示
         > | grep -v grep
     
     コマンドの実行結果
     --------------------------------------------------
-    TID    PRIO  USER    DISK-READ  DISK-WRITE  SWAPIN  IO      COMMAND
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    0.00 %  0.00 %  bash script01.sh
+    TID   PRIO  USER    DISK-READ  DISK-WRITE  SWAPIN  IO     COMMAND
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   3.90 K/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
     --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ sudo iotop
         > -b            // バッチモード
-        > -p 16205      // プロセスID指定
+        > -p 2882       // プロセスID指定
         > -d 1          // 更新間隔１秒
         > -n 9          // 更新回数９回
-        > | grep 16205  // 該当プロセスのみ表示
+        > | grep 2882   // 該当プロセスのみ表示
         > | grep -v grep
     
     コマンドの実行結果
     --------------------------------------------------
-    TID    PRIO  USER    DISK-READ  DISK-WRITE  SWAPIN  IO     COMMAND
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash script01.sh
-    16205  be/4  makoto  0.00 B/s   3.99 K/s    ?unavailable?  bash script01.sh
+    TID   PRIO  USER    DISK-READ  DISK-WRITE  SWAPIN  IO     COMMAND
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   3.98 K/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   0.00 B/s    ?unavailable?  bash scripts/script01.sh'
+    2882  be/4  makoto  0.00 B/s   3.98 K/s    ?unavailable?  bash scripts/script01.sh'
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ kill -term(15) 16205
+    vm11$ kill -term(15) 2882
     
     コマンドの実行結果
     --------------------------------------------------
-    [1]+  Terminated              bash script01.sh
+    [1]+  Terminated  bash scripts/script01.sh
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2333,36 +2359,44 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
+  Last login: Wed May 31 09:39:24 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ ls -lh /var/log/sa
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 13K  4月 15 20:30 sa15
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > sar
-      > -u                   // 統計対象(CPU)
-      > -f /var/log/sa/sa15  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
-  
-  19:50:01        CPU     %user     %nice   %system   %iowait    %steal     %idle
-  20:10:01        all      0.12      0.00      0.28      0.08      0.06     99.46
-  20:30:02        all      0.09      0.00      0.19      0.00      0.11     99.61
-  Average:        all      0.10      0.00      0.24      0.04      0.08     99.53
-  --------------------------------------------------
-  
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root 14K  5月 31 09:50 sa31
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > sar
+        > -u                   // 統計対象(CPU)
+        > -f /var/log/sa/sa31  // ログファイル
+        > -s 08:30:00          // 開始時刻
+        > -e 09:30:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 4.18.0-477.10.1.el8_8.x86_64 (vm11) 	05/31/23 	_x86_64_	(1 CPU)
+    
+    08:30:03        CPU     %user     %nice   %system   %iowait    %steal     %idle
+    08:50:03        all      0.41      0.00      0.39      0.00      0.21     98.98
+    09:10:03        all      0.60      0.96      0.98      0.05      0.23     97.18
+    Average:        all      0.51      0.48      0.69      0.02      0.22     98.08
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2373,31 +2407,42 @@
   ## 作業内容
     収集データからメモリ統計のレポートを作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > sar
-      > -r                   // 統計対象(メモリ)
-      > -f /var/log/sa/sa15  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
-  
-  19:50:01   kbmemfree  kbmemused  %memused  kbbuffers  kbcached  kbcommit  %commit  kbactive  kbinact  kbdirty
-  20:10:01      425680     587776     58.00       2104    367108    284756     9.15    373528    58720        4
-  20:30:02      426472     586984     57.92       2104    367216    283440     9.11    373056    58724        0
-  Average:      426076     587380     57.96       2104    367162    284098     9.13    373292    58722        2
+  Last login: Wed May 31 09:57:16 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > sar
+        > -r                   // 統計対象(メモリ)
+        > -f /var/log/sa/sa31  // ログファイル
+        > -s 08:30:00          // 開始時刻
+        > -e 09:30:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 4.18.0-477.10.1.el8_8.x86_64 (vm11) 	05/31/23 	_x86_64_	(1 CPU)
+    
+    08:30:03  kbmemfree  kbavail  kbmemused  %memused  kbbuffers  kbcached  kbcommit  %commit  kbactive  kbinact  kbdirty
+    08:50:03    1088664  1100492     280000     20.46       4204    134380    211600     4.69     75636   123656        0
+    09:10:03     984532  1091180     384132     28.07       4204    228396    239276     5.30    115556   183016        4
+    Average:    1036598  1095836     332066     24.26       4204    181388    225438     4.99     95596   153336        2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2408,31 +2453,42 @@
   ## 作業内容
     収集データからスワップ統計のレポートを作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > sar
-      > -W                   // 統計対象(スワップ)
-      > -f /var/log/sa/sa15  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
-  
-  19:50:01  pswpin/s  pswpout/s
-  20:10:01      0.00       0.00
-  20:30:02      0.00       0.00
-  Average:      0.00       0.00
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > sar
+        > -W                   // 統計対象(スワップ)
+        > -f /var/log/sa/sa15  // ログファイル
+        > -s 19:40:00          // 開始時刻
+        > -e 20:40:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
+    
+    19:50:01  pswpin/s  pswpout/s
+    20:10:01      0.00       0.00
+    20:30:02      0.00       0.00
+    Average:      0.00       0.00
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2443,31 +2499,42 @@
   ## 作業内容
     収集データからディスクIO統計のレポートを作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > sar
-      > -b                   // 統計対象(ディスクIO)
-      > -f /var/log/sa/sa15  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
-  
-  19:50:01       tps      rtps      wtps   bread/s   bwrtn/s
-  20:10:01      3.05      0.52      2.53     37.89   2228.68
-  20:30:02      0.16      0.00      0.15      0.13      1.30
-  Average:      1.60      0.26      1.34     19.00   1114.45
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > sar
+        > -b                   // 統計対象(ディスクIO)
+        > -f /var/log/sa/sa15  // ログファイル
+        > -s 19:40:00          // 開始時刻
+        > -e 20:40:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
+    
+    19:50:01       tps      rtps      wtps   bread/s   bwrtn/s
+    20:10:01      3.05      0.52      2.53     37.89   2228.68
+    20:30:02      0.16      0.00      0.15      0.13      1.30
+    Average:      1.60      0.26      1.34     19.00   1114.45
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2478,34 +2545,45 @@
   ## 作業内容
     収集データからネットワーク統計のレポートを作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > sar
-      > -n DEV               // 統計対象(ネットワーク)
-      > -f /var/log/sa/sa15  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
-  
-  19:50:01     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
-  20:10:01      eth0      0.78      0.37      0.10      0.03      0.00      0.00      0.00
-  20:10:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  20:30:02      eth0      0.54      0.01      0.03      0.00      0.00      0.00      0.00
-  20:30:02        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  Average:      eth0      0.66      0.19      0.06      0.01      0.00      0.00      0.00
-  Average:        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > sar
+        > -n DEV               // 統計対象(ネットワーク)
+        > -f /var/log/sa/sa15  // ログファイル
+        > -s 19:40:00          // 開始時刻
+        > -e 20:40:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
+    
+    19:50:01     IFACE   rxpck/s   txpck/s    rxkB/s    txkB/s   rxcmp/s   txcmp/s  rxmcst/s
+    20:10:01      eth0      0.78      0.37      0.10      0.03      0.00      0.00      0.00
+    20:10:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    20:30:02      eth0      0.54      0.01      0.03      0.00      0.00      0.00      0.00
+    20:30:02        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    Average:      eth0      0.66      0.19      0.06      0.01      0.00      0.00      0.00
+    Average:        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2516,34 +2594,45 @@
   ## 作業内容
     収集データからネットワークエラー統計のレポートを作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C
-      > sar
-      > -n EDEV              // 統計対象(ネットワークエラー)
-      > -f /var/log/sa/sa15  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
-  
-  19:50:01     IFACE   rxerr/s   txerr/s    coll/s  rxdrop/s  txdrop/s  txcarr/s  rxfram/s  rxfifo/s  txfifo/s
-  20:10:01      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  20:10:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  20:30:02      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  20:30:02        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  Average:      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
-  Average:        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C
+        > sar
+        > -n EDEV              // 統計対象(ネットワークエラー)
+        > -f /var/log/sa/sa15  // ログファイル
+        > -s 19:40:00          // 開始時刻
+        > -e 20:40:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 3.10.0-1160.el7.x86_64 (vm11) 04/15/23 _x86_64_ (1 CPU)
+    
+    19:50:01     IFACE   rxerr/s   txerr/s    coll/s  rxdrop/s  txdrop/s  txcarr/s  rxfram/s  rxfifo/s  txfifo/s
+    20:10:01      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    20:10:01        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    20:30:02      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    20:30:02        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    Average:      eth0      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    Average:        lo      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00      0.00
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2554,177 +2643,188 @@
   ## 作業内容
     収集データからネットワーク統計のレポートをJSON形式で作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド
     sadf -j XX -- sarコマンドのオプション  : 出力形式(JSON)
     sadf -x XX -- sarコマンドのオプション  : 出力形式(XML)
     sadf -t XX -- sarコマンドのオプション  : ローカル日時
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sar
-      > -u                   // CPU使用率
-      > -f /var/log/sa/sa30  // ログファイル
-      > -s 19:40:00          // 開始時刻
-      > -e 20:40:00          // 終了時刻
-      > 1200                 // 1200秒(20分)単位
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Linux 4.15.3 (vm11) 04/30/23 _x86_64_ (1 CPU)
-  
-  19:40:01        CPU     %user     %nice   %system   %iowait    %steal     %idle
-  20:00:01        all      0.04      0.00      0.05      0.00      0.02     99.88
-  20:20:01        all      0.04      0.00      0.03      0.00      0.04     99.90
-  Average:        all      0.04      0.00      0.04      0.00      0.03     99.89
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sadf              // CSV形式
-      > -t                // ローカル時刻
-      > /var/log/sa/sa30  // ログファイル
-      > --                // 以降はコマンド(sar)のオプション
-      > -u                // 統計対象(CPU)
-      > -s 19:40:00       // 開始時刻
-      > -e 20:40:00       // 終了時刻
-      > 1200              // 1200秒(20分)単位
-      > | tr '\t' ','     // タブ文字をカンマに変換
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  vm11,1198,2023-04-30 20:00:01,all,%user,0.04
-  vm11,1198,2023-04-30 20:00:01,all,%nice,0.00
-  vm11,1198,2023-04-30 20:00:01,all,%system,0.05
-  vm11,1198,2023-04-30 20:00:01,all,%iowait,0.00
-  vm11,1198,2023-04-30 20:00:01,all,%steal,0.02
-  vm11,1198,2023-04-30 20:00:01,all,%idle,99.88
-  vm11,1199,2023-04-30 20:20:01,all,%user,0.04
-  vm11,1199,2023-04-30 20:20:01,all,%nice,0.00
-  vm11,1199,2023-04-30 20:20:01,all,%system,0.03
-  vm11,1199,2023-04-30 20:20:01,all,%iowait,0.00
-  vm11,1199,2023-04-30 20:20:01,all,%steal,0.04
-  vm11,1199,2023-04-30 20:20:01,all,%idle,99.90 -> 上記と比較して最後の「Average」部分が存在しない模様
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sadf
-      > -j                // 出力形式(JSON)
-      > -t                // ローカル時刻
-      > /var/log/sa/sa30  // ログファイル
-      > --                // 以降はコマンド(sar)のオプション
-      > -u                // 統計対象(CPU)
-      > -s 19:40:00       // 開始時刻
-      > -e 20:40:00       // 終了時刻
-      > 1200              // 1200秒(20分)単位
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  {
-    "sysstat": {
-      "sysdata-version": 2.16,
-      "hosts": [
-        {
-          "nodename": "vm11",
-          "sysname": "Linux",
-          "release": "4.15.3",
-          "machine": "x86_64",
-          "number-of-cpus": 1,
-          "file-date": "2023-04-30",
-          "statistics": [
-            {
-              // 空オブジェクト
-            },
-            {
-              "timestamp": { "date": "2023-04-30", "time": "20:00:01", "utc": 0, "interval": 1198 },
-              "cpu-load": [
-                {
-                  "cpu": "all",
-                  "user": 0.04,
-                  "nice": 0.00,
-                  "system": 0.05,
-                  "iowait": 0.00,
-                  "steal": 0.02,
-                  "idle": 99.88
-                }
-              ]
-            },
-            {
-              // 空オブジェクト
-            },
-            {
-              "timestamp": { "date": "2023-04-30", "time": "20:20:01", "utc": 0, "interval": 1199 },
-              "cpu-load": [
-                {
-                  "cpu": "all",
-                  "user": 0.04,
-                  "nice": 0.00,
-                  "system": 0.03,
-                  "iowait": 0.00,
-                  "steal": 0.04,
-                  "idle": 99.90
-                }
-              ]
-            },
-            {
-              // 空オブジェクト
-            },
-            {
-              // 空オブジェクト
-            }
-          ],
-          "restarts": []
-        }
-      ]
+    vm11$ cd $HOME
+    vm11$ sar
+        > -u                   // CPU使用率
+        > -f /var/log/sa/sa30  // ログファイル
+        > -s 19:40:00          // 開始時刻
+        > -e 20:40:00          // 終了時刻
+        > 1200                 // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Linux 4.15.3 (vm11) 04/30/23 _x86_64_ (1 CPU)
+    
+    19:40:01        CPU     %user     %nice   %system   %iowait    %steal     %idle
+    20:00:01        all      0.04      0.00      0.05      0.00      0.02     99.88
+    20:20:01        all      0.04      0.00      0.03      0.00      0.04     99.90
+    Average:        all      0.04      0.00      0.04      0.00      0.03     99.89
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sadf              // CSV形式
+        > -t                // ローカル時刻
+        > /var/log/sa/sa30  // ログファイル
+        > --                // 以降はコマンド(sar)のオプション
+        > -u                // 統計対象(CPU)
+        > -s 19:40:00       // 開始時刻
+        > -e 20:40:00       // 終了時刻
+        > 1200              // 1200秒(20分)単位
+        > | tr '\t' ','     // タブ文字をカンマに変換
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    vm11,1198,2023-04-30 20:00:01,all,%user,0.04
+    vm11,1198,2023-04-30 20:00:01,all,%nice,0.00
+    vm11,1198,2023-04-30 20:00:01,all,%system,0.05
+    vm11,1198,2023-04-30 20:00:01,all,%iowait,0.00
+    vm11,1198,2023-04-30 20:00:01,all,%steal,0.02
+    vm11,1198,2023-04-30 20:00:01,all,%idle,99.88
+    vm11,1199,2023-04-30 20:20:01,all,%user,0.04
+    vm11,1199,2023-04-30 20:20:01,all,%nice,0.00
+    vm11,1199,2023-04-30 20:20:01,all,%system,0.03
+    vm11,1199,2023-04-30 20:20:01,all,%iowait,0.00
+    vm11,1199,2023-04-30 20:20:01,all,%steal,0.04
+    vm11,1199,2023-04-30 20:20:01,all,%idle,99.90 -> 上記と比較して最後の「Average」部分が存在しない模様
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sadf
+        > -j                // 出力形式(JSON)
+        > -t                // ローカル時刻
+        > /var/log/sa/sa30  // ログファイル
+        > --                // 以降はコマンド(sar)のオプション
+        > -u                // 統計対象(CPU)
+        > -s 19:40:00       // 開始時刻
+        > -e 20:40:00       // 終了時刻
+        > 1200              // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    {
+      "sysstat": {
+        "sysdata-version": 2.16,
+        "hosts": [
+          {
+            "nodename": "vm11",
+            "sysname": "Linux",
+            "release": "4.15.3",
+            "machine": "x86_64",
+            "number-of-cpus": 1,
+            "file-date": "2023-04-30",
+            "statistics": [
+              {
+                // 空オブジェクト
+              },
+              {
+                "timestamp": { "date": "2023-04-30", "time": "20:00:01", "utc": 0, "interval": 1198 },
+                "cpu-load": [
+                  {
+                    "cpu": "all",
+                    "user": 0.04,
+                    "nice": 0.00,
+                    "system": 0.05,
+                    "iowait": 0.00,
+                    "steal": 0.02,
+                    "idle": 99.88
+                  }
+                ]
+              },
+              {
+                // 空オブジェクト
+              },
+              {
+                "timestamp": { "date": "2023-04-30", "time": "20:20:01", "utc": 0, "interval": 1199 },
+                "cpu-load": [
+                  {
+                    "cpu": "all",
+                    "user": 0.04,
+                    "nice": 0.00,
+                    "system": 0.03,
+                    "iowait": 0.00,
+                    "steal": 0.04,
+                    "idle": 99.90
+                  }
+                ]
+              },
+              {
+                // 空オブジェクト
+              },
+              {
+                // 空オブジェクト
+              }
+            ],
+            "restarts": []
+          }
+        ]
+      }
     }
-  }
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sadf
-      > -x                // 出力形式(XML)
-      > -t                // ローカル時刻
-      > /var/log/sa/sa30  // ログファイル
-      > --                // 以降はコマンド(sar)のオプション
-      > -u                // 統計対象(CPU)
-      > -s 19:40:00       // 開始時刻
-      > -e 20:40:00       // 終了時刻
-      > 1200              // 1200秒(20分)単位
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <?xml version="1.0" encoding="UTF-8"?>
-  <!DOCTYPE sysstat PUBLIC "DTD v2.16 sysstat //EN"
-  "http://pagesperso-orange.fr/sebastien.godard/sysstat-2.16.dtd">
-  <sysstat>
-    <sysdata-version>2.16</sysdata-version>
-    <host nodename="vm11">
-      <sysname>Linux</sysname>
-      <release>4.15.3</release>
-      <machine>x86_64</machine>
-      <number-of-cpus>1</number-of-cpus>
-      <file-date>2023-04-30</file-date>
-      <statistics>
-        <timestamp date="2023-04-30" time="20:00:01" utc="0" interval="1198">
-          <cpu-load>
-            <cpu number="all" user="0.04" nice="0.00" system="0.05" iowait="0.00" steal="0.02" idle="99.88"/>
-          </cpu-load>
-        </timestamp>
-        <timestamp date="2023-04-30" time="20:20:01" utc="0" interval="1199">
-          <cpu-load>
-            <cpu number="all" user="0.04" nice="0.00" system="0.03" iowait="0.00" steal="0.04" idle="99.90"/>
-          </cpu-load>
-        </timestamp>
-      </statistics>
-      <restarts>
-      </restarts>
-    </host>
-  </sysstat>
-  --------------------------------------------------
-  
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sadf
+        > -x                // 出力形式(XML)
+        > -t                // ローカル時刻
+        > /var/log/sa/sa30  // ログファイル
+        > --                // 以降はコマンド(sar)のオプション
+        > -u                // 統計対象(CPU)
+        > -s 19:40:00       // 開始時刻
+        > -e 20:40:00       // 終了時刻
+        > 1200              // 1200秒(20分)単位
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE sysstat PUBLIC "DTD v2.16 sysstat //EN"
+    "http://pagesperso-orange.fr/sebastien.godard/sysstat-2.16.dtd">
+    <sysstat>
+      <sysdata-version>2.16</sysdata-version>
+      <host nodename="vm11">
+        <sysname>Linux</sysname>
+        <release>4.15.3</release>
+        <machine>x86_64</machine>
+        <number-of-cpus>1</number-of-cpus>
+        <file-date>2023-04-30</file-date>
+        <statistics>
+          <timestamp date="2023-04-30" time="20:00:01" utc="0" interval="1198">
+            <cpu-load>
+              <cpu number="all" user="0.04" nice="0.00" system="0.05" iowait="0.00" steal="0.02" idle="99.88"/>
+            </cpu-load>
+          </timestamp>
+          <timestamp date="2023-04-30" time="20:20:01" utc="0" interval="1199">
+            <cpu-load>
+              <cpu number="all" user="0.04" nice="0.00" system="0.03" iowait="0.00" steal="0.04" idle="99.90"/>
+            </cpu-load>
+          </timestamp>
+        </statistics>
+        <restarts>
+        </restarts>
+      </host>
+    </sysstat>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2735,23 +2835,31 @@
   ## 作業内容
     システム稼働時間、ログインユーザー数、平均負荷を観察する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-  ## コマンド
-    uptime
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ uptime
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  21:23:37 up  3:11,  1 user,  load average: 0.00, 0.01, 0.05
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ uptime
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    21:23:37 up  3:11,  1 user,  load average: 0.00, 0.01, 0.05
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2760,12 +2868,7 @@
   
 [内容]
   ## 作業内容
-    指定ユーザー(makoto)のプロセス情報を出力
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    指定ユーザーのプロセス情報を出力
   
   ## コマンド
     w XX     : ユーザー(XX)のプロセス情報を出力
@@ -2782,34 +2885,32 @@
     WHAT   : 実行コマンド
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ systemctl is-active sshd
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  active
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
     
-    $ cd $HOME
-    $ ssh makoto@192.168.122.11 -> ホスト側から仮想マシンにログイン
+    vm11$ cd $HOME
+    vm11$ w -h
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略)
+    USER     TTY     FROM      LOGIN@   IDLE     JCPU    PCPU    WHAT
+    makoto   ttyS0             18:12    3.00s    1.42s   0.01s   w
+    makoto   pts/0   gateway   21:27    32.00s   0.02s   0.02s   -bash
     --------------------------------------------------
     
-  vm11$ cd $HOME
-  vm11$ w
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  21:28:27 up  3:16,  2 users,  load average: 0.00, 0.01, 0.05
-  
-  USER     TTY     FROM      LOGIN@   IDLE     JCPU    PCPU    WHAT
-  makoto   ttyS0             18:12    3.00s    1.42s   0.01s   w
-  makoto   pts/0   gateway   21:27    32.00s   0.02s   0.02s   -bash
-  --------------------------------------------------
-  
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2819,11 +2920,6 @@
 [内容]
   ## 作業内容
     プロセスをコマンド(ps)で測定する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド
     ps a      : 端末上の全プロセス表示
@@ -2852,31 +2948,47 @@
     COMMAND : 実行コマンド
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ bash script01.sh & -> バックグラウンド実行
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 17508
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ps aux | grep script01 | grep -v grep
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  USER       PID  %CPU  %MEM     VSZ   RSS  TTY    STAT  START  TIME  COMMAND
-  makoto   17508  0.0   0.1   113284  1384  ttyS0  S     21:34  0:00  bash script01.sh
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ kill -term 17508
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [1]+  Terminated              bash script01.sh
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ bash script01.sh & -> バックグラウンド実行
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [1] 17508
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ps aux | grep script01 | grep -v grep
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    USER       PID  %CPU  %MEM     VSZ   RSS  TTY    STAT  START  TIME  COMMAND
+    makoto   17508  0.0   0.1   113284  1384  ttyS0  S     21:34  0:00  bash script01.sh
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ kill -term 17508
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [1]+  Terminated              bash script01.sh
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2887,37 +2999,48 @@
   ## 作業内容
     プロセスをコマンド(ps)で測定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ bash script01.sh & -> バックグラウンド実行
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  [1] 1490
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ps -ef | grep script01 | grep -v grep
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UID     PID   PPID  C  STIME  TTY    TIME      CMD
-  makoto  1490  1468  0  06:38  ttyS0  00:00:00  bash script01.sh
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ kill -term 1490
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [1]+  Terminated              bash script01.sh
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ bash script01.sh & -> バックグラウンド実行
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [1] 1490
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ps -ef | grep script01 | grep -v grep
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UID     PID   PPID  C  STIME  TTY    TIME      CMD
+    makoto  1490  1468  0  06:38  ttyS0  00:00:00  bash script01.sh
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ kill -term 1490
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [1]+  Terminated              bash script01.sh
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2928,43 +3051,46 @@
   ## 作業内容
     プロセスの親子関係をコマンド(pstree)で確認する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド ##
     pstree XX  : PID(XX)の親子関係をツリー状で表示
     pstree -l  : 長フォーマット
     pstree -p  : PID表示
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install psmisc
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ps -ef | grep -i NetworkManager
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UID   PID  PPID  C  STIME  TTY  TIME      CMD
-  root  669  1     0  06:37  ?    00:00:00  /usr/sbin/NetworkManager --no-daemon
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ pstree -p 669
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NetworkManager(669) -------- {NetworkManager}(676)
-                         |---- {NetworkManager}(680)
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ ps -ef | grep -i NetworkManager
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UID   PID  PPID  C  STIME  TTY  TIME      CMD
+    root  669  1     0  06:37  ?    00:00:00  /usr/sbin/NetworkManager --no-daemon
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ pstree -p 669
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NetworkManager(669) ------- {NetworkManager}(676)
+                           |--- {NetworkManager}(680)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2974,11 +3100,6 @@
 [内容]
   ## 作業内容
     ネットワーク通信をコマンド(lsof)で測定する
-  
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
   
   ## コマンド
     lsof        : プロセス情報をリスト表示
@@ -2990,22 +3111,21 @@
   
 [確認]
   $ cd $HOME
-  $ sudo yum -y install lsof
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
   --------------------------------------------------
   
-  $ cd $HOME
-  $ lsof -i:https -n -> HTTPS通信を測定
+    $ cd $HOME
+    $ lsof -i:https -n -> HTTPS通信を測定
   
   コマンドの実行結果
   --------------------------------------------------
   COMMAND   PID    USER    FD  TYPE  DEVICE  SIZE/OFF  NODE  NAME
   code     3368  makoto   42u  IPV4  301529       0t0   TCP  192.168.1.3:38862 -> 40.77.226.250:https (SYN_SENT)
   firefox  3563  makoto   49u  IPV4  301406       0t0   TCP  192.168.1.3:41428 -> 133.152.62.71:https (ESTABLISHED)
-  firefox  3563  makoto   53u  IPV4  263699       0t0   TCP  192.168.1.3:55368 -> 133.152.42.207:https (ESTABLISHED)
   firefox  3563  makoto  103u  IPV4   46986       0t0   TCP  192.168.1.3:51332 -> 52.35.145.245:https (ESTABLISHED)
   --------------------------------------------------
   
@@ -3019,11 +3139,6 @@
   ## 作業内容
     メモリとスワップの使用量を確認する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド
     free        : メモリとスワップの情報を表示
     free -b     : バイト単位で表示
@@ -3034,16 +3149,15 @@
     free -c XX  : 更新回数(XX)を指定
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ free -m -> メガバイト単位
+  $ cd $HOME
+  $ free -mt -> メガバイト単位
   
   コマンドの実行結果
   --------------------------------------------------
                 total        used        free      shared  buff/cache   available
-  Mem:            989         176         558           8         254         665
-  Swap:          2047           0        2047
-  
-  // total(989) = used(176) + buff/cache(254) + free(558) -> used(176)以外からavailable(665)を捻出
+  Mem:           3549        2263         547         149         739         905
+  Swap:          3943        1938        2005
+  Total:         7493        4201        2553
   --------------------------------------------------
   
   以下の確認に続く
