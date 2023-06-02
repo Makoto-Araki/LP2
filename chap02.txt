@@ -1593,93 +1593,101 @@
     初期RAMディスクをコマンド(mkinitrd, dracut)で作成
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ mkdir temp1 temp2
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Sat Jun  3 08:21:13 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  ==================================================
-                      mkinitrd
-  ==================================================
-  
-  vm11$ cd $HOME/temp1
-  vm11$ sudo mkinitrd RamDisk1.img $(uname -r) -> 初期RAMディスクをコマンド作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 5分程かかる
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/temp1
-  vm11$ sudo lsinitrd RamDisk1.img | head -n 1 -> 初期RAMディスクの内容確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Image: RamDisk1.img: 38M
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/temp1
-  vm11$ sudo gunzip -S .img RamDisk1.img -> 拡張子指定で初期RAMディスクの解凍
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/temp1
-  vm11$ sudo cat RamDisk1 | cpio -id -> 初期RAMディスクの展開
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/temp1
-  vm11$ sudo rm RamDisk1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/temp1
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx.  1 makoto makoto    7  4月 29 21:31 bin -> usr/bin
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 dev
-  drwxr-xr-x. 12 makoto makoto 4.0K  4月 29 21:31 etc
-  lrwxrwxrwx.  1 makoto makoto   23  4月 29 21:31 init -> usr/lib/systemd/systemd
-  lrwxrwxrwx.  1 makoto makoto    7  4月 29 21:31 lib -> usr/lib
-  lrwxrwxrwx.  1 makoto makoto    9  4月 29 21:31 lib64 -> usr/lib64
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 proc
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 root
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 run
-  lrwxrwxrwx.  1 makoto makoto    8  4月 29 21:31 sbin -> usr/sbin
-  -rwxr-xr-x.  1 makoto makoto 3.1K  4月 29 21:31 shutdown
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 sys
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 sysroot
-  drwxr-xr-x.  2 makoto makoto    6  4月 29 21:31 tmp
-  drwxr-xr-x.  7 makoto makoto   66  4月 29 21:31 usr
-  drwxr-xr-x.  2 makoto makoto   29  4月 29 21:31 var
-  --------------------------------------------------
-  
-  ==================================================
-                      dracut
-  ==================================================
-  
-  vm11$ cd $HOME/temp2
-  vm11$ sudo dracut RamDisk2.img $(uname -r) -> 初期RAMディスクをコマンド作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 5分程かかる
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ mkdir temp1 temp2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    ==================================================
+                        mkinitrd
+    ==================================================
+    
+    vm11$ cd $HOME/temp1
+    vm11$ sudo mkinitrd RamDisk1.img $(uname -r) -> 初期RAMディスクをコマンド作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 5分程かかる
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp1
+    vm11$ sudo lsinitrd RamDisk1.img | head -n 1 -> 初期RAMディスクの内容確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Image: RamDisk1.img: 68M
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp1
+    vm11$ sudo gunzip -S .img RamDisk1.img -> 拡張子指定で初期RAMディスクの解凍
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp1
+    vm11$ sudo cat RamDisk1 | cpio -id -> 初期RAMディスクの展開
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 関数 mknod が失敗しましたと表示されるが続行
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp1
+    vm11$ sudo rm RamDisk1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp1
+    vm11$ ls -lh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lrwxrwxrwx  1 makoto makoto    7  6月  3 08:35 bin -> usr/bin
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 dev
+    drwxr-xr-x 10 makoto makoto 4.0K  6月  3 08:35 etc
+    lrwxrwxrwx  1 makoto makoto   23  6月  3 08:35 init -> usr/lib/systemd/systemd
+    lrwxrwxrwx  1 makoto makoto    7  6月  3 08:35 lib -> usr/lib
+    lrwxrwxrwx  1 makoto makoto    9  6月  3 08:35 lib64 -> usr/lib64
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 proc
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 root
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 run
+    lrwxrwxrwx  1 makoto makoto    8  6月  3 08:35 sbin -> usr/sbin
+    -rwxr-xr-x  1 makoto makoto 3.1K  6月  3 08:35 shutdown
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 sys
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 sysroot
+    drwxr-xr-x  2 makoto makoto    6  6月  3 08:35 tmp
+    drwxr-xr-x  8 makoto makoto   81  6月  3 08:35 usr
+    drwxr-xr-x  3 makoto makoto   40  6月  3 08:35 var
+    --------------------------------------------------
+    
+    ==================================================
+                        dracut
+    ==================================================
+    
+    vm11$ cd $HOME/temp2
+    vm11$ sudo dracut RamDisk2.img $(uname -r) -> 初期RAMディスクをコマンド作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 5分程かかる
+    --------------------------------------------------
+    
   vm11$ cd $HOME/temp2
   vm11$ sudo lsinitrd RamDisk2.img | head -n 1 -> 初期RAMディスクの内容確認
   
