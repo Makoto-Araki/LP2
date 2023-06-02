@@ -14,8 +14,8 @@
 [13] カーネルモジュール - 06 (modinfo)
 [14] カーネルモジュール - 07 (lsmod)
 [15] カーネルモジュール - 08 (cat /proc/modules)
-[16] カーネルモジュール - 09 (Parameter Set 1)
-[17] カーネルモジュール - 10 (Parameter Set 2)
+[16] カーネルモジュール - 09 (Set Parameter 1)
+[17] カーネルモジュール - 10 (Set Parameter 2)
 [18] カーネルパラメータの設定 - 01
 [19] カーネルパラメータの設定 - 02
 [20] カーネルパラメータの設定 - 03
@@ -667,58 +667,70 @@
   ## 作業内容
     カーネルモジュールの格納されているディレクトリ構成(FHS)を把握する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo find /lib/modules -name $(uname -r) -> カーネルモジュールのディレクトリ検索
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  /lib/modules/4.15.3
+  Last login: Fri Jun  2 01:43:43 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd /lib/modules/4.15.3
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx.  1 root root   29  4月 16 10:36 build -> /usr/src/kernels/linux-4.15.3
-  drwxr-xr-x. 12 root root  128  4月 16 10:38 kernel
-  -rw-r--r--.  1 root root 833K  4月 16 10:41 modules.alias
-  -rw-r--r--.  1 root root 800K  4月 16 10:41 modules.alias.bin
-  -rw-r--r--.  1 root root 7.7K  4月 16 10:36 modules.builtin
-  -rw-r--r--.  1 root root  10K  4月 16 10:41 modules.builtin.bin
-  -rw-r--r--.  1 root root 246K  4月 16 10:41 modules.dep
-  -rw-r--r--.  1 root root 352K  4月 16 10:41 modules.dep.bin
-  -rw-r--r--.  1 root root  411  4月 16 10:41 modules.devname
-  -rw-r--r--.  1 root root  97K  4月 16 10:36 modules.order
-  -rw-r--r--.  1 root root  515  4月 16 10:41 modules.softdep
-  -rw-r--r--.  1 root root 386K  4月 16 10:41 modules.symbols
-  -rw-r--r--.  1 root root 472K  4月 16 10:41 modules.symbols.bin
-  lrwxrwxrwx.  1 root root   29  4月 16 10:36 source -> /usr/src/kernels/linux-4.15.3
-  --------------------------------------------------
-  
-  vm11$ cd /lib/modules/4.15.3/kernel
-  vm11$ ls -lh -> カーネルモジュール格納場所の内部確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  drwxr-xr-x.  3 root root   17  4月 16 10:36 arch    // アーキテクチャ
-  drwxr-xr-x.  3 root root 4.0K  4月 16 10:36 crypto  // 暗号化
-  drwxr-xr-x. 69 root root 4.0K  4月 16 10:38 drivers // デバイスドライバ
-  drwxr-xr-x. 25 root root 4.0K  4月 16 10:38 fs      // ファイルシステム
-  drwxr-xr-x.  3 root root   19  4月 16 10:38 kernel  // カーネル
-  drwxr-xr-x.  5 root root  207  4月 16 10:38 lib     // ライブラリ
-  drwxr-xr-x.  2 root root   32  4月 16 10:38 mm      // メモリ関連
-  drwxr-xr-x. 35 root root 4.0K  4月 16 10:38 net     // ネットワーク
-  drwxr-xr-x. 12 root root  167  4月 16 10:38 sound   // サウンド -> 仮想マシンには不要
-  drwxr-xr-x.  3 root root   17  4月 16 10:38 virt    // 仮想環境 -> 仮想マシンには不要
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo find /lib/modules -type d -name $(uname -r) -> カーネルモジュールのディレクトリ検索
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /lib/modules/4.20.1
+    --------------------------------------------------
+    
+    vm11$ cd /lib/modules/4.20.1
+    vm11$ ls -lh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lrwxrwxrwx  1 root root   27  6月  1 20:46 build -> /usr/local/src/linux-4.20.1
+    drwxr-xr-x 13 root root  143  6月  2 01:15 kernel
+    -rw-r--r--  1 root root 849K  6月  2 01:15 modules.alias
+    -rw-r--r--  1 root root 811K  6月  2 01:15 modules.alias.bin
+    -rw-r--r--  1 root root 7.8K  6月  2 01:12 modules.builtin
+    -rw-r--r--  1 root root  11K  6月  2 01:15 modules.builtin.bin
+    -rw-r--r--  1 root root 260K  6月  2 01:15 modules.dep
+    -rw-r--r--  1 root root 367K  6月  2 01:15 modules.dep.bin
+    -rw-r--r--  1 root root  383  6月  2 01:15 modules.devname
+    -rw-r--r--  1 root root  97K  6月  2 01:12 modules.order
+    -rw-r--r--  1 root root  560  6月  2 01:15 modules.softdep
+    -rw-r--r--  1 root root 388K  6月  2 01:15 modules.symbols
+    -rw-r--r--  1 root root 472K  6月  2 01:15 modules.symbols.bin
+    lrwxrwxrwx  1 root root   27  6月  2 01:12 source -> /usr/local/src/linux-4.20.1
+    --------------------------------------------------
+    
+    vm11$ cd /lib/modules/4.20.1/kernel
+    vm11$ ls -lh -> カーネルモジュール格納場所の内部確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxr-xr-x  3 root root   17  6月  2 01:12 arch
+    drwxr-xr-x  3 root root 4.0K  6月  2 01:12 crypto
+    drwxr-xr-x 67 root root 4.0K  6月  2 01:14 drivers
+    drwxr-xr-x 24 root root 4.0K  6月  2 01:14 fs
+    drwxr-xr-x  4 root root   52  6月  2 01:14 kernel -> カーネルモジュール格納場所
+    drwxr-xr-x  4 root root 4.0K  6月  2 01:14 lib
+    drwxr-xr-x  2 root root   32  6月  2 01:14 mm
+    drwxr-xr-x 36 root root 4.0K  6月  2 01:14 net
+    drwxr-xr-x  3 root root   23  6月  2 01:14 samples
+    drwxr-xr-x 13 root root  178  6月  2 01:15 sound
+    drwxr-xr-x  3 root root   17  6月  2 01:15 virt
+    --------------------------------------------------
+    
+    vm11$ cd /lib/modules/4.20.1/kernel
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -729,288 +741,304 @@
   ## 作業内容
     カーネルモジュールを作成して、コマンド(insmod)でロード
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ mkdir module1
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Fri Jun  2 19:20:18 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ vi base.c
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #include <linux/module.h>
-  #include <linux/init.h>
-  
-  // ライセンス情報
-  MODULE_LICENSE("GPL");
-  MODULE_AUTHOR("Makoto-Araki");
-  MODULE_DESCRIPTION("base");
-  
-  // ロード時
-  static int base_init(void)
-  {
-    printk(KERN_INFO "base init\n");
-    return 0;
-  }
-  
-  // アンロード時
-  static void base_exit(void) { printk(KERN_INFO "base exit\n"); }
-  
-  // 関数定義
-  void func1(void) { printk(KERN_INFO "func1 called\n"); }
-  void func2(void) { printk(KERN_INFO "func2 called\n"); }
-  
-  // エクスポート
-  EXPORT_SYMBOL(func1);
-  EXPORT_SYMBOL(func2);
-  
-  module_init( base_init );
-  module_exit( base_exit );
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ vi module1.c
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #include <linux/module.h>
-  #include <linux/kernel.h>
-  
-  // プロトタイプ宣言
-  void func1(void);
-  void func2(void);
-  
-  // ライセンス情報
-  MODULE_LICENSE("GPL");
-  MODULE_AUTHOR("Makoto-Araki");
-  MODULE_DESCRIPTION("module1");
-  
-  // ロード時
-  static int module1_init(void)
-  {
-    printk( KERN_INFO "module1 init\n" );
-    func1();  // 他モジュールの関数実行
-    func2();  // 他モジュールの関数実行
-    return 0;
-  }
-  
-  // アンロード時
-  static void module1_exit(void) { printk( KERN_INFO "module1 exit\n" ); }
-  
-  module_init( module1_init );
-  module_exit( module1_exit );
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ vi Makefile
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 既存ファイル(/lib/modules/4.15.3/build/Makefile)のターゲットを利用
-  obj-m := module1.o base.o
-  
-  all:
-    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
-  
-  clean:
-    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ make -n
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/module1 modules
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ make
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/module1 modules
-  make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' に入ります
-    CC [M]  /home/makoto/module1/module1.o
-    CC [M]  /home/makoto/module1/base.o
-    Building modules, stage 2.
-    MODPOST 2 modules
-    CC      /home/makoto/module1/base.mod.o
-    LD [M]  /home/makoto/module1/base.ko
-    CC      /home/makoto/module1/module1.mod.o
-    LD [M]  /home/makoto/module1/module1.ko
-  make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' から出ます
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  176  4月 29 19:45 Makefile
-  -rw-rw-r--. 1 makoto makoto  114  4月 29 19:46 Module.symvers
-  -rw-rw-r--. 1 makoto makoto  592  4月 29 19:40 base.c
-  -rw-rw-r--. 1 makoto makoto 124K  4月 29 19:46 base.ko -> カーネルモジュール
-  -rw-rw-r--. 1 makoto makoto  853  4月 29 19:46 base.mod.c
-  -rw-rw-r--. 1 makoto makoto  70K  4月 29 19:46 base.mod.o
-  -rw-rw-r--. 1 makoto makoto  59K  4月 29 19:46 base.o
-  -rw-rw-r--. 1 makoto makoto  584  4月 29 19:44 module1.c
-  -rw-rw-r--. 1 makoto makoto 122K  4月 29 19:46 module1.ko -> カーネルモジュール
-  -rw-rw-r--. 1 makoto makoto  949  4月 29 19:46 module1.mod.c
-  -rw-rw-r--. 1 makoto makoto  70K  4月 29 19:46 module1.mod.o
-  -rw-rw-r--. 1 makoto makoto  56K  4月 29 19:46 module1.o
-  -rw-rw-r--. 1 makoto makoto   75  4月 29 19:46 modules.order
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ modinfo base.ko -> モジュールの詳細表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  filename:       /home/makoto/module1/base.ko
-  description:    base
-  author:         Makoto-Araki
-  license:        GPL
-  srcversion:     F97D838A3F67D2B0738370E
-  depends:        (依存モジュール無し)
-  retpoline:      Y
-  name:           base
-  vermagic:       4.15.3 SMP mod_unload modversions 
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ modinfo module1.ko -> モジュールの詳細表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  filename:       /home/makoto/module1/module1.ko
-  description:    module1
-  author:         Makoto-Araki
-  license:        GPL
-  srcversion:     258908EAD8EE2CA9B348147
-  depends:        base (baseモジュールに依存)
-  retpoline:      Y
-  name:           module1
-  vermagic:       4.15.3 SMP mod_unload modversions 
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo insmod base.ko -> モジュールのロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1013.078677] base init -> 初回のみカーネルツリー外からのロードです、という意味の警告メッセージが出力
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo insmod module1.ko -> モジュールのロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1056.881717] module1 init
-  [ 1056.882889] func1 called
-  [ 1056.884084] func2 called
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo rmmod module1.ko -> モジュールのアンロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1140.942468] module1 exit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo rmmod base.ko -> モジュールのアンロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1179.366872] base exit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel -> モジュールをシステム規定の場所にコピー
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 後のコマンド「modprobe」は依存関係ファイル「modules.dep」に記述が無いと動作しないため
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo depmod -> 依存関係ファイル更新
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> /lib/modules/$(uname -r)/modules.depを更新
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module1
-  vm11$ sudo grep -E 'base|module1' /lib/modules/$(uname -r)/modules.dep -> 依存関係を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  kernel/kernel/module1.ko: kernel/kernel/base.ko
-  kernel/kernel/base.ko:
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe module1 -> モジュールのロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1431.633238] base init
-  [ 1431.635282] module1 init
-  [ 1431.636975] func1 called
-  [ 1431.638475] func2 called
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lsmod | grep -E 'base|module1' -> モジュールの一覧表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Module                  Size  Used by
-  module1                16384  0 
-  base                   16384  1 module1 -> base は module1 が参照している
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo cat /proc/modules | grep -E 'base|module1' -> モジュールの一覧表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  module1  16384  0  -        Live  0xffffffffc05dc000 (OE)
-  base     16384  1  module1, Live  0xffffffffc05e1000 (OE)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe -r module1 -> モジュールのアンロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 1755.624973] module1 exit
-  [ 1755.626715] base exit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe --show-depends module1 -> モジュールの依存関係
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  insmod  /lib/modules/4.15.3/kernel/kernel/base.ko 
-  insmod  /lib/modules/4.15.3/kernel/kernel/module1.ko 
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ mkdir module1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ vi base.c
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #include <linux/module.h>
+    #include <linux/init.h>
+    
+    // ライセンス情報
+    MODULE_LICENSE("GPL");
+    MODULE_AUTHOR("Makoto-Araki");
+    MODULE_DESCRIPTION("base");
+    
+    // ロード時
+    static int base_init(void)
+    {
+      printk(KERN_INFO "base init\n");
+      return 0;
+    }
+    
+    // アンロード時
+    static void base_exit(void) { printk(KERN_INFO "base exit\n"); }
+    
+    // 関数定義
+    void func1(void) { printk(KERN_INFO "func1 called\n"); }
+    void func2(void) { printk(KERN_INFO "func2 called\n"); }
+    
+    // エクスポート
+    EXPORT_SYMBOL(func1);
+    EXPORT_SYMBOL(func2);
+    
+    module_init( base_init );
+    module_exit( base_exit );
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ vi module1.c
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #include <linux/module.h>
+    #include <linux/kernel.h>
+    
+    // プロトタイプ宣言
+    void func1(void);
+    void func2(void);
+    
+    // ライセンス情報
+    MODULE_LICENSE("GPL");
+    MODULE_AUTHOR("Makoto-Araki");
+    MODULE_DESCRIPTION("module1");
+    
+    // ロード時
+    static int module1_init(void)
+    {
+      printk( KERN_INFO "module1 init\n" );
+      func1();  // 他モジュールの関数実行
+      func2();  // 他モジュールの関数実行
+      return 0;
+    }
+    
+    // アンロード時
+    static void module1_exit(void) { printk( KERN_INFO "module1 exit\n" ); }
+    
+    module_init( module1_init );
+    module_exit( module1_exit );
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ vi Makefile
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 既存ファイル(/lib/modules/4.20.1/build/Makefile)のターゲットを利用
+    obj-m := module1.o base.o
+    
+    all:
+      make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
+    
+    clean:
+      make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ make -n
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    make -C /lib/modules/4.20.1/build M=/home/makoto/module1 modules
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    make -C /lib/modules/4.20.1/build M=/home/makoto/module1 modules
+    make[1]: ディレクトリ '/usr/local/src/linux-4.20.1' に入ります
+      CC [M]  /home/makoto/module1/module1.o
+      CC [M]  /home/makoto/module1/base.o
+      Building modules, stage 2.
+      MODPOST 2 modules
+      CC      /home/makoto/module1/base.mod.o
+      LD [M]  /home/makoto/module1/base.ko
+      CC      /home/makoto/module1/module1.mod.o
+      LD [M]  /home/makoto/module1/module1.ko
+    make[1]: ディレクトリ '/usr/local/src/linux-4.20.1' から出ます
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ ls -lh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r-- 1 makoto makoto  176  6月  2 19:47 Makefile
+    -rw-rw-r-- 1 makoto makoto  114  6月  2 19:48 Module.symvers
+    -rw-rw-r-- 1 makoto makoto  592  6月  2 19:41 base.c
+    -rw-rw-r-- 1 makoto makoto 189K  6月  2 19:48 base.ko -> カーネルモジュールは拡張子(.ko)
+    -rw-rw-r-- 1 makoto makoto  836  6月  2 19:48 base.mod.c
+    -rw-rw-r-- 1 makoto makoto  95K  6月  2 19:48 base.mod.o
+    -rw-rw-r-- 1 makoto makoto  97K  6月  2 19:48 base.o
+    -rw-rw-r-- 1 makoto makoto  584  6月  2 19:44 module1.c
+    -rw-rw-r-- 1 makoto makoto 188K  6月  2 19:48 module1.ko -> カーネルモジュールは拡張子(.ko)
+    -rw-rw-r-- 1 makoto makoto  892  6月  2 19:48 module1.mod.c
+    -rw-rw-r-- 1 makoto makoto  95K  6月  2 19:48 module1.mod.o
+    -rw-rw-r-- 1 makoto makoto  95K  6月  2 19:48 module1.o
+    -rw-rw-r-- 1 makoto makoto   75  6月  2 19:48 modules.order
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ modinfo base.ko -> モジュールの詳細表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    filename:       /home/makoto/module1/base.ko
+    description:    base
+    author:         Makoto-Araki
+    license:        GPL
+    srcversion:     F97D838A3F67D2B0738370E
+    depends:        (依存モジュールなし)
+    name:           base
+    vermagic:       4.20.1 SMP mod_unload modversions 
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ modinfo module1.ko -> モジュールの詳細表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    filename:       /home/makoto/module1/module1.ko
+    description:    module1
+    author:         Makoto-Araki
+    license:        GPL
+    srcversion:     258908EAD8EE2CA9B348147
+    depends:        base
+    name:           module1
+    vermagic:       4.20.1 SMP mod_unload modversions 
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo insmod base.ko -> モジュールのロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo insmod module1.ko -> モジュールのロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo rmmod module1.ko -> モジュールのアンロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo rmmod base.ko -> モジュールのアンロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ journalctl -k -> ジャーナル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    6月 02 19:54:57 vm11 kernel: base init
+    6月 02 19:56:20 vm11 kernel: module1 init
+    6月 02 19:56:20 vm11 kernel: func1 called
+    6月 02 19:56:20 vm11 kernel: func2 called
+    6月 02 19:57:28 vm11 kernel: module1 exit
+    6月 02 19:57:59 vm11 kernel: base exit
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel -> システム規定の場所にコピー
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 後のコマンド「modprobe」は依存関係ファイル「modules.dep」に記述が無いと動作しない
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo depmod -> 依存関係ファイル更新
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> /lib/modules/$(uname -r)/modules.depを更新
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module1
+    vm11$ sudo grep -E 'base|module1' /lib/modules/$(uname -r)/modules.dep -> 依存関係を確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    kernel/kernel/module1.ko: kernel/kernel/base.ko
+    kernel/kernel/base.ko:
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe module1 -> モジュールのロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lsmod | grep -E 'base|module1' -> モジュールの一覧表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Module                  Size  Used by
+    module1                16384  0
+    base                   16384  1 module1 -> base は module1 が参照
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /proc/modules | grep -E 'base|module1' -> モジュールの一覧表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    module1  16384  0  -        Live  0xffffffffc03ad000 (OE)
+    base     16384  1  module1, Live  0xffffffffc03b2000 (OE)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe -r module1 -> モジュールのアンロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe --show-depends module1 -> モジュールの依存関係
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    insmod /lib/modules/4.20.1/kernel/kernel/base.ko 
+    insmod /lib/modules/4.20.1/kernel/kernel/module1.ko 
+    --------------------------------------------------
+    
+    vm11$ cd /lib/modules/4.20.1/kernel
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1020,11 +1048,6 @@
 [内容]
   ## 作業内容
     作成したカーネルモジュールをコマンド(rmmod)でアンロードする
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
 [確認]
   上記の「09」を参照
@@ -1037,11 +1060,6 @@
   ## 作業内容
     作成したカーネルモジュールをコマンド(modprobe)でロード・アンロードする
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
   上記の「09」を参照
   
@@ -1052,11 +1070,6 @@
 [内容]
   ## 作業内容
     作成したカーネルモジュールをコマンド(depmod)で依存関係ファイル(modules.dep)に登録する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
 [確認]
   上記の「09」を参照
@@ -1069,11 +1082,6 @@
   ## 作業内容
     作成したカーネルモジュールの詳細情報をコマンド(modinfo)で表示する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
   上記の「09」を参照
   
@@ -1084,11 +1092,6 @@
 [内容]
   ## 作業内容
     作成したカーネルモジュールをコマンド(lsmod)で表示する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
 [確認]
   上記の「09」を参照
@@ -1101,261 +1104,278 @@
   ## 作業内容
     作成したカーネルモジュールをコマンド(cat /proc/modules)で表示する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
   上記の「09」を参照
   
 ================================================================================
 [16]
-  カーネルモジュール - 09 (Parameter Set 1)
+  カーネルモジュール - 09 (Set Parameter 1)
   
 [内容]
   ## 作業内容
     カーネルモジュール起動時にパラメータ値を指定可能にする
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ mkdir module2
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Fri Jun  2 19:40:55 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ vi module2.c
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #include <linux/module.h>
-  #include <linux/kernel.h>
-  
-  // ライセンス情報
-  MODULE_LICENSE("GPL");
-  MODULE_AUTHOR("Makoto-Araki");
-  MODULE_DESCRIPTION("module2");
-  
-  // パラメータ値をソース記述
-  static int P1 = 11;
-  static int P2 = 22;
-  
-  // カーネルモジュールにパラメータ組込
-  module_param(P1, int, S_IWUSR);
-  module_param(P2, int, S_IWUSR);
-  
-  // ロード時
-  static int module2_init(void)
-  {
-    printk( KERN_INFO "module2 init\n" );
-    printk( KERN_INFO "P1 = %d\n", P1);  // パラメータ値を表示
-    printk( KERN_INFO "P2 = %d\n", P2);  // パラメータ値を表示
-    return 0;
-  }
-  
-  // アンロード時
-  static void module2_exit(void) { printk( KERN_INFO "module2 exit\n" ); }
-  
-  module_init( module2_init );
-  module_exit( module2_exit );
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ vi Makefile
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 既存ファイル(/lib/modules/4.15.3/build/Makefile)のターゲットを利用
-  obj-m := module2.o
-  
-  all:
-    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
-  
-  clean:
-    make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ make -n
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/sample2 modules
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ make
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  make -C /lib/modules/4.15.3/build M=/home/makoto/module2 modules
-  make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' に入ります
-    CC [M]  /home/makoto/module2/module2.o
-    Building modules, stage 2.
-    MODPOST 1 modules
-    CC      /home/makoto/module2/module2.mod.o
-    LD [M]  /home/makoto/module2/module2.ko
-  make[1]: ディレクトリ `/usr/src/kernels/linux-4.15.3' から出ます
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto  169  4月 29 20:13 Makefile
-  -rw-rw-r--. 1 makoto makoto    0  4月 29 20:14 Module.symvers
-  -rw-rw-r--. 1 makoto makoto  762  4月 29 20:12 module2.c
-  -rw-rw-r--. 1 makoto makoto 140K  4月 29 20:14 module2.ko -> カーネルモジュール
-  -rw-rw-r--. 1 makoto makoto  907  4月 29 20:14 module2.mod.c
-  -rw-rw-r--. 1 makoto makoto  70K  4月 29 20:14 module2.mod.o
-  -rw-rw-r--. 1 makoto makoto  74K  4月 29 20:14 module2.o
-  -rw-rw-r--. 1 makoto makoto   39  4月 29 20:14 modules.order
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ modinfo module2.ko
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  filename:       /home/makoto/module2/module2.ko
-  description:    module2
-  author:         Makoto-Araki
-  license:        GPL
-  srcversion:     BD1FF2633987D42475AC194
-  depends:        (依存モジュール無し)
-  retpoline:      Y
-  name:           module2
-  vermagic:       4.15.3 SMP mod_unload modversions 
-  parm:           P1:int -> パラメータ
-  parm:           P2:int -> パラメータ
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ sudo insmod module2.ko
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 2594.255477] module2 init
-  [ 2594.256385] P1 = 11 -> ソース中の設定値
-  [ 2594.257133] P2 = 22 -> ソース中の設定値
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ sudo rmmod module2.ko
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 2661.859028] module2 exit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/module2
-  vm11$ sudo depmod
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> /lib/modules/$(uname -r)/modules.depを更新
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe module2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 2823.587542] module2 init
-  [ 2823.588646] P1 = 11 -> ソース中の設定値
-  [ 2823.589452] P2 = 22 -> ソース中の設定値
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe -r module2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 2900.741254] module2 exit
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ mkdir module2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ vi module2.c
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #include <linux/module.h>
+    #include <linux/kernel.h>
+    
+    // ライセンス情報
+    MODULE_LICENSE("GPL");
+    MODULE_AUTHOR("Makoto-Araki");
+    MODULE_DESCRIPTION("module2");
+    
+    // パラメータ値をソース記述
+    static int P1 = 11;
+    static int P2 = 22;
+    
+    // カーネルモジュールにパラメータ組込
+    module_param(P1, int, S_IWUSR);
+    module_param(P2, int, S_IWUSR);
+    
+    // ロード時
+    static int module2_init(void)
+    {
+      printk( KERN_INFO "module2 init\n" );
+      printk( KERN_INFO "P1 = %d\n", P1);  // パラメータ値を表示
+      printk( KERN_INFO "P2 = %d\n", P2);  // パラメータ値を表示
+      return 0;
+    }
+    
+    // アンロード時
+    static void module2_exit(void) { printk( KERN_INFO "module2 exit\n" ); }
+    
+    module_init( module2_init );
+    module_exit( module2_exit );
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ vi Makefile
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 既存ファイル(/lib/modules/4.20.1/build/Makefile)のターゲットを利用
+    obj-m := module2.o
+    
+    all:
+      make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) modules
+    
+    clean:
+      make -C /lib/modules/$(shell uname -r)/build M=$(shell pwd) clean
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ make -n
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    make -C /lib/modules/4.20.1/build M=/home/makoto/module2 modules
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    make -C /lib/modules/4.20.1/build M=/home/makoto/module2 modules
+    make[1]: ディレクトリ '/usr/local/src/linux-4.20.1' に入ります
+      CC [M]  /home/makoto/module2/module2.o
+      Building modules, stage 2.
+      MODPOST 1 modules
+      CC      /home/makoto/module2/module2.mod.o
+      LD [M]  /home/makoto/module2/module2.ko
+    make[1]: ディレクトリ '/usr/local/src/linux-4.20.1' から出ます
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ ls -lh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r-- 1 makoto makoto  169  6月  2 20:45 Makefile
+    -rw-rw-r-- 1 makoto makoto    0  6月  2 20:45 Module.symvers
+    -rw-rw-r-- 1 makoto makoto  762  6月  2 20:44 module2.c
+    -rw-rw-r-- 1 makoto makoto 189K  6月  2 20:45 module2.ko -> カーネルモジュールは拡張子(.ko)
+    -rw-rw-r-- 1 makoto makoto  870  6月  2 20:45 module2.mod.c
+    -rw-rw-r-- 1 makoto makoto  95K  6月  2 20:45 module2.mod.o
+    -rw-rw-r-- 1 makoto makoto  96K  6月  2 20:45 module2.o
+    -rw-rw-r-- 1 makoto makoto   39  6月  2 20:45 modules.order
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ modinfo module2.ko
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    filename:       /home/makoto/module2/module2.ko
+    description:    module2
+    author:         Makoto-Araki
+    license:        GPL
+    srcversion:     BD1FF2633987D42475AC194
+    depends:        (依存モジュールなし)
+    name:           module2
+    vermagic:       4.20.1 SMP mod_unload modversions 
+    parm:           P1:int
+    parm:           P2:int
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ sudo insmod module2.ko
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ sudo rmmod module2.ko
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ journalctl -k -> ジャーナル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    6月 02 20:54:03 vm11 kernel: module2 init
+    6月 02 20:54:03 vm11 kernel: P1 = 11
+    6月 02 20:54:03 vm11 kernel: P2 = 22
+    6月 02 20:54:34 vm11 kernel: module2 exit
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ sudo cp -p *.ko /lib/modules/$(uname -r)/kernel/kernel
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/module2
+    vm11$ sudo depmod
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> /lib/modules/$(uname -r)/modules.depを更新
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe module2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe -r module2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
 [17]
-  カーネルモジュール - 10 (Parameter Set 2)
+  カーネルモジュール - 10 (Set Parameter 2)
   
 [内容]
   ## 作業内容
     パラメータ値を設定ファイルから指定可能にする
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd /etc/modprobe.d
-  vm11$ sudo vi modules.conf
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  alias mod1 module1
-  alias mod2 module2
-  options module2 P1=111
-  options module2 P2=222
+  Last login: Fri Jun  2 20:43:16 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe mod1 -> 別名でモジュールをロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 3214.700305] base init
-  [ 3214.702002] module1 init
-  [ 3214.703471] func1 called
-  [ 3214.704702] func2 called
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe -r mod1 -> 別名でモジュールのアンロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 3260.795568] module1 exit
-  [ 3260.797451] base exit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe mod2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 3331.863986] module2 init
-  [ 3331.864883] P1 = 111 -> 設定ファイル中の値
-  [ 3331.865618] P2 = 222 -> 設定ファイル中の値
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo modprobe -r mod2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 3415.829206] module2 exit
-  --------------------------------------------------
-  
+    
+    vm11$ cd /etc/modprobe.d
+    vm11$ sudo vi modules.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    alias mod1 module1
+    alias mod2 module2
+    options module2 P1=111
+    options module2 P2=222
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe mod1 -> 別名でモジュールをロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe -r mod1 -> 別名でモジュールのアンロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe mod2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo modprobe -r mod2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1365,11 +1385,6 @@
 [内容]
   ## 作業内容
     カーネルパラメータの閲覧と更新
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
 [確認]
   vm11$ cd $HOME
