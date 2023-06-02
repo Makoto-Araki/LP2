@@ -372,7 +372,7 @@
   
 [内容]
   ## 作業内容
-    パス(/boot)からカーネルイメージを検索
+    カーネルイメージ
   
 [確認]
   $ cd $HOME
@@ -407,211 +407,256 @@
   
 [内容]
   ## 作業内容
-    カーネル(4.15.3)のコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    カーネルのコンパイルとインストール
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install kernel-devel ncurses-devel elfutils-libelf-devel openssl-devel bc
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Thu Jun  1 20:00:14 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels
-  vm11$ sudo wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.15.3.tar.xz
+    
+    vm11$ cd /usr/src/kernels
+    vm11$ sudo xz -d linux-4.20.1.tar.xz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> unxzコマンドでもOK
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels
+    vm11$ sudo tar xf linux-4.20.1.tar
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo cp /boot/config-$(uname -r) .config -> 既存のカーネル設定ファイルをコピー
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo make oldconfig -> カーネルの新規機能のみ設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    # configuration written to .config -> 質問は全てEnterで回答して、内容はファイル(.config)に保存
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo grep "CONFIG_SYSTEM_TRUSTED_KEYS" .config
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem" -> この設定を空文字に修正しないとコンパイル時にエラー
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo make menuconfig -> カーネルの設定変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> https://qiita.com/OPySPGcLYpJE0Tc/items/f0120d7274216172aedc を参照
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo grep "CONFIG_SYSTEM_TRUSTED_KEYS" .config
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    CONFIG_SYSTEM_TRUSTED_KEYS="" -> 修正完了
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo vi script.sh -> コンパイル時間を知るためスクリプト化
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #!/bin/bash
+    
+    if test -f script.log ; then
+      rm -f script.log
+    fi
+    
+    # 日時出力
+    echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
+    
+    # 優先度指定でカーネルをコンパイル
+    nice -n -10 make
+    
+    # 日時出力
+    echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
+    
+    # モジュールをインストール
+    make modules_install
+    
+    # 日時出力
+    echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
+    
+    # カーネル本体をインストール
+    make install
+    
+    # 日時出力
+    echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo bash script.sh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ cat script.log
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    2023/06/01 - 21:23:28 => コンパイルに4時間近くかかる
+    2023/06/02 - 01:12:31
+    2023/06/02 - 01:15:24
+    2023/06/02 - 01:18:04
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ LANG=C df -mT
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem               Type     1M-blocks  Used Available Use% Mounted on
+    devtmpfs                 devtmpfs       650     0       650   0% /dev
+    tmpfs                    tmpfs          669     0       669   0% /dev/shm
+    tmpfs                    tmpfs          669     9       660   2% /run
+    tmpfs                    tmpfs          669     0       669   0% /sys/fs/cgroup
+    /dev/mapper/rl_vm11-root xfs          26608 20408      6200  77% /
+    /dev/vda1                xfs           1014   269       746  27% /boot
+    tmpfs                    tmpfs          134     0       134   0% /run/user/1000
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo make clean -> 中間ファイル削除でディスク容量に空きを作る
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    CLEAN   .
+    CLEAN   arch/x86/entry/vdso
+    CLEAN   arch/x86/kernel/cpu
+    CLEAN   arch/x86/kernel
+    CLEAN   arch/x86/purgatory
+    CLEAN   arch/x86/realmode/rm
+    CLEAN   arch/x86/lib
+    CLEAN   certs
+    CLEAN   drivers/firmware/efi/libstub
+    CLEAN   drivers/gpu/drm/radeon
+    CLEAN   drivers/scsi
+    CLEAN   drivers/tty/vt
+    CLEAN   drivers/video/logo
+    CLEAN   kernel/debug/kdb
+    CLEAN   lib/raid6
+    CLEAN   lib
+    CLEAN   net/wireless
+    CLEAN   security/selinux
+    CLEAN   usr
+    CLEAN   samples/hidraw
+    CLEAN   arch/x86/boot/compressed
+    CLEAN   arch/x86/boot
+    CLEAN   arch/x86/tools
+    CLEAN   .tmp_versions
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ LANG=C df -mT
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem               Type     1M-blocks  Used Available Use% Mounted on
+    devtmpfs                 devtmpfs       650     0       650   0% /dev
+    tmpfs                    tmpfs          669     0       669   0% /dev/shm
+    tmpfs                    tmpfs          669     9       660   2% /run
+    tmpfs                    tmpfs          669     0       669   0% /sys/fs/cgroup
+    /dev/mapper/rl_vm11-root xfs          26608  8100     18508  31% / -> 12GBほど領域が開放された
+    /dev/vda1                xfs           1014   269       746  27% /boot
+    tmpfs                    tmpfs          134     0       134   0% /run/user/1000
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo grub2-editenv list -> デフォルトの起動カーネル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    saved_entry=92d5bec8979048b0b1af10ed812a4356-4.20.1 -> デフォルトの起動カーネル
+    kernelopts=root=/dev/mapper/rl_vm11-root ro crashkernel=auto resume=/dev/mapper/rl_vm11-swap rd.lvm.lv=rl_vm11/root rd.lvm.lv=rl_vm11/swap console=ttyS0,115200n8 
+    boot_success=1
+    boot_indeterminate=0
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ sudo ls -lh /boot/vmlinuz* -> カーネルイメージ一覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lrwxrwxrwx  1 root root   20  6月  2 01:15 /boot/vmlinuz -> /boot/vmlinuz-4.20.1
+    -rwxr-xr-x. 1 root root  11M  5月 28 11:44 /boot/vmlinuz-0-rescue-92d5bec8979048b0b1af10ed812a4356
+    -rwxr-xr-x. 1 root root  11M  5月 16 20:49 /boot/vmlinuz-4.18.0-477.10.1.el8_8.x86_64
+    -rw-r--r--  1 root root 7.6M  6月  2 01:15 /boot/vmlinuz-4.20.1
+    --------------------------------------------------
+    
+    vm11$ cd /usr/src/kernels/linux-4.20.1
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh destroy vm11 -> 仮想マシン停止
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  Domain 'vm11' destroyed
   --------------------------------------------------
   
-  vm11$ cd /usr/src/kernels
-  vm11$ sudo xz -d linux-4.15.3.tar.xz
+  $ cd $HOME
+  $ sudo virsh start vm11 -> 仮想マシン起動
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> unxzコマンドでもOK
+  Domain 'vm11' started
   --------------------------------------------------
   
-  vm11$ cd /usr/src/kernels
-  vm11$ sudo tar xf linux-4.15.3.tar
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Fri Jun  2 01:43:43 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ sudo make menuconfig -> カーネルの設定変更
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> ツールを開き直後に保存して終了 -> 設定内容がファイル「.config」に保存
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ ls -lh .config -> 設定ファイルを確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 180K  4月 16 07:58 .config
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ sudo vi script05.sh -> コンパイルの所要時間を知るためスクリプト化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #!/bin/bash
-  
-  # 既存ログファイル削除
-  if test -f script.log ; then
-    rm -f script.log
-  fi
-  
-  # 日時出力
-  echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
-  
-  # 優先度指定でカーネルをコンパイル
-  nice -n -10 make > /dev/null
-  
-  # 日時出力
-  echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
-  
-  # モジュールをインストール
-  make modules_install > /dev/null
-  
-  # 日時出力
-  echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
-  
-  # カーネル本体をインストール
-  make install > /dev/null
-  
-  # 日時出力
-  echo $(date +'%Y/%m/%d - %H:%M:%S') >> script.log
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ sudo bash script05.sh & ->バックグラウンド実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [1] 21929
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ cat script.log
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  2023/04/29 - 16:41:06 -> コンパイルに02時間36分
-  2023/04/29 - 19:17:23
-  2023/04/29 - 19:19:41
-  2023/04/29 - 19:23:44
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ cp script05.sh ~/ -> スクリプトはホーム直下で保管
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ LANG=C df -mT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks   Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        884      0        884    0%  /dev
-  tmpfs                         tmpfs           895      0        895    0%  /dev/shm
-  tmpfs                         tmpfs           895      9        887    1%  /run
-  tmpfs                         tmpfs           895      0        895    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394  16173       1222   93%  / -> 空き容量がギリギリの状態
-  /dev/vda1                     xfs            1014    199        816   20%  /boot
-  tmpfs                         tmpfs            99      0         99    0%  /run/user/1000
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ sudo make clean -> 中間ファイル削除でディスク容量に空きを作る
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 設定ファイル(.config)は残る
-  --------------------------------------------------
-  
-  vm11$ cd /usr/src/kernels/linux-4.15.3
-  vm11$ LANG=C df -mT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks   Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        884      0        884    0%  /dev
-  tmpfs                         tmpfs           895      0        895    0%  /dev/shm
-  tmpfs                         tmpfs           895      9        887    1%  /run
-  tmpfs                         tmpfs           895      0        895    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394   6418      10977   37%  / -> 空き容量が10GB程度増えた
-  /dev/vda1                     xfs            1014    199        816   20%  /boot
-  tmpfs                         tmpfs            99      0         99    0%  /run/user/1000
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo grub2-editenv list -> デフォルト起動のカーネル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  saved_entry=CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core) -> デフォルト起動は旧パージョンのカーネルのまま
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo grep -E '^menuentry' /boot/grub2/grub.cfg -> 起動可能なカーネルリストを番号表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  menuentry 'CentOS Linux (4.15.3) 7 (Core)' ...                                     // 0
-  menuentry 'CentOS Linux (3.10.0-1160.el7.x86_64) 7 (Core)' ...                     // 1
-  menuentry 'CentOS Linux (0-rescue-9a873402a94f4530a872af79d68bdeb7) 7 (Core)' ...  // 2
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo grub2-set-default 0 -> デフォルト起動のカーネルを番号指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デフォルト起動されるカーネルを新カーネル(4.15.3)に変更
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo grub2-editenv list -> デフォルト起動のカーネル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  saved_entry=0 -> 新カーネル(4.15.3)の番号を確認
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl reboot
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> カーネル選択画面に新カーネル(4.15.3)が確認できた
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ uname -r
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  4.15.3 -> 起動後に新カーネル(4.15.3)を確認
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ uname -r
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    4.20.1 -> 起動後に新カーネル(4.20.1)を確認
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================

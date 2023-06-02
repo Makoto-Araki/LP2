@@ -13,11 +13,12 @@
 [X12] 準備 - パイプで処理をつなげるとエラー
 [X13] 準備 - 管理者権限でコマンド実行
 [X14] 準備 - ファイルコピーのモジュール使用
-[X15] 準備 - プレイブック作成(01)
-[X16] 準備 - プレイブック作成(02)
-[X17] 準備 - プレイブック作成(03)
-[X18] 準備 - プレイブック作成(04)
-[X19] 準備 - プレイブック作成(05)
+[X15] 準備 - プレイブック作成 - 01
+[X16] 準備 - プレイブック作成 - 02
+[X17] 準備 - プレイブック作成 - 03
+[X18] 準備 - プレイブック作成 - 04
+[X19] 準備 - プレイブック作成 - 05
+[X20] 準備 - プレイブック作成 - 06
 [001] 総合的なリソース使用率の測定 - 01 (top)
 [002] 総合的なリソース使用率の測定 - 02 (vmstat)
 [003] 総合的なリソース使用率の測定 - 03 (vmstat)
@@ -1444,11 +1445,11 @@
   
 ================================================================================
 [X15]
-  準備 - プレイブック作成(01)
+  準備 - プレイブック作成 - 01
   
 [内容]
   ## 作業内容
-    プレイブック作成(01)
+    プレイブック作成 - 01
   
 [確認]
   $ cd $HOME
@@ -1661,11 +1662,11 @@
   
 ================================================================================
 [X16]
-  準備 - プレイブック作成(02)
+  準備 - プレイブック作成 - 02
   
 [内容]
   ## 作業内容
-    プレイブック作成(02)
+    プレイブック作成 - 02
   
 [確認]
   $ cd $HOME
@@ -1732,11 +1733,11 @@
   
 ================================================================================
 [X17]
-  準備 - プレイブック作成(03)
+  準備 - プレイブック作成 - 03
   
 [内容]
   ## 作業内容
-    プレイブック作成(03)
+    プレイブック作成 - 03
   
 [確認]
   $ cd $HOME
@@ -1836,11 +1837,11 @@
   
 ================================================================================
 [X18]
-  準備 - プレイブック作成(04)
+  準備 - プレイブック作成 - 04
   
 [内容]
   ## 作業内容
-    プレイブック作成(04)
+    プレイブック作成 - 04
   
 [確認]
   $ cd $HOME
@@ -1919,11 +1920,11 @@
   
 ================================================================================
 [X19]
-  準備 - プレイブック作成(05)
+  準備 - プレイブック作成 - 05
   
 [内容]
   ## 作業内容
-    プレイブック作成(05)
+    プレイブック作成 - 05
   
 [確認]
   $ cd $HOME
@@ -1972,6 +1973,119 @@
   
   PLAY RECAP
   vm11 : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[X20]
+  準備 - プレイブック作成 - 06
+  
+[内容]
+  ## 作業内容
+    プレイブック作成 - 06
+  
+[確認]
+  $ cd $HOME
+  $ cat ansible/myhost.yml -> インベントリ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  all:
+    hosts:
+      vm11:
+        ansible_host: 192.168.122.11
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm12:
+        ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.20.1.tar.xz -> カーネルソースのダウンロード
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> エラー出力が無ければOK
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi ansible/mybook06.yml -> プレイブック作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  - name: Install Packages
+    hosts: vm11
+    gather_facts: no
+    
+    tasks:
+      - name: Install kernel-devel package
+        ansible.builtin.dnf:
+          name: kernel-devel
+          state: present
+        become: yes
+      
+      - name: Install ncurses-devel package
+        ansible.builtin.dnf:
+          name: ncurses-devel
+          state: present
+        become: yes
+      
+      - name: Install elfutils-libelf-devel package
+        ansible.builtin.dnf:
+          name: elfutils-libelf-devel
+          state: present
+        become: yes
+      
+      - name: Install openssl-devel package
+        ansible.builtin.dnf:
+          name: openssl-devel
+          state: present
+        become: yes
+      
+      - name: Install bc package
+        ansible.builtin.dnf:
+          name: bc
+          state: present
+        become: yes
+      
+      - name: Copy kernel source
+        ansible.builtin.copy:
+          remote_src: false  // ローカルからリモートへコピー
+          src: /home/makoto/linux-4.20.1.tar.xz
+          dest: /usr/local/src
+        become: yes
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible-playbook -i ansible/myhost.yml ansible/mybook06.yml -> プレイブック実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  TASK [Install kernel-devel package]
+  ok: [vm11]
+  
+  TASK [Install ncurses-devel package]
+  changed: [vm11]
+  
+  TASK [Install elfutils-libelf-devel package]
+  ok: [vm11]
+  
+  TASK [Install openssl-devel package]
+  ok: [vm11]
+  
+  TASK [Install bc package]
+  changed: [vm11]
+  
+  TASK [Copy kernel source]
+  changed: [vm11]
+  
+  PLAY RECAP
+  vm11 : ok=6    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
   --------------------------------------------------
   
   以下の確認に続く
