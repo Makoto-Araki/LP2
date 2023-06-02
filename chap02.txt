@@ -1592,11 +1592,6 @@
   ## 作業内容
     初期RAMディスクをコマンド(mkinitrd, dracut)で作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
   vm11$ cd $HOME
   vm11$ mkdir temp1 temp2
