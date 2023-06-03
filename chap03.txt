@@ -1,97 +1,114 @@
 ================================================================================
-[01] ブートからカーネルの起動 - 01 (dmesg)
-[02] ブートからカーネルの起動 - 02 (journalctl -b -k)
-[03] 設定ファイル(SysVinit) - 01 (/etc/inittab)
-[04] 設定ファイル(SysVinit) - 02 (/etc/rcXX.d)
-[05] 起動スクリプトとランレベル(SysVinit) - 01 (/etc/init.d/XX)
-[06] 起動スクリプトとランレベル(SysVinit) - 02 (service)
-[07] サービスの自動起動(SysVinit) - 01 (link)
-[08] サービスの自動起動(SysVinit) - 02 (chkconfig)
-[09] 起動手順(Systemd)
-[10] サービスの管理(Systemd) - 01
-[11] サービスの管理(Systemd) - 02
-[12] Unit設定ファイル(Systemd)
-[13] Systemdのログ - 01 (journalctl)
-[14] Systemdのログ - 02 (/etc/systemd/journalctld.conf)
-[15] ブートローダー(Grub Legacy) - 01
-[16] ブートローダー(Grub Legacy) - 02
-[17] ブートローダー(Grub Legacy) - 03
-[18] ブートローダー(Grub Legacy) - 04
-[19] ブートローダー(Grub 2) - 01
-[20] ブートローダー(Grub 2) - 02
-[21] Install USB - 01
-[22] Install USB - 02
-[23] Install USB - 03
+[001] ブートからカーネルの起動 - 01 (dmesg)
+[002] ブートからカーネルの起動 - 02 (journalctl -b -k)
+[003] 設定ファイル(SysVinit) - 01 (/etc/inittab)
+[004] 設定ファイル(SysVinit) - 02 (/etc/rcXX.d)
+[005] 起動スクリプトとランレベル(SysVinit) - 01 (/etc/init.d/XX)
+[006] 起動スクリプトとランレベル(SysVinit) - 02 (service)
+[007] サービスの自動起動(SysVinit) - 01 (link)
+[008] サービスの自動起動(SysVinit) - 02 (chkconfig)
+[009] 起動手順(Systemd)
+[010] サービスの管理(Systemd) - 01
+[011] サービスの管理(Systemd) - 02
+[012] Unit設定ファイル(Systemd)
+[013] Systemdのログ - 01 (journalctl)
+[014] Systemdのログ - 02 (/etc/systemd/journalctld.conf)
+[015] ブートローダー(Grub Legacy) - 01
+[016] ブートローダー(Grub Legacy) - 02
+[017] ブートローダー(Grub Legacy) - 03
+[018] ブートローダー(Grub Legacy) - 04
+[019] ブートローダー(Grub 2) - 01
+[020] ブートローダー(Grub 2) - 02
+[021] Install USB - 01
+[022] Install USB - 02
+[023] Install USB - 03
 ================================================================================
-[01]
+[001]
   ブートからカーネルの起動 - 01 (dmesg)
   
 [内容]
   ## 作業内容
     ブートからカーネルの起動をコマンド(dmesg)で確認
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ dmesg | head -n 5
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  [    0.000000] Linux version 4.15.3 (root@vm11) ...
-  [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-4.15.3 root=/dev/mapper/centos_vm11-root ro ...
-  [    0.000000] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
-  [    0.000000] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
-  [    0.000000] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+  Last login: Sat Jun  3 13:25:41 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dmesg | head -n 5
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [    0.000000] Linux version 4.20.1 (root@vm11) (gcc version 8.5.0 20210514 (Red Hat 8.5.0-18) (GCC)) ...
+    [    0.000000] Command line: BOOT_IMAGE=(hd0,msdos1)/vmlinuz-4.20.1 root=/dev/mapper/rl_vm11-root ro crashkernel=auto resume=/dev/mapper/rl_vm11-swap rd.lvm.lv=rl_vm11/root rd.lvm.lv=rl_vm11/swap console=ttyS0,115200n8
+    [    0.000000] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+    [    0.000000] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+    [    0.000000] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[02]
+[002]
   ブートからカーネルの起動 - 02 (journalctl -b -k)
   
 [内容]
   ## 作業内容
     ブートからカーネルの起動をコマンド(journalctl -b -k)で確認
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C journalctl -b -k | head -n 5
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  -- Logs begin at Sun 2023-04-16 18:31:25 JST, end at Sun 2023-04-16 20:50:01 JST. --
-  Apr 16 18:31:25 vm11 kernel: Linux version 4.15.3 (root@vm11) ...
-  Apr 16 18:31:25 vm11 kernel: Command line: BOOT_IMAGE=/vmlinuz-4.15.3 root=/dev/mapper/centos_vm11-root ro ...
-  Apr 16 18:31:25 vm11 kernel: x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
-  Apr 16 18:31:25 vm11 kernel: x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+  Last login: Sat Jun  3 13:58:53 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ journalctl -b -k | head -n 5
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -- Logs begin at Sat 2023-06-03 12:45:38 JST, end at Sat 2023-06-03 14:05:11 JST. --
+    6月 03 12:45:38 vm11 kernel: Linux version 4.20.1 (root@vm11) (gcc version 8.5.0 20210514 (Red Hat 8.5.0-18) (GCC)) ...
+    6月 03 12:45:38 vm11 kernel: Command line: BOOT_IMAGE=(hd0,msdos1)/vmlinuz-4.20.1 root=/dev/mapper/rl_vm11-root ro crashkernel=auto resume=/dev/mapper/rl_vm11-swap rd.lvm.lv=rl_vm11/root rd.lvm.lv=rl_vm11/swap console=ttyS0,115200n8
+    6月 03 12:45:38 vm11 kernel: x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+    6月 03 12:45:38 vm11 kernel: x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[03]
+[003]
   設定ファイル(SysVinit) - 01 (/etc/inittab)
   
 [内容]
   ## 作業内容
     設定ファイル(/etc/inittab)の確認
   
-  ## 使用マシン
-    HOST : vm16
-    IPV4 : なし
-    MEMO : 仮想マシン -> CentOS6
-  
-  ## 設定ファイル(/etc/inittab)の書式
+  書式
   --------------------------------------------------
   ID : ランレベル : アクション指示 : コマンド
   
@@ -118,17 +135,12 @@
   以下の確認に続く
   
 ================================================================================
-[04]
+[004]
   設定ファイル(SysVinit) - 02 (/etc/rcXX.d)
   
 [内容]
   ## 作業内容
     ディレクトリ(/etc/rcXX.d)配下の起動・停止スクリプトを確認
-  
-  ## 使用マシン
-    HOST : vm16
-    IPV4 : なし
-    MEMO : 仮想マシン -> CentOS6
   
 [確認]
   vm16# cd $HOME
@@ -148,7 +160,7 @@
   --------------------------------------------------
   
   vm16# cd /etc/init.d
-  vm16# head -n 10 sshd
+  vm16# head -n 5 sshd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -157,11 +169,6 @@
   # sshd Start up the OpenSSH server daemon
   #
   # chkconfig: 2345 55 25 -> ランレベル「2,3,4,5」で開始スクリプト「S55」、終了スクリプト「K25」の名称
-  # description: SSH is a protocol for secure remote shell access. \
-  #              This service starts up the OpenSSH server daemon.
-  #
-  # processname: sshd
-  # config: /etc/ssh/ssh_host_key
   --------------------------------------------------
   
   vm16# cd /etc/rc3.d
@@ -183,17 +190,12 @@
   以下の確認に続く
   
 ================================================================================
-[05]
+[005]
   起動スクリプトとランレベル(SysVinit) - 01 (/etc/init.d/XX)
   
 [内容]
   ## 作業内容
     サービスの起動・停止・再起動等を確認
-  
-  ## 使用マシン
-    HOST : vm16
-    IPV4 : なし
-    MEMO : 仮想マシン -> CentOS6
   
 [確認]
   vm16# cd /etc/init.d
@@ -257,17 +259,12 @@
   以下の確認に続く
   
 ================================================================================
-[06]
+[006]
   起動スクリプトとランレベル(SysVinit) - 02 (service)
   
 [内容]
   ## 作業内容
     サービスの起動・停止・再起動等をコマンド(service)で確認
-  
-  ## 使用マシン
-    HOST : vm16
-    IPV4 : なし
-    MEMO : 仮想マシン -> CentOS6
   
 [確認]
   vm16# cd $HOME
@@ -323,21 +320,16 @@
   以下の確認に続く
   
 ================================================================================
-[07]
+[007]
   サービスの自動起動(SysVinit) - 01 (link)
   
 [内容]
   ## 作業内容
     サービスの自動起動設定を行う
   
-  ## 使用マシン
-    HOST : vm16
-    IPV4 : なし
-    MEMO : 仮想マシン -> CentOS6
-  
 [確認]
   vm16# cd /etc/init.d
-  vm16# head -n 10 sshd
+  vm16# head -n 5 sshd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -346,11 +338,6 @@
   # sshd Start up the OpenSSH server daemon
   #
   # chkconfig: 2345 55 25 -> ランレベル「2,3,4,5」で開始スクリプト「S55」、終了スクリプト「K25」の名称
-  # description: SSH is a protocol for secure remote shell access. \
-  #              This service starts up the OpenSSH server daemon.
-  #
-  # processname: sshd
-  # config: /etc/ssh/ssh_host_key
   --------------------------------------------------
   
   vm16# cd $HOME
@@ -372,17 +359,12 @@
   以下の確認に続く
   
 ================================================================================
-[08]
+[008]
   サービスの自動起動(SysVinit) - 02 (chkconfig)
   
 [内容]
   ## 作業内容
     サービスの自動起動設定を行う
-  
-  ## 使用マシン
-    HOST : vm16
-    IPV4 : なし
-    MEMO : 仮想マシン -> CentOS6
   
 [確認]
   vm16# cd $HOME
@@ -471,301 +453,250 @@
   以下の確認に続く
   
 ================================================================================
-[09]
+[009]
   起動手順(Systemd)
   
 [内容]
   ## 作業内容
     ターゲット(default.target)を追跡する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo find /etc -name default.target
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  /etc/systemd/system/default.target
+  Last login: Sat Jun  3 14:05:11 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh /etc/systemd/system/default.target -> ターゲットの実体
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx. 1 root root 37  4月 15 12:09 /etc/systemd/system/default.target -> /lib/systemd/system/multi-user.target
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl get-default
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  multi-user.target
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl list-dependencies default.target
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  default.target(multi-user.target)
-    |-- auditd.service
-    |-- chronyd.service
-    |-- crond.service
-     ...
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo find /etc -name default.target
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /etc/systemd/system/default.target
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /etc/systemd/system/default.target -> ターゲットの実体
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lrwxrwxrwx. 1 root root 41  5月 28 11:47 /etc/systemd/system/default.target -> /usr/lib/systemd/system/multi-user.target
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl get-default
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    multi-user.target
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl list-dependencies default.target
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    default.target(multi-user.target)
+    ●|-- auditd.service
+    ●|-- chronyd.service
+    ●|-- crond.service
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[10]
+[010]
   サービスの管理(Systemd) - 01
   
 [内容]
   ## 作業内容
-    サービスの起動・停止・再起動等を確認 -> サンプルとして「sshd」サービスを確認
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    サービスの起動・停止・再起動等を確認 -> サンプル「sshd」サービスを確認
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ systemctl status sshd -> サービス状態
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  ● sshd.service - OpenSSH server daemon
-     Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; vendor preset: enabled)
-     Active: active (running) since 月 2023-04-17 09:57:28 JST; 28min ago
-       Docs: man:sshd(8)
-             man:sshd_config(5)
-   Main PID: 1422 (sshd)
-     CGroup: /system.slice/sshd.service
-             └─1422 /usr/sbin/sshd -D
-  
-   4月 17 09:57:28 vm11 sshd[1422]: Server listening on 0.0.0.0 port 22.
-   4月 17 09:57:28 vm11 systemd[1]: Stopped OpenSSH server daemon.
-   4月 17 09:57:28 vm11 sshd[1422]: Server listening on :: port 22.
-   4月 17 09:57:28 vm11 systemd[1]: Starting OpenSSH server daemon...
-   4月 17 09:57:28 vm11 systemd[1]: Started OpenSSH server daemon.
+  Last login: Sun Jun  4 08:31:39 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /usr/lib/systemd/system/sshd.service -> サービス定義を参照
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [Unit]
-  Description=OpenSSH server daemon
-  Documentation=man:sshd(8) man:sshd_config(5)  // マニュアル参照コマンド
-  After=network.target sshd-keygen.service      // 指定サービスの起動が開始後に起動
-  Wants=sshd-keygen.service                     // 指定サービスの起動が失敗でも起動
-  
-  [Service]
-  Type=notify
-  EnvironmentFile=/etc/sysconfig/sshd   // 設定ファイル
-  ExecStart=/usr/sbin/sshd -D $OPTIONS
-  ExecReload=/bin/kill -HUP $MAINPID
-  KillMode=process
-  Restart=on-failure
-  RestartSec=42s
-  
-  [Install]
-  WantedBy=multi-user.target  // 所属ターゲット
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl is-active sshd -> サービス起動確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  active
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl stop sshd -> サービス停止
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl start sshd -> サービス開始
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl reload sshd -> 設定の再読込
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl restart sshd -> サービス再起動
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl is-enabled sshd -> サービス自動起動確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  enabled -> 自動起動が有効
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh /etc/systemd/system/multi-user.target.wants | grep sshd -> 所属ターゲット確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx. 1 root root 36  4月 15 12:05 sshd.service -> /usr/lib/systemd/system/sshd.service
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl disable sshd -> サービス自動起動無効
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Removed symlink /etc/systemd/system/multi-user.target.wants/sshd.service.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh /etc/systemd/system/multi-user.target.wants | grep sshd
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> リンクが削除された
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl enable sshd -> サービス自動起動有効
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created symlink from /etc/systemd/system/multi-user.target.wants/sshd.service to /usr/lib/systemd/system/sshd.service.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh /etc/systemd/system/multi-user.target.wants | grep sshd
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx. 1 root root 36  4月 17 10:00 sshd.service -> /usr/lib/systemd/system/sshd.service
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ systemctl status sshd -> サービス状態
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ● sshd.service - OpenSSH server daemon
+       Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; vendor preset: enabled)
+       Active: active (running) since 月 2023-04-17 09:57:28 JST; 28min ago -> 稼働中(active)を確認
+       ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat /usr/lib/systemd/system/sshd.service -> サービス定義を参照
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [Unit]
+    Description=OpenSSH server daemon
+    Documentation=man:sshd(8) man:sshd_config(5)
+    After=network.target sshd-keygen.service  // network.target,sshd-keygen.serviceが開始後に本サービス起動
+    Wants=sshd-keygen.service                 // sshd-keygen.serviceが起動失敗でも本サービス起動
+    
+    [Service]
+    Type=notify
+    EnvironmentFile=/etc/sysconfig/sshd  // 本サービスの設定ファイル
+    ExecStart=/usr/sbin/sshd -D $OPTIONS
+    ExecReload=/bin/kill -HUP $MAINPID
+    KillMode=process
+    Restart=on-failure
+    RestartSec=42s
+    
+    [Install]
+    WantedBy=multi-user.target  // 所属ターゲット
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl is-active sshd -> サービス起動確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl is-enabled sshd -> サービス自動起動確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    enabled -> 自動起動が有効
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /etc/systemd/system/multi-user.target.wants | grep sshd -> 所属ターゲット確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    lrwxrwxrwx. 1 root root 36  5月 28 11:42 sshd.service -> /usr/lib/systemd/system/sshd.service
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[11]
+[011]
   サービスの管理(Systemd) - 02
   
 [内容]
   ## 作業内容
     検索条件に合致するサービスの検索を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ systemctl --no-pager list-units -t target | head -n 5
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  UNIT                 LOAD    ACTIVE  SUB    
-  basic.target         loaded  active  active Basic System
-  cryptsetup.target    loaded  active  active Local Encrypted Volumes
-  getty.target         loaded  active  active Login Prompts
-  local-fs-pre.target  loaded  active  active Local File Systems (Pre)
+  Last login: Sun Jun  4 08:34:19 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl --no-pager list-units -t service | head -n 5
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UNIT             LOAD    ACTIVE  SUB     
-  auditd.service   loaded  active  running Security Auditing Service
-  chronyd.service  loaded  active  running NTP client/server
-  crond.service    loaded  active  running Command Scheduler
-  dbus.service     loaded  active  running D-Bus System Message Bus
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C systemctl --no-pager list-timers
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NEXT                         LEFT      LAST                         PASSED     UNIT                          ACTIVATES
-  Tue 2023-04-18 09:40:21 JST  23h left  Mon 2023-04-17 09:40:21 JST  28min ago  systemd-tmpfiles-clean.timer  systemd-tmpfiles-clean.service
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl --no-pager list-unit-files -t target | head -n 5
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UNIT FILE              STATE   
-  basic.target           static  
-  bluetooth.target       static  
-  cryptsetup-pre.target  static  
-  cryptsetup.target      static  
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ systemctl --no-pager list-unit-files -t service | head -n 5
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UNIT FILE                 STATE   
-  arp-ethers.service        disabled
-  auditd.service            enabled 
-  autovt@.service           enabled 
-  blk-availability.service  disabled
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C systemctl --no-pager list-timers --all | head -n 5
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NEXT                         LEFT      LAST                         PASSED     UNIT                          ACTIVATES
-  Tue 2023-04-18 09:40:21 JST  23h left  Mon 2023-04-17 09:40:21 JST  38min ago  systemd-tmpfiles-clean.timer  systemd-tmpfiles-clean.service
-  n/a                          n/a       n/a                          n/a        systemd-readahead-done.timer  systemd-readahead-done.service
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ systemctl --no-pager list-units -t target | head -n 3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UNIT               LOAD    ACTIVE  SUB     DESCRIPTION
+    basic.target       loaded  active  active  Basic System
+    cryptsetup.target  loaded  active  active  Local Encrypted Volumes
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl --no-pager list-units -t service | head -n 3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UNIT            LOAD    ACTIVE  SUB      DESCRIPTION                                                                  
+    auditd.service  loaded  active  running  Security Auditing Service                                                    
+    crond.service   loaded  active  running  Command Scheduler                                                            
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl --no-pager list-timers
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NEXT                         LEFT           LAST                         PASSED        UNIT                          ACTIVATES
+    Sun 2023-06-04 08:50:00 JST  2min 32s left  Sun 2023-06-04 08:40:06 JST  7min ago      sysstat-collect.timer         sysstat-collect.service
+    Sun 2023-06-04 09:36:52 JST  49min left     n/a                          n/a           dnf-makecache.timer           dnf-makecache.service
+    Mon 2023-06-05 00:07:00 JST  15h left       n/a                          n/a           sysstat-summary.timer         sysstat-summary.service
+    Mon 2023-06-05 08:45:33 JST  23h left       Sun 2023-06-04 08:45:33 JST  1min 53s ago  systemd-tmpfiles-clean.timer  systemd-tmpfiles-clean.service
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl --no-pager list-unit-files -t target | head -n 3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UNIT FILE         STATE   
+    basic.target      static  
+    bluetooth.target  static  
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl --no-pager list-unit-files -t service | head -n 3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UNIT FILE           STATE   
+    arp-ethers.service  disabled
+    auditd.service      enabled 
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl --no-pager list-timers --all | head -n 3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NEXT                         LEFT        LAST                         PASSED        UNIT                   ACTIVATES
+    Sun 2023-06-04 09:00:00 JST  7min left   Sun 2023-06-04 08:50:11 JST  2min 39s ago  sysstat-collect.timer  sysstat-collect.service
+    Sun 2023-06-04 09:36:52 JST  44min left  n/a                          n/a           dnf-makecache.timer    dnf-makecache.service
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[12]
+[012]
   Unit設定ファイル(Systemd)
   
 [内容]
   ## 作業内容
-    サービスの作成とシステムへの登録を行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    サービス作成とシステム登録を行う
   
 [確認]
   vm11$ cd $HOME
@@ -869,7 +800,7 @@
   以下の確認に続く
   
 ================================================================================
-[13]
+[013]
   Systemdのログ - 01 (journalctl)
   
 [内容]
@@ -1005,7 +936,7 @@
   以下の確認に続く
   
 ================================================================================
-[14]
+[014]
   Systemdのログ - 02 (/etc/systemd/journalctld.conf)
   
 [内容]
@@ -1072,7 +1003,7 @@
   以下の確認に続く
   
 ================================================================================
-[15]
+[015]
   ブートローダー(Grub Legacy) - 01
   
 [内容]
@@ -1116,7 +1047,7 @@
   以下の確認に続く
   
 ================================================================================
-[16]
+[016]
   ブートローダー(Grub Legacy) - 02
   
 [内容]
@@ -1185,7 +1116,7 @@
   以下の確認に続く
   
 ================================================================================
-[17]
+[017]
   ブートローダー(Grub Legacy) - 03
   
 [内容]
@@ -1249,7 +1180,7 @@
   以下の確認に続く
   
 ================================================================================
-[18]
+[018]
   ブートローダー(Grub Legacy) - 04
   
 [内容]
@@ -1361,7 +1292,7 @@
   以下の確認に続く
   
 ================================================================================
-[19]
+[019]
   ブートローダー(Grub2) - 01
   
 [内容]
@@ -1437,7 +1368,7 @@
   以下の確認に続く
   
 ================================================================================
-[20]
+[020]
   ブートローダー(Grub2) - 02
   
 [内容]
@@ -1559,7 +1490,7 @@
   以下の確認に続く
   
 ================================================================================
-[21]
+[021]
   Install USB - 01
   
 [内容]
@@ -1707,7 +1638,7 @@
   以下の確認に続く
   
 ================================================================================
-[22]
+[022]
   Install USB - 02 (Rocky Linux 8)
   
 [内容]
@@ -1857,7 +1788,7 @@
   以下の確認に続く
   
 ================================================================================
-[23]
+[023]
   Install USB - 03
   
 [内容]
