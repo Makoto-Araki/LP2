@@ -2182,97 +2182,114 @@
   ## 作業内容
     ディスクイメージからループバックデバイス作成
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=1M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  10485760 bytes (10 MB) copied, 0.0727656 s, 144 MB/s
+  Last login: Sat Jun  3 10:19:55 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 4801.711345] loop: module loaded
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ losetup -l
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME        SIZELIMIT  OFFSET  AUTOCLEAR  RO  BACK-FILE
-  /dev/loop0          0       0          0   0  /home/makoto/image0.img
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> ブロック割当のメッセージが多数出力されるが成功
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -t ext4 /dev/loop0 /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 5139.620213] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0    10M   0  loop  /mnt -> ループバックデバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=1M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    10485760 bytes (10 MB, 10 MiB) copied, 0.0113847 s, 921 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ losetup -l
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME        SIZELIMIT  OFFSET  AUTOCLEAR  RO  BACK-FILE                DIO  LOG-SEC
+    /dev/loop0          0       0          0   0  /home/makoto/image0.img    0      512
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mke2fs 1.45.6 (20-Mar-2020)
+    Discarding device blocks: done                            
+    Creating filesystem with 10240 1k blocks and 2560 inodes
+    Filesystem UUID: 04b4d9d4-d1fd-46e0-85e0-58374285b889
+    Superblock backups stored on blocks: 8193
+    
+    Allocating group tables: done                            
+    Writing inode tables: done                            
+    Creating journal (1024 blocks): done
+    Writing superblocks and filesystem accounting information: done
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount /dev/loop0 /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+    loop0                    7:0    0   10M  0 loop /mnt -> ループバックデバイス
+    sr0                     11:0    1 1024M  0 rom  
+    vda                    252:0    0   30G  0 disk 
+     |-- vda1              252:1    0    1G  0 part /boot
+     |-- vda2              252:2    0   29G  0 part 
+          |-- rl_vm11-root 253:0    0   26G  0 lvm  /
+          |-- rl_vm11-swap 253:1    0    3G  0 lvm  [SWAP]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2281,75 +2298,86 @@
   
 [内容]
   ## 作業内容
-    ループバックデバイス検出時にルール通りのコマンドが実行されるか確認する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    デバイス検出時のルール通りのコマンド実行を確認する
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ systemctl is-active systemd-udevd
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  active -> プロセス(udevd)の実体はsystemd-udevd
+  Last login: Sat Jun  3 12:49:29 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd /etc/udev/rules.d
-  vm11$ sudo vi 10-loopback.rules -> ルール作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## デバイス検出時にジャーナル記録
-  KERNEL=="loop*", RUN="/bin/logger %k %p" // %k(デバイス名)、%p(絶対パス)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  10485760 bytes (100 MB) copied, 0.0239324 s, 438 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デバイスファイル作成
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C journalctl --no-pager | grep loop0 -> ジャーナル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Apr 16 20:16:28 vm11 sudo[13238]: makoto : TTY=ttyS0 ; PWD=/home/makoto ; USER=root ; COMMAND=/sbin/losetup /dev/loop0 image0.img
-  Apr 16 20:16:28 vm11 root[13243]: loop0 (デバイス名) /devices/virtual/block/loop0 (絶対パス)
-  Apr 16 20:16:28 vm11 root[13245]: loop0 (デバイス名) /devices/virtual/block/loop0 (絶対パス)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ systemctl is-active systemd-udevd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active -> プロセス(udevd)の実体はsystemd-udevd
+    --------------------------------------------------
+    
+    vm11$ cd /etc/udev/rules.d
+    vm11$ sudo vi 10-loopback.rules -> ルール作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## デバイス検出時にジャーナル記録
+    KERNEL=="loop*", RUN="/bin/logger %k(デバイス名) %p(絶対パス)"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.267804 s, 392 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ journalctl --no-pager | grep loop0 -> ジャーナル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    6月 03 13:11:01 vm11 sudo[1322]: makoto : TTY=pts/0 ; PWD=/home/makoto ; USER=root ; COMMAND=/sbin/losetup /dev/loop0 image0.img
+    6月 03 13:11:01 vm11 root[1327]: loop0(デバイス名) /devices/virtual/block/loop0(絶対パス)
+    6月 03 13:11:01 vm11 root[1328]: loop0(デバイス名) /devices/virtual/block/loop0(絶対パス)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2358,121 +2386,141 @@
   
 [内容]
   ## 作業内容
-    ループバックデバイスをコマンド(udevadm info)で捕捉する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    検出デバイスをコマンド(udevadm info)で捕捉する
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ systemctl is-active systemd-udevd
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  active -> プロセス(udevd)の実体はsystemd-udevd
+  Last login: Sat Jun  3 13:06:31 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=loop1.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  10485760 bytes (100 MB) copied, 0.0188382 s, 557 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop1 loop1.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ udevadm info -n /dev/loop1 -> デバイス名(udevd)を指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  P: /devices/virtual/block/loop1 -> デバイス名(sysfs)
-  N: loop1 -> デバイス名(udevd)
-  E: DEVNAME=/dev/loop1
-  E: DEVPATH=/devices/virtual/block/loop1
-  E: DEVTYPE=disk
-  E: MAJOR=7
-  E: MINOR=1
-  E: SUBSYSTEM=block
-  E: TAGS=:systemd:
-  E: USEC_INITIALIZED=15017502
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ udevadm info -p /devices/virtual/block/loop1 -> デバイス名(sysfs)を指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (同上)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ udevadm info -n /dev/loop1 -q name -> 問合せ結果から名前のみ抽出
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  loop1
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ udevadm info -n /dev/loop1 -q property -> 問合せ結果からプロパティのみ表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  DEVNAME=/dev/loop1
-  DEVPATH=/devices/virtual/block/loop1
-  DEVTYPE=disk
-  MAJOR=7
-  MINOR=1
-  SUBSYSTEM=block
-  TAGS=:systemd:
-  USEC_INITIALIZED=15017502
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ udevadm info -n /dev/loop1 -q all -> 問合せ結果から全情報表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  P: /devices/virtual/block/loop1 -> デバイス名(sysfs)
-  N: loop1 -> デバイス名(udevd)
-  E: DEVNAME=/dev/loop1
-  E: DEVPATH=/devices/virtual/block/loop1
-  E: DEVTYPE=disk
-  E: MAJOR=7
-  E: MINOR=1
-  E: SUBSYSTEM=block
-  E: TAGS=:systemd:
-  E: USEC_INITIALIZED=15017502
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f loop1.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ systemctl is-active systemd-udevd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active -> プロセス(udevd)の実体はsystemd-udevd
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=loop0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.247014 s, 425 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 loop0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ udevadm info -n /dev/loop0 -> デバイス名(udevd)を指定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    P: /devices/virtual/block/loop0 -> デバイス名(sysfs)
+    N: loop0                        -> デバイス名(udevd)
+    E: DEVNAME=/dev/loop0
+    E: DEVPATH=/devices/virtual/block/loop0 -> 絶対パス
+    E: DEVTYPE=disk
+    E: MAJOR=7
+    E: MINOR=0
+    E: SUBSYSTEM=block
+    E: TAGS=:systemd:
+    E: USEC_INITIALIZED=307946933
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ udevadm info -p /devices/virtual/block/loop0 -> デバイス名(sysfs)を指定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    P: /devices/virtual/block/loop0 -> デバイス名(sysfs)
+    N: loop0                        -> デバイス名(udevd)
+    E: DEVNAME=/dev/loop0
+    E: DEVPATH=/devices/virtual/block/loop0 -> 絶対パス
+    E: DEVTYPE=disk
+    E: MAJOR=7
+    E: MINOR=0
+    E: SUBSYSTEM=block
+    E: TAGS=:systemd:
+    E: USEC_INITIALIZED=307946933
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ udevadm info -n /dev/loop0 -q name -> 名前のみ抽出
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    loop0
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ udevadm info -n /dev/loop0 -q property -> プロパティのみ抽出
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    DEVNAME=/dev/loop0
+    DEVPATH=/devices/virtual/block/loop0
+    DEVTYPE=disk
+    MAJOR=7
+    MINOR=0
+    SUBSYSTEM=block
+    TAGS=:systemd:
+    USEC_INITIALIZED=307946933
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ udevadm info -n /dev/loop0 -q all -> 全情報を抽出
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    P: /devices/virtual/block/loop0 -> デバイス名(sysfs)
+    N: loop0                        -> デバイス名(udevd)
+    E: DEVNAME=/dev/loop0
+    E: DEVPATH=/devices/virtual/block/loop0 -> 絶対パス
+    E: DEVTYPE=disk
+    E: MAJOR=7
+    E: MINOR=0
+    E: SUBSYSTEM=block
+    E: TAGS=:systemd:
+    E: USEC_INITIALIZED=307946933
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f loop0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2481,12 +2529,7 @@
   
 [内容]
   ## 作業内容
-    デバイス(USB)の自動検出をモニタリング
-  
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
+    デバイス(USBメモリ)の自動検出をモニタリング
   
 [確認]
   # cd $HOME
