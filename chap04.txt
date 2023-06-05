@@ -272,129 +272,427 @@
     mount -t XX   : ファイルシステム種類(XX)を指定
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ lsblk
+  $ cd $HOME
+  $ sudo virsh destroy vm11 -> 仮想マシンの停止
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  Domain 'vm11' destroyed
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/vdb1 -> ファイルシステム作成
-  vm11$ sudo mkfs -t ext4 /dev/vdb2 -> ファイルシステム作成
+  $ cd $HOME
+  $ sudo dd if=/dev/zero of=/home/disk1.img bs=100M count=20 -> イメージファイル作成
+  $ sudo dd if=/dev/zero of=/home/disk2.img bs=100M count=20
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  // disk1.img
+  20+0 レコード入力
+  20+0 レコード出力
+  2097152000 bytes (2.1 GB, 2.0 GiB) copied, 7.08418 s, 296 MB/s
+  
+  // disk2.img
+  20+0 レコード入力
+  20+0 レコード出力
+  2097152000 bytes (2.1 GB, 2.0 GiB) copied, 7.0944 s, 296 MB/s
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sudo mkdir -p /mnt/mp1 -> マウントポイント作成
-  vm11$ sudo mkdir -p /mnt/mp2 -> マウントポイント作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /etc/fstab -> 設定ファイル(/etc/fstab)を編集
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UUID=7c5f5868-f985-4022-8bfc-c748dde563db  /boot     xfs   defaults  0  0
-  /dev/mapper/centos_vm11-root               /         xfs   defaults  0  0
-  /dev/mapper/centos_vm11-swap               swap      swap  defaults  0  0
-  /dev/vdb1                                  /mnt/mp1  ext4  defaults  0  0  (追加)
-  /dev/vdb2                                  /mnt/mp2  ext4  defaults  0  0  (追加)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をマウント
+  $ cd $HOME
+  $ sudo vi /home/disk1.xml -> デバイスのXMLファイル作成
+  $ sudo vi /home/disk2.xml
   
   コマンドの実行結果
   --------------------------------------------------
-  [ 3643.371102] EXT4-fs (vdb1): mounted filesystem with ordered data mode. Opts: (null)
-  [ 3643.390767] EXT4-fs (vdb2): mounted filesystem with ordered data mode. Opts: (null)
+  // disk1.xml
+  <disk type='file' device='disk'>
+    <driver name='qemu' type='raw' cache='none'/>
+    <source file='/home/disk1.img'/>
+    <target dev='vdb'/>
+  </disk>
+  
+  // disk2.xml
+  <disk type='file' device='disk'>
+    <driver name='qemu' type='raw' cache='none'/>
+    <source file='/home/disk2.img'/>
+    <target dev='vdc'/>
+  </disk>
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ lsblk
+  $ cd /home
+  $ sudo virsh attach-device --config vm11 /home/disk1.xml -> 仮想マシンにデバイス追加
+  $ sudo virsh attach-device --config vm11 /home/disk2.xml
+
+  コマンドの実行結果
+  --------------------------------------------------
+  // disk1.xml
+  デバイスが正常に接続されました
+  
+  // disk2.xml
+  デバイスが正常に接続されました
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh start vm11 -> 仮想マシンの起動
   
   コマンドの実行結果
   --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2 (マウント確認)
-   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1 (マウント確認)
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  Domain 'vm11' started
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sudo umount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をアンマウント
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Mon Jun  5 10:54:21 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+    sr0                      11:0     1  1024M   0  rom   
+    vda                     252:0     0    30G   0  disk  
+     |-- vda1               252:1     0     1G   0  part  /boot
+     |-- vda2               252:2     0    29G   0  part  
+          |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+    vdb                     252:16    0     2G   0  disk  ディスク追加
+    vdc                     252:32    0     2G   0  disk  ディスク追加
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C sudo parted /dev/vdb -> ディスク上にパーティション作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    GNU Parted 3.2
+    Using /dev/vdb
+    Welcome to GNU Parted! Type 'help' to view a list of commands.
+    
+    (parted) 
+    (parted) print -> パーティション情報
+    
+    Error: /dev/vdb: unrecognised disk label -> 管理方式が不明
+    Model: Virtio Block Device (virtblk)
+    Disk /dev/vdb: 2097MB
+    Sector size (logical/physical): 512B/512B
+    Partition Table: unknown -> 管理方式が不明なのでパーティション情報もない
+    Disk Flags: 
+    
+    (parted) 
+    (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に設定
+    
+    (parted) 
+    (parted) mkpart -> パーティション作成
+    
+    Partition type?  primary/extended? (primaryを入力)
+    File system type?  [ext2]? (ext4を入力)
+    Start? (0%を入力) -> 開始セクタはディスクの最初から
+    End? (50%を入力) -> 終了セクタはディスクの半分まで
+    
+    (parted) 
+    (parted) mkpart -> パーティション作成
+    
+    Partition type?  primary/extended? (primaryを入力)
+    File system type?  [ext2]? (ext4を入力)
+    Start? (51%を入力) -> 開始セクタはディスクの半分から
+    End? (100%を入力) -> 終了セクタはディスクの最後まで
+    
+    (parted) 
+    (parted) print -> パーティション情報
+    
+    Model: Virtio Block Device (virtblk)
+    Disk /dev/vdb: 2097MB
+    Sector size (logical/physical): 512B/512B
+    Partition Table: msdos
+    Disk Flags: 
+    
+    Number  Start   End     Size    Type     File system  Flags
+    1       1049kB  1049MB  1048MB  primary  ext4         lba
+    2       1070MB  2097MB  1028MB  primary  ext4         lba
+    
+    (parted) 
+    (parted) quit -> 対話モード終了
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C sudo parted /dev/vdc -> ディスク上にパーティション作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    GNU Parted 3.2
+    Using /dev/vdc
+    Welcome to GNU Parted! Type 'help' to view a list of commands.
+    
+    (parted) 
+    (parted) print -> パーティション情報
+    
+    Error: /dev/vdc: unrecognised disk label -> 管理方式が不明
+    Model: Virtio Block Device (virtblk)
+    Disk /dev/vdb: 2097MB
+    Sector size (logical/physical): 512B/512B
+    Partition Table: unknown -> 管理方式が不明なのでパーティション情報もない
+    Disk Flags: 
+    
+    (parted) 
+    (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に設定
+    
+    (parted) 
+    (parted) mkpart -> パーティション作成
+    
+    Partition type?  primary/extended? (primaryを入力)
+    File system type?  [ext2]? (ext4を入力)
+    Start? (0%を入力) -> 開始セクタはディスクの最初から
+    End? (50%を入力) -> 終了セクタはディスクの半分まで
+    
+    (parted) 
+    (parted) mkpart -> パーティション作成
+    
+    Partition type?  primary/extended? (primaryを入力)
+    File system type?  [ext2]? (ext4を入力)
+    Start? (51%を入力) -> 開始セクタはディスクの半分から
+    End? (100%を入力) -> 終了セクタはディスクの最後まで
+    
+    (parted) 
+    (parted) print -> パーティション情報
+    
+    Model: Virtio Block Device (virtblk)
+    Disk /dev/vdc: 2097MB
+    Sector size (logical/physical): 512B/512B
+    Partition Table: msdos
+    Disk Flags: 
+    
+    Number  Start   End     Size    Type     File system  Flags
+    1       1049kB  1049MB  1048MB  primary  ext4         lba
+    2       1070MB  2097MB  1028MB  primary  ext4         lba
+    
+    (parted) 
+    (parted) quit -> 対話モード終了
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+    sr0                      11:0     1  1024M   0  rom   
+    vda                     252:0     0    30G   0  disk  
+     |-- vda1               252:1     0     1G   0  part  /boot
+     |-- vda2               252:2     0    29G   0  part  
+          |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+    vdb                     252:16    0     2G   0  disk  
+     |-- vdb1               252:17    0   999M   0  part  パーティション作成
+     |-- vdb2               252:18    0   980M   0  part  パーティション作成
+    vdc                     252:32    0     2G   0  disk  
+     |-- vdc1               252:33    0   999M   0  part  パーティション作成
+     |-- vdc2               252:34    0   980M   0  part  パーティション作成
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir -p /mnt/mp1 -> マウントポイント作成
+    vm11$ sudo mkdir -p /mnt/mp2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/vdb1 -> ファイルシステム作成
+    vm11$ sudo mkfs -t ext4 /dev/vdb2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkswap /dev/vdc1 -> スワップ領域を作成
+    vm11$ sudo mkswap /dev/vdc2
   
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  (アンマウント確認)
-   |-- vdb1                   252:17    0     1G   0  part  (アンマウント確認)
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl reboot -> 再起動後に設定ファイル(etc/fstab)のオプション(auto)通りにマウントされるか確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> makotoでログイン
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2 (マウント確認)
-   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1 (マウント確認)
-  sr0                          11:0     1  1024M   0  rom   
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
+    コマンドの実行結果
+    --------------------------------------------------
+    // vdc1
+    スワップ空間バージョン 1 を設定します。サイズ = 999 MiB (1047523328 バイト)
+    ラベルはありません, UUID=92f57769-d249-4ccd-ad8c-fb207f271367
+    
+    // vdc2
+    スワップ空間バージョン 1 を設定します。サイズ = 980 MiB (1027600384 バイト)
+    ラベルはありません, UUID=1c99c611-6e12-44d7-994a-018eb5d4038a
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo swapon /dev/vdc1 -> スワップ領域を有効化
+    vm11$ sudo swapon /dev/vdc2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // vdc1
+    (省略) -> 出力なし
+    
+    // vdc2
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ LANG=C swapon -s -> 有効なスワップ領域を表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filename   Type       Size     Used  Priority
+    /dev/dm-1  partition  3145724  0     -2
+    /dev/vdc1  partition  1022972  0     -3
+    /dev/vdc2  partition  1003516  0     -4
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat /proc/swaps -> 有効なスワップ領域を表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filename   Type       Size     Used  Priority
+    /dev/dm-1  partition  3145724  0     -2
+    /dev/vdc1  partition  1022972  0     -3
+    /dev/vdc2  partition  1003516  0     -4
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/fstab -> 設定ファイル(/etc/fstab)を編集
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UUID=873bce14-6dd1-411a-a3bb-1fbd6dd99891  /boot     xfs   defaults  0  0
+    /dev/mapper/rl_vm11-root                   /         xfs   defaults  0  0
+    /dev/mapper/rl_vm11-swap                   none      swap  defaults  0  0
+    /dev/vdb1                                  /mnt/mp1  ext4  defaults  0  0  (追加)
+    /dev/vdb2                                  /mnt/mp2  ext4  defaults  0  0  (追加)
+    /dev/vdc1                                  none      swap  defaults  0  0  (追加)
+    /dev/vdc2                                  none      swap  defaults  0  0  (追加)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl daemon-reload -> 設定ファイル(/etc/fstab)の変更をシステムへ通知
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をマウント
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+    sr0                      11:0     1  1024M   0  rom   
+    vda                     252:0     0    30G   0  disk  
+     |-- vda1               252:1     0     1G   0  part  /boot
+     |-- vda2               252:2     0    29G   0  part  
+          |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+    vdb                     252:16    0     2G   0  disk  
+     |-- vdb1               252:17    0   999M   0  part  /mnt/mp1
+     |-- vdb2               252:18    0   980M   0  part  /mnt/mp2
+    vdc                     252:32    0     2G   0  disk  
+     |-- vdc1               252:33    0   999M   0  part  [SWAP]
+     |-- vdc2               252:34    0   980M   0  part  [SWAP]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をアンマウント
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo swapoff /dev/vdc1 -> スワップ領域の無効化
+    vm11$ sudo swapoff /dev/vdc2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+    sr0                      11:0     1  1024M   0  rom   
+    vda                     252:0     0    30G   0  disk  
+     |-- vda1               252:1     0     1G   0  part  /boot
+     |-- vda2               252:2     0    29G   0  part  
+          |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+    vdb                     252:16    0     2G   0  disk  
+     |-- vdb1               252:17    0   999M   0  part  
+     |-- vdb2               252:18    0   980M   0  part  
+    vdc                     252:32    0     2G   0  disk  
+     |-- vdc1               252:33    0   999M   0  part  
+     |-- vdc2               252:34    0   980M   0  part  
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をマウント
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo swapon /dev/vdc1 -> スワップ領域の有効化
+    vm11$ sudo swapon /dev/vdc2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
+    sr0                      11:0     1  1024M   0  rom   
+    vda                     252:0     0    30G   0  disk  
+     |-- vda1               252:1     0     1G   0  part  /boot
+     |-- vda2               252:2     0    29G   0  part  
+          |-- rl_vm11-root  253:0     0    26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
+    vdb                     252:16    0     2G   0  disk  
+     |-- vdb1               252:17    0   999M   0  part  /mnt/mp1
+     |-- vdb2               252:18    0   980M   0  part  /mnt/mp2
+    vdc                     252:32    0     2G   0  disk  
+     |-- vdc1               252:33    0   999M   0  part  [SWAP]
+     |-- vdc2               252:34    0   980M   0  part  [SWAP]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -404,11 +702,6 @@
 [内容]
   ## 作業内容
     指定ファイルシステムでデバイスマウント
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド(umount)
     umount -a     : 設定ファイル(/etc/mtab)の全ファイルシステムをアンマウント
@@ -425,184 +718,13 @@
   ## 作業内容
     指定デバイスをスワップ領域化する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(mkswap)
     mkswap XX     : スワップ領域(XX)を作成
     mkswap -c     : 不良ブロックをチェック
     mkswap -L XX  : ラベル(XX)を付与
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ dd if=/dev/zero of=image1.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // image0.img
-  10+0 レコード入力
-  10+0 レコード出力
-  104857600 バイト (105 MB) コピーされました、 0.145578 秒、 720 MB/秒
-
-  // image1.img
-  10+0 レコード入力
-  10+0 レコード出力
-  104857600 バイト (105 MB) コピーされました、 0.145578 秒、 720 MB/秒
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ losetup -f
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/loop0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkswap /dev/loop0  -> スワップ領域を作成
-  vm11$ sudo mkswap /dev/loop1  -> スワップ領域を作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // loop0
-  スワップ空間バージョン1を設定します、サイズ = 102396 KiB
-  ラベルはありません, UUID=cd28706a-7911-49aa-8778-fb92b66228de
-  
-  // loop1
-  スワップ空間バージョン1を設定します、サイズ = 102396 KiB
-  ラベルはありません, UUID=5fbf5f62-a566-4e3e-a2de-32e181f6cdae
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2
-   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  (スワップ領域予定)
-  loop1                         7:1     0   100M   0  loop  (スワップ領域予定)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo swapon /dev/loop0 -> スワップ領域の有効化
-  vm11$ sudo swapon /dev/loop1 -> スワップ領域の有効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // loop0
-  [ 4092.146551] Adding 102396k swap on /dev/loop0.  Priority:-3 extents:1 across:102396k FS
-  
-  // loop1
-  [ 4121.141813] Adding 102396k swap on /dev/loop1.  Priority:-4 extents:1 across:102396k FS
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2
-   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  [SWAP] -> スワップ領域
-  loop1                         7:1     0   100M   0  loop  [SWAP] -> スワップ領域
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ swapon -s -> 有効なスワップ領域を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filename     Type        Size      Used   Priority
-  /dev/dm-1    partition   2097148   0      -2
-  /dev/loop0   partition   10236     0      -3
-  /dev/loop1   partition   10236     0      -4
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat /proc/swaps -> 有効なスワップ領域を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filename     Type        Size      Used   Priority
-  /dev/dm-1    partition   2097148   0      -2
-  /dev/loop0   partition   10236     0      -3
-  /dev/loop1   partition   10236     0      -4
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo swapoff /dev/loop0 -> スワップ領域の無効化
-  vm11$ sudo swapoff /dev/loop1 -> スワップ領域の無効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  /mnt/mp2
-   |-- vdb1                   252:17    0     1G   0  part  /mnt/mp1
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  (スワップ領域を無効化)
-  loop1                         7:1     0   100M   0  loop  (スワップ領域を無効化)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-1].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  以下の確認に続く
+  上記の「06」を参照
   
 ================================================================================
 [09]
@@ -612,18 +734,13 @@
   ## 作業内容
     指定デバイスをスワップ領域化する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(swapon)
     swapon XX  : スワップ領域(XX)を有効化
     swapon -a  : 設定ファイル(/etc/fstab)の全スワップ領域を有効化
     swapon -s  : 有効なスワップ領域を表示
   
 [確認]
-  上記の「08」を参照
+  上記の「06」を参照
   
 ================================================================================
 [10]
@@ -633,17 +750,12 @@
   ## 作業内容
     指定デバイスのスワップ領域化を解除する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(swapoff)
     swapoff XX  : スワップ領域(XX)を無効化
     swapoff -a  : 設定ファイル(/etc/fstab)の全スワップ領域を無効化
   
 [確認]
-  上記の「08」を参照
+  上記の「06」を参照
   
 ================================================================================
 [11]
