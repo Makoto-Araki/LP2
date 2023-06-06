@@ -1912,117 +1912,85 @@
     fsck -N     : 動作のシミュレートのみ
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 1.72486 s, 60.8 MB/s
+  Last login: Tue Jun  6 09:17:01 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0
-  vm11$ sudo mkfs -t xfs /dev/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo fsck -t ext4 /dev/loop0 -> ファイルシステムチェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  fsck from util-linux 2.23.2
-  e2fsck 1.42.9 (28-Dec-2013) -> 内部でコマンド(e2fsck)を実行
-  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks -> 異常なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo fsck -r /dev/loop0 -> 対話的にファイルシステムチェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  fsck from util-linux 2.23.2
-  e2fsck 1.42.9 (28-Dec-2013) -> 内部でコマンド(e2fsck)を実行
-  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks -> 異常なし
-  /dev/loop0: status 0, rss 3088, real 0.036244, user 0.001382, sys 0.006858
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo fsck -t xfs /dev/loop1 -> ファイルシステムチェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  fsck from util-linux 2.23.2
-  If you wish to check the consistency of an XFS filesystem or
-  repair a damaged filesystem, see xfs_repair(8). -> コマンド(xfs_repair)の使用推奨
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_repair /dev/loop1 -> ファイルシステムチェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Phase 1 - find and verify superblock...
-  Phase 2 - using internal log
-          - zero log...
-          - scan filesystem freespace and inode maps...
-          - found root inode chunk
-  Phase 3 - for each AG...
-          - scan and clear agi unlinked lists...
-          - process known inodes and perform inode discovery...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-          - process newly discovered inodes...
-  Phase 4 - check for duplicate blocks...
-          - setting up duplicate extent list...
-          - check for inodes claiming duplicate blocks...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-  Phase 5 - rebuild AG headers and trees...
-          - reset superblock...
-  Phase 6 - check inode connectivity...
-          - resetting contents of realtime bitmap and summary inodes
-          - traversing filesystem ...
-          - traversal finished ...
-          - moving disconnected inodes to lost+found ...
-  Phase 7 - verify and correct link counts...
-  done
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-1].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.118634 s, 884 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo fsck -t ext4 /dev/loop0 -> ファイルシステムチェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    fsck from util-linux 2.32.1
+    e2fsck 1.45.6 (20-Mar-2020) -> 内部でコマンド(e2fsck)を実行
+    /dev/loop0: clean, 11/25688 files, 8896/102400 blocks -> 異常なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo fsck -r /dev/loop0 -> 対話的にファイルシステムチェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    fsck from util-linux 2.32.1
+    e2fsck 1.45.6 (20-Mar-2020)
+    /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
+    /dev/loop0: status 0, rss 3344, real 0.034143, user 0.002671, sys 0.001715
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2031,15 +1999,10 @@
   
 [内容]
   ## 作業内容
-    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントでないとファイルシステムが壊れる)
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    ファイルシステムチェックを行う
   
   ## コマンド(e2fsck)
-    e2fsck -b XX  : 指定したスーパーブロックのバックアップ(XX)を使用してファイルシステム復元
+    e2fsck -b XX  : スーパーブロックのバックアップ(XX)でファイルシステム復元
     e2fsck -c     : 不良ブロックをチェック
     e2fsck -f     : ファイルシステムが「clean」でもチェック
     e2fsck -p     : 不良ブロックを自動的に修復 -> preen(身だしなみの意味)
@@ -2047,116 +2010,135 @@
     e2fsck -n     : 問合せに「no」と回答
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.13457 s, 779 MB/s
+  Last login: Tue Jun  6 09:53:58 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> スーパーブロックはメモしない、後でコマンド(dumpe2fs)で調査する
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo e2fsck /dev/loop0 -> ファイルシステムチェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  e2fsck 1.42.9 (28-Dec-2013)
-  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo e2fsck -c -y /dev/loop0 -> 不良チェック、問合せにYES
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  e2fsck 1.42.9 (28-Dec-2013)
-  Checking for bad blocks (read-only test): 0.00% done, 0:00 elapsed.
-  
-  /dev/loop0: Updating bad block inode.
-  Pass 1: Checking inodes, blocks, and sizes
-  Pass 2: Checking directory structure
-  Pass 3: Checking directory connectivity
-  Pass 4: Checking reference counts
-  Pass 5: Checking group summary information
-  
-  /dev/loop0: ***** FILE SYSTEM WAS MODIFIED *****
-  /dev/loop0: 11/25688 files (9.1% non-contiguous), 8896/102400 blocks
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo e2fsck -p /dev/loop0 -> 自動修復
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dumpe2fs /dev/loop0 | grep -i superblock -> スーパーブロック確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dumpe2fs 1.42.9 (28-Dec-2013)
-    Primary superblock at 1, Group descriptors at 2-2
-    Backup superblock at 8193, Group descriptors at 8194-8194 -> バックアップ(8193)を後に使用
-    Backup superblock at 24577, Group descriptors at 24578-24578
-    Backup superblock at 40961, Group descriptors at 40962-40962
-    Backup superblock at 57345, Group descriptors at 57346-57346
-    Backup superblock at 73729, Group descriptors at 73730-73730
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo e2fsck -b 8193 /dev/loop0 -> バックアップ(8193)使用、ファイルシステム修復
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  e2fsck 1.42.9 (28-Dec-2013)
-  /dev/loop0 was not cleanly unmounted, check forced.
-  
-  Pass 1: Checking inodes, blocks, and sizes
-  Pass 2: Checking directory structure
-  Pass 3: Checking directory connectivity
-  Pass 4: Checking reference counts
-  Pass 5: Checking group summary information
-  
-  /dev/loop0: ***** FILE SYSTEM WAS MODIFIED *****
-  /dev/loop0: 11/25688 files (9.1% non-contiguous), 8896/102400 blocks
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.112765 s, 930 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> スーパーブロックはあえてメモしない
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo e2fsck /dev/loop0 -> ファイルシステムチェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    e2fsck 1.45.6 (20-Mar-2020)
+    /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo e2fsck -y -c /dev/loop0 -> 不良チェック、問合せにYES
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Checking for bad blocks (read-only test):   0.00% done, 0:00 elapsed.
+    /dev/loop0: Updating bad block inode.
+    
+    Pass 1: Checking inodes, blocks, and sizes
+    Pass 2: Checking directory structure
+    Pass 3: Checking directory connectivity
+    Pass 4: Checking reference counts
+    Pass 5: Checking group summary information
+    
+    /dev/loop0: ***** FILE SYSTEM WAS MODIFIED *****
+    /dev/loop0: 11/25688 files (0.0% non-contiguous), 8896/102400 blocks
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo e2fsck -p /dev/loop0 -> 自動修復
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /dev/loop0: clean, 11/25688 files, 8896/102400 blocks
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo dumpe2fs /dev/loop0 | grep -i superblock -> スーパーブロック確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dumpe2fs 1.45.6 (20-Mar-2020)
+      Primary superblock at 1, Group descriptors at 2-2
+      Backup superblock at 8193, Group descriptors at 8194-8194
+      Backup superblock at 24577, Group descriptors at 24578-24578
+      Backup superblock at 40961, Group descriptors at 40962-40962
+      Backup superblock at 57345, Group descriptors at 57346-57346
+      Backup superblock at 73729, Group descriptors at 73730-73730
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo e2fsck -y -b 8193 /dev/loop0 -> バックアップ(8193)使用、ファイルシステム修復、問合せにYES
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    e2fsck 1.45.6 (20-Mar-2020)
+    /dev/loop0 was not cleanly unmounted, check forced.
+    
+    Pass 1: Checking inodes, blocks, and sizes
+    Pass 2: Checking directory structure
+    Pass 3: Checking directory connectivity
+    Pass 4: Checking reference counts
+    Pass 5: Checking group summary information
+    
+    Padding at end of inode bitmap is not set. Fix? yes  // YESが自動入力
+    Block bitmap differences: Group 1 block bitmap does not match checksum.
+    FIXED.
+    
+    /dev/loop0: ***** FILE SYSTEM WAS MODIFIED *****
+    /dev/loop0: 11/25688 files (0.0% non-contiguous), 8896/102400 blocks
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2165,130 +2147,107 @@
   
 [内容]
   ## 作業内容
-    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントの状態でないとファイルシステムが壊れる)
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    ファイルシステムチェックを行う
   
   ## コマンド(xfs_repair)
     xfs_repair XX     : デバイス(XX)のチェックと修復
     xfs_repair -n XX  : デバイス(XX)のチェックのみ
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.298024 s, 352 MB/s
+  Last login: Tue Jun  6 10:32:20 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_repair -n /dev/loop0 -> ファイルシステムチェックのみ実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Phase 1 - find and verify superblock...
-  Phase 2 - using internal log
-          - zero log...
-          - scan filesystem freespace and inode maps...
-          - found root inode chunk
-  Phase 3 - for each AG...
-          - scan (but don't clear) agi unlinked lists...
-          - process known inodes and perform inode discovery...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-          - process newly discovered inodes...
-  Phase 4 - check for duplicate blocks...
-          - setting up duplicate extent list...
-          - check for inodes claiming duplicate blocks...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-  No modify flag set, skipping phase 5
-  Phase 6 - check inode connectivity...
-          - traversing filesystem ...
-          - traversal finished ...
-          - moving disconnected inodes to lost+found ...
-  Phase 7 - verify link counts...
-  No modify flag set, skipping filesystem flush and exiting.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_repair /dev/loop0 -> ファイルシステムチェックと修復
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Phase 1 - find and verify superblock...
-  Phase 2 - using internal log
-          - zero log...
-          - scan filesystem freespace and inode maps...
-          - found root inode chunk
-  Phase 3 - for each AG...
-          - scan and clear agi unlinked lists...
-          - process known inodes and perform inode discovery...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-          - process newly discovered inodes...
-  Phase 4 - check for duplicate blocks...
-          - setting up duplicate extent list...
-          - check for inodes claiming duplicate blocks...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-  Phase 5 - rebuild AG headers and trees...
-          - reset superblock...
-  Phase 6 - check inode connectivity...
-          - resetting contents of realtime bitmap and summary inodes
-          - traversing filesystem ...
-          - traversal finished ...
-          - moving disconnected inodes to lost+found ...
-  Phase 7 - verify and correct link counts...
-  done
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.14858 s, 706 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_repair /dev/loop0 -> ファイルシステムチェックと修復
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Phase 1 - find and verify superblock...
+    Phase 2 - using internal log
+            - zero log...
+            - scan filesystem freespace and inode maps...
+            - found root inode chunk
+    Phase 3 - for each AG...
+            - scan and clear agi unlinked lists...
+            - process known inodes and perform inode discovery...
+            - agno = 0
+            - agno = 1
+            - agno = 2
+            - agno = 3
+            - process newly discovered inodes...
+    Phase 4 - check for duplicate blocks...
+            - setting up duplicate extent list...
+            - check for inodes claiming duplicate blocks...
+            - agno = 0
+            - agno = 1
+            - agno = 2
+            - agno = 3
+    Phase 5 - rebuild AG headers and trees...
+            - reset superblock...
+    Phase 6 - check inode connectivity...
+            - resetting contents of realtime bitmap and summary inodes
+            - traversing filesystem ...
+            - traversal finished ...
+            - moving disconnected inodes to lost+found ...
+    Phase 7 - verify and correct link counts...
+    done
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2299,169 +2258,180 @@
   ## 作業内容
     ファイルシステム管理を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(tune2fs)
-    tune2fs -c XX  : 最大マウント回数(XX)でファイルシステムチェック -> 0 はチェックしない
+    tune2fs -c XX  : 最大マウント回数(XX)でファイルシステムチェック
     tune2fs -C XX  : 現在のマウント回数を設定
-    tune2fs -i XX  : ファイルシステムチェック間隔(XX日) -> 0 はチェックしない
+    tune2fs -i XX  : ファイルシステムチェック間隔(XX日)
     tune2fs -j     : ext2からext3に変換
-    tune2fs -m XX  : root用の管理領域の割合
+    tune2fs -m XX  : 管理領域の割合
     tune2fs -l     : スーパーブロック内容を表示
     tune2fs -L XX  : ファイルシステムのボリュームラベル(XX)
     tune2fs -U XX  : UUID(XX)
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.125487 s, 836 MB/s
+  Last login: Tue Jun  6 12:03:16 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext2 /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -j /dev/loop0 -> ファイルシステムのアップグレード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  tune2fs 1.42.9 (28-Dec-2013)
-  Creating journal inode: done
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -m 1 /dev/loop0 -> 管理領域の割合を1%に変更
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  tune2fs 1.42.9 (28-Dec-2013)
-  Setting reserved blocks percentage to 1% (1024 blocks)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -l /dev/loop0 -> スーパーブロックの内容表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  tune2fs 1.42.9 (28-Dec-2013)
-  Filesystem volume name:   <none>
-  Last mounted on:          <not available>
-  Filesystem UUID:          cad03a58-d968-454f-90f7-17a47f9d45f7
-  Filesystem magic number:  0xEF53
-  Filesystem revision #:    1 (dynamic)
-  Filesystem features:      has_journal ext_attr resize_inode dir_index filetype sparse_super
-  Filesystem flags:         signed_directory_hash 
-  Default mount options:    user_xattr acl
-  Filesystem state:         clean
-  Errors behavior:          Continue
-  Filesystem OS type:       Linux
-  Inode count:              25688
-  Block count:              102400
-  Reserved block count:     1024
-  Free blocks:              93487
-  Free inodes:              25677
-  First block:              1
-  Block size:               1024
-  Fragment size:            1024
-  Reserved GDT blocks:      256
-  Blocks per group:         8192
-  Fragments per group:      8192
-  Inodes per group:         1976
-  Inode blocks per group:   247
-  Filesystem created:       Tue Apr 18 18:36:28 2023
-  Last mount time:          n/a
-  Last write time:          Tue Apr 18 18:38:47 2023
-  Mount count:              0
-  Maximum mount count:      -1
-  Last checked:             Tue Apr 18 18:36:28 2023
-  Check interval:           0 (<none>)
-  Reserved blocks uid:      0 (user root)
-  Reserved blocks gid:      0 (group root)
-  First inode:              11
-  Inode size:               128
-  Journal inode:            8
-  Default directory hash:   half_md4
-  Directory Hash Seed:      31bbfd9e-0370-48f4-8b9f-24692375084a
-  Journal backup:           inode blocks
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -L AAA /dev/loop0 -> ボリュームラベルを「AAA」に変更
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  tune2fs 1.42.9 (28-Dec-2013)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -l /dev/loop0 | grep 'volume name' -> ボリュームラベルを確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem volume name: AAA
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -l /dev/loop0 | grep 'UUID' -> UUID確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem UUID: cad03a58-d968-454f-90f7-17a47f9d45f7
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -U $(uuidgen) /dev/loop0 -> UUID設定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  tune2fs 1.42.9 (28-Dec-2013)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -l /dev/loop0 | grep 'UUID' -> UUID確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem UUID: 477f05e5-45df-48e9-bf8b-17395e5fada0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.101355 s, 1.0 GB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext2 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -j /dev/loop0 -> ファイルシステムのアップグレード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    tune2fs 1.45.6 (20-Mar-2020)
+    Creating journal inode: done
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -m 1 /dev/loop0 -> 管理領域の割合を1%に変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    tune2fs 1.45.6 (20-Mar-2020)
+    Setting reserved blocks percentage to 1% (1024 blocks)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -l /dev/loop0 -> スーパーブロックの内容表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    tune2fs 1.45.6 (20-Mar-2020)
+    Filesystem volume name:   <none>
+    Last mounted on:          <not available>
+    Filesystem UUID:          fd9fb7bc-f919-4e52-beee-93f2a380105f
+    Filesystem magic number:  0xEF53
+    Filesystem revision #:    1 (dynamic)
+    Filesystem features:      has_journal ext_attr resize_inode dir_index filetype sparse_super large_file
+    Filesystem flags:         signed_directory_hash 
+    Default mount options:    user_xattr acl
+    Filesystem state:         clean
+    Errors behavior:          Continue
+    Filesystem OS type:       Linux
+    Inode count:              25688
+    Block count:              102400
+    Reserved block count:     1024
+    Free blocks:              93487
+    Free inodes:              25677
+    First block:              1
+    Block size:               1024
+    Fragment size:            1024
+    Reserved GDT blocks:      256
+    Blocks per group:         8192
+    Fragments per group:      8192
+    Inodes per group:         1976
+    Inode blocks per group:   247
+    Filesystem created:       Tue Jun  6 12:28:54 2023
+    Last mount time:          n/a
+    Last write time:          Tue Jun  6 12:29:33 2023
+    Mount count:              0
+    Maximum mount count:      -1
+    Last checked:             Tue Jun  6 12:28:54 2023
+    Check interval:           0 (<none>)
+    Reserved blocks uid:      0 (user root)
+    Reserved blocks gid:      0 (group root)
+    First inode:              11
+    Inode size:               128
+    Journal inode:            8
+    Default directory hash:   half_md4
+    Directory Hash Seed:      b0304565-52b1-4ed4-9523-c15e576c5949
+    Journal backup:           inode blocks
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -L AAA /dev/loop0 -> ボリュームラベル変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    tune2fs 1.45.6 (20-Mar-2020)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -l /dev/loop0 | grep 'volume name' -> ボリュームラベル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem volume name: AAA
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -l /dev/loop0 | grep 'UUID' -> UUID確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem UUID:  fd9fb7bc-f919-4e52-beee-93f2a380105f
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -U $(uuidgen) /dev/loop0 -> UUID変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    tune2fs 1.45.6 (20-Mar-2020)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -l /dev/loop0 | grep 'UUID' -> UUID確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Filesystem UUID:  7d00cd45-4c4f-4857-a359-376b6e3dad58
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2472,75 +2442,86 @@
   ## 作業内容
     ファイルシステム管理を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(badblocks)
     badblocks -b XX  : ブロックサイズ(XX)を指定
     badblocks -o XX  : 結果をファイル(XX)に出力
     badblocks -w     : 書込モードでテスト -> ファイルシステム破壊？
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.17776 s, 590 MB/s
+  Last login: Tue Jun  6 12:27:57 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo tune2fs -l /dev/loop0 | grep -i 'block size' -> ブロックサイズの確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Block size: 1024
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo badblocks -b 1024 /dev/loop0 -> 不良ブロックの検索
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.11985 s, 875 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo tune2fs -l /dev/loop0 | grep -i 'block size' -> ブロックサイズの確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Block size: 1024
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo badblocks -b 1024 /dev/loop0 -> 不良ブロックの検索
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2551,156 +2532,226 @@
   ## 作業内容
     ファイルシステム管理を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(debugfs)
     debugfs -w     : 書込可能モードで開く(デフォルトは読取専用)
     debugfs -s XX  : スーパーブロック(XX)を指定
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.141589 s, 741 MB/s
+  Last login: Tue Jun  6 13:03:18 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t ext4 /dev/loop0 /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [10067.924501] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  /mnt -> マウントしたデバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/history
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 75  4月 18 11:00 1234567890.12345
-  -rw-rw-r--. 1 makoto makoto 69  4月 18 12:46 AAA.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/history
-  vm11$ mv 1234567890.12345 BBB.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo cp -pr history /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo debugfs -w /dev/loop0 -> 書込可能モードで実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  debugfs 1.42.9 (28-Dec-2013)
-  
-  debugfs:  (サブコマンド: ls)
-  debugfs:  ls
-  2  (12) .    2  (12) ..    11  (20) lost+found    12  (980) history
-  
-  debugfs:  (サブコマンド: cd)
-  debugfs:  cd hitory
-  (出力なし)
-  
-  debugfs:  (サブコマンド: ls)
-  debugfs:  ls
-  12  (12) .    2  (12) ..    13  (16) AAA.txt    14  (984) BBB.txt
-  
-  debugfs:  (サブコマンド: cat)
-  debugfs:  cat AAA.txt
-  
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  
-  debugfs:  (サブコマンド: cat)
-  debugfs:  cat BBB.txt
-  
-  1582年 本能寺の変
-  1600年 関ヶ原の戦い
-  1615年 大坂夏の陣
-  
-  debugfs:  (サブコマンド: quit)
-  debugfs:  quit
-
-  (OSプロンプトに戻る)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.113652 s, 923 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/loop0 /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /mnt/sample.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Hello World
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo debugfs -w /dev/loop0 -> 書込可能モードで実行
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    debugfs 1.45.6 (20-Mar-2020)
+    
+    debugfs: 
+    debugfs: ls -l
+    
+     2   40755 (2)       0       0    1024  6-Jun-2023 13:43 .
+     2   40755 (2)       0       0    1024  6-Jun-2023 13:43 ..
+    11   40700 (2)       0       0   12288  6-Jun-2023 13:42 lost+found
+    13  100644 (1)       0       0      12  6-Jun-2023 13:43 sample.txt  // iノード番号は「13」
+    
+    debugfs: 
+    debugfs: cat sample.txt  // ファイル内容を出力
+    
+    Hello World
+    
+    debugfs: 
+    debugfs: stat sample.txt  // iノードの内容を表示
+    
+    Inode: 13   Type: regular   Mode:  0644   Flags: 0x80000
+    Generation: 2380734287   Version: 0x00000001
+    User: 0   Group: 0   Size: 12
+    File ACL: 0
+    Links: 1   Blockcount: 2
+    Fragment:  Address: 0    Number: 0    Size: 0
+    ctime: 0x647eb98f -- Tue Jun  6 13:43:59 2023
+    atime: 0x647eb98f -- Tue Jun  6 13:43:59 2023
+    mtime: 0x647eb98f -- Tue Jun  6 13:43:59 2023
+    Inode checksum: 0x0000ebf5
+    EXTENTS:
+    (0):8705
+    
+    debugfs: 
+    debugfs:  freei sample.txt  // ファイルのiノードを消去 -> データ部分のみの不整合状態
+    
+    (消去時にメッセージ等の出力なし)
+    
+    debugfs: 
+    debugfs:  quit
+    
+    (OSプロンプトに戻る)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> アンマウントまたは読取専用の状態でないとファイルシステムが壊れる
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo dumpe2fs /dev/loop0 | grep -i superblock
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dumpe2fs 1.45.6 (20-Mar-2020)
+      Primary superblock at 1, Group descriptors at 2-2
+      Backup superblock at 8193, Group descriptors at 8194-8194
+      Backup superblock at 24577, Group descriptors at 24578-24578
+      Backup superblock at 40961, Group descriptors at 40962-40962
+      Backup superblock at 57345, Group descriptors at 57346-57346
+      Backup superblock at 73729, Group descriptors at 73730-73730
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo e2fsck -y -b 8193 /dev/loop0 -> バックアップ(8193)使用、ファイルシステム修復、問合せにYES
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    e2fsck 1.45.6 (20-Mar-2020)
+    /dev/loop0 was not cleanly unmounted, check forced.
+    
+    Pass 1: Checking inodes, blocks, and sizes
+    Pass 2: Checking directory structure
+    Pass 3: Checking directory connectivity
+    Pass 4: Checking reference counts
+    Pass 5: Checking group summary information
+    
+    Block bitmap differences:  +(24577--24834) +(40961--41218) +(57345--57602) +(73729--73986)
+    Fix? yes
+    
+    Free blocks count wrong for group #1 (7934, counted=7933).
+    Fix? yes
+    
+    Free blocks count wrong (93504, counted=93503).
+    Fix? yes
+    
+    Inode bitmap differences:  +13
+    Fix? yes
+    
+    Free inodes count wrong for group #0 (1965, counted=1964).
+    Fix? yes
+    
+    Free inodes count wrong (25677, counted=25676).
+    Fix? yes
+    
+    Padding at end of inode bitmap is not set.
+    Fix? yes
+    
+    /dev/loop0: ***** FILE SYSTEM WAS MODIFIED *****
+    /dev/loop0: 12/25688 files (0.0% non-contiguous), 8897/102400 blocks
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/loop0 /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -li /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    11 drwx------ 2 root root 12288  6月  6 13:42 lost+found
+    13 -rw-r--r-- 1 root root    12  6月  6 13:43 sample.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /mnt/sample.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Hello World
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
