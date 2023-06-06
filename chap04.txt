@@ -2671,25 +2671,25 @@
     Pass 5: Checking group summary information
     
     Block bitmap differences:  +(24577--24834) +(40961--41218) +(57345--57602) +(73729--73986)
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     Free blocks count wrong for group #1 (7934, counted=7933).
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     Free blocks count wrong (93504, counted=93503).
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     Inode bitmap differences:  +13
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     Free inodes count wrong for group #0 (1965, counted=1964).
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     Free inodes count wrong (25677, counted=25676).
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     Padding at end of inode bitmap is not set.
-    Fix? yes
+    Fix? yes  // 問合せにYESを自動入力
     
     /dev/loop0: ***** FILE SYSTEM WAS MODIFIED *****
     /dev/loop0: 12/25688 files (0.0% non-contiguous), 8897/102400 blocks
@@ -2762,11 +2762,6 @@
   ## 作業内容
     ディスクの自己診断
   
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
-  
   ## コマンド(smartctl)
     smartctl -a  : 自己診断情報を表示
     smartctl -t  : セルフテスト実施
@@ -2775,7 +2770,7 @@
   
 [確認]
   $ cd $HOME
-  $ yum list installed | grep smartmontools
+  $ dnf list installed | grep smartmontools
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2826,11 +2821,6 @@
   ## 作業内容
     ファイルシステム管理を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(xfs_admin)
     xfs_admin -u     : UUID表示
     xfs_admin -U XX  : UUID(XX)を設定
@@ -2838,151 +2828,148 @@
     xfs_admin -L XX  : ラベル(XX)を設定
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.601776 s, 174 MB/s
+  Last login: Tue Jun  6 13:41:47 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t xfs /dev/loop0 /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [13467.643878] XFS (loop0): Mounting V5 Filesystem
-  [13467.652054] XFS (loop0): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  /mnt -> マウントしたデバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_info /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  meta-data=/dev/loop0   isize=512    agcount=4, agsize=6400 blks
-           =             sectsz=512   attr=2, projid32bit=1
-           =             crc=1        finobt=0 spinodes=0
-  data     =             bsize=4096   blocks=25600, imaxpct=25
-           =             sunit=0      swidth=0 blks
-  naming   =version 2    bsize=4096   ascii-ci=0 ftype=1
-  log      =internal     bsize=4096   blocks=855, version=2
-           =             sectsz=512   sunit=0 blks, lazy-count=1
-  realtime =none         extsz=4096   blocks=0, rtextents=0
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [13656.982623] XFS (loop0): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_admin -u /dev/loop0 -> UUID表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UUID = 3bb60c6d-f357-496c-a4a1-0e05861943c5
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_admin -U $(uuidgen) /dev/loop0 -> UUID設定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Clearing log and setting UUID
-  writing all SBs
-  new UUID = c5049f38-9228-437e-af27-ec078bab2185
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_admin -u /dev/loop0 -> UUID表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  UUID = c5049f38-9228-437e-af27-ec078bab2185
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_admin -l /dev/loop0 -> ラベル表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  label = ""
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_admin -L 'AAA' /dev/loop0 -> ラベル設定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  writing all SBs
-  new label = "AAA"
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_admin -l /dev/loop0 -> ラベル表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  label = "AAA"
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  ディスクイメージ削除
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.148586 s, 706 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/loop0 /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_info /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    meta-data = /dev/loop0     isize=512    agcount=4, agsize=6400 blks
+              =                sectsz=512   attr=2, projid32bit=1
+              =                crc=1        finobt=1, sparse=1, rmapbt=0
+              =                reflink=1    bigtime=0 inobtcount=0
+    data      =                bsize=4096   blocks=25600, imaxpct=25
+              =                sunit=0      swidth=0 blks
+    naming    = version 2      bsize=4096   ascii-ci=0, ftype=1
+    log       = internal log   bsize=4096   blocks=1368, version=2
+              =                sectsz=512   sunit=0 blks, lazy-count=1
+    realtime  = none           extsz=4096   blocks=0, rtextents=0
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_admin -u /dev/loop0 -> UUID表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UUID = eb5910a5-b6ec-47d1-9ae0-d1baaf043091
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_admin -U $(uuidgen) /dev/loop0 -> UUID設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Clearing log and setting UUID
+    writing all SBs
+    new UUID = 0a71404f-a822-48e9-8642-f784ea3d91ce
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_admin -u /dev/loop0 -> UUID表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    UUID = 0a71404f-a822-48e9-8642-f784ea3d91ce
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_admin -l /dev/loop0 -> ラベル表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    label = ""
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_admin -L 'AAA' /dev/loop0 -> ラベル設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    writing all SBs
+    new label = "AAA"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_admin -l /dev/loop0 -> ラベル表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    label = "AAA"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2992,11 +2979,6 @@
 [内容]
   ## 作業内容
     ファイルシステム管理を行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
 [確認]
   上記の「29」を参照
@@ -3009,400 +2991,390 @@
   ## 作業内容
     ファイルシステム管理を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(xfsdump)
     xfsdump -f XX  : 出力ファイル名(XX)を指定
     xfsdump -l XX  : ダンプレベル(XX)を指定
     xfsdump -J     : ダンプ情報データベース更新しない
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install xfsdump
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Tue Jun  6 15:08:13 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.523387 s, 200 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/loop0
-  vm11$ sudo mkfs -t xfs /dev/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t xfs /dev/loop0 /mnt/loop0
-  vm11$ sudo mount -o defaults -t xfs /dev/loop1 /mnt/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  /mnt/loop0 -> マウントしたデバイス
-  loop1                         7:0     0   100M   0  loop  /mnt/loop1 -> マウントしたデバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo cp -p history/AAA.txt /mnt/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfsdump -f loop0-level0.dmp -l 0 /mnt/loop0 -> 完全バックアップ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  xfsdump: using file dump (drive_simple) strategy
-  xfsdump: version 3.1.7 (dump format 3.0) - type ^C for status and control
-  
-  // セッションラベル入力
-  please enter label for this dump session (timeout in 300 sec)
-  -> loop0-level0-sess
-  session label entered: "loop0-level0-sess"
-  
-  xfsdump: level 0 dump of vm11:/mnt/loop0
-  xfsdump: dump date: Tue Apr 18 21:09:30 2023
-  xfsdump: session id: 2749bad4-2d37-4214-8c75-2b4000487e4e
-  xfsdump: session label: "loop0-level0-sess"
-  xfsdump: ino map phase 1: constructing initial dump list
-  xfsdump: ino map phase 2: skipping (no pruning necessary)
-  xfsdump: ino map phase 3: skipping (only one dump stream)
-  xfsdump: ino map construction complete
-  xfsdump: estimated dump size: 25216 bytes
-  xfsdump: /var/lib/xfsdump/inventory created
-  
-  // メディアラベル入力
-  please enter label for media in drive 0 (timeout in 300 sec)
-  -> loop0-level0-media
-  media label entered: "loop0-level0-media"
-  
-  xfsdump: creating dump session media file 0 (media 0, file 0)
-  xfsdump: dumping ino map
-  xfsdump: dumping directories
-  xfsdump: dumping non-directory files
-  xfsdump: ending media file
-  xfsdump: media file size 22216 bytes
-  xfsdump: dump size (non-dir files) : 544 bytes
-  xfsdump: dump complete: 151 seconds elapsed
-  xfsdump: Dump Summary:
-  xfsdump: stream 0 /home/makoto/loop0-level0.dmp OK (success)
-  xfsdump: Dump Status: SUCCESS
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop0
-  vm11$ vi AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  866年 応天門の変 (追加)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfsdump -f loop0-level1.dmp -l 1 /mnt/loop0 -> 増分バックアップ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  xfsdump: using file dump (drive_simple) strategy
-  xfsdump: version 3.1.7 (dump format 3.0) - type ^C for status and control
-  
-  // セッションラベル入力
-  please enter label for this dump session (timeout in 300 sec)
-  -> loop0-level1-sess
-  session label entered: "loop0-level1-sess"
-  
-  xfsdump: level 1 incremental dump of vm11:/mnt/loop0 based on level 0 dump begun Tue Apr 18 21:09:30 2023
-  xfsdump: dump date: Tue Apr 18 21:17:23 2023
-  xfsdump: session id: 945108ce-775b-4de2-939e-85ad848c489f
-  xfsdump: session label: "loop0-level1-sess"
-  xfsdump: ino map phase 1: constructing initial dump list
-  xfsdump: ino map phase 2: pruning unneeded subtrees
-  xfsdump: ino map phase 3: skipping (only one dump stream)
-  xfsdump: ino map construction complete
-  xfsdump: estimated dump size: 25216 bytes
-  
-  // メディアラベル入力
-  please enter label for media in drive 0 (timeout in 300 sec)
-  -> loop0-level1-media
-  media label entered: "loop0-level1-media"
-  
-  xfsdump: creating dump session media file 0 (media 0, file 0)
-  xfsdump: dumping ino map
-  xfsdump: dumping directories
-  xfsdump: dumping non-directory files
-  xfsdump: ending media file
-  xfsdump: media file size 22216 bytes
-  xfsdump: dump size (non-dir files) : 544 bytes
-  xfsdump: dump complete: 119 seconds elapsed
-  xfsdump: Dump Summary:
-  xfsdump: stream 0 /home/makoto/loop0-level1.dmp OK (success)
-  xfsdump: Dump Status: SUCCESS
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop0
-  vm11$ vi AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  866年 応天門の変
-  894年 遣唐使の廃止 (追加)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfsdump -f loop0-level2.dmp -l 2 /mnt/loop0 -> 増分バックアップ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  xfsdump: using file dump (drive_simple) strategy
-  xfsdump: version 3.1.7 (dump format 3.0) - type ^C for status and control
-  
-  // セッションラベル入力
-  please enter label for this dump session (timeout in 300 sec)
-  -> loop0-level2-sess
-  session label entered: "loop0-level2-sess"
-  
-  xfsdump: level 2 incremental dump of vm11:/mnt/loop0 based on level 1 dump begun Tue Apr 18 21:17:23 2023
-  xfsdump: dump date: Tue Apr 18 21:23:50 2023
-  xfsdump: session id: 4614df6d-2fc3-4153-a86e-fe90bfdceb18
-  xfsdump: session label: "loop0-level2-sess"
-  xfsdump: ino map phase 1: constructing initial dump list
-  xfsdump: ino map phase 2: pruning unneeded subtrees
-  xfsdump: ino map phase 3: skipping (only one dump stream)
-  xfsdump: ino map construction complete
-  xfsdump: estimated dump size: 25216 bytes
-  
-  // メディアラベル入力
-  please enter label for media in drive 0 (timeout in 300 sec)
-  -> loop0-level2-media
-  media label entered: "loop0-level2-media"
-  
-  xfsdump: creating dump session media file 0 (media 0, file 0)
-  xfsdump: dumping ino map
-  xfsdump: dumping directories
-  xfsdump: dumping non-directory files
-  xfsdump: ending media file
-  xfsdump: media file size 22216 bytes
-  xfsdump: dump size (non-dir files) : 544 bytes
-  xfsdump: dump complete: 103 seconds elapsed
-  xfsdump: Dump Summary:
-  xfsdump: stream 0 /home/makoto/loop0-level2.dmp OK (success)
-  xfsdump: Dump Status: SUCCESS
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh | grep loop0-level -> バックアップファイル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--.  1 root   root    22K  4月 18 21:12 loop0-level0.dmp
-  -rw-r--r--.  1 root   root    22K  4月 18 21:19 loop0-level1.dmp
-  -rw-r--r--.  1 root   root    22K  4月 18 21:25 loop0-level2.dmp
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ xfsrestore -I | grep -E 'session|media' -> セッションラベルとメディアラベル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  session 0:
-    session label: "loop0-level0-sess"
-    session id: 2749bad4-2d37-4214-8c75-2b4000487e4e
-      media files: 1
-      media file 0:
-        media label: "loop0-level0-media"
-        media id: 28d59813-33ef-468d-a6cb-d452a2d9514f
-  session 1:
-    session label: "loop0-level1-sess"
-    session id: 945108ce-775b-4de2-939e-85ad848c489f
-      media files: 1
-      media file 0:
-        media label: "loop0-level1-media"
-        media id: 21ea992b-5fee-47d0-8f7e-6416b2ff229e
-  session 2:
-    session label: "loop0-level2-sess"
-    session id: 4614df6d-2fc3-4153-a86e-fe90bfdceb18
-      media files: 1
-      media file 0:
-        media label: "loop0-level2-media"
-        media id: 2202e962-21fa-4238-a569-80948903c767
-  --------------------------------------------------
-  
-  vm11$ cd $HOME -> 完全バックアップを別ファイルシステムにレストア
-  vm11$ sudo xfsrestore -S "2749bad4-2d37-4214-8c75-2b4000487e4e" -L "loop0-level0-media" -f loop0-level0.dmp /mnt/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  xfsrestore: using file dump (drive_simple) strategy
-  xfsrestore: version 3.1.7 (dump format 3.0) - type ^C for status and control
-  xfsrestore: using online session inventory
-  xfsrestore: searching media for directory dump
-  xfsrestore: examining media file 0
-  xfsrestore: reading directories
-  xfsrestore: 1 directories and 1 entries processed
-  xfsrestore: directory post-processing
-  xfsrestore: restoring non-directory files
-  xfsrestore: restore complete: 0 seconds elapsed
-  xfsrestore: Restore Summary:
-  xfsrestore: stream 0 /home/makoto/loop0-level0.dmp OK (success)
-  xfsrestore: Restore Status: SUCCESS
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop1
-  vm11$ cat AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  --------------------------------------------------
-  
-  vm11$ cd $HOME -> 増分バックアップを別ファイルシステムにレストア
-  vm11$ sudo xfsrestore -S "945108ce-775b-4de2-939e-85ad848c489f" -L "loop0-level1-media" -f loop0-level1.dmp /mnt/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  xfsrestore: using file dump (drive_simple) strategy
-  xfsrestore: version 3.1.7 (dump format 3.0) - type ^C for status and control
-  xfsrestore: using online session inventory
-  xfsrestore: searching media for directory dump
-  xfsrestore: examining media file 0
-  xfsrestore: reading directories
-  xfsrestore: 1 directories and 1 entries processed
-  xfsrestore: directory post-processing
-  xfsrestore: restoring non-directory files
-  xfsrestore: restore complete: 0 seconds elapsed
-  xfsrestore: Restore Summary:
-  xfsrestore: stream 0 /home/makoto/loop0-level1.dmp OK (success)
-  xfsrestore: Restore Status: SUCCESS
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop1
-  vm11$ cat AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  866年 応天門の変 (反映された)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME -> 増分バックアップを別ファイルシステムにレストア
-  vm11$ sudo xfsrestore -S "4614df6d-2fc3-4153-a86e-fe90bfdceb18" -L "loop0-level2-media" -f loop0-level2.dmp /mnt/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  xfsrestore: using file dump (drive_simple) strategy
-  xfsrestore: version 3.1.7 (dump format 3.0) - type ^C for status and control
-  xfsrestore: using online session inventory
-  xfsrestore: searching media for directory dump
-  xfsrestore: examining media file 0
-  xfsrestore: reading directories
-  xfsrestore: 1 directories and 1 entries processed
-  xfsrestore: directory post-processing
-  xfsrestore: restoring non-directory files
-  xfsrestore: restore complete: 0 seconds elapsed
-  xfsrestore: Restore Summary:
-  xfsrestore: stream 0 /home/makoto/loop0-level2.dmp OK (success)
-  xfsrestore: Restore Status: SUCCESS
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop1
-  vm11$ cat AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  866年 応天門の変
-  894年 遣唐使の廃止
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ diff /mnt/loop0/AAA.txt /mnt/loop1/AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/loop0 /mnt/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-1].img loop-level[0-2].dmp
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=image1.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // image0.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.124907 s, 839 MB/s
+
+    // image1.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.516994 s, 203 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    vm11$ sudo losetup /dev/loop1 image1.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/loop0
+    vm11$ sudo mkfs -t xfs /dev/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/loop0 /mnt/loop0
+    vm11$ sudo mount -o defaults /dev/loop1 /mnt/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /mnt/loop0/sample1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    sample1
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfsdump         // 全体バックアップ
+        > -f loop0-level0.dmp  // バックアップファイル
+        > -l 0                 // バックアップレベル
+        > /mnt/loop0           // バックアップ対象
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    xfsdump: using file dump (drive_simple) strategy
+    xfsdump: version 3.1.8 (dump format 3.0) - type ^C for status and control
+    
+    please enter label for this dump session (timeout in 300 sec)
+    -> loop0-level0-sess  // セッションラベル入力
+    session label entered: "loop0-level0-sess"
+    
+    xfsdump: level 0 dump of vm11:/mnt/loop0
+    xfsdump: dump date: Tue Jun  6 18:15:26 2023
+    xfsdump: session id: 12647fe3-4e3a-4f54-b135-788ab949887f
+    xfsdump: session label: "loop0-level0-sess"
+    xfsdump: ino map phase 1: constructing initial dump list
+    xfsdump: ino map phase 2: skipping (no pruning necessary)
+    xfsdump: ino map phase 3: skipping (only one dump stream)
+    xfsdump: ino map construction complete
+    xfsdump: estimated dump size: 25216 bytes
+    
+    please enter label for media in drive 0 (timeout in 300 sec)
+    -> loop0-level0-media  // メディアラベル入力
+    media label entered: "loop0-level0-media"
+    
+    xfsdump: creating dump session media file 0 (media 0, file 0)
+    xfsdump: dumping ino map
+    xfsdump: dumping directories
+    xfsdump: dumping non-directory files
+    xfsdump: ending media file
+    xfsdump: media file size 21880 bytes
+    xfsdump: dump size (non-dir files) : 544 bytes
+    xfsdump: dump complete: 67 seconds elapsed
+    xfsdump: Dump Summary:
+    xfsdump: stream 0 /home/makoto/loop0-level0.dmp OK (success)
+    xfsdump: Dump Status: SUCCESS
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /mnt/loop0/sample2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    sample2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfsdump         // 増分バックアップ
+        > -f loop0-level1.dmp  // バックアップファイル
+        > -l 1                 // バックアップレベル
+        > /mnt/loop0           // バックアップ対象
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    xfsdump: using file dump (drive_simple) strategy
+    xfsdump: version 3.1.8 (dump format 3.0) - type ^C for status and control
+    
+    please enter label for this dump session (timeout in 300 sec)
+    -> loop0-level1-sess  // セッションラベル入力
+    session label entered: "loop0-level1-sess"
+    
+    xfsdump: level 1 incremental dump of vm11:/mnt/loop0 based on level 0 dump begun Tue Jun  6 18:15:26 2023
+    xfsdump: dump date: Tue Jun  6 18:21:46 2023
+    xfsdump: session id: 6bf6e7e8-0d44-4e29-880a-5d5567edcfa2
+    xfsdump: session label: "loop0-level1-sess"
+    xfsdump: ino map phase 1: constructing initial dump list
+    xfsdump: ino map phase 2: skipping (no pruning necessary)
+    xfsdump: ino map phase 3: skipping (only one dump stream)
+    xfsdump: ino map construction complete
+    xfsdump: estimated dump size: 25216 bytes
+    
+    please enter label for media in drive 0 (timeout in 300 sec)
+    -> loop0-level1-media  // メディアラベル入力
+    media label entered: "loop0-level1-media"
+    
+    xfsdump: creating dump session media file 0 (media 0, file 0)
+    xfsdump: dumping ino map
+    xfsdump: dumping directories
+    xfsdump: dumping non-directory files
+    xfsdump: ending media file
+    xfsdump: media file size 21912 bytes
+    xfsdump: dump size (non-dir files) : 544 bytes
+    xfsdump: dump complete: 23 seconds elapsed
+    xfsdump: Dump Summary:
+    xfsdump: stream 0 /home/makoto/loop0-level1.dmp OK (success)
+    xfsdump: Dump Status: SUCCESS
+    --------------------------------------------------
+    
+    vm11$ cd /mnt/loop0
+    vm11$ sudo vi /mnt/loop0/sample3.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    sample3
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfsdump         // 増分バックアップ
+        > -f loop0-level2.dmp  // バックアップファイル
+        > -l 2                 // バックアップレベル
+        > /mnt/loop0           // バックアップ対象
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    xfsdump: using file dump (drive_simple) strategy
+    xfsdump: version 3.1.8 (dump format 3.0) - type ^C for status and control
+    
+    please enter label for this dump session (timeout in 300 sec)
+    -> loop0-level2-sess  // セッションラベル入力
+    session label entered: "loop0-level2-sess"
+    
+    xfsdump: level 2 incremental dump of vm11:/mnt/loop0 based on level 1 dump begun Tue Jun  6 18:21:46 2023
+    xfsdump: dump date: Tue Jun  6 18:26:00 2023
+    xfsdump: session id: e1cda028-d0f5-479b-8930-67840d5cdd13
+    xfsdump: session label: "loop0-level2-sess"
+    xfsdump: ino map phase 1: constructing initial dump list
+    xfsdump: ino map phase 2: skipping (no pruning necessary)
+    xfsdump: ino map phase 3: skipping (only one dump stream)
+    xfsdump: ino map construction complete
+    xfsdump: estimated dump size: 25216 bytes
+    
+    please enter label for media in drive 0 (timeout in 300 sec)
+    -> loop0-level2-media  // メディアラベル入力
+    media label entered: "loop0-level2-media"
+    
+    xfsdump: creating dump session media file 0 (media 0, file 0)
+    xfsdump: dumping ino map
+    xfsdump: dumping directories
+    xfsdump: dumping non-directory files
+    xfsdump: ending media file
+    xfsdump: media file size 21944 bytes
+    xfsdump: dump size (non-dir files) : 544 bytes
+    xfsdump: dump complete: 28 seconds elapsed
+    xfsdump: Dump Summary:
+    xfsdump: stream 0 /home/makoto/loop0-level2.dmp OK (success)
+    xfsdump: Dump Status: SUCCESS
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh | grep loop0-level -> バックアップファイル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--  1 root   root    22K  6月  6 18:16 loop0-level0.dmp
+    -rw-r--r--  1 root   root    22K  6月  6 18:22 loop0-level1.dmp
+    -rw-r--r--  1 root   root    22K  6月  6 18:26 loop0-level2.dmp
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ xfsrestore -I | grep -E 'session|media' -> セッションラベルとメディアラベル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    session 0:
+      session label: "loop0-level0-sess"
+      session id: 12647fe3-4e3a-4f54-b135-788ab949887f
+        media files: 1
+        media file 0:
+          media label: "loop0-level0-media"
+          media id: c9547123-5586-45b3-8f07-73987ca4e96a
+    
+    session 1:
+      session label: "loop0-level1-sess"
+      session id: 6bf6e7e8-0d44-4e29-880a-5d5567edcfa2
+        media files: 1
+        media file 0:
+          media label: "loop0-level1-media"
+          media id: 4f38ae85-a8d0-484c-9e1d-7687587a19c3
+    
+    session 2:
+      session label: "loop0-level2-sess"
+      session id: e1cda028-d0f5-479b-8930-67840d5cdd13
+        media files: 1
+        media file 0:
+          media label: "loop0-level2-media"
+          media id: c7e08184-8f09-4802-8325-4d21cbc05a4b
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfsrestore       // 完全バックアップをレストア
+        > -L loop0-level0-sess  // セッションラベル
+        > -f loop0-level0.dmp   // バックアップファイル
+        > /mnt/loop1            // レストア先
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    xfsrestore: using file dump (drive_simple) strategy
+    xfsrestore: version 3.1.8 (dump format 3.0) - type ^C for status and control
+    xfsrestore: using online session inventory
+    xfsrestore: searching media for directory dump
+    xfsrestore: examining media file 0
+    xfsrestore: reading directories
+    xfsrestore: 1 directories and 1 entries processed
+    xfsrestore: directory post-processing
+    xfsrestore: restoring non-directory files
+    xfsrestore: restore complete: 0 seconds elapsed
+    xfsrestore: Restore Summary:
+    xfsrestore: stream 0 /home/makoto/loop0-level0.dmp OK (success)
+    xfsrestore: Restore Status: SUCCESS
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /mnt/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root 8  6月  6 18:14 sample1.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfsrestore       // 増分バックアップをレストア
+        > -L loop0-level1-sess  // セッションラベル
+        > -f loop0-level1.dmp   // バックアップファイル
+        > /mnt/loop1            // レストア先
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    xfsrestore: using file dump (drive_simple) strategy
+    xfsrestore: version 3.1.8 (dump format 3.0) - type ^C for status and control
+    xfsrestore: using online session inventory
+    xfsrestore: searching media for directory dump
+    xfsrestore: examining media file 0
+    xfsrestore: reading directories
+    xfsrestore: 1 directories and 2 entries processed
+    xfsrestore: directory post-processing
+    xfsrestore: restoring non-directory files
+    xfsrestore: restore complete: 0 seconds elapsed
+    xfsrestore: Restore Summary:
+    xfsrestore: stream 0 /home/makoto/loop0-level1.dmp OK (success)
+    xfsrestore: Restore Status: SUCCESS
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /mnt/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root 8  6月  6 18:14 sample1.txt
+    -rw-r--r-- 1 root root 8  6月  6 18:21 sample2.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfsrestore       // 増分バックアップをレストア
+        > -L loop0-level2-sess  // セッションラベル
+        > -f loop0-level2.dmp   // バックアップファイル
+        > /mnt/loop1            // レストア先
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    xfsrestore: using file dump (drive_simple) strategy
+    xfsrestore: version 3.1.8 (dump format 3.0) - type ^C for status and control
+    xfsrestore: using online session inventory
+    xfsrestore: searching media for directory dump
+    xfsrestore: examining media file 0
+    xfsrestore: reading directories
+    xfsrestore: 1 directories and 3 entries processed
+    xfsrestore: directory post-processing
+    xfsrestore: restoring non-directory files
+    xfsrestore: restore complete: 0 seconds elapsed
+    xfsrestore: Restore Summary:
+    xfsrestore: stream 0 /home/makoto/loop0-level2.dmp OK (success)
+    xfsrestore: Restore Status: SUCCESS
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /mnt/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root 8  6月  6 18:14 sample1.txt
+    -rw-r--r-- 1 root root 8  6月  6 18:21 sample2.txt
+    -rw-r--r-- 1 root root 8  6月  6 18:25 sample3.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ diff -r /mnt/loop0 /mnt/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/loop0 /mnt/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image[0-1].img loop0-level[0-2].dmp
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3412,11 +3384,6 @@
 [内容]
   ## 作業内容
     ファイルシステム管理を行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド(xfsrestore)
     xfsrestore -f XX  : バックアップファイル(XX)を指定
