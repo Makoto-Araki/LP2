@@ -1575,196 +1575,108 @@
   
 [内容]
   ## 作業内容
-    暗号化デバイスにファイルシステムを作成する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    暗号化デバイスを作成する
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install cryptsetup
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Mon Jun  5 22:36:20 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.167523 s, 626 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo cryptsetup create secret0(暗号化デバイス) /dev/loop0 -> 暗号化デバイスに変換
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Enter passphrase for /home/makoto/image0.img: (例えば ma0122ma と入力)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  
-   |-- secret0                253:2     0   100M   0  crypt -> 暗号化デバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd /dev/mapper
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  lrwxrwxrwx. 1 root root       7  4月 18 09:38 centos_vm11-root -> ../dm-0
-  lrwxrwxrwx. 1 root root       7  4月 18 09:38 centos_vm11-swap -> ../dm-1
-  crw-------. 1 root root 10, 236  4月 18 09:38 control
-  lrwxrwxrwx. 1 root root       7  4月 18 12:23 secret0 -> ../dm-2
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/mapper/secret0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t xfs /dev/mapper/secret0 /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [10955.614742] XFS (dm-2): Mounting V5 Filesystem
-  [10955.633464] XFS (dm-2): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  
-   |-- secret0                253:2     0   100M   0  crypt /mnt -> 暗号化デバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C df -mT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        947     0        947    0%  /dev
-  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
-  tmpfs                         tmpfs           969     1        968    1%  /run
-  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394  6538      10857   38%  /
-  /dev/vda1                     xfs            1014   199        816   20%  /boot
-  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
-  /dev/mapper/secret0           xfs              97     6         92    6%  /mnt -> 暗号化デバイス
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ mount | grep secret0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /dev/mapper/secret0 on /mnt type xfs (rw,relatime,seclabel,attr2,inode64,noquota)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/history
-  vm11$ vi AAA.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  645年 大化の改新
-  710年 平城京遷都
-  794年 平安京遷都
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/history
-  vm11$ sudo cp -p AAA.txt /mnt -> ファイルを暗号化デバイスにコピー
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd /mnt
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 69  4月 18 12:46 AAA.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [11864.247061] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo cryptsetup remove secret0 -> 暗号化デバイスを元に戻す
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.307474 s, 341 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cryptsetup create sec0 /dev/loop0 -> デバイスを暗号化デバイスに変換
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /home/makoto/image0.img のパスフレーズを入力してください: (例えば ma0122ma と入力)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/mapper/sec0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    meta-data = /dev/mapper/sec0   isize=512    agcount=4, agsize=6400 blks
+              =                    sectsz=512   attr=2, projid32bit=1
+              =                    crc=1        finobt=1, sparse=1, rmapbt=0
+              =                    reflink=1    bigtime=0 inobtcount=0
+    data      =                    bsize=4096   blocks=25600, imaxpct=25
+              =                    sunit=0      swidth=0 blks
+    naming    = version 2          bsize=4096   ascii-ci=0, ftype=1
+    log       = internal log       bsize=4096   blocks=1368, version=2
+              =                    sectsz=512   sunit=0 blks, lazy-count=1
+    realtime  = none               extsz=4096   blocks=0, rtextents=0
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/mapper/sec0 /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cryptsetup remove sec0 -> 暗号化デバイスを元に戻す
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1773,15 +1685,217 @@
   
 [内容]
   ## 作業内容
-    ファイルシステム(ext2,ext3,ext4)のスーパーブロックを調査する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    ファイルシステム(ext2, ext3, ext4)のスーパーブロック調査
   
 [確認]
-  上記の「11」を参照
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun  6 09:08:27 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.113037 s, 928 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext2 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo dumpe2fs /dev/loop0 -> スーパーブロック調査
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dumpe2fs 1.45.6 (20-Mar-2020)
+    Filesystem volume name:   <none>
+    Last mounted on:          <not available>
+    Filesystem UUID:          5a942f52-01e0-495e-a247-e6f303ce89d5
+    Filesystem magic number:  0xEF53
+    Filesystem revision #:    1 (dynamic)
+    Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file
+    Filesystem flags:         signed_directory_hash 
+    Default mount options:    user_xattr acl
+    Filesystem state:         clean  // dirty の場合は整合性チェックでエラー検出
+    Errors behavior:          Continue
+    Filesystem OS type:       Linux
+    Inode count:              25688
+    Block count:              102400
+    Reserved block count:     5120
+    Free blocks:              97600
+    Free inodes:              25677
+    First block:              1
+    Block size:               1024
+    Fragment size:            1024
+    Reserved GDT blocks:      256
+    Blocks per group:         8192
+    Fragments per group:      8192
+    Inodes per group:         1976
+    Inode blocks per group:   247
+    Filesystem created:       Tue Jun  6 09:18:24 2023
+    Last mount time:          n/a
+    Last write time:          Tue Jun  6 09:18:24 2023
+    Mount count:              0
+    Maximum mount count:      -1
+    Last checked:             Tue Jun  6 09:18:24 2023
+    Check interval:           0 (<none>)
+    Reserved blocks uid:      0 (user root)
+    Reserved blocks gid:      0 (group root)
+    First inode:              11
+    Inode size:               128
+    Default directory hash:   half_md4
+    Directory Hash Seed:      06a93942-fed0-4730-bcbf-0ff14edf5b4e
+    
+    Group 0: (Blocks 1-8192)
+      Primary superblock at 1, Group descriptors at 2-2  // スーパーブロック「1」
+      Reserved GDT blocks at 3-258
+      Block bitmap at 259 (+258)
+      Inode bitmap at 260 (+259)
+      Inode table at 261-507 (+260)
+      7671 free blocks, 1965 free inodes, 2 directories
+      Free blocks: 522-8192
+      Free inodes: 12-1976
+    Group 1: (Blocks 8193-16384)
+      Backup superblock at 8193, Group descriptors at 8194-8194  // バックアップ「8193」
+      Reserved GDT blocks at 8195-8450
+      Block bitmap at 8451 (+258)
+      Inode bitmap at 8452 (+259)
+      Inode table at 8453-8699 (+260)
+      7685 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 8700-16384
+      Free inodes: 1977-3952
+    Group 2: (Blocks 16385-24576)
+      Block bitmap at 16385 (+0)
+      Inode bitmap at 16386 (+1)
+      Inode table at 16387-16633 (+2)
+      7943 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 16634-24576
+      Free inodes: 3953-5928
+    Group 3: (Blocks 24577-32768)
+      Backup superblock at 24577, Group descriptors at 24578-24578  // バックアップ「24577」
+      Reserved GDT blocks at 24579-24834
+      Block bitmap at 24835 (+258)
+      Inode bitmap at 24836 (+259)
+      Inode table at 24837-25083 (+260)
+      7685 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 25084-32768
+      Free inodes: 5929-7904
+    Group 4: (Blocks 32769-40960)
+      Block bitmap at 32769 (+0)
+      Inode bitmap at 32770 (+1)
+      Inode table at 32771-33017 (+2)
+      7943 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 33018-40960
+      Free inodes: 7905-9880
+    Group 5: (Blocks 40961-49152)
+      Backup superblock at 40961, Group descriptors at 40962-40962  // バックアップ「40961」
+      Reserved GDT blocks at 40963-41218
+      Block bitmap at 41219 (+258)
+      Inode bitmap at 41220 (+259)
+      Inode table at 41221-41467 (+260)
+      7685 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 41468-49152
+      Free inodes: 9881-11856
+    Group 6: (Blocks 49153-57344)
+      Block bitmap at 49153 (+0)
+      Inode bitmap at 49154 (+1)
+      Inode table at 49155-49401 (+2)
+      7943 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 49402-57344
+      Free inodes: 11857-13832
+    Group 7: (Blocks 57345-65536)
+      Backup superblock at 57345, Group descriptors at 57346-57346  // バックアップ「57345」
+      Reserved GDT blocks at 57347-57602
+      Block bitmap at 57603 (+258)
+      Inode bitmap at 57604 (+259)
+      Inode table at 57605-57851 (+260)
+      7685 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 57852-65536
+      Free inodes: 13833-15808
+    Group 8: (Blocks 65537-73728)
+      Block bitmap at 65537 (+0)
+      Inode bitmap at 65538 (+1)
+      Inode table at 65539-65785 (+2)
+      7943 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 65786-73728
+      Free inodes: 15809-17784
+    Group 9: (Blocks 73729-81920)
+      Backup superblock at 73729, Group descriptors at 73730-73730  // バックアップ「73729」
+      Reserved GDT blocks at 73731-73986
+      Block bitmap at 73987 (+258)
+      Inode bitmap at 73988 (+259)
+      Inode table at 73989-74235 (+260)
+      7685 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 74236-81920
+      Free inodes: 17785-19760
+    Group 10: (Blocks 81921-90112)
+      Block bitmap at 81921 (+0)
+      Inode bitmap at 81922 (+1)
+      Inode table at 81923-82169 (+2)
+      7943 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 82170-90112
+      Free inodes: 19761-21736
+    Group 11: (Blocks 90113-98304)
+      Block bitmap at 90113 (+0)
+      Inode bitmap at 90114 (+1)
+      Inode table at 90115-90361 (+2)
+      7943 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 90362-98304
+      Free inodes: 21737-23712
+    Group 12: (Blocks 98305-102399)
+      Block bitmap at 98305 (+0)
+      Inode bitmap at 98306 (+1)
+      Inode table at 98307-98553 (+2)
+      3846 free blocks, 1976 free inodes, 0 directories
+      Free blocks: 98554-102399
+      Free inodes: 23713-25688
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
 ================================================================================
 [22]
@@ -1789,12 +1903,7 @@
   
 [内容]
   ## 作業内容
-    ファイルシステムチェックを行う (アンマウントまたは読取専用マウントでないとファイルシステムが壊れる)
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    ファイルシステムチェックを行う
   
   ## コマンド(fsck)
     fsck -r     : 対話的に修復を実行
@@ -1805,7 +1914,6 @@
 [確認]
   vm11$ cd $HOME
   vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
   
   コマンドの実行結果
   --------------------------------------------------
