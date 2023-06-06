@@ -3404,90 +3404,101 @@
   ## 作業内容
     ファイルシステム管理を行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.433394 s, 242 MB/s
+  Last login: Tue Jun  6 17:50:42 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo xfs_repair /dev/loop0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Phase 1 - find and verify superblock...
-  Phase 2 - using internal log
-          - zero log...
-          - scan filesystem freespace and inode maps...
-          - found root inode chunk
-  Phase 3 - for each AG...
-          - scan and clear agi unlinked lists...
-          - process known inodes and perform inode discovery...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-          - process newly discovered inodes...
-  Phase 4 - check for duplicate blocks...
-          - setting up duplicate extent list...
-          - check for inodes claiming duplicate blocks...
-          - agno = 0
-          - agno = 1
-          - agno = 2
-          - agno = 3
-  Phase 5 - rebuild AG headers and trees...
-          - reset superblock...
-  Phase 6 - check inode connectivity...
-          - resetting contents of realtime bitmap and summary inodes
-          - traversing filesystem ...
-          - traversal finished ...
-          - moving disconnected inodes to lost+found ...
-  Phase 7 - verify and correct link counts...
-  done
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image0.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.188613 s, 556 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo xfs_repair /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Phase 1 - find and verify superblock...
+    Phase 2 - using internal log
+            - zero log...
+            - scan filesystem freespace and inode maps...
+            - found root inode chunk
+    Phase 3 - for each AG...
+            - scan and clear agi unlinked lists...
+            - process known inodes and perform inode discovery...
+            - agno = 0
+            - agno = 1
+            - agno = 2
+            - agno = 3
+            - process newly discovered inodes...
+    Phase 4 - check for duplicate blocks...
+            - setting up duplicate extent list...
+            - check for inodes claiming duplicate blocks...
+            - agno = 0
+            - agno = 1
+            - agno = 2
+            - agno = 3
+    Phase 5 - rebuild AG headers and trees...
+            - reset superblock...
+    Phase 6 - check inode connectivity...
+            - resetting contents of realtime bitmap and summary inodes
+            - traversing filesystem ...
+            - traversal finished ...
+            - moving disconnected inodes to lost+found ...
+    Phase 7 - verify and correct link counts...
+    done
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -3496,12 +3507,7 @@
   
 [内容]
   ## 作業内容
-    ファイルシステム管理を行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    ファイルシステム管理を行う => 仮想マシン(vm11)がCentOS7の頃の記録
   
 [確認]
   vm11$ cd $HOME
@@ -3541,29 +3547,11 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t btrfs /dev/loop0 /mnt
+  vm11$ sudo mount -o defaults /dev/loop0 /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  /mnt -> マウントしたデバイス
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -3605,48 +3593,12 @@
   --------------------------------------------------
   
   vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  (アンマウント済)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
   vm11$ sudo mount -o defaults,subvolid=256 -t btrfs /dev/loop0 /mnt/loop1 -> サブボリュームを個別にマウント
   vm11$ sudo mount -o defaults,subvolid=257 -t btrfs /dev/loop0 /mnt/loop2 -> サブボリュームを個別にマウント
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C df -mT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        947     0        947    0%  /dev
-  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
-  tmpfs                         tmpfs           969     1        968    1%  /run
-  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394  6448      10947   38%  /
-  /dev/vda1                     xfs            1014   199        816   20%  /boot
-  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
-  tmpfs                         tmpfs           114     0        114    0%  /run/user/0
-  /dev/loop0                    btrfs           100    17         19   47%  /mnt/loop1 -> サブボリューム
-  /dev/loop0                    btrfs           100    17         19   47%  /mnt/loop2 -> サブボリューム
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -3681,12 +3633,7 @@
   
 [内容]
   ## 作業内容
-    ファイルシステム変換を行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    ファイルシステム変換を行う => 仮想マシン(vm11)がCentOS7の頃の記録
   
 [確認]
   vm11$ cd $HOME
@@ -3725,7 +3672,7 @@
     nodesize:  16384
     features:  extref, skinny-metadata (default)
   creating ext2 image file
-  creating btrfs metadatacopy inodes [o] [         2/        11]
+  creating btrfs metadatacopy inodes [o] [   2/  11]
   conversion complete
   --------------------------------------------------
   
@@ -3735,22 +3682,6 @@
   コマンドの実行結果
   --------------------------------------------------
   (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C df -mT
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Filesystem                    Type      1M-blocks  Used  Available  Use%  Mounted on
-  devtmpfs                      devtmpfs        947     0        947    0%  /dev
-  tmpfs                         tmpfs           969     0        969    0%  /dev/shm
-  tmpfs                         tmpfs           969     1        968    1%  /run
-  tmpfs                         tmpfs           969     0        969    0%  /sys/fs/cgroup
-  /dev/mapper/centos_vm11-root  xfs           17394  6450      10945   38%  /
-  /dev/vda1                     xfs            1014   199        816   20%  /boot
-  tmpfs                         tmpfs           114     0        114    0%  /run/user/1000
-  /dev/loop0                    btrfs           100    24         56   30%  /mnt -> btrfs を確認
   --------------------------------------------------
   
   vm11$ cd $HOME
@@ -3789,181 +3720,199 @@
     ディレクトリ「/mnt/auto/dir1」に移動時にデバイス「/dev/loop1」を自動マウントする
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install autofs
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Tue Jun  6 19:04:10 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=loop0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=loop1.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.215565 s, 486 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 loop0.img
-  vm11$ sudo losetup /dev/loop1 loop1.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t ext4 /dev/loop0
-  vm11$ sudo mkfs -t ext4 /dev/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /etc/auto.master (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /misc /etc/auto.misc
-  /net  -hosts
-  +dir:/etc/auto.master.d
-  +auto.master
-  /mnt/auto /etc/auto.dir  // 追加 -> ディレクトリ「/mnt/auto」移動時に設定ファイル「/etc/auto.dir」の内容でマウント
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /etc/auto.dir -> 設定ファイルの追加
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dir0  -fstype=ext4,rw  :/dev/loop0
-  dir1  -fstype=ext4,rw  :/dev/loop1
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl restart autofs
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  (オートマウント前)
-  loop1                         7:1     0   100M   0  loop  (オートマウント前)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh /mnt/auto
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cd /mnt/auto/dir0 -> ディレクトリ移動
-  vm11$ cd /mnt/auto/dir1 -> ディレクトリ移動
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [11051.588068] EXT4-fs (loop0): mounted filesystem with ordered data mode. Opts: (null) -> cd /mnt/auto/dir0
-  [11114.060107] EXT4-fs (loop1): mounted filesystem with ordered data mode. Opts: (null) -> cd /mnt/auto/dir1
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  /mnt/auto/dir0 (オートマウント後)
-  loop1                         7:1     0   100M   0  loop  /mnt/auto/dir1 (オートマウント後)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/auto/dir0
-  vm12$ sudo umount /mnt/auto/dir1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f loop[0-1].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /etc/auto.master
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /misc /etc/auto.misc
-  /net  -hosts
-  +dir:/etc/auto.master.d
-  +auto.master
-  # /mnt/auto /etc/auto.dir  // コメントアウト
-  --------------------------------------------------
-  
-  vm11$ cd /etc
-  vm11$ sudo rm auto.dir
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl restart autofs
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=loop0.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=loop1.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // loop0.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.168887 s, 621 MB/s
+    
+    // loop1.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.482773 s, 217 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 loop0.img
+    vm11$ sudo losetup /dev/loop1 loop1.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t ext4 /dev/loop0
+    vm11$ sudo mkfs -t ext4 /dev/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/auto.master -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /misc /etc/auto.misc
+    /net  -hosts
+    +dir:/etc/auto.master.d
+    +auto.master
+    /mnt/auto /etc/auto.dir  // ディレクトリ「/mnt/auto」移動時に設定ファイル「/etc/auto.dir」の内容でマウント
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/auto.dir -> 設定ファイルの追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dir0  -fstype=ext4,rw  :/dev/loop0
+    dir1  -fstype=ext4,rw  :/dev/loop1
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart autofs
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM  SIZE  RO  TYPE  MOUNTPOINT
+    loop0                     7:0     0  100M   0  loop  (オートマウント前)
+    loop1                     7:1     0  100M   0  loop  (オートマウント前)
+    sr0                      11:0     1 1024M   0  rom   
+    vda                     252:0     0   30G   0  disk  
+     |-- vda1               252:1     0    1G   0  part  /boot
+     |-- vda2               252:2     0   29G   0  part  
+          |-- rl_vm11-root  253:0     0   26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0    3G   0  lvm   [SWAP]
+    vdb                     252:16    0    2G   0  disk  
+     |-- vdb1               252:17    0  999M   0  part  /mnt/mp1
+     |-- vdb2               252:18    0  980M   0  part  /mnt/mp2
+    vdc                     252:32    0    2G   0  disk  
+     |-- vdc1               252:33    0  999M   0  part  [SWAP]
+     |-- vdc2               252:34    0  980M   0  part  [SWAP]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /mnt/auto
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cd /mnt/auto/dir0
+    vm11$ cd /mnt/auto/dir1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ lsblk
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    NAME                    MAJ:MIN  RM  SIZE  RO  TYPE  MOUNTPOINT
+    loop0                     7:0     0  100M   0  loop  /mnt/auto/dir0
+    loop1                     7:1     0  100M   0  loop  /mnt/auto/dir1
+    sr0                      11:0     1 1024M   0  rom   
+    vda                     252:0     0   30G   0  disk  
+     |-- vda1               252:1     0    1G   0  part  /boot
+     |-- vda2               252:2     0   29G   0  part  
+          |-- rl_vm11-root  253:0     0   26G   0  lvm   /
+          |-- rl_vm11-swap  253:1     0    3G   0  lvm   [SWAP]
+    vdb                     252:16    0    2G   0  disk  
+     |-- vdb1               252:17    0  999M   0  part  /mnt/mp1
+     |-- vdb2               252:18    0  980M   0  part  /mnt/mp2
+    vdc                     252:32    0    2G   0  disk  
+     |-- vdc1               252:33    0  999M   0  part  [SWAP]
+     |-- vdc2               252:34    0  980M   0  part  [SWAP]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/auto/dir0 /mnt/auto/dir1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f loop[0-1].img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/auto.master
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /misc /etc/auto.misc
+    /net  -hosts
+    +dir:/etc/auto.master.d
+    +auto.master
+    # /mnt/auto /etc/auto.dir  // コメントアウト
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rm /etc/auto.dir
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart autofs
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
