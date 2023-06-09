@@ -1133,7 +1133,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Wed Jun  7 20:59:23 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1143,7 +1143,14 @@
     コマンドの実行結果
     --------------------------------------------------
     // image0.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.178561 s, 587 MB/s
+    
     // image1.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.153347 s, 684 MB/s
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1179,8 +1186,17 @@
     
     コマンドの実行結果
     --------------------------------------------------
+    // lv0
     Rounding up size to full physical extent 52.00 MiB
     Logical volume "lv0" created.
+    
+    // lv1
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv1" created.
+    
+    // lv2
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv2" created.
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1194,14 +1210,13 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/loop0
-    vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/loop1
-    vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/loop2
+    vm11$ sudo mount -o defaults /dev/vg0/lv0 /mnt/loop0
+    vm11$ sudo mount -o defaults /dev/vg0/lv1 /mnt/loop1
+    vm11$ sudo mount -o defaults /dev/vg0/lv2 /mnt/loop2
     
     コマンドの実行結果
     --------------------------------------------------
-    [10536.272400] XFS (dm-2): Mounting V5 Filesystem
-    [10536.282739] XFS (dm-2): Ending clean mount
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1209,9 +1224,10 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    PV /dev/loop0   VG vg0             lvm2 [96.00 MiB / 0         free]
-    PV /dev/loop1   VG vg0             lvm2 [96.00 MiB / 36.00 MiB free]
-    PV /dev/vda2    VG centos_vm11     lvm2 [<19.00 GiB / 0    free]
+    PV /dev/vda2    VG rl_vm11         lvm2 [<29.00 GiB / 0         free]
+    PV /dev/loop0   VG vg0             lvm2 [96.00 MiB  / 0         free]
+    PV /dev/loop1   VG vg0             lvm2 [96.00 MiB  / 36.00 MiB free]
+    Total: 3 [29.18 GiB] / in use: 3 [29.18 GiB] / in no VG: 0 [0   ]
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1227,7 +1243,7 @@
     Total PE              24
     Free PE               0
     Allocated PE          24
-    PV UUID               Cc9lde-1Zu3-EQvZ-HPMk-Zih2-yDQj-KKrZlG
+    PV UUID               1i6wad-Ara0-jHaz-cNhd-P5TE-LqcU-FC7Day
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1243,7 +1259,7 @@
     Total PE              24
     Free PE               9
     Allocated PE          15
-    PV UUID               PmTv4a-qhzB-MwdA-ODJP-eqYJ-ro3K-fi2AdW
+    PV UUID               7GXbXf-n7ps-pzq0-MbLv-r9lX-J4bq-wx4lOO
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1251,9 +1267,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Reading volume groups from cache.
+    Found volume group "rl_vm11" using metadata type lvm2
     Found volume group "vg0" using metadata type lvm2
-    Found volume group "centos_vm11" using metadata type lvm2
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1279,7 +1294,7 @@
     Total PE              48
     Alloc PE / Size       39 / 156.00 MiB
     Free  PE / Size       9 / 36.00 MiB
-    VG UUID               Hps2Bi-1uI2-bMsz-Ovr1-Wca5-nrKP-1vtbnf
+    VG UUID               MXjrfm-0zkC-lcPN-dKGL-5mY2-Neeh-ZXIw2v
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1287,11 +1302,11 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ACTIVE            '/dev/vg0/lv0' [52.00 MiB] inherit
-    ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
-    ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
-    ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
-    ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
+    ACTIVE  '/dev/rl_vm11/swap' [3.00 GiB] inherit
+    ACTIVE  '/dev/rl_vm11/root' [<26.00 GiB] inherit
+    ACTIVE  '/dev/vg0/lv0' [52.00 MiB] inherit
+    ACTIVE  '/dev/vg0/lv1' [52.00 MiB] inherit
+    ACTIVE  '/dev/vg0/lv2' [52.00 MiB] inherit
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1299,121 +1314,138 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    LV Path                 /dev/vg0/lv0
-    LV Name                 lv0
-    VG Name                 vg0
-    LV UUID                 NzpkHL-BeBh-LxeT-5ovo-2MlM-kCha-5IbZVi
-    LV Write Access         read/write
-    LV Creation host, time  vm11, 2023-04-19 20:10:34 +0900
-    LV Status               available
-    # open                  1
-    LV Size                 52.00 MiB
-    Current LE              13
-    Segments                1
-    Allocation              inherit
-    Read ahead sectors      auto
-    - currently set to      8192
-    Block device            253:2
+    LV Path                /dev/vg0/lv0
+    LV Name                lv0
+    VG Name                vg0
+    LV UUID                QlH5IY-ZJft-Or93-D5pV-TKSv-6Fw8-42bm4F
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-07 22:30:58 +0900
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:2
     --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ sudo lvdisplay /dev/vg0/lv1 -> 論理ボリュームの詳細を表示
     
-  コマンドの実行結果
-  --------------------------------------------------
-  LV Path                 /dev/vg0/lv1
-  LV Name                 lv1
-  VG Name                 vg0
-  LV UUID                 Z3WDe5-zfQq-MLsh-KFfb-6i9L-AQTW-8RwADa
-  LV Write Access         read/write
-  LV Creation host, time  vm11, 2023-04-19 20:11:19 +0900
-  LV Status               available
-  # open                  1
-  LV Size                 52.00 MiB
-  Current LE              13
-  Segments                1
-  Allocation              inherit
-  Read ahead sectors      auto
-  - currently set to      8192
-  Block device            253:3
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvdisplay /dev/vg0/lv2 -> 論理ボリュームの詳細を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  LV Path                 /dev/vg0/lv2
-  LV Name                 lv2
-  VG Name                 vg0
-  LV UUID                 2rTDQZ-2wpz-pZ10-7lgf-SK3C-Z5Yy-X2ofu0
-  LV Write Access         read/write
-  LV Creation host, time  vm11, 2023-04-19 20:11:26 +0900
-  LV Status               available
-  # open                  1
-  LV Size                 52.00 MiB
-  Current LE              13
-  Segments                2
-  Allocation              inherit
-  Read ahead sectors      auto
-  - currently set to      8192
-  Block device            253:4
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/loop0
-  vm11$ sudo umount /mnt/loop1
-  vm11$ sudo umount /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [12240.220671] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvremove /dev/vg0/lv0 -> 論理ボリュームの削除
-  vm11$ sudo lvremove /dev/vg0/lv1 -> 論理ボリュームの削除
-  vm11$ sudo lvremove /dev/vg0/lv2 -> 論理ボリュームの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Do you really want to remove active logical volume vg0/lv0? [y/n]: y
-    Logical volume "lv0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgremove vg0 -> ボリュームグループの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvremove /dev/loop0 /dev/loop1 -> 物理ボリュームの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Labels on physical volume "/dev/loop0" successfully wiped.
-  Labels on physical volume "/dev/loop1" successfully wiped.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-1].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/lv1
+    LV Name                lv1
+    VG Name                vg0
+    LV UUID                Z8jWxV-ddG2-1rQH-tkPi-TGVJ-Vk0s-EGAt1s
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-07 22:42:36 +0900
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:3
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvdisplay /dev/vg0/lv2 -> 論理ボリュームの詳細を表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/lv2
+    LV Name                lv2
+    VG Name                vg0
+    LV UUID                2qG8cQ-yu25-Jr0u-emRA-8oIV-U2Qv-9NzLQm
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-07 22:43:02 +0900
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               2
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:4
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/loop0
+    vm11$ sudo umount /mnt/loop1
+    vm11$ sudo umount /mnt/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvremove /dev/vg0/lv0 -> 論理ボリュームの削除
+    vm11$ sudo lvremove /dev/vg0/lv1 -> 論理ボリュームの削除
+    vm11$ sudo lvremove /dev/vg0/lv2 -> 論理ボリュームの削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // lv0
+    Do you really want to remove active logical volume vg0/lv0? [y/n]: y
+      Logical volume "lv0" successfully removed.
+    
+    // lv1
+    Do you really want to remove active logical volume vg0/lv1? [y/n]: y
+      Logical volume "lv1" successfully removed.
+    
+    // lv2
+    Do you really want to remove active logical volume vg0/lv2? [y/n]: y
+      Logical volume "lv2" successfully removed.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgremove vg0 -> ボリュームグループの削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully removed
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvremove /dev/loop0 /dev/loop1 -> 物理ボリュームの削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Labels on physical volume "/dev/loop0" successfully wiped.
+    Labels on physical volume "/dev/loop1" successfully wiped.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image[0-1].img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1424,205 +1456,268 @@
   ## 作業内容
     論理ボリュームがマウント状態で、ボリュームグループの拡張・縮小を実験
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.206419 s, 508 MB/s
+  Last login: Wed Jun  7 22:28:26 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
-  vm11$ sudo losetup /dev/loop2 image2.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2 -> 物理ボリュームの初期化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Physical volume "/dev/loop0" successfully created.
-  Physical volume "/dev/loop1" successfully created.
-  Physical volume "/dev/loop2" successfully created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 -> ボリュームグループの作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully created
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvcreate -L 50M -n lv0 vg0 -> 論理ボリュームの作成
-  vm11$ sudo lvcreate -L 50M -n lv1 vg0 -> 論理ボリュームの作成
-  vm11$ sudo lvcreate -L 50M -n lv2 vg0 -> 論理ボリュームの作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Rounding up size to full physical extent 52.00 MiB
-  Logical volume "lv0" created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv0
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv1
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/loop0
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/loop1
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [13607.796644] XFS (dm-2): Mounting V5 Filesystem
-  [13607.805070] XFS (dm-2): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  
-   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2 -> 論理ボリューム
-   |-- vg0-lv0                253:2     0    52M   0  lvm   /mnt/loop0 -> 論理ボリューム
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2 -> 論理ボリューム
-   |-- vg0-lv1                253:3     0    52M   0  lvm   /mnt/loop1 -> 論理ボリューム
-  loop2                         7:2     0   100M   0  loop  (ボリュームグループに未所属)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgreduce vg0 /dev/loop0 -> ボリュームグループの縮小
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Physical volume "/dev/loop0" still in use -> 使用中の物理ボリュームは削除不可
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgextend vg0 /dev/loop2 -> ボリュームグループの拡張
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully extended
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgdisplay vg0 -> ボリュームグループの詳細を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  VG Name               vg0
-  System ID             
-  Format                lvm2
-  Metadata Areas        3
-  Metadata Sequence No  5
-  VG Access             read/write
-  VG Status             resizable
-  MAX LV                0
-  Cur LV                3 -> /dev/vg0/lv0, /dev/vg0/lv1, /dev/vg0/lv2
-  Open LV               3 -> /dev/vg0/lv0, /dev/vg0/lv1, /dev/vg0/lv2
-  Max PV                0
-  Cur PV                3 -> /dev/loop0, /dev/loop1, /dev/loop2
-  Act PV                3 -> /dev/loop0, /dev/loop1, /dev/loop2
-  VG Size               288.00 MiB
-  PE Size               4.00 MiB
-  Total PE              72
-  Alloc PE / Size       39 / 156.00 MiB
-  Free  PE / Size       33 / 132.00 MiB
-  VG UUID               c2O3Tk-GiZg-cFD8-yjIT-AmsS-WInt-cNXdU1
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/loop0
-  vm11$ sudo umount /mnt/loop1
-  vm11$ sudo umount /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [14874.230488] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvremove /dev/vg0/lv0 -> 論理ボリュームの削除
-  vm11$ sudo lvremove /dev/vg0/lv1 -> 論理ボリュームの削除
-  vm11$ sudo lvremove /dev/vg0/lv2 -> 論理ボリュームの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Do you really want to remove active logical volume vg0/lv0? [y/n]: y
-    Logical volume "lv0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgremove vg0 -> ボリュームグループの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2 -> 物理ボリュームの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Labels on physical volume "/dev/loop0" successfully wiped.
-  Labels on physical volume "/dev/loop1" successfully wiped.
-  Labels on physical volume "/dev/loop2" successfully wiped.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-2].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=image1.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=image2.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // image0.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.964403 s, 109 MB/s
+    
+    // image1.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.603381 s, 174 MB/s
+    
+    // image2.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.633878 s, 165 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    vm11$ sudo losetup /dev/loop1 image1.img
+    vm11$ sudo losetup /dev/loop2 image2.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Physical volume "/dev/loop0" successfully created.
+    Physical volume "/dev/loop1" successfully created.
+    Physical volume "/dev/loop2" successfully created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully created
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvcreate -L 50M -n lv0 vg0
+    vm11$ sudo lvcreate -L 50M -n lv1 vg0
+    vm11$ sudo lvcreate -L 50M -n lv2 vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // lv0
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv0" created.
+    
+    // lv1
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv1" created.
+    
+    // lv2
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv2" created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv0
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv1
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/vg0/lv0 /mnt/loop0
+    vm11$ sudo mount -o defaults /dev/vg0/lv1 /mnt/loop1
+    vm11$ sudo mount -o defaults /dev/vg0/lv2 /mnt/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgdisplay vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    VG Name               vg0
+    System ID             
+    Format                lvm2
+    Metadata Areas        2
+    Metadata Sequence No  4
+    VG Access             read/write
+    VG Status             resizable  // サイズ変更可能
+    MAX LV                0          // 論理ボリューム数の上限なし
+    Cur LV                3          // 現在の論理ボリューム数
+    Open LV               3
+    Max PV                0          // 論理ボリューム数の上限なし
+    Cur PV                2          // 現在の物理ボリューム数
+    Act PV                2
+    VG Size               192.00 MiB
+    PE Size               4.00 MiB
+    Total PE              48
+    Alloc PE / Size       39 / 156.00 MiB
+    Free  PE / Size       9 / 36.00 MiB
+    VG UUID               PVXMgQ-Fl53-ktzi-uxON-mUiY-LyFj-icuap3
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvdisplay /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PV Name               /dev/loop0
+    VG Name               vg0
+    PV Size               100.00 MiB / not usable 4.00 MiB
+    Allocatable           yes (but full)  // サイズ変更の余地がない
+    PE Size               4.00 MiB
+    Total PE              24              // 総エクステント数
+    Free PE               0               // 空エクステント数
+    Allocated PE          24              // エクステント割当数
+    PV UUID               EEhp8D-7ZLz-ct63-arTf-R0M3-efw3-fU2d43
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvdisplay /dev/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PV Name               /dev/loop1
+    VG Name               vg0
+    PV Size               100.00 MiB / not usable 4.00 MiB
+    Allocatable           yes             // サイズ変更の余地がある
+    PE Size               4.00 MiB
+    Total PE              24              // 総エクステント数
+    Free PE               9               // 空エクステント数
+    Allocated PE          15              // エクステント割当数
+    PV UUID               uAeEO3-NGLq-opQB-0wkB-cqhG-nfhp-llApxR
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgreduce vg0 /dev/loop0 -> ボリュームグループの縮小
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Physical volume "/dev/loop0" still in use -> 物理ボリュームが使用中のためエラー
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgreduce vg0 /dev/loop1 -> ボリュームグループの縮小
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Physical volume "/dev/loop1" still in use -> 物理ボリュームが使用中のためエラー
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgextend vg0 /dev/loop2 -> ボリュームグループの拡張
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully extended -> 空の物理ボリュームは追加可能
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgreduce vg0 /dev/loop2 -> ボリュームグループの縮小
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Removed "/dev/loop2" from volume group "vg0" -> 物理ボリュームが未使用のためボリュームグループから除去可能
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/loop0
+    vm11$ sudo umount /mnt/loop1
+    vm11$ sudo umount /mnt/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvremove /dev/vg0/lv0
+    vm11$ sudo lvremove /dev/vg0/lv1
+    vm11$ sudo lvremove /dev/vg0/lv2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // lv0
+    Do you really want to remove active logical volume vg0/lv0? [y/n]: y
+      Logical volume "lv0" successfully removed.
+    
+    // lv1
+    Do you really want to remove active logical volume vg0/lv1? [y/n]: y
+      Logical volume "lv1" successfully removed.
+    
+    // lv2
+    Do you really want to remove active logical volume vg0/lv2? [y/n]: y
+      Logical volume "lv2" successfully removed.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgremove vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully removed
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Labels on physical volume "/dev/loop0" successfully wiped.
+    Labels on physical volume "/dev/loop1" successfully wiped.
+    Labels on physical volume "/dev/loop2" successfully wiped.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image[0-2].img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1633,273 +1728,340 @@
   ## 作業内容
     論理ボリュームがマウント状態で、論理ボリュームの拡張・縮小を実験
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.163529 s, 641 MB/s
+  Last login: Thu Jun  8 18:32:29 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
-  vm11$ sudo losetup /dev/loop2 image2.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2 -> 物理ボリュームの初期化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Physical volume "/dev/loop0" successfully created.
-  Physical volume "/dev/loop1" successfully created.
-  Physical volume "/dev/loop2" successfully created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 /dev/loop2 -> ボリュームグループの作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully created
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvcreate -L 50M -n lv0 vg0 -> 論理ボリュームの作成
-  vm11$ sudo lvcreate -L 50M -n lv1 vg0 -> 論理ボリュームの作成
-  vm11$ sudo lvcreate -L 50M -n lv2 vg0 -> 論理ボリュームの作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Rounding up size to full physical extent 52.00 MiB
-  Logical volume "lv0" created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv0
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv1
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/loop0
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/loop1
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [15647.594873] XFS (dm-2): Mounting V5 Filesystem
-  [15647.599373] XFS (dm-2): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  
-   |-- vg0-lv0                253:2     0    52M   0  lvm   /mnt/loop0 -> 論理ボリューム
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv1                253:3     0    52M   0  lvm   /mnt/loop1 -> 論理ボリューム
-  loop2                         7:2     0   100M   0  loop  
-   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2 -> 論理ボリューム
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvreduce -L 20M /dev/vg0/lv0 -> 論理ボリュームの縮小
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  WARNING: Reducing active and open logical volume to 20.00 MiB.
-  THIS MAY DESTROY YOUR DATA (filesystem etc.)
-  Do you really want to reduce vg0/lv0? [y/n]: y  (マウント状態でも論理ボリュームのサイズ縮小は可能)
-  Size of logical volume vg0/lv0 changed from 52.00 MiB (13 extents) to 20.00 MiB (5 extents).
-  Logical volume vg0/lv0 successfully resized.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop 
-   |-- vg0-lv0                253:2     0    20M   0  lvm   /mnt/loop0 -> 50M から 20M に縮小
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv1                253:3     0    52M   0  lvm   /mnt/loop1
-  loop2                         7:2     0   100M   0  loop  
-   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvdisplay /dev/vg0/lv0 -> 論理ボリュームの詳細を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  LV Path                 /dev/vg0/lv0
-  LV Name                 lv0
-  VG Name                 vg0
-  LV UUID                 l6qBIP-BQUD-ReyX-X2yj-jd5i-SbJr-DyxLRB
-  LV Write Access         read/write
-  LV Creation host, time  vm11, 2023-04-19 21:41:11 +0900
-  LV Status               available
-  # open                  1
-  LV Size                 20.00 MiB -> 指定したサイズに縮小
-  Current LE              5
-  Segments                1
-  Allocation              inherit
-  Read ahead sectors      auto
-  - currently set to      8192
-  Block device            253:2
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvextend -L 60M /dev/vg0/lv0 -> 論理ボリュームの拡張
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Size of logical volume vg0/lv0 changed from 20.00 MiB (5 extents) to 60.00 MiB (15 extents).
-  Logical volume vg0/lv0 successfully resized.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop 
-   |-- vg0-lv0                253:2     0    60M   0  lvm   /mnt/loop0 -> 20M から 60M に拡張
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv1                253:3     0    52M   0  lvm   /mnt/loop1
-  loop2                         7:2     0   100M   0  loop  
-   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvdisplay /dev/vg0/lv0 -> 論理ボリュームの詳細を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  LV Path                 /dev/vg0/lv0
-  LV Name                 lv0
-  VG Name                 vg0
-  LV UUID                 l6qBIP-BQUD-ReyX-X2yj-jd5i-SbJr-DyxLRB
-  LV Write Access         read/write
-  LV Creation host, time  vm11, 2023-04-19 21:41:11 +0900
-  LV Status               available
-  # open                  1
-  LV Size                 60.00 MiB -> 指定したサイズに拡張
-  Current LE              15
-  Segments                1
-  Allocation              inherit
-  Read ahead sectors      auto
-  - currently set to      8192
-  Block device            253:2
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/loop0
-  vm11$ sudo umount /mnt/loop1
-  vm11$ sudo umount /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [16799.730558] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvremove /dev/vg0/lv0 -> 論理ボリュームの削除
-  vm11$ sudo lvremove /dev/vg0/lv1 -> 論理ボリュームの削除
-  vm11$ sudo lvremove /dev/vg0/lv2 -> 論理ボリュームの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Do you really want to remove active logical volume vg0/lv0? [y/n]: y
-    Logical volume "lv0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgremove vg0 -> ボリュームグループの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2 -> 物理ボリュームの削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Labels on physical volume "/dev/loop0" successfully wiped.
-  Labels on physical volume "/dev/loop1" successfully wiped.
-  Labels on physical volume "/dev/loop2" successfully wiped.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-2].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=image1.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=image2.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // image0.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.333639 s, 314 MB/s
+    
+    // image1.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.360866 s, 291 MB/s
+    
+    // image2.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.677358 s, 155 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    vm11$ sudo losetup /dev/loop1 image1.img
+    vm11$ sudo losetup /dev/loop2 image2.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Physical volume "/dev/loop0" successfully created.
+    Physical volume "/dev/loop1" successfully created.
+    Physical volume "/dev/loop2" successfully created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 /dev/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully created
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvcreate -L 50M -n lv0 vg0
+    vm11$ sudo lvcreate -L 50M -n lv1 vg0
+    vm11$ sudo lvcreate -L 50M -n lv2 vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // lv0
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv0" created.
+    
+    // lv1
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv1" created.
+    
+    // lv2
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv2" created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv0
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv1
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/vg0/lv0 /mnt/loop0
+    vm11$ sudo mount -o defaults /dev/vg0/lv1 /mnt/loop1
+    vm11$ sudo mount -o defaults /dev/vg0/lv2 /mnt/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvdisplay /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PV Name               /dev/loop0
+    VG Name               vg0
+    PV Size               100.00 MiB / not usable 4.00 MiB
+    Allocatable           yes 
+    PE Size               4.00 MiB
+    Total PE              24
+    Free PE               11  // 空きエクステントがある
+    Allocated PE          13
+    PV UUID               IP5Ii5-ZnE9-KPtW-9ysQ-On00-pqX4-tJlyss
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvdisplay /dev/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PV Name               /dev/loop1
+    VG Name               vg0
+    PV Size               100.00 MiB / not usable 4.00 MiB
+    Allocatable           yes 
+    PE Size               4.00 MiB
+    Total PE              24
+    Free PE               11  // 空きエクステントがある
+    Allocated PE          13
+    PV UUID               35KTdi-0dRS-AaGi-9NvC-eL57-BluJ-C1p0AN
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvdisplay /dev/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PV Name               /dev/loop2
+    VG Name               vg0
+    PV Size               100.00 MiB / not usable 4.00 MiB
+    Allocatable           yes 
+    PE Size               4.00 MiB
+    Total PE              24
+    Free PE               11  // 空きエクステントがある
+    Allocated PE          13
+    PV UUID               T23Nd2-t2cU-ABt1-qvpl-5FtF-3GMb-ajJFAV
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgdisplay vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    VG Name               vg0
+    System ID             
+    Format                lvm2
+    Metadata Areas        3
+    Metadata Sequence No  4
+    VG Access             read/write
+    VG Status             resizable  // サイズ変更可能
+    MAX LV                0
+    Cur LV                3
+    Open LV               3
+    Max PV                0
+    Cur PV                3
+    Act PV                3
+    VG Size               288.00 MiB
+    PE Size               4.00 MiB
+    Total PE              72
+    Alloc PE / Size       39 / 156.00 MiB
+    Free  PE / Size       33 / 132.00 MiB
+    VG UUID               h5YCEF-m1wl-lH20-wSJI-OrzE-6t41-LrBoiS
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvdisplay /dev/vg0/lv0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/lv0
+    LV Name                lv0
+    VG Name                vg0
+    LV UUID                m1Nzu9-fBvC-dnZ6-kU8V-OEwl-7LO4-2vELJc
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-08 19:31:02 +0900
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvdisplay /dev/vg0/lv1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/lv1
+    LV Name                lv1
+    VG Name                vg0
+    LV UUID                S8Yaj3-Rje4-H69Q-Kyri-c9jw-qad4-ToJ3e1
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-08 19:31:26 +0900
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:3
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvdisplay /dev/vg0/lv2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/lv2
+    LV Name                lv2
+    VG Name                vg0
+    LV UUID                mKcCIy-B7Kj-vETJ-6BBq-5ofx-dbIs-3CPB05
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-08 19:31:49 +0900
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:4
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvreduce -L 40M /dev/vg0/lv0 -> 論理ボリュームの縮小
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    WARNING: Reducing active and open logical volume to 40.00 MiB.
+    THIS MAY DESTROY YOUR DATA (filesystem etc.)
+    
+    Do you really want to reduce vg0/lv0? [y/n]: y
+    Size of logical volume vg0/lv0 changed from 52.00 MiB (13 extents) to 40.00 MiB (10 extents).
+    Logical volume vg0/lv0 successfully resized.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvextend -L 60M /dev/vg0/lv1 -> 論理ボリュームの拡張
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Size of logical volume vg0/lv1 changed from 52.00 MiB (13 extents) to 60.00 MiB (15 extents).
+    Logical volume vg0/lv1 successfully resized.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/loop0
+    vm11$ sudo umount /mnt/loop1
+    vm11$ sudo umount /mnt/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvremove /dev/vg0/lv0
+    vm11$ sudo lvremove /dev/vg0/lv1
+    vm11$ sudo lvremove /dev/vg0/lv2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // lv0
+    Do you really want to remove active logical volume vg0/lv0? [y/n]: y
+      Logical volume "lv0" successfully removed.
+    
+    // lv1
+    Do you really want to remove active logical volume vg0/lv1? [y/n]: y
+      Logical volume "lv1" successfully removed.
+    
+    // lv2
+    Do you really want to remove active logical volume vg0/lv2? [y/n]: y
+      Logical volume "lv2" successfully removed.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgremove vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully removed
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Labels on physical volume "/dev/loop0" successfully wiped.
+    Labels on physical volume "/dev/loop1" successfully wiped.
+    Labels on physical volume "/dev/loop2" successfully wiped.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image[0-2].img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1910,310 +2072,273 @@
   ## 作業内容
     論理ボリュームがマウント状態で、スナップショットによる復元を実験
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image2.img bs=10M count=10
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.155328 s, 675 MB/s
+  Last login: Thu Jun  8 19:25:51 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
-  vm11$ sudo losetup /dev/loop2 image2.img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvcreate /dev/loop0 /dev/loop1 /dev/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Physical volume "/dev/loop0" successfully created.
-  Physical volume "/dev/loop1" successfully created.
-  Physical volume "/dev/loop2" successfully created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1 /dev/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully created
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvcreate -L 50M -n lv0 vg0
-  vm11$ sudo lvcreate -L 50M -n lv1 vg0
-  vm11$ sudo lvcreate -L 50M -n lv2 vg0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Rounding up size to full physical extent 52.00 MiB
-  Logical volume "lv0" created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv0
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv1
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/loop0
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv1 /mnt/loop1
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv2 /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [17804.880495] XFS (dm-2): Mounting V5 Filesystem
-  [17804.886300] XFS (dm-2): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop 
-   |-- vg0-lv0                253:2     0    60M   0  lvm   /mnt/loop0 -> 論理ボリューム
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv1                253:3     0    52M   0  lvm   /mnt/loop1 -> 論理ボリューム
-  loop2                         7:2     0   100M   0  loop  
-   |-- vg0-lv2                253:4     0    52M   0  lvm   /mnt/loop2 -> 論理ボリューム
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop0
-  vm11$ sudo touch sample1.txt -> 論理ボリュームにファイル作成
-  vm11$ sudo touch sample2.txt -> 論理ボリュームにファイル作成
-  vm11$ sudo touch sample3.txt -> 論理ボリュームにファイル作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvcreate -s -L 20M -n sp0 /dev/vg0/lv0 -> 論理ボリュームのスナップショット作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Logical volume "sp0" created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvscan -> 論理ボリュームとスナップショットの確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ACTIVE  Original  '/dev/vg0/lv0' [52.00 MiB] inherit -> 論理ボリューム
-  ACTIVE            '/dev/vg0/lv1' [52.00 MiB] inherit
-  ACTIVE            '/dev/vg0/lv2' [52.00 MiB] inherit
-  ACTIVE  Snapshot  '/dev/vg0/sp0' [20.00 MiB] inherit -> スナップショット
-  ACTIVE            '/dev/centos_vm11/swap' [2.00 GiB] inherit
-  ACTIVE            '/dev/centos_vm11/root' [<17.00 GiB] inherit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvdisplay /dev/vg0/lv0 -> 論理ボリュームの詳細を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  LV Path                 /dev/vg0/lv0
-  LV Name                 lv0
-  VG Name                 vg0
-  LV UUID                 KomZCa-jNWQ-UeiU-I9bW-iSef-VitP-cG2YIM
-  LV Write Access         read/write
-  LV Creation host, time  vm11, 2023-04-19 22:18:06 +0900
-  LV snapshot status      source of
-                          sp0 [active]
-  LV Status               available
-  # open                  1
-  LV Size                 52.00 MiB
-  Current LE              13
-  Segments                1
-  Allocation              inherit
-  Read ahead sectors      auto
-  - currently set to      8192
-  Block device            253:2
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvdisplay /dev/vg0/sp0 -> スナップショットの詳細を表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  LV Path                 /dev/vg0/sp0
-  LV Name                 sp0
-  VG Name                 vg0
-  LV UUID                 UV6uMz-ebwp-XUXe-liMy-apLO-UnKp-LKtVaO
-  LV Write Access         read/write
-  LV Creation host, time  vm11, 2023-04-19 22:28:26 +0900
-  LV snapshot status      active destination for lv0 -> 論理ボリューム(lv0)へのスナップショット
-  LV Status               available
-  # open                  0
-  LV Size                 52.00 MiB
-  Current LE              13
-  COW-table size          20.00 MiB
-  COW-table LE            5
-  Allocated to snapshot   0.10%
-  Snapshot chunk size     4.00 KiB
-  Segments                1
-  Allocation              inherit
-  Read ahead sectors      auto
-  - currently set to      8192
-  Block device            253:7
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop0
-  vm11$ sudo rm sample2.txt -> 論理ボリュームからファイル削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop0
-  vm11$ sudo ls -lh -> 論理ボリュームのファイル一覧
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 0 12月 31 18:29 sample1.txt
-  -rw-r--r--. 1 root root 0 12月 31 18:29 sample3.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/loop0 -> 論理ボリュームのアンマウント
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [18869.421267] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvconvert --merge /dev/vg0/sp0 -> スナップショットを使用して論理ボリューム復元
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Merging of volume vg0/sp0 started.
-  vg0/lv0: Merged: 100.00%
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mount -t xfs -o defaults /dev/vg0/lv0 /mnt/loop0 -> 論理ボリュームをマウント
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [18950.265607] XFS (dm-2): Mounting V5 Filesystem
-  [18950.275223] XFS (dm-2): Starting recovery (logdev: internal)
-  [18950.279218] XFS (dm-2): Ending recovery (logdev: internal)
-  --------------------------------------------------
-  
-  vm11$ cd /mnt/loop0
-  vm11$ sudo ls -lh -> 論理ボリュームのファイル一覧
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 0  4月 19 22:27 sample1.txt
-  -rw-r--r--. 1 root root 0  4月 19 22:27 sample2.txt  // 削除したファイルが復元
-  -rw-r--r--. 1 root root 0  4月 19 22:27 sample3.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvscan -> 論理ボリュームとスナップショットの確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ACTIVE  '/dev/vg0/lv0' [52.00 MiB] inherit  // スナップショットは復元作業に使用され無くなる
-  ACTIVE  '/dev/vg0/lv1' [52.00 MiB] inherit
-  ACTIVE  '/dev/vg0/lv2' [52.00 MiB] inherit
-  ACTIVE  '/dev/centos_vm11/swap' [2.00 GiB] inherit
-  ACTIVE  '/dev/centos_vm11/root' [<17.00 GiB] inherit
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt/loop0
-  vm11$ sudo umount /mnt/loop1
-  vm11$ sudo umount /mnt/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [19492.386905] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvremove /dev/vg0/lv0
-  vm11$ sudo lvremove /dev/vg0/lv1
-  vm11$ sudo lvremove /dev/vg0/lv2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Do you really want to remove active logical volume vg0/lv0? [y/n]: y
-    Logical volume "lv0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgremove vg0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvremove /dev/loop0 /dev/loop1 /dev/loop2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Labels on physical volume "/dev/loop0" successfully wiped.
-  Labels on physical volume "/dev/loop1" successfully wiped.
-  Labels on physical volume "/dev/loop2" successfully wiped.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-2].img
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.421026 s, 249 MB/s
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvcreate /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Physical volume "/dev/loop0" successfully created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgcreate vg0 /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully created
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvcreate -L 50M -n lv0 vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Rounding up size to full physical extent 52.00 MiB
+    Logical volume "lv0" created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/vg0/lv0 /mnt/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo touch /mnt/loop0/sample1.txt
+    vm11$ sudo touch /mnt/loop0/sample2.txt
+    vm11$ sudo touch /mnt/loop0/sample3.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvcreate -s -L 20M -n sp0 /dev/vg0/lv0 -> スナップショット作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Logical volume "sp0" created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvscan | grep vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ACTIVE   Original   '/dev/vg0/lv0'   [52.00 MiB]   inherit
+    ACTIVE   Snapshot   '/dev/vg0/sp0'   [20.00 MiB]   inherit
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvdisplay /dev/vg0/lv0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/lv0
+    LV Name                lv0
+    VG Name                vg0
+    LV UUID                0Zxr97-74rS-OaME-Z9uu-op2w-zpVT-FPCpI6
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-08 20:41:43 +0900
+    LV snapshot status     source of sp0 [active]  // スナップショット元
+    LV Status              available
+    # open                 1
+    LV Size                52.00 MiB
+    Current LE             13
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvdisplay /dev/vg0/sp0 -> スナップショットの詳細を表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    LV Path                /dev/vg0/sp0
+    LV Name                sp0
+    VG Name                vg0
+    LV UUID                hzLlHb-m1Qu-XXAQ-koiU-N8Nq-CdJu-8KzMW7
+    LV Write Access        read/write
+    LV Creation host, time vm11, 2023-06-08 20:45:10 +0900
+    LV snapshot status     active destination for lv0  // 論理ボリューム(lv0)のスナップショット先
+    LV Status              available
+    # open                 0
+    LV Size                52.00 MiB
+    Current LE             13
+    COW-table size         20.00 MiB
+    COW-table LE           5
+    Allocated to snapshot  0.08%
+    Snapshot chunk size    4.00 KiB
+    Segments               1
+    Allocation             inherit
+    Read ahead sectors     auto
+    - currently set to     8192
+    Block device           253:5
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rm /mnt/loop0/sample2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls -lh /mnt/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root 0  6月  8 20:43 sample1.txt
+    -rw-r--r-- 1 root root 0  6月  8 20:43 sample3.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> マウント状態ではスナップショット操作はできない
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvconvert --merge /dev/vg0/sp0 -> スナップショットで論理ボリューム復元
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Merging of volume vg0/sp0 started.
+    vg0/lv0: Merged: 99.94%
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mount -o defaults /dev/vg0/lv0 /mnt/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls -lh /mnt/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root 0  6月  8 20:43 sample1.txt
+    -rw-r--r-- 1 root root 0  6月  8 20:43 sample2.txt -> スナップショット作成前に戻る
+    -rw-r--r-- 1 root root 0  6月  8 20:43 sample3.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvscan | grep vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 作成直後
+    ACTIVE   Original   '/dev/vg0/lv0'   [52.00 MiB]   inherit
+    ACTIVE   Snapshot   '/dev/vg0/sp0'   [20.00 MiB]   inherit
+    
+    // 論理ボリュームと融合後
+    ACTIVE              '/dev/vg0/lv0'   [52.00 MiB]   inherit
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo umount /mnt/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvremove /dev/vg0/lv0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Do you really want to remove active logical volume vg0/lv0? [y/n]: y
+      Logical volume "lv0" successfully removed.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgremove vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully removed
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvremove /dev/loop0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Labels on physical volume "/dev/loop0" successfully wiped.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image0.img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2223,11 +2348,6 @@
 [内容]
   ## 作業内容
     ハードディスクのパラメータ確認
-  
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
   
   ## コマンド(sdparm)
     sdparm -q           : 冒頭プロファイル非表示
@@ -2335,11 +2455,6 @@
   ## 作業内容
     記憶装置がHDDかSSDか確認する
   
-  ## 使用マシン
-    HOST : localhost
-    IPV4 : DHCP
-    MEMO : ホスト
-  
 [確認]
   $ cd $HOME
   $ lsblk
@@ -2369,7 +2484,7 @@
   コマンドの実行結果
   --------------------------------------------------
   NAME               ROTA
-  sda                0 (SDD)
+  sda                0  // SDD
    |-- sda1          0
    |-- sda2          0
         |-- rl-root  0
@@ -2410,526 +2525,433 @@
   
 [内容]
   ## 作業内容
-    論理ボリュームを「ターゲット」で公開、クライアントは「イニシエータ」としてアクセス
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    論理ボリュームを「ターゲット」で公開、クライアントは「イニシエータ」でアクセス
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install targetcli
+  $ cd $HOME
+  $ sudo dnf -y install iscsi-initiator-utils
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  (省略) -> 既にインストール済みの模様
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ LANG=C dd if=/dev/zero of=image0.img bs=10M count=10
-  vm11$ LANG=C dd if=/dev/zero of=image1.img bs=10M count=10
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  10+0 records in
-  10+0 records out
-  104857600 bytes (105 MB) copied, 0.226317 s, 463 MB/s
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup /dev/loop0 image0.img
-  vm11$ sudo losetup /dev/loop1 image1.img
+  $ cd $HOME
+  $ cat /etc/iscsi/initiatorname.iscsi
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  InitiatorName=iqn.1994-05.com.redhat:3da7d55861a
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sudo pvcreate /dev/loop0 /dev/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Physical volume "/dev/loop0" successfully created.
-  Physical volume "/dev/loop1" successfully created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Volume group "vg0" successfully created
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvcreate -L 150M -n lv0 vg0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Rounding up size to full physical extent 152.00 MiB
-  Logical volume "lv0" created.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo mkfs -t xfs /dev/vg0/lv0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  
-   |-- vg0-lv0                253:2     0   152M   0  lvm   (論理ボリューム)
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv0                253:2     0   152M   0  lvm   (論理ボリューム)
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
+  Last login: Thu Jun  8 20:28:49 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo yum -y install iscsi-initiator-utils
+    vm11$ cd $HOME
+    vm11$ dd if=/dev/zero of=image0.img bs=10M count=10
+    vm11$ dd if=/dev/zero of=image1.img bs=10M count=10
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
+    // image0.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.898396 s, 117 MB/s
+    
+    // image1.img
+    10+0 レコード入力
+    10+0 レコード出力
+    104857600 bytes (105 MB, 100 MiB) copied, 0.270659 s, 387 MB/s
     --------------------------------------------------
     
-    vm12$ cd 4HOME
-    vm12$ cat /etc/iscsi/initiatorname.iscsi
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    InitiatorName=iqn.1994-05.com.redhat:11f16be6b393
-    --------------------------------------------------
-    
-  vm11$ cd $HOME
-  vm11$ sudo targetcli ls -> ターゲット設定項目を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  o- /  [...]
-    o- backstores  [...]
-    | o- block  [Storage Objects: 0]  // 公開ディスク -> ここに論理ボリュームを指定
-    | o- fileio  [Storage Objects: 0]
-    | o- pscsi  [Storage Objects: 0]
-    | o- ramdisk  [Storage Objects: 0]
-    o- iscsi  [Targets: 0]  // ターゲット識別名(IQN) -> 配下に多数の設定項目を作成
-    o- loopback  [Targets: 0]
-  --------------------------------------------------
-  
-  設定項目
-  ==================================================
-  /backstores/block      : 公開ディスク
-  /iscsi                 : ターゲット識別名(IQN)
-  /iscsi/(IQN)/tpg1/luns : 識別名(IQN)と公開ディスクのリンク
-  /iscsi/(IQN)/tpg1/acls : アクセス制限(ACL)
-  ==================================================
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli /backstores/block create name=vm11-lv0 dev=/dev/vg0/lv0 -> 公開ディスクに論理ボリューム指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created block storage object vm11-lv0 using /dev/vg0/lv0.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli ls -> ターゲット設定項目を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  o- /  [...]
-    o- backstores  [...]
-    | o- block  [Storage Objects: 1]
-    | | o- vm11-lv0  [/dev/vg0/lv0 (152.0MiB) write-thru deactivated] -> 公開ディスク名、論理ボリューム
-    | |   o- alua  [ALUA Groups: 1]
-    | |     o- default_tg_pt_gp  [ALUA state: Active/optimized]
-    | o- fileio  [Storage Objects: 0]
-    | o- pscsi  [Storage Objects: 0]
-    | o- ramdisk  [Storage Objects: 0]
-    o- iscsi  [Targets: 0]
-    o- loopback  [Targets: 0]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli /iscsi create iqn.2023-04.com.test:vm11-share01 -> ターゲット識別名(IQN)を指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created target iqn.2023-04.com.test:vm11-share01. -> ターゲット識別名(IQN)
-  Created TPG 1.
-  Global pref auto_add_default_portal=true
-  Created default portal listening on all IPs (0.0.0.0), port 3260.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli ls -> ターゲット設定項目を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  o- /  [...]
-    o- backstores  [...]
-    | o- block  [Storage Objects: 1]
-    | | o- vm11-lv0  [/dev/vg0/lv0 (152.0MiB) write-thru deactivated] -> 公開ディスク名、論理ボリューム
-    | |   o- alua  [ALUA Groups: 1]
-    | |     o- default_tg_pt_gp  [ALUA state: Active/optimized]
-    | o- fileio  [Storage Objects: 0]
-    | o- pscsi  [Storage Objects: 0]
-    | o- ramdisk  [Storage Objects: 0]
-    o- iscsi  [Targets: 1]
-    | o- iqn.2023-04.com.test:vm11-share01  [TPGs: 1] -> ターゲット識別名(IQN)
-    |   o- tpg1  [no-gen-acls, no-auth]
-    |     o- acls  [ACLs: 0]
-    |     o- luns  [LUNs: 0]
-    |     o- portals  [Portals: 1]
-    |       o- 0.0.0.0:3260  [OK]
-    o- loopback  [Targets: 0]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME -> 公開ディスクとターゲット識別名(IQN)をリンク
-  vm11$ sudo targetcli /iscsi/iqn.2023-04.com.test:vm11-share01/tpg1/luns create /backstores/block/vm11-lv0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created LUN 0.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli ls -> ターゲット設定項目を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  o- /  [...]
-    o- backstores  [...]
-    | o- block  [Storage Objects: 1]
-    | | o- vm11-lv0  [/dev/vg0/lv0 (152.0MiB) write-thru activated] -> 公開ディスク名、論理ボリューム
-    | |   o- alua  [ALUA Groups: 1]
-    | |     o- default_tg_pt_gp  [ALUA state: Active/optimized]
-    | o- fileio  [Storage Objects: 0]
-    | o- pscsi  [Storage Objects: 0]
-    | o- ramdisk  [Storage Objects: 0]
-    o- iscsi  [Targets: 1]
-    | o- iqn.2023-04.com.test:vm11-share01  [TPGs: 1] -> ターゲット識別名(IQN)
-    |   o- tpg1  [no-gen-acls, no-auth]
-    |     o- acls  [ACLs: 0]
-    |     o- luns  [LUNs: 1]
-    |     | o- lun0  [block/vm11-lv0 (/dev/vg0/lv0) (default_tg_pt_gp)] -> 公開ディスクへのリンク
-    |     o- portals  [Portals: 1]
-    |       o- 0.0.0.0:3260  [OK]
-    o- loopback  [Targets: 0]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME -> アクセス可能なiSCSIイニシエータ名を登録
-  vm11$ sudo targetcli /iscsi/iqn.2023-04.com.test:vm11-share01/tpg1/acls create iqn.1994-05.com.redhat:11f16be6b393
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created Node ACL for iqn.1994-05.com.redhat:11f16be6b393
-  Created mapped LUN 0.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli ls -> ターゲット設定項目を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  o- /  [...]
-    o- backstores  [...]
-    | o- block  [Storage Objects: 1]
-    | | o- vm11-lv0  [/dev/vg0/lv0 (152.0MiB) write-thru activated] -> 公開ディスク名、論理ボリューム
-    | |   o- alua  [ALUA Groups: 1]
-    | |     o- default_tg_pt_gp  [ALUA state: Active/optimized]
-    | o- fileio  [Storage Objects: 0]
-    | o- pscsi  [Storage Objects: 0]
-    | o- ramdisk  [Storage Objects: 0]
-    o- iscsi  [Targets: 1]
-    | o- iqn.2023-04.com.test:vm11-share01  [TPGs: 1] -> ターゲット識別名(IQN)
-    |   o- tpg1  [no-gen-acls, no-auth]
-    |     o- acls  [ACLs: 1]
-    |     | o- iqn.1994-05.com.redhat:11f16be6b393  [Mapped LUNs: 1] -> アクセス可能なイニシエータ名
-    |     |   o- mapped_lun0  [lun0 block/vm11-lv0 (rw)]
-    |     o- luns  [LUNs: 1]
-    |     | o- lun0  [block/vm11-lv0 (/dev/vg0/lv0) (default_tg_pt_gp)] -> 公開ディスクへのリンク
-    |     o- portals  [Portals: 1]
-    |       o- 0.0.0.0:3260  [OK]
-    o- loopback  [Targets: 0]
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo targetcli saveconfig -> ターゲット設定項目を保存
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Configuration saved to /etc/target/saveconfig.json
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --add-service=iscsi-target --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-
-  vm11$ cd $HOME
-  vm11$ sudo systemctl restart target
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo iscsiadm -m discovery -t sendtargets -p 192.168.122.11 -> ターゲットの検索
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    192.168.122.11:3260,1 iqn.2023-04.com.test:vm11-share01
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo iscsiadm -m node --login -> ターゲットへログイン
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Logging in to [iface: default, target: iqn.2023-04.com.test:vm11-share01, portal: 192.168.122.11,3260] (multiple)
-      [ 2510.772674] scsi host6: iSCSI Initiator over TCP/IP
-      [ 2510.800227] scsi 6:0:0:0: Direct-Access LIO-ORG vm11-lv0 4.0 PQ: 0 ANSI: 5
-      [ 2510.807551] scsi 6:0:0:0: alua: supports implicit and explicit TPGS
-      [ 2510.809771] scsi 6:0:0:0: alua: device naa.60014052b074bcf100245f49bb99698f port group 0 rel port 1
-      [ 2510.814942] scsi 6:0:0:0: alua: Attached
-      [ 2510.823663] scsi 6:0:0:0: alua: transition timeout set to 60 seconds
-      [ 2510.826395] scsi 6:0:0:0: alua: port group 00 state A non-preferred supports TOlUSNA
-      [ 2510.830137] scsi 6:0:0:0: Attached scsi generic sg1 type 0
-    
-    Login to [iface: default, target: iqn.2023-04.com.test:vm11-share01, portal: 192.168.122.11,3260] successful.
-      [ 2510.854712] sd 6:0:0:0: [sda] 311296 512-byte logical blocks: (159 MB/152 MiB)
-      [ 2510.860928] sd 6:0:0:0: [sda] Write Protect is off
-      [ 2510.863829] sd 6:0:0:0: [sda] Write cache: enabled, read cache: enabled, supports DPO and FUA
-      [ 2510.876840] sd 6:0:0:0: [sda] Optimal transfer size 1310720 bytes
-      [ 2510.888801] sd 6:0:0:0: [sda] Attached SCSI disk
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ lsblk -> ターゲットのデバイスを確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-    sda                           8:0     0   152M   0  disk  (ターゲット)
-    sr0                          11:0     1  1024M   0  rom   
-    vda                         252:0     0    20G   0  disk  
-     |-- vda1                   252:1     0     1G   0  part  /boot
-     |-- vda2                   252:2     0    19G   0  part  
-          |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-          |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ lsblk -S -> SCSIデバイスのみ表示
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    NAME  HCTL     TYPE  VENDOR   MODEL         REV   TRAN
-    sda   6:0:0:0  disk  LIO-ORG  vm11-lv0      4.0   iscsi (ターゲット)
-    sr0   0:0:0:0  rom   QEMU     QEMU DVD-ROM  2.5+  sata
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo mount -o defaults -t xfs /dev/sda /mnt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    [ 3086.324705] XFS (sda): Mounting V5 Filesystem
-    [ 3086.353023] XFS (sda): Ending clean mount
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ lsblk -> ターゲットのデバイスを確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-    sda                           8:0     0   152M   0  disk  /mnt -> ターゲットのデバイスをマウント
-    sr0                          11:0     1  1024M   0  rom   
-    vda                         252:0     0    20G   0  disk  
-     |-- vda1                   252:1     0     1G   0  part  /boot
-     |-- vda2                   252:2     0    19G   0  part  
-          |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-          |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-    --------------------------------------------------
-    
-    vm12$ cd /mnt
-    vm12$ sudo touch sample1.txt -> ターゲットのデバイスにファイル作成
-    vm12$ sudo touch sample2.txt -> ターゲットのデバイスにファイル作成
-    vm12$ sudo touch sample3.txt -> ターゲットのデバイスにファイル作成
+    vm11$ cd $HOME
+    vm11$ sudo losetup /dev/loop0 image0.img
+    vm11$ sudo losetup /dev/loop1 image1.img
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo umount /mnt
+    vm11$ cd $HOME
+    vm11$ sudo pvcreate /dev/loop0 /dev/loop1
     
     コマンドの実行結果
     --------------------------------------------------
-    [ 3371.825131] XFS (sda): Unmounting Filesystem
+    Physical volume "/dev/loop0" successfully created.
+    Physical volume "/dev/loop1" successfully created.
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo iscsiadm -m node --logoutall=all -> ターゲットからログアウト
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Logging out of session [sid: 1, target: iqn.2023-04.com.test:vm11-share01, portal: 192.168.122.11,3260]
-    [ 3396.939818] sd 6:0:0:0: alua: Detached
-    [ 3396.950612] sd 6:0:0:0: [sda] Synchronizing SCSI cache
-    Logout of [sid: 1, target: iqn.2023-04.com.test:vm11-share01, portal: 192.168.122.11,3260] successful.
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl disable iscsi -> サービスの自動起動を無効化
+    vm11$ cd $HOME
+    vm11$ sudo vgcreate vg0 /dev/loop0 /dev/loop1
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 無効化しないと起動時にターゲットへの検索・ログイン処理が実行される
+    Volume group "vg0" successfully created
     --------------------------------------------------
     
-  vm11$ cd $HOME
-  vm11$ sudo targetcli clearconfig confirm=True -> ターゲットの初期化
+    vm11$ cd $HOME
+    vm11$ sudo lvcreate -L 150M -n lv0 vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Rounding up size to full physical extent 152.00 MiB
+    Logical volume "lv0" created.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkfs -t xfs /dev/vg0/lv0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli ls -> ターゲット設定項目
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Warning: Could not load preferences file /root/.targetcli/prefs.bin.
+    o- / ..................................................................... [...]
+      o- backstores .......................................................... [...]
+      | o- block .............................................. [Storage Objects: 0]  // 公開ディスク
+      | o- fileio ............................................. [Storage Objects: 0]
+      | o- pscsi .............................................. [Storage Objects: 0]
+      | o- ramdisk ............................................ [Storage Objects: 0]
+      o- iscsi ........................................................ [Targets: 0]  // ターゲット識別名(IQN)
+      o- loopback ..................................................... [Targets: 0]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli     // コマンド本体
+        > /backstores/block  // 規定の作成場所
+        > create             // 作成モード
+        > name=vm11-lv0      // ディスク名
+        > dev=/dev/vg0/lv0   // デバイスに論理ボリューム指定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created block storage object vm11-lv0 using /dev/vg0/lv0.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli ls -> ターゲット設定項目
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    o- / ..................................................................... [...]
+      o- backstores .......................................................... [...]
+      | o- block .............................................. [Storage Objects: 1]
+      | | o- vm11-lv0 ............. [/dev/vg0/lv0 (152.0MiB) write-thru deactivated]  // 公開ディスク
+      | |   o- alua ............................................... [ALUA Groups: 1]
+      | |     o- default_tg_pt_gp ................... [ALUA state: Active/optimized]
+      | o- fileio ............................................. [Storage Objects: 0]
+      | o- pscsi .............................................. [Storage Objects: 0]
+      | o- ramdisk ............................................ [Storage Objects: 0]
+      o- iscsi ........................................................ [Targets: 0]
+      o- loopback ..................................................... [Targets: 0]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli                     // コマンド本体
+        > /iscsi                             // 規定の作成場所
+        > create                             // 作成モード
+        > iqn.2023-06.com.test:vm11-share01  // ターゲット識別名(IQN)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created target iqn.2023-06.com.test:vm11-share01. // ターゲット識別名(IQN)
+    Created TPG 1.
+    Global pref auto_add_default_portal=true
+    Created default portal listening on all IPs (0.0.0.0), port 3260.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli ls -> ターゲット設定項目
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    o- / ..................................................................... [...]
+      o- backstores .......................................................... [...]
+      | o- block .............................................. [Storage Objects: 1]
+      | | o- vm11-lv0 ............. [/dev/vg0/lv0 (152.0MiB) write-thru deactivated]  // 公開ディスク
+      | |   o- alua ............................................... [ALUA Groups: 1]
+      | |     o- default_tg_pt_gp ................... [ALUA state: Active/optimized]
+      | o- fileio ............................................. [Storage Objects: 0]
+      | o- pscsi .............................................. [Storage Objects: 0]
+      | o- ramdisk ............................................ [Storage Objects: 0]
+      o- iscsi ........................................................ [Targets: 1]
+      | o- iqn.2023-06.com.test:vm11-share01 ............................. [TPGs: 1]  // ターゲット識別名(IQN)
+      |   o- tpg1 ........................................... [no-gen-acls, no-auth]
+      |     o- acls ...................................................... [ACLs: 0]
+      |     o- luns ...................................................... [LUNs: 0]
+      |     o- portals ................................................ [Portals: 1]
+      |       o- 0.0.0.0:3260 ................................................. [OK]
+      o- loopback ..................................................... [Targets: 0]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli                                      // コマンド本体
+        > /iscsi/iqn.2023-06.com.test:vm11-share01/tpg1/luns  // 規定の作成場所
+        > create                                              // 作成モード
+        > /backstores/block/vm11-lv0                          // 公開ディスク
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created LUN 0.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli ls -> ターゲット設定項目
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    o- / ..................................................................... [...]
+      o- backstores .......................................................... [...]
+      | o- block .............................................. [Storage Objects: 1]
+      | | o- vm11-lv0 ............... [/dev/vg0/lv0 (152.0MiB) write-thru activated]  // 公開ディスク
+      | |   o- alua ............................................... [ALUA Groups: 1]
+      | |     o- default_tg_pt_gp ................... [ALUA state: Active/optimized]
+      | o- fileio ............................................. [Storage Objects: 0]
+      | o- pscsi .............................................. [Storage Objects: 0]
+      | o- ramdisk ............................................ [Storage Objects: 0]
+      o- iscsi ........................................................ [Targets: 1]
+      | o- iqn.2023-06.com.test:vm11-share01 ............................. [TPGs: 1]  // ターゲット識別名(IQN)
+      |   o- tpg1 ........................................... [no-gen-acls, no-auth]
+      |     o- acls ...................................................... [ACLs: 0]
+      |     o- luns ...................................................... [LUNs: 1]
+      |     | o- lun0 ........... [block/vm11-lv0 (/dev/vg0/lv0) (default_tg_pt_gp)]  // 公開ディスクへのリンク
+      |     o- portals ................................................ [Portals: 1]
+      |       o- 0.0.0.0:3260 ................................................. [OK]
+      o- loopback ..................................................... [Targets: 0]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli                                      // コマンド本体
+        > /iscsi/iqn.2023-06.com.test:vm11-share01/tpg1/acls  // 規定の作成場所
+        > create                                              // 作成モード
+        > iqn.1994-05.com.redhat:3da7d55861a                  // イニシエータ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created Node ACL for iqn.1994-05.com.redhat:3da7d55861a
+    Created mapped LUN 0.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli ls -> ターゲット設定項目
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    o- / ..................................................................... [...]
+      o- backstores .......................................................... [...]
+      | o- block .............................................. [Storage Objects: 1]
+      | | o- vm11-lv0 ............... [/dev/vg0/lv0 (152.0MiB) write-thru activated]  // 公開ディスク
+      | |   o- alua ............................................... [ALUA Groups: 1]
+      | |     o- default_tg_pt_gp ................... [ALUA state: Active/optimized]
+      | o- fileio ............................................. [Storage Objects: 0]
+      | o- pscsi .............................................. [Storage Objects: 0]
+      | o- ramdisk ............................................ [Storage Objects: 0]
+      o- iscsi ........................................................ [Targets: 1]
+      | o- iqn.2023-06.com.test:vm11-share01 ............................. [TPGs: 1]  // ターゲット識別名(IQN)
+      |   o- tpg1 ........................................... [no-gen-acls, no-auth]
+      |     o- acls ...................................................... [ACLs: 1]
+      |     | o- iqn.1994-05.com.redhat:3da7d55861a ............... [Mapped LUNs: 1]  // イニシエータ名
+      |     |   o- mapped_lun0 .......................... [lun0 block/vm11-lv0 (rw)]
+      |     o- luns ...................................................... [LUNs: 1]
+      |     | o- lun0 ........... [block/vm11-lv0 (/dev/vg0/lv0) (default_tg_pt_gp)]  // 公開ディスクへのリンク
+      |     o- portals ................................................ [Portals: 1]
+      |       o- 0.0.0.0:3260 ................................................. [OK]
+      o- loopback ..................................................... [Targets: 0]
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli saveconfig -> ターゲット設定項目を保存
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Configuration saved to /etc/target/saveconfig.json
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl disable target
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 本格的に使用するつもりは無いので自動起動なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart target
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo iscsiadm -m discovery -t sendtargets -p vm11 -> ターゲット検索
   
   コマンドの実行結果
   --------------------------------------------------
-  All configuration cleared
+  192.168.122.11:3260,1 iqn.2023-06.com.test:vm11-share01
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sudo systemctl stop target
+  $ cd $HOME
+  $ sudo iscsiadm -m node --login -> ターゲットへログイン
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Logging in to [iface: default, target: iqn.2023-06.com.test:vm11-share01, portal: 192.168.122.11,3260]
+  Login to [iface: default, target: iqn.2023-06.com.test:vm11-share01, portal: 192.168.122.11,3260] successful.
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ lsblk
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME               MAJ:MIN  RM    SIZE  RO  TYPE  MOUNTPOINT
+  sda                  8:0     0    477G   0  disk  
+   |-- sda1            8:1     0      1G   0  part  /boot
+   |-- sda2            8:2     0    476G   0  part  
+        |-- rl-root  253:0     0     70G   0  lvm   /
+        |-- rl-swap  253:1     0    3.9G   0  lvm   [SWAP]
+        |-- rl-home  253:2     0  402.1G   0  lvm   /home
+  sdb                  8:16    0    152M   0  disk  (ターゲットデバイス)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ lsblk -S -> SCSIデバイスのみ表示
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  NAME   HCTL      TYPE   VENDOR    MODEL              REV    TRAN
+  sda    0:0:0:0   disk   ATA       Crucial_CT512MX1   MU01   sata
+  sdb    6:0:0:0   disk   LIO-ORG   vm11-lv0           4.0    iscsi  // ターゲットデバイス
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo mount -o defaults /dev/sdb /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ sudo mount -o defaults -t xfs /dev/vg0/lv0 /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 3695.991646] XFS (dm-2): Mounting V5 Filesystem
-  [ 3695.997516] XFS (dm-2): Ending clean mount
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ lsblk
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  NAME                        MAJ:MIN  RM   SIZE  RO  TYPE  MOUNTPOINT
-  vdb                         252:16    0     2G   0  disk  
-   |-- vdb2                   252:18    0   975M   0  part  
-   |-- vdb1                   252:17    0     1G   0  part  
-  sr0                          11:0     1  1024M   0  rom   
-  loop0                         7:0     0   100M   0  loop  
-   |-- vg0-lv0                253:2     0   152M   0  lvm   /mnt -> 論理ボリューム
-  loop1                         7:1     0   100M   0  loop  
-   |-- vg0-lv0                253:2     0   152M   0  lvm   /mnt -> 論理ボリューム
-  vda                         252:0     0    20G   0  disk  
-   |-- vda1                   252:1     0     1G   0  part  /boot
-   |-- vda2                   252:2     0    19G   0  part  
-        |-- centos_vm11-root  253:0     0    17G   0  lvm   /
-        |-- centos_vm11-swap  253:1     0     2G   0  lvm   [SWAP]
-  --------------------------------------------------
-  
-  vm11$ cd /mnt
-  vm11$ ls -lh
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 0  4月 20 11:21 sample1.txt
-  -rw-r--r--. 1 root root 0  4月 20 11:21 sample2.txt
-  -rw-r--r--. 1 root root 0  4月 20 11:21 sample3.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo umount /mnt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ 3866.784640] XFS (dm-2): Unmounting Filesystem
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo lvremove /dev/vg0/lv0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Do you really want to remove active logical volume vg0/lv0? [y/n]: y
-    Logical volume "lv0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vgremove vg0
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Volume group "vg0" successfully removed
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo pvremove /dev/loop0 /dev/loop1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Labels on physical volume "/dev/loop0" successfully wiped.
-  Labels on physical volume "/dev/loop1" successfully wiped.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo losetup -D
+  $ cd $HOME
+  $ sudo umount /mnt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ rm -f image[0-1].img
+  $ cd $HOME
+  $ sudo iscsiadm -m node --logoutall=all -> ターゲットからログアウト
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Logging out of session [sid: 1, target: iqn.2023-06.com.test:vm11-share01, portal: 192.168.122.11,3260]
+  Logout of [sid: 1, target: iqn.2023-06.com.test:vm11-share01, portal: 192.168.122.11,3260] successful.
   --------------------------------------------------
   
+  $ cd $HOME
+  $ sudo systemctl disable iscsi -> サービスの自動起動を無効化
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Removed /etc/systemd/system/remote-fs.target.wants/iscsi.service. -> 起動時のターゲット検索・ログイン処理を防ぐ
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jun  9 08:30:20 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo targetcli clearconfig confirm=True -> ターゲット初期化
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    All configuration cleared
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl stop target
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo lvremove /dev/vg0/lv0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Do you really want to remove active logical volume vg0/lv0? [y/n]: y
+      Logical volume "lv0" successfully removed.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vgremove vg0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Volume group "vg0" successfully removed
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo pvremove /dev/loop0 /dev/loop1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Labels on physical volume "/dev/loop0" successfully wiped.
+    Labels on physical volume "/dev/loop1" successfully wiped.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo losetup -D
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f image[0-1].img
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
