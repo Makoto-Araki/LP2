@@ -447,7 +447,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    # configuration written to .config -> 質問は全てEnterで回答して、内容はファイル(.config)に保存
+    # configuration written to .config -> 質問は全てEnterで回答、内容はファイル(.config)に保存
     --------------------------------------------------
     
     vm11$ cd /usr/src/kernels/linux-4.20.1
@@ -475,7 +475,7 @@
     --------------------------------------------------
     
     vm11$ cd /usr/src/kernels/linux-4.20.1
-    vm11$ sudo vi script.sh -> コンパイル時間を知るためスクリプト化
+    vm11$ sudo vi script.sh
     
     コマンドの実行結果
     --------------------------------------------------
@@ -520,7 +520,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    2023/06/01 - 21:23:28 => コンパイルに4時間近くかかる
+    2023/06/01 - 21:23:28  // コンパイルに4時間近くかかる
     2023/06/02 - 01:12:31
     2023/06/02 - 01:15:24
     2023/06/02 - 01:18:04
@@ -573,7 +573,7 @@
     --------------------------------------------------
     
     vm11$ cd /usr/src/kernels/linux-4.20.1
-    vm11$ LANG=C df -mT
+    vm11$ LANG=C df -mT -> 12GB程の領域が開放された
     
     コマンドの実行結果
     --------------------------------------------------
@@ -582,7 +582,7 @@
     tmpfs                    tmpfs          669     0       669   0% /dev/shm
     tmpfs                    tmpfs          669     9       660   2% /run
     tmpfs                    tmpfs          669     0       669   0% /sys/fs/cgroup
-    /dev/mapper/rl_vm11-root xfs          26608  8100     18508  31% / -> 12GBほど領域が開放された
+    /dev/mapper/rl_vm11-root xfs          26608  8100     18508  31% /
     /dev/vda1                xfs           1014   269       746  27% /boot
     tmpfs                    tmpfs          134     0       134   0% /run/user/1000
     --------------------------------------------------
@@ -618,7 +618,7 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ sudo virsh destroy vm11 -> 仮想マシン停止
+  $ sudo virsh destroy vm11
   
   コマンドの実行結果
   --------------------------------------------------
@@ -626,7 +626,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo virsh start vm11 -> 仮想マシン起動
+  $ sudo virsh start vm11
   
   コマンドの実行結果
   --------------------------------------------------
@@ -714,7 +714,7 @@
     drwxr-xr-x  3 root root 4.0K  6月  2 01:12 crypto
     drwxr-xr-x 67 root root 4.0K  6月  2 01:14 drivers
     drwxr-xr-x 24 root root 4.0K  6月  2 01:14 fs
-    drwxr-xr-x  4 root root   52  6月  2 01:14 kernel -> カーネルモジュール格納場所
+    drwxr-xr-x  4 root root   52  6月  2 01:14 kernel  // カーネルモジュール格納場所
     drwxr-xr-x  4 root root 4.0K  6月  2 01:14 lib
     drwxr-xr-x  2 root root   32  6月  2 01:14 mm
     drwxr-xr-x 36 root root 4.0K  6月  2 01:14 net
@@ -875,12 +875,12 @@
     -rw-rw-r-- 1 makoto makoto  176  6月  2 19:47 Makefile
     -rw-rw-r-- 1 makoto makoto  114  6月  2 19:48 Module.symvers
     -rw-rw-r-- 1 makoto makoto  592  6月  2 19:41 base.c
-    -rw-rw-r-- 1 makoto makoto 189K  6月  2 19:48 base.ko -> カーネルモジュールは拡張子(.ko)
+    -rw-rw-r-- 1 makoto makoto 189K  6月  2 19:48 base.ko  // カーネルモジュールは拡張子(.ko)
     -rw-rw-r-- 1 makoto makoto  836  6月  2 19:48 base.mod.c
     -rw-rw-r-- 1 makoto makoto  95K  6月  2 19:48 base.mod.o
     -rw-rw-r-- 1 makoto makoto  97K  6月  2 19:48 base.o
     -rw-rw-r-- 1 makoto makoto  584  6月  2 19:44 module1.c
-    -rw-rw-r-- 1 makoto makoto 188K  6月  2 19:48 module1.ko -> カーネルモジュールは拡張子(.ko)
+    -rw-rw-r-- 1 makoto makoto 188K  6月  2 19:48 module1.ko  // カーネルモジュールは拡張子(.ko)
     -rw-rw-r-- 1 makoto makoto  892  6月  2 19:48 module1.mod.c
     -rw-rw-r-- 1 makoto makoto  95K  6月  2 19:48 module1.mod.o
     -rw-rw-r-- 1 makoto makoto  95K  6月  2 19:48 module1.o
@@ -967,7 +967,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 後のコマンド「modprobe」は依存関係ファイル「modules.dep」に記述が無いと動作しない
+    (省略) -> コマンド「modprobe」は依存関係ファイル「modules.dep」に記述が無いと動作しない
     --------------------------------------------------
     
     vm11$ cd $HOME/module1
@@ -1215,7 +1215,7 @@
     -rw-rw-r-- 1 makoto makoto  169  6月  2 20:45 Makefile
     -rw-rw-r-- 1 makoto makoto    0  6月  2 20:45 Module.symvers
     -rw-rw-r-- 1 makoto makoto  762  6月  2 20:44 module2.c
-    -rw-rw-r-- 1 makoto makoto 189K  6月  2 20:45 module2.ko -> カーネルモジュールは拡張子(.ko)
+    -rw-rw-r-- 1 makoto makoto 189K  6月  2 20:45 module2.ko  // カーネルモジュールは拡張子(.ko)
     -rw-rw-r-- 1 makoto makoto  870  6月  2 20:45 module2.mod.c
     -rw-rw-r-- 1 makoto makoto  95K  6月  2 20:45 module2.mod.o
     -rw-rw-r-- 1 makoto makoto  96K  6月  2 20:45 module2.o
@@ -1836,7 +1836,7 @@
     fpu_exception    : yes
     cpuid level      : 13
     wp               : yes
-    flags            : fpu vme de ... -> 仮想環境(KVM)にはフラグ vmx が必要
+    flags            : fpu vme de ... // 仮想環境(KVM)にはフラグvmxが必要
     bugs             : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf
     bogomips         : 4988.66
     clflush size     : 64
@@ -1993,11 +1993,6 @@
   ## 作業内容
     PCIバス情報を確認する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
   $ cd $HOME
   $ ssh vm11 -> 公開鍵認証でSSH接続
@@ -2012,7 +2007,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    dr-xr-xr-x 2 root root 0  6月  3 09:45 00 -> PCIバス(00)
+    dr-xr-xr-x 2 root root 0  6月  3 09:45 00  // PCIバス(00)
     dr-xr-xr-x 2 root root 0  6月  3 09:45 01
     dr-xr-xr-x 2 root root 0  6月  3 09:45 02
     dr-xr-xr-x 2 root root 0  6月  3 09:45 03
@@ -2027,7 +2022,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r-- 1 root root  256  6月  3 09:46 00.0 -> スロット(00)のデバイス(0)
+    -rw-r--r-- 1 root root  256  6月  3 09:46 00.0  // スロット(00)のデバイス(0)
     -rw-r--r-- 1 root root 4.0K  6月  3 09:46 01.0
     -rw-r--r-- 1 root root 4.0K  6月  3 09:46 01.1
     -rw-r--r-- 1 root root 4.0K  6月  3 09:46 01.2
@@ -2147,7 +2142,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    brw-rw---- 1 root disk    253,   0  6月  3 07:48 dm-0 -> メジャー番号(253)、マイナー番号(0)
+    brw-rw---- 1 root disk    253,   0  6月  3 07:48 dm-0  // メジャー番号(253)、マイナー番号(0)
     brw-rw---- 1 root disk    253,   1  6月  3 07:48 dm-1
     brw-rw---- 1 root cdrom    11,   0  6月  3 07:48 sr0
     brw-rw---- 1 root disk    252,   0  6月  3 07:48 vda
@@ -2161,7 +2156,7 @@
     コマンドの実行結果
     --------------------------------------------------
     253 tpm
-    253 device-mapper -> おそらくこちらが正解
+    253 device-mapper  // おそらくこちらが正解
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2249,7 +2244,7 @@
     コマンドの実行結果
     --------------------------------------------------
     NAME                   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-    loop0                    7:0    0   10M  0 loop /mnt -> ループバックデバイス
+    loop0                    7:0    0   10M  0 loop /mnt  // ループバックデバイス
     sr0                     11:0    1 1024M  0 rom  
     vda                    252:0    0   30G  0 disk 
      |-- vda1              252:1    0    1G  0 part /boot
@@ -2345,7 +2340,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ journalctl --no-pager | grep loop0 -> ジャーナル確認
+    vm11$ journalctl --no-pager | grep loop0
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2428,8 +2423,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    P: /devices/virtual/block/loop0 -> デバイス名(sysfs)
-    N: loop0                        -> デバイス名(udevd)
+    P: /devices/virtual/block/loop0  // デバイス名(sysfs)
+    N: loop0                         // デバイス名(udevd)
     E: DEVNAME=/dev/loop0
     E: DEVPATH=/devices/virtual/block/loop0 -> 絶対パス
     E: DEVTYPE=disk
@@ -2445,8 +2440,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    P: /devices/virtual/block/loop0 -> デバイス名(sysfs)
-    N: loop0                        -> デバイス名(udevd)
+    P: /devices/virtual/block/loop0  // デバイス名(sysfs)
+    N: loop0                         // デバイス名(udevd)
     E: DEVNAME=/dev/loop0
     E: DEVPATH=/devices/virtual/block/loop0 -> 絶対パス
     E: DEVTYPE=disk
@@ -2485,10 +2480,10 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    P: /devices/virtual/block/loop0 -> デバイス名(sysfs)
-    N: loop0                        -> デバイス名(udevd)
+    P: /devices/virtual/block/loop0  // デバイス名(sysfs)
+    N: loop0                         // デバイス名(udevd)
     E: DEVNAME=/dev/loop0
-    E: DEVPATH=/devices/virtual/block/loop0 -> 絶対パス
+    E: DEVPATH=/devices/virtual/block/loop0  // 絶対パス
     E: DEVTYPE=disk
     E: MAJOR=7
     E: MINOR=0
@@ -2553,9 +2548,9 @@
   
   KERNEL[27052.818517] add /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.1 (usb)
   KERNEL[27052.819669] add /devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.1/2-1.1:1.0 (usb)
-    
-    -- 省略 --
-    
+  
+  // 省略
+  
   KERNEL[27058.610690] add /module/vfat (module)
   UDEV  [27058.611319] add /module/vfat (module)
   --------------------------------------------------

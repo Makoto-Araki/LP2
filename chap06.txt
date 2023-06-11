@@ -36,7 +36,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 00:46:45 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -44,7 +44,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    [    3.475536] virtio_net virtio0 enp1s0: renamed from eth0
+    [   10.248875] IPv6: ADDRCONF(NETDEV_UP): enp1s0: link is not ready
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -87,7 +88,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 00:51:58 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -95,7 +96,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -137,7 +138,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:16:29 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -145,19 +146,43 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 192.168.122.11  netmask 255.255.255.0  broadcast 192.168.122.255
+            inet6 fe80::5054:ff:fe3a:2d5f  prefixlen 64  scopeid 0x20<link>
+            ether 52:54:00:3a:2d:5f  txqueuelen 1000  (Ethernet)
+            RX packets 1229  bytes 94170 (91.9 KiB)
+            RX errors 0  dropped 828  overruns 0  frame 0
+            TX packets 205  bytes 31557 (30.8 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1000  (Local Loopback)
+            RX packets 0  bytes 0 (0.0 B)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 0  bytes 0 (0.0 B)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ ifconfig eth0 -> ネットワークデバイス(eth0)を表示
+    vm11$ ifconfig enp1s0 -> ネットワークデバイス(enp1s0)を表示
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 192.168.122.11  netmask 255.255.255.0  broadcast 192.168.122.255
+            inet6 fe80::5054:ff:fe3a:2d5f  prefixlen 64  scopeid 0x20<link>
+            ether 52:54:00:3a:2d:5f  txqueuelen 1000  (Ethernet)
+            RX packets 1304  bytes 99696 (97.3 KiB)
+            RX errors 0  dropped 868  overruns 0  frame 0
+            TX packets 221  bytes 34245 (33.4 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ifconfig eth0:0 192.168.122.21 netmask 255.255.255.0 -> 仮想ネットワークデバイスにIPアドレスを付与
+    vm11$ sudo ifconfig enp1s0:0 192.168.122.21 netmask 255.255.255.0 -> 仮想ネットワークデバイスにIPアドレスを付与
+    vm11$ sudo ifconfig enp1s0:1 192.168.122.31 netmask 255.255.255.0 -> 仮想ネットワークデバイスにIPアドレスを付与
     
     コマンドの実行結果
     --------------------------------------------------
@@ -165,7 +190,8 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ifconfig eth0:0 up -> 仮想ネットワークデバイスを起動
+    vm11$ sudo ifconfig enp1s0:0 up -> 仮想ネットワークデバイスを起動
+    vm11$ sudo ifconfig enp1s0:1 up -> 仮想ネットワークデバイスを起動
     
     コマンドの実行結果
     --------------------------------------------------
@@ -173,7 +199,8 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ifconfig eth0:0 down -> 仮想ネットワークデバイスを停止
+    vm11$ sudo ifconfig enp1s0:0 down -> 仮想ネットワークデバイスを停止
+    vm11$ sudo ifconfig enp1s0:1 down -> 仮想ネットワークデバイスを停止
     
     コマンドの実行結果
     --------------------------------------------------
@@ -212,7 +239,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:18:10 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -220,7 +247,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ntt.setup (192.168.1.1) at 1c:b1:7f:43:f0:da [ether] on enp0s25
+    _gateway (192.168.122.1) at 52:54:00:6f:51:3b [ether] on enp1s0
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -228,50 +255,16 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ? (192.168.122.1) at 52:54:00:6f:51:3b [ether] PERM on eth0
-    ? (192.168.122.12) at 52:54:00:44:98:f6 [ether] PERM on eth0
+    ? (192.168.122.1) at 52:54:00:6f:51:3b [ether] on enp1s0
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ arp ntt.setup -> 指定ホストのみ表示
+    vm11$ arp _gateway -> 指定ホストのみ表示
     
     コマンドの実行結果
     --------------------------------------------------
-    Address    HWtype  HWaddress          Flags Mask  Iface
-    ntt.setup  ether   1c:b1:7f:43:f0:da  C           enp0s25
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo arp -d vm12 -> エントリ削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/ethers -> 設定ファイル作成
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    52:54:00:44:98:f6 192.168.122.12  // vm12
-    52:54:00:6f:51:3b 192.168.122.1   // gateway
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo arp -f /etc/ethers -> 設定ファイル読込
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ arp -a -> 全エントリ表示
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    //
+    Address    HWtype   HWaddress           Flags Mask   Iface
+    _gateway   ether    52:54:00:6f:51:3b   C            enp1s0
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -304,15 +297,21 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:29:47 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ ping -n -c 3 -i 1 www.yahoo.co.jp -> 名前解決なし、送信回数は3回、送信間隔は1秒
+    vm11$ ping -n -c 2 -i 1 www.yahoo.co.jp -> 名前解決なし、送信回数は2回、送信間隔は1秒
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    PING edge12.g.yimg.jp (183.79.250.251) 56(84) bytes of data.
+    64 bytes from 183.79.250.251: icmp_seq=1 ttl=51 time=15.10 ms
+    64 bytes from 183.79.250.251: icmp_seq=2 ttl=51 time=15.2 ms
+    
+    --- edge12.g.yimg.jp ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 15.223/15.600/15.977/0.377 ms
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -345,15 +344,21 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:32:38 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ ping6 -n -c 3 -i 1 localhost -> 名前解決なし、送信回数は3回、送信間隔は1秒
+    vm11$ ping6 -n -c 2 -i 1 localhost -> 名前解決なし、送信回数は2回、送信間隔は1秒
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    PING localhost(::1) 56 data bytes
+    64 bytes from ::1: icmp_seq=1 ttl=64 time=0.076 ms
+    64 bytes from ::1: icmp_seq=2 ttl=64 time=0.052 ms
+    
+    --- localhost ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1027ms
+    rtt min/avg/max/mdev = 0.052/0.064/0.076/0.012 ms
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -385,7 +390,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:35:51 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -393,7 +398,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    traceroute to 192.168.1.1 (192.168.1.1), 30 hops max, 60 byte packets
+    1  192.168.122.1  0.894 ms  0.839 ms  0.810 ms
+    2  192.168.1.1    1.316 ms  1.587 ms  1.859 ms
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -425,7 +432,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:38:53 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -433,7 +440,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    traceroute to localhost (::1), 30 hops max, 80 byte packets
+    1  ::1  0.505 ms  0.426 ms  0.395 ms
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -477,39 +485,55 @@
 
 [確認]
   $ cd $HOME
+  $ ifconfig enp0s25
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  enp0s25: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+           inet 192.168.1.4  netmask 255.255.255.0  broadcast 192.168.1.255
+           inet6 fe80::7258:12ff:fe26:accf  prefixlen 64  scopeid 0x20<link>
+           inet6 2400:4052:20c0:bc00:7258:12ff:fe26:accf  prefixlen 64  scopeid 0x0<global>
+           ether 70:58:12:26:ac:cf  txqueuelen 1000  (Ethernet)
+           RX packets 461735  bytes 567400451 (541.1 MiB)
+           RX errors 0  dropped 6532  overruns 0  frame 0
+           TX packets 117233  bytes 20090867 (19.1 MiB)
+           TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+           device interrupt 20  memory 0xf7c00000-f7c20000  
+  --------------------------------------------------
+  
+  $ cd $HOME
   $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:40:06 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ sudo tcpdump
-        > -n             // 名前解決なし
-        > -l             // バッファリング
-        > -i eth0        // NIC指定
-        > src host rock  // 送信元指定
+        > -n         // 名前解決なし
+        > -l         // バッファリング
+        > -i enp1s0  // インターフェース
+        > icmp       // プロトコル
     
     コマンドの実行結果
     --------------------------------------------------
-    [ 9357.799276] device eth0 entered promiscuous mode
+    dropped privs to tcpdump
     tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
-    listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+    listening on enp1s0, link-type EN10MB (Ethernet), capture size 262144 bytes
     
-    // ここでホスト(vm12)からICMPパケット送信
+    // ホストからPingでICMPパケット送信
     
-    13:01:42.861134 IP 192.168.122.12 > 192.168.122.11: ICMP echo request, id 9015, seq 1, length 64
-    13:01:43.862704 IP 192.168.122.12 > 192.168.122.11: ICMP echo request, id 9015, seq 2, length 64
-    13:01:44.863907 IP 192.168.122.12 > 192.168.122.11: ICMP echo request, id 9015, seq 3, length 64
-    13:01:47.867085 ARP, Request who-has 192.168.122.11 tell 192.168.122.12, length 28
+    02:02:27.049546 IP 192.168.122.1  > 192.168.122.11: ICMP echo request, id 6, seq 1, length 64
+    02:02:27.049584 IP 192.168.122.11 > 192.168.122.1: ICMP echo reply, id 6, seq 1, length 64
+    02:02:28.109792 IP 192.168.122.1  > 192.168.122.11: ICMP echo request, id 6, seq 2, length 64
+    02:02:28.109827 IP 192.168.122.11 > 192.168.122.1: ICMP echo reply, id 6, seq 2, length 64
     
     // Ctrl + C でネットワーク監視を停止
     
     4 packets captured
     4 packets received by filter
     0 packets dropped by kernel
-    [ 9548.826892] device eth0 left promiscuous mode
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -547,7 +571,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 01:55:59 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -555,37 +579,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Kernel Interface table
-    Iface    MTU    RX-OK  RX-ERR  RX-DRP  RX-OVR  TX-OK  TX-ERR  TX-DRP  TX-OVR  Flg
-    eth0    1500     8137       0       9       0   2543       0       0       0  BMRU
-    lo     65536       70       0       0       0     70       0       0       0  LRU
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ netstat -a -p -> 全ソケット情報、プロセス名を表示
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // インターネット接続
-    Active Internet connections (servers and established)
-    Proto   Recv-Q   Send-Q   Local Address    Foreign Address   State    PID/Program name    
-    tcp          0        0   0.0.0.0:ssh      0.0.0.0:*         LISTEN   3167/sshd           
-    tcp          0        0   localhost:smtp   0.0.0.0:*         LISTEN   3412/master         
-    tcp6         0        0   [::]:ssh         [::]:*            LISTEN   3167/sshd           
-    tcp6         0        0   localhost:smtp   [::]:*            LISTEN   3412/master         
-    udp          0        0   localhost:323    0.0.0.0:*                  2636/chronyd        
-    udp6         0        0   localhost:323    [::]:*                     2636/chronyd        
-    
-    // ソケット
-    Active UNIX domain sockets (servers and established)
-    Proto  RefCnt  Flags    Type    State      I-Node  PID/Program name  Path
-    unix   2       [ ACC ]  STREAM  LISTENING  24736   3412/master       private/trace
-    unix   3       [ ]      DGRAM              7456    1/systemd         /run/systemd/notify
-    unix   2       [ ]      DGRAM              7458    1/systemd         /run/systemd/cgroups-agent
-    unix   2       [ ACC ]  STREAM  LISTENING  24717   3412/master       public/cleanup
-    unix   2       [ ACC ]  STREAM  LISTENING  24720   3412/master       public/qmgr
-    unix   2       [ ACC ]  STREAM  LISTENING  24742   3412/master       public/flush
-    ...
+    Iface     MTU   RX-OK  RX-ERR  RX-DRP  RX-OVR  TX-OK  TX-ERR  TX-DRP  TX-OVR  Flg
+    enp1s0   1500    8172       0    2113       0   9297       0       0       0  BMRU
+    lo      65536      36       0       0       0     36       0       0       0  LRU
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -593,13 +589,10 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    // インターネット接続
-    Active Internet connections (servers and established)
-    Proto   Recv-Q   Send-Q   Local Address    Foreign Address   State
-    tcp          0        0   0.0.0.0:22       0.0.0.0:*         LISTEN
-    tcp          0        0   127.0.0.1:25     0.0.0.0:*         LISTEN
-    tcp6         0        0   :::22            :::*              LISTEN
-    tcp6         0        0   ::1:25           :::*              LISTEN
+    Proto   Recv-Q   Send-Q   Local Address       Foreign Address       State      
+    tcp          0        0   0.0.0.0:22          0.0.0.0:*             LISTEN     
+    tcp          0        0   192.168.122.11:22   192.168.122.1:57160   ESTABLISHED
+    tcp6         0        0   :::22               :::*                  LISTEN     
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -607,10 +600,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Kernel IP routing table
-    Destination     Gateway   Genmask         Flags   MSS   Window   irtt   Iface
-    default         gateway   0.0.0.0         UG        0        0      0   eth0
-    192.168.122.0   0.0.0.0   255.255.255.0   U         0        0      0   eth0
+    Destination     Gateway    Genmask         Flags   MSS   Window   irtt   Iface
+    default         _gateway   0.0.0.0         UG        0        0      0   enp1s0
+    192.168.122.0   0.0.0.0    255.255.255.0   U         0        0      0   enp1s0
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -647,7 +639,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 02:06:21 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -660,9 +652,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    State    Recv-Q   Send-Q   Local Address:Port   Peer Address:Port
-    LISTEN        0      128   *:22                 *:*              
-    LISTEN        0      100   127.0.0.1:25         *:*              
+    State    Recv-Q   Send-Q   Local Address:Port   Peer Address:Port    Process  
+    LISTEN        0      128   0.0.0.0:22           0.0.0.0:*            
+    ESTAB         0        0   192.168.122.11:22    192.168.122.1:49758  
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -701,11 +693,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Sun Jun 11 02:15:51 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ vi script05.sh -> ポートスキャンのツール作成
+    vm11$ vi scripts/script07.sh -> ポートスキャンのツール作成
     
     コマンドの実行結果
     --------------------------------------------------
@@ -726,24 +718,24 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script05.sh localhost 15000 15002 -> ポートスキャン実行
+    vm11$ sudo bash scripts/script07.sh localhost 15000 15002 -> ポートスキャン実行
     
     コマンドの実行結果
     --------------------------------------------------
     localhost - 15000
-    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
     Ncat: Connection to 127.0.0.1 failed: Connection refused.
     Ncat: Trying next address...
     Ncat: Connection refused.
     
     localhost - 15001
-    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
     Ncat: Connection to 127.0.0.1 failed: Connection refused.
     Ncat: Trying next address...
     Ncat: Connection refused.
     
     localhost - 15002
-    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
     Ncat: Connection to 127.0.0.1 failed: Connection refused.
     Ncat: Trying next address...
     Ncat: Connection refused.
@@ -766,24 +758,24 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ bash script05.sh localhost 15000 15002 -> ポートスキャン実行
+    vm11$ bash scripts/script07.sh localhost 15000 15002 -> ポートスキャン実行
     
     コマンドの実行結果
     --------------------------------------------------
     localhost - 15000
-    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
     Ncat: Connection to 127.0.0.1 failed: Connection refused.
     Ncat: Trying next address...
     Ncat: Connection refused.
     
     localhost - 15001
-    Ncat: Version 7.50 ( https://nmap.org/ncat )
-    Ncat: Connection to 127.0.0.1 failed: Connection refused.
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
+    Ncat: Connection to 127.0.0.1 failed: Connection refused.  // ポート開放しても受取プログラムが無いため失敗
     Ncat: Trying next address...
-    Ncat: Connection refused. -> ポート開放しても受取プログラムが無いため失敗する模様
+    Ncat: Connection refused.
     
     localhost - 15002
-    Ncat: Version 7.50 ( https://nmap.org/ncat )
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
     Ncat: Connection to 127.0.0.1 failed: Connection refused.
     Ncat: Trying next address...
     Ncat: Connection refused.
@@ -798,7 +790,30 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    [1] 1382 -> PID
+    [1] 1228 -> PID
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ bash scripts/script07.sh localhost 15000 15002 -> ポートスキャン実行
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    localhost - 15000
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
+    Ncat: Connection to 127.0.0.1 failed: Connection refused.
+    Ncat: Trying next address...
+    Ncat: Connection refused.
+    
+    localhost - 15001
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
+    Ncat: Connected to 127.0.0.1:15001.  // 接続成功
+    Ncat: 0 bytes sent, 0 bytes received in 0.07 seconds.
+    
+    localhost - 15002
+    Ncat: Version 7.70 ( https://nmap.org/ncat )
+    Ncat: Connection to 127.0.0.1 failed: Connection refused.
+    Ncat: Trying next address...
+    Ncat: Connection refused.
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -806,14 +821,13 @@
         > -l  // リスニング
         > -t  // TCP
         > -4  // IPV4
-        > -p  // PID
+        > -p  // Process
     
     コマンドの実行結果
     --------------------------------------------------
-    Proto  Recv-Q  Send-Q  Local Address   Foreign Address  State   PID/Program name
-    tcp         0       0  0.0.0.0:ssh     0.0.0.0:*        LISTEN  -
-    tcp         0       0  0.0.0.0:15001   0.0.0.0:*        LISTEN  1382/nc -> ポート「15001」の受取プログラム
-    tcp         0       0  localhost:smtp  0.0.0.0:*        LISTEN  -
+    Proto  Recv-Q  Send-Q  Local Address     Foreign Address  State   PID/Program name
+    tcp         0       0  0.0.0.0:ssh       0.0.0.0:*        LISTEN  -      
+    tcp         0       0  0.0.0.0:onep-tls  0.0.0.0:*        LISTEN  1228/nc
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -821,13 +835,13 @@
         > -l  // リスニング
         > -t  // TCP
         > -4  // IPV4
+        > -p  // Process
     
     コマンドの実行結果
     --------------------------------------------------
-    State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port
-    LISTEN  0          128  *:ssh               *:*
-    LISTEN  0           10  *:15001             *:* -> ポート「15001」の受取プログラム
-    LISTEN  0          100  127.0.0.1:smtp      *:*
+    State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port  Process  
+    LISTEN  0       128     0.0.0.0:ssh         0.0.0.0:*          
+    LISTEN  0       10      0.0.0.0:onep-tls    0.0.0.0:*          users:(("nc",pid=1228,fd=3))
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -835,7 +849,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> Hello World と出力
+    Hello World
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -843,11 +857,11 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    1382
+    1228
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ kill -term 1382
+    vm11$ kill -term 1228
     
     コマンドの実行結果
     --------------------------------------------------
@@ -856,14 +870,6 @@
     
     vm11$ cd $HOME
     vm11$ sudo firewall-cmd --remove-port=15001/tcp --permanent
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    success
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo firewall-cmd --reload
     
     コマンドの実行結果
     --------------------------------------------------
@@ -959,7 +965,8 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ip addr add 192.168.122.21/24 dev eth0:0 -> デバイスに仮想IPアドレスを付与
+    vm11$ sudo ip addr add 192.168.122.21/24 dev enp1s0:0 -> デバイスに仮想IPアドレスを付与
+    vm11$ sudo ip addr add 192.168.122.31/24 dev enp1s0:1 -> デバイスに仮想IPアドレスを付与
     
     コマンドの実行結果
     --------------------------------------------------
@@ -975,7 +982,8 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ip addr del 192.168.122.21/24 dev eth0:0 -> 仮想IPアドレスを削除
+    vm11$ sudo ip addr del 192.168.122.21/24 dev enp1s0:0 -> 仮想IPアドレスを削除
+    vm11$ sudo ip addr del 192.168.122.31/24 dev enp1s0:1 -> 仮想IPアドレスを削除
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1001,8 +1009,8 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ip route add 192.168.122.21/32 via 192.168.122.1 dev eth0 -> ルート情報を追加
-    vm11$ sudo ip route add 192.168.122.31/32 via 192.168.122.1 dev eth0 -> ルート情報を追加
+    vm11$ sudo ip route add 192.168.122.21/32 via 192.168.122.1 dev enp1s0 -> ルート情報を追加
+    vm11$ sudo ip route add 192.168.122.31/32 via 192.168.122.1 dev enp1s0 -> ルート情報を追加
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1021,8 +1029,8 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ip route del 192.168.122.21/32 via 192.168.122.1 dev eth0 -> ルート情報を削除
-    vm11$ sudo ip route del 192.168.122.31/32 via 192.168.122.1 dev eth0 -> ルート情報を削除
+    vm11$ sudo ip route del 192.168.122.21/32 via 192.168.122.1 dev enp1s0 -> ルート情報を削除
+    vm11$ sudo ip route del 192.168.122.31/32 via 192.168.122.1 dev enp1s0 -> ルート情報を削除
     
     コマンドの実行結果
     --------------------------------------------------

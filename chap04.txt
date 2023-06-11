@@ -321,7 +321,7 @@
   $ cd /home
   $ sudo virsh attach-device --config vm11 /home/disk1.xml -> 仮想マシンにデバイス追加
   $ sudo virsh attach-device --config vm11 /home/disk2.xml
-
+  
   コマンドの実行結果
   --------------------------------------------------
   // disk1.xml
@@ -373,36 +373,36 @@
     Welcome to GNU Parted! Type 'help' to view a list of commands.
     
     (parted) 
-    (parted) print -> パーティション情報
+    (parted) print  // パーティション情報
     
-    Error: /dev/vdb: unrecognised disk label -> 管理方式が不明
+    Error: /dev/vdb: unrecognised disk label  // 管理方式が不明
     Model: Virtio Block Device (virtblk)
     Disk /dev/vdb: 2097MB
     Sector size (logical/physical): 512B/512B
-    Partition Table: unknown -> 管理方式が不明なのでパーティション情報もない
+    Partition Table: unknown  // 管理方式が不明なのでパーティション情報もない
     Disk Flags: 
     
     (parted) 
-    (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に設定
+    (parted) mklabel msdos  // 管理方式をmsdos(MBR方式)に設定
     
     (parted) 
-    (parted) mkpart -> パーティション作成
+    (parted) mkpart  // パーティション作成
     
     Partition type?  primary/extended? (primaryを入力)
     File system type?  [ext2]? (ext4を入力)
-    Start? (0%を入力) -> 開始セクタはディスクの最初から
-    End? (50%を入力) -> 終了セクタはディスクの半分まで
+    Start? (0%を入力)  // 開始セクタはディスクの最初から
+    End? (50%を入力)   // 終了セクタはディスクの半分まで
     
     (parted) 
-    (parted) mkpart -> パーティション作成
+    (parted) mkpart
     
     Partition type?  primary/extended? (primaryを入力)
     File system type?  [ext2]? (ext4を入力)
-    Start? (51%を入力) -> 開始セクタはディスクの半分から
-    End? (100%を入力) -> 終了セクタはディスクの最後まで
+    Start? (51%を入力)  // 開始セクタはディスクの半分から
+    End? (100%を入力)   // 終了セクタはディスクの最後まで
     
     (parted) 
-    (parted) print -> パーティション情報
+    (parted) print
     
     Model: Virtio Block Device (virtblk)
     Disk /dev/vdb: 2097MB
@@ -415,7 +415,7 @@
     2       1070MB  2097MB  1028MB  primary  ext4         lba
     
     (parted) 
-    (parted) quit -> 対話モード終了
+    (parted) quit  // 対話モード終了
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -428,36 +428,36 @@
     Welcome to GNU Parted! Type 'help' to view a list of commands.
     
     (parted) 
-    (parted) print -> パーティション情報
+    (parted) print
     
-    Error: /dev/vdc: unrecognised disk label -> 管理方式が不明
+    Error: /dev/vdc: unrecognised disk label
     Model: Virtio Block Device (virtblk)
     Disk /dev/vdb: 2097MB
     Sector size (logical/physical): 512B/512B
-    Partition Table: unknown -> 管理方式が不明なのでパーティション情報もない
+    Partition Table: unknown
     Disk Flags: 
     
     (parted) 
-    (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に設定
+    (parted) mklabel msdos
     
     (parted) 
-    (parted) mkpart -> パーティション作成
+    (parted) mkpart
     
     Partition type?  primary/extended? (primaryを入力)
     File system type?  [ext2]? (ext4を入力)
-    Start? (0%を入力) -> 開始セクタはディスクの最初から
-    End? (50%を入力) -> 終了セクタはディスクの半分まで
+    Start? (0%を入力)
+    End? (50%を入力)
     
     (parted) 
-    (parted) mkpart -> パーティション作成
+    (parted) mkpart
     
     Partition type?  primary/extended? (primaryを入力)
     File system type?  [ext2]? (ext4を入力)
-    Start? (51%を入力) -> 開始セクタはディスクの半分から
-    End? (100%を入力) -> 終了セクタはディスクの最後まで
+    Start? (51%を入力)
+    End? (100%を入力)
     
     (parted) 
-    (parted) print -> パーティション情報
+    (parted) print
     
     Model: Virtio Block Device (virtblk)
     Disk /dev/vdc: 2097MB
@@ -470,7 +470,7 @@
     2       1070MB  2097MB  1028MB  primary  ext4         lba
     
     (parted) 
-    (parted) quit -> 対話モード終了
+    (parted) quit
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -649,21 +649,63 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo mount -at ext4 -> 設定ファイル(/etc/fstab)上のファイルシステム(ext4)をマウント
+    vm11$ sudo vi /etc/fstab -> 設定ファイル(/etc/fstab)を編集
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし
+    UUID=873bce14-6dd1-411a-a3bb-1fbd6dd99891  /boot     xfs   defaults  0  0
+    /dev/mapper/rl_vm11-root                   /         xfs   defaults  0  0
+    /dev/mapper/rl_vm11-swap                   none      swap  defaults  0  0
+    # /dev/vdb1                                /mnt/mp1  ext4  defaults  0  0  (コメントアウト)
+    # /dev/vdb2                                /mnt/mp2  ext4  defaults  0  0  (コメントアウト)
+    # /dev/vdc1                                none      swap  defaults  0  0  (コメントアウト)
+    # /dev/vdc2                                none      swap  defaults  0  0  (コメントアウト)
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo swapon /dev/vdc1 -> スワップ領域の有効化
-    vm11$ sudo swapon /dev/vdc2
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし
+    Connection to vm11 closed.
     --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh destroy vm11 -> 仮想マシンの停止
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm11' destroyed
+  --------------------------------------------------
+  
+  $ cd /home
+  $ sudo virsh detach-device --config vm11 /home/disk1.xml -> 仮想マシンからデバイス削除
+  $ sudo virsh detach-device --config vm11 /home/disk2.xml
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // disk1.xml
+  デバイスが正常に切断されました
+  
+  // disk2.xml
+  デバイスが正常に切断されました
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh start vm11 -> 仮想マシンの起動
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm11' started
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon Jun  5 10:54:21 2023 from 192.168.122.1
+  --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ lsblk
@@ -677,12 +719,6 @@
      |-- vda2               252:2     0    29G   0  part  
           |-- rl_vm11-root  253:0     0    26G   0  lvm   /
           |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-    vdb                     252:16    0     2G   0  disk  
-     |-- vdb1               252:17    0   999M   0  part  /mnt/mp1
-     |-- vdb2               252:18    0   980M   0  part  /mnt/mp2
-    vdc                     252:32    0     2G   0  disk  
-     |-- vdc1               252:33    0   999M   0  part  [SWAP]
-     |-- vdc2               252:34    0   980M   0  part  [SWAP]
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -972,12 +1008,6 @@
      |-- vda2               252:2     0    29G   0  part  
           |-- rl_vm11-root  253:0     0    26G   0  lvm   /
           |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-    vdb                     252:16    0     2G   0  disk  
-     |-- vdb1               252:17    0   999M   0  part  /mnt/mp1
-     |-- vdb2               252:18    0   980M   0  part  /mnt/mp2
-    vdc                     252:32    0     2G   0  disk  
-     |-- vdc1               252:33    0   999M   0  part  [SWAP]
-     |-- vdc2               252:34    0   980M   0  part  [SWAP]
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -992,8 +1022,6 @@
     tmpfs                     tmpfs     807M     0   807M    0%  /sys/fs/cgroup
     /dev/mapper/rl_vm11-root  xfs        28G  9.2G    19G   33%  /
     /dev/vda1                 xfs       1.1G  283M   782M   27%  /boot
-    /dev/vdb1                 ext4      1.1G  2.6M   943M    1%  /mnt/mp1
-    /dev/vdb2                 ext4      995M  2.6M   924M    1%  /mnt/mp2
     tmpfs                     tmpfs     162M     0   162M    0%  /run/user/1000
     /dev/loop0                ext2      102M   50k   101M    1%  /mnt/loop0
     /dev/loop1                ext3       98M   54k    97M    1%  /mnt/loop1
@@ -1211,7 +1239,7 @@
     ファイルシステム(btrfs)を作成後にマウント
   
 [確認]
-  確認不可、コマンド(mkfs.btrfs)が削除された模様
+  コマンド(mkfs.btrfs)が削除され確認できない
   
 ================================================================================
 [017]
@@ -1330,12 +1358,6 @@
      |-- vda2               252:2     0    29G   0  part  
           |-- rl_vm11-root  253:0     0    26G   0  lvm   /
           |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-    vdb                     252:16    0     2G   0  disk  
-     |-- vdb1               252:17    0   999M   0  part  /mnt/mp1
-     |-- vdb2               252:18    0   980M   0  part  /mnt/mp2
-    vdc                     252:32    0     2G   0  disk  
-     |-- vdc1               252:33    0   999M   0  part  [SWAP]
-     |-- vdc2               252:34    0   980M   0  part  [SWAP]
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1351,8 +1373,6 @@
     tmpfs                     tmpfs     162M     0  162M     0%  /run/user/1000
     /dev/mapper/rl_vm11-root  xfs        28G  9.1G   19G    33%  /
     /dev/vda1                 xfs       1.1G  283M  782M    27%  /boot
-    /dev/vdb1                 ext4      1.1G  2.6M  943M     1%  /mnt/mp1
-    /dev/vdb2                 ext4      995M  2.6M  924M     1%  /mnt/mp2
     /dev/loop0                iso9660   359k  359k     0   100%  /mnt/cdrom1
     /dev/loop1                iso9660   361k  361k     0   100%  /mnt/cdrom2
     --------------------------------------------------
@@ -1488,12 +1508,6 @@
      |-- vda2               252:2     0    29G   0  part  
           |-- rl_vm11-root  253:0     0    26G   0  lvm   /
           |-- rl_vm11-swap  253:1     0     3G   0  lvm   [SWAP]
-    vdb                     252:16    0     2G   0  disk  
-     |-- vdb1               252:17    0   999M   0  part  /mnt/mp1
-     |-- vdb2               252:18    0   980M   0  part  /mnt/mp2
-    vdc                     252:32    0     2G   0  disk  
-     |-- vdc1               252:33    0   999M   0  part  [SWAP]
-     |-- vdc2               252:34    0   980M   0  part  [SWAP]
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1509,8 +1523,6 @@
     tmpfs                     tmpfs     162M     0   162M    0%  /run/user/1000
     /dev/mapper/rl_vm11-root  xfs        28G  9.1G    19G   33%  /
     /dev/vda1                 xfs       1.1G  283M   782M   27%  /boot
-    /dev/vdb1                 ext4      1.1G  2.6M   943M    1%  /mnt/mp1
-    /dev/vdb2                 ext4      995M  2.6M   924M    1%  /mnt/mp2
     /dev/loop0                iso9660   859k  859k      0  100%  /mnt/dvdrom1
     /dev/loop1                iso9660   861k  861k      0  100%  /mnt/dvdrom2
     --------------------------------------------------
@@ -3806,12 +3818,6 @@
      |-- vda2               252:2     0   29G   0  part  
           |-- rl_vm11-root  253:0     0   26G   0  lvm   /
           |-- rl_vm11-swap  253:1     0    3G   0  lvm   [SWAP]
-    vdb                     252:16    0    2G   0  disk  
-     |-- vdb1               252:17    0  999M   0  part  /mnt/mp1
-     |-- vdb2               252:18    0  980M   0  part  /mnt/mp2
-    vdc                     252:32    0    2G   0  disk  
-     |-- vdc1               252:33    0  999M   0  part  [SWAP]
-     |-- vdc2               252:34    0  980M   0  part  [SWAP]
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3845,12 +3851,6 @@
      |-- vda2               252:2     0   29G   0  part  
           |-- rl_vm11-root  253:0     0   26G   0  lvm   /
           |-- rl_vm11-swap  253:1     0    3G   0  lvm   [SWAP]
-    vdb                     252:16    0    2G   0  disk  
-     |-- vdb1               252:17    0  999M   0  part  /mnt/mp1
-     |-- vdb2               252:18    0  980M   0  part  /mnt/mp2
-    vdc                     252:32    0    2G   0  disk  
-     |-- vdc1               252:33    0  999M   0  part  [SWAP]
-     |-- vdc2               252:34    0  980M   0  part  [SWAP]
     --------------------------------------------------
     
     vm11$ cd $HOME

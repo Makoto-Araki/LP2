@@ -306,7 +306,7 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ lsblk (ディスク情報) -> デバイスマッピングが使われている
+    vm11$ lsblk
     
     コマンドの実行結果
     --------------------------------------------------
@@ -362,12 +362,12 @@
     Linux 4.15.3 (vm11) 2023年05月04日 _x86_64_ (1 CPU)
     
     avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-               0.00    0.00   98.28    0.00    1.72    0.00 -> HDD負荷開始で「%system」の数値上昇
+               0.00    0.00   98.28    0.00    1.72    0.00  // HDD負荷開始で「%system」の数値上昇
     
     Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-    vda             165.52         0.00       165.52          0         96 -> リクエストがデバイスに殺到
+    vda             165.52         0.00       165.52          0         96  // リクエストがデバイスに殺到
     vdb               0.00         0.00         0.00          0          0
-    dm-0             84.48         0.00       165.52          0         96 -> リクエストがデバイスに殺到
+    dm-0             84.48         0.00       165.52          0         96  // リクエストがデバイスに殺到
     dm-1              0.00         0.00         0.00          0          0
     
     avg-cpu:  %user   %nice %system %iowait  %steal   %idle
@@ -398,12 +398,12 @@
     dm-1              0.00         0.00         0.00          0          0
     
     avg-cpu:  %user   %nice %system %iowait  %steal   %idle
-               1.00    0.00    2.00    0.00    0.00   97.00 -> HDD負荷終了で「%idle」の数値上昇
+               1.00    0.00    2.00    0.00    0.00   97.00  // HDD負荷終了で「%idle」の数値上昇
     
     Device:            tps    MB_read/s    MB_wrtn/s    MB_read    MB_wrtn
-    vda               0.00         0.00         0.00          0          0 -> 書込リクエストも無くなる
+    vda               0.00         0.00         0.00          0          0  // 書込リクエストも無くなる
     vdb               0.00         0.00         0.00          0          0
-    dm-0              0.00         0.00         0.00          0          0 -> 書込リクエストも無くなる
+    dm-0              0.00         0.00         0.00          0          0  // 書込リクエストも無くなる
     dm-1              0.00         0.00         0.00          0          0
     
     avg-cpu:  %user   %nice %system %iowait  %steal   %idle
@@ -1448,7 +1448,7 @@
     vm11$ cd $HOME
     vm11$ LANG=C
         > df
-        > -h  // 1MB=1024KB
+        > -h  // 1MB = 1024KB
         > -m  // メガバイト単位
         > -T  // ファイルシステムタイプ表示
     
@@ -1494,7 +1494,7 @@
     vm11$ cd $HOME
     vm11$ LANG=C 
         > df
-        > -h  // 1MB=1024KB
+        > -h  // 1MB = 1024KB
         > -i  // 使用状況(iノード)
         > -T  // ファイルシステムタイプ表示
     
@@ -1810,14 +1810,13 @@
   --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ ping -c 3 vm11
+    vm12$ ping -c 2 vm11
     
     コマンドの実行結果
     --------------------------------------------------
     PING vm11 (192.168.122.11) 56(84) bytes of data.
     64 bytes from vm11 (192.168.122.11): icmp_seq=1 ttl=64 time=1.90 ms
     64 bytes from vm11 (192.168.122.11): icmp_seq=2 ttl=64 time=0.719 ms
-    64 bytes from vm11 (192.168.122.11): icmp_seq=3 ttl=64 time=1.51 ms
     
     --- vm11 ping statistics ---
     3 packets transmitted, 3 received, 0% packet loss, time 2003ms

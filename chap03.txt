@@ -533,7 +533,7 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ systemctl status sshd -> サービス状態
+    vm11$ systemctl status sshd
     
     コマンドの実行結果
     --------------------------------------------------
@@ -769,7 +769,7 @@
     コマンドの実行結果
     --------------------------------------------------
     [Unit]
-    Description=onion.service -> サービス名は野菜(タマネギ)から命名
+    Description=onion.service  // サービス名は野菜(タマネギ)から命名
     
     [Service]
     Type=simple
@@ -790,7 +790,7 @@
     コマンドの実行結果
     --------------------------------------------------
     ● onion.service
-       Loaded: loaded (/usr/lib/systemd/system/onion.service; static; vendor preset>
+       Loaded: loaded (/usr/lib/systemd/system/onion.service; static; vendor preset> ...)
        Active: inactive (dead)
     --------------------------------------------------
     
@@ -1105,11 +1105,11 @@
   splashimage=(hd0,0)/grub/splash.xpm.gz
   hiddenmenu
   title CentOS 6 (2.6.32-754.el6.x86_64)
-    root (hd0,0)                       -> パーティション指定 (hd0,0) = /dev/vda1 = /boot
-    kernel                             -> カーネル設定
-      /vmlinuz-2.6.32-754.el6.x86_64   -> カーネル本体
-      ro                               -> 読み取り専用
-      root=/dev/mapper/vg_vm16-lv_root -> カーネルが起動するルートファイルシステム
+    root (hd0,0)                        // パーティション指定 (hd0,0) = /dev/vda1 = /boot
+    kernel                              // カーネル設定
+      /vmlinuz-2.6.32-754.el6.x86_64    // カーネル本体
+      ro                                // 読み取り専用
+      root=/dev/mapper/vg_vm16-lv_root  // カーネルが起動するルートファイルシステム
       rd_LVM_LV=vg_vm16/lv_swap
       rd_NO_LUKS
       rd_NO_MD
@@ -1121,9 +1121,9 @@
       rd_NO_DM
       rhgb
       quiet
-      console=tty0 console=ttyS0,115200n8  -> コンソール接続
-    initrd                                 -> 初期RAMディスク設定
-      /initramfs-2.6.32-754.el6.x86_64.img -> 初期RAMディスク本体
+      console=tty0 console=ttyS0,115200n8   // コンソール接続
+    initrd                                  // 初期RAMディスク設定
+      /initramfs-2.6.32-754.el6.x86_64.img  // 初期RAMディスク本体
   --------------------------------------------------
   
   以下の確認に続く
@@ -1389,7 +1389,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (hd0)  /dev/vda -> GRUB2上では「/dev/vda」が「hd0」と表記
+    (hd0)  /dev/vda  // GRUB2上では「/dev/vda」が「hd0」と表記
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1550,27 +1550,27 @@
   Welcome to GNU Parted! Type 'help' to view a list of commands.
   
   (parted) 
-  (parted) rm 1 -> パーティション1を削除
+  (parted) rm 1  // パーティション1を削除
   
   (parted) 
-  (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に変更
+  (parted) mklabel msdos  // 管理方式をmsdos(MBR方式)に変更
   
   Warning: The existing disk label on /dev/sdb will be destroyed and all data on this disk will be lost.
-  Do you want to continue? Yes/No? Yes (Yesを入力) -> 既存データが破壊されてもOK
+  Do you want to continue? Yes/No? Yes (Yesを入力)  // 既存データが破壊されてもOK
   
   (parted) 
-  (parted) mkpart -> パーティション作成
+  (parted) mkpart
   
   Partition type?  primary/extended? primary
-  File system type?  [ext2]? fat32 -> USBメモリのファイルシステム
-  Start? 0G -> 開始セクタはUSBメモリの最初から
-  End? 100% -> 終了セクタはUSBメモリの最後まで
+  File system type?  [ext2]? fat32  // USBメモリのファイルシステム
+  Start? 0G  // 開始セクタはUSBメモリの最初から
+  End? 100%  // 終了セクタはUSBメモリの最後まで
   
   (parted) 
-  (parted) set 1 boot on -> 起動フラグを付与
+  (parted) set 1 boot on  // 起動フラグを付与
   
   (parted) 
-  (parted) quit -> 対話モード終了
+  (parted) quit
   --------------------------------------------------
   
   $ cd $HOME
@@ -1695,27 +1695,27 @@
   Welcome to GNU Parted! Type 'help' to view a list of commands.
   
   (parted) 
-  (parted) rm 2 -> パーティション2を削除
+  (parted) rm 2  // パーティション2を削除
   
   (parted) 
-  (parted) mklabel msdos -> 管理方式をmsdos(MBR方式)に変更
+  (parted) mklabel msdos  // 管理方式をmsdos(MBR方式)に変更
   
   Warning: The existing disk label on /dev/sdb will be destroyed and all data on this disk will be lost.
-  Do you want to continue? Yes/No? Yes (Yesを入力) -> 既存データが破壊されてもOK
+  Do you want to continue? Yes/No? Yes (Yesを入力)  // 既存データが破壊されてもOK
   
   (parted) 
-  (parted) mkpart -> パーティション作成
+  (parted) mkpart
   
   Partition type?  primary/extended? primary
-  File system type?  [ext2]? fat32 -> USBメモリのファイルシステム
-  Start? 0G -> 開始セクタはUSBメモリの最初から
-  End? 100% -> 終了セクタはUSBメモリの最後まで
+  File system type?  [ext2]? fat32  // USBメモリのファイルシステム
+  Start? 0G  // 開始セクタはUSBメモリの最初から
+  End? 100%  // 終了セクタはUSBメモリの最後まで
   
   (parted) 
-  (parted) set 1 boot on -> 起動フラグを付与
+  (parted) set 1 boot on  // 起動フラグを付与
   
   (parted) 
-  (parted) quit -> 対話モード終了
+  (parted) quit
   --------------------------------------------------
   
   $ cd $HOME
@@ -1787,7 +1787,7 @@
   --------------------------------------------------
   ・Install CentOS 7
   ・Test this media & Install CentOS 7
-  ・Troubleshooting (レスキューモード)
+  ・Troubleshooting  // レスキューモード
   --------------------------------------------------
   
   > 上記で「Troubleshooting」を選択
@@ -1796,7 +1796,7 @@
   コマンドの実行結果
   --------------------------------------------------
   ・Install CentOS 7 in basic graphics mode
-  ・Rescue a CentOS system (レスキューモード)
+  ・Rescue a CentOS system  // レスキューモード
   ・Run a memory test
   ・Boot from local drive
   ・Return to main menu
@@ -1816,7 +1816,7 @@
   メニューで「02」を選択の場合は、現在の読み書き可能でのマウントを読み取り専用でマウントします。
   メニューで「03」を選択の場合は、シェルまでの手順を一気にスキップします。
   
-  01: Continue (レスキューモード)
+  01: Continue  // レスキューモード
   02: Read-only mount
   03: Skip to shell
   04: Quit (Reboot)
