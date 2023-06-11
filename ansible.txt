@@ -2357,6 +2357,12 @@
           name: tree
           state: present
         become: yes
+      
+      - name: Install rsync package
+        ansible.builtin.dnf:
+          name: rsync
+          state: present
+        become: yes      
   --------------------------------------------------
   
   $ cd $HOME
@@ -2376,8 +2382,11 @@
   TASK [Install tree package]
   changed: [vm11]
   
+  TASK [Install rsync package]
+  changed: [vm11]
+  
   PLAY RECAP
-  vm11 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm11 :    ok=5    changed=5    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
   --------------------------------------------------
   
   以下の確認に続く

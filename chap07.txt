@@ -1370,11 +1370,6 @@
   ## 作業内容
     バックアップをコマンド(rsync)で行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
   ## コマンド(rsync)
     rsync -v        : コピー中のファイル表示
     rsync -a        : ファイルやディレクトリ属性をそのままコピー
@@ -1391,118 +1386,170 @@
     rsync --delete  : コピー元ファイル削除はコピー先でも削除
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ mkdir dirA dirB
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Sun Jun 11 13:12:05 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME/dirA
-  vm11$ echo 'AAA BBB CCC' > sample1.txt
-  vm11$ echo 'AAA BBB CCC' > sample2.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA BBB CCC
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rsync
-      > -a  // ファイル属性維持
-      > -u  // ファイル変更反映
-      > -v  // 反映ファイル表示
-      > --delete     // ファイル削除反映
-      > dirA/ dirB/  // 反映元 反映先
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  sending incremental file list
-  ./
-  sample1.txt  // 反映ファイル表示
-  sample2.txt  // 反映ファイル表示
-  
-  sent 224 bytes  received 57 bytes  562.00 bytes/sec
-  total size is 24  speedup is 0.09
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh dirA/ dirB/
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dirA/:
-  合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample2.txt
-  
-  dirB/:
-  合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:11 sample2.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/dirA
-  vm11$ vi sample1.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA BBB CCC DDD(追加)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/dirA
-  vm11$ rm sample2.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/dirA
-  vm11$ echo 'AAA BBB CCC' > sample3.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rsync
-      > -a  // ファイル属性維持
-      > -u  // ファイル変更反映
-      > -v  // 反映ファイル表示
-      > --delete     // ファイル削除反映
-      > dirA/ dirB/  // 反映元 反映先
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  sending incremental file list
-  deleting sample2.txt  // ファイル削除反映メッセージ
-  ./
-  sample1.txt
-  sample3.txt
-  
-  sent 228 bytes  received 72 bytes  600.00 bytes/sec
-  total size is 28  speedup is 0.09
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh dirA/ dirB/
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dirA/:
-  合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 16  4月 22 12:21 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:22 sample3.txt
-  
-  dirB/:
-  合計 8.0K
-  -rw-rw-r--. 1 makoto makoto 16  4月 22 12:21 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:22 sample3.txt
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ mkdir dirA dirB
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi dirA/sample1.txt
+    vm11$ vi dirA/sample2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // sample1.txt
+    AAA BBB CCC
+    
+    // sample2.txt
+    AAA BBB CCC
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rsync
+        > -a           // ファイル属性維持
+        > -u           // ファイル変更反映
+        > -v           // 反映ファイル表示
+        > --delete     // ファイル削除反映
+        > dirA/ dirB/  // 反映元 反映先
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    sending incremental file list
+    
+    ./
+    sample1.txt
+    sample2.txt
+    
+    sent 222 bytes  received 57 bytes  558.00 bytes/sec
+    total size is 24  speedup is 0.09
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh dirA/ dirB/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dirA/:
+    合計 8.0K
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 17:57 sample1.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 17:57 sample2.txt
+    
+    dirB/:
+    合計 8.0K
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 17:57 sample1.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 17:57 sample2.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ diff -r dirA dirB
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi dirA/sample1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA BBB CCC DDD(追加)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm dirA/sample2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ echo 'AAA BBB CCC' > dirA/sample3.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ diff -r dirA dirB
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    diff -r dirA/sample1.txt dirB/sample1.txt
+    1c1
+    < AAA BBB CCC DDD
+    ---
+    > AAA BBB CCC
+    dirB のみに存在: sample2.txt
+    dirA のみに存在: sample3.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rsync
+        > -a           // ファイル属性維持
+        > -u           // ファイル変更反映
+        > -v           // 反映ファイル表示
+        > --delete     // ファイル削除反映
+        > dirA/ dirB/  // 反映元 反映先
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    sending incremental file list
+    
+    deleting sample2.txt
+    ./
+    sample1.txt
+    sample3.txt
+    
+    sent 228 bytes  received 72 bytes  600.00 bytes/sec
+    total size is 28  speedup is 0.09
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh dirA/ dirB/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dirA/:
+    合計 8.0K
+    -rw-rw-r-- 1 makoto makoto 16  6月 11 18:06 sample1.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 18:07 sample3.txt
+    
+    dirB/:
+    合計 8.0K
+    -rw-rw-r-- 1 makoto makoto 16  6月 11 18:06 sample1.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 18:07 sample3.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ diff -r dirA dirB
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1513,16 +1560,6 @@
   ## 作業内容
     バックアップをコマンド(rsync)で行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
   ## コマンド(rsync)
     rsync -v        : コピー中のファイル表示
     rsync -a        : ファイルやディレクトリ属性をそのままコピー
@@ -1539,138 +1576,190 @@
     rsync --delete  : コピー元ファイル削除はコピー先でも削除
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ mkdir dirC
+  $ cd $HOME
+  $ dnf -y install rsync
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 既にインストール済み
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ mkdir dirC
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm11$ cd $HOME/dirC
-  vm11$ echo 'AAA BBB CCC' > sample1.txt
-  vm11$ echo 'AAA BBB CCC' > sample2.txt
+  $ cd $HOME
+  $ vi dirC/sample1.txt
+  $ vi dirC/sample2.txt
   
   コマンドの実行結果
   --------------------------------------------------
+  // sample1.txt
+  AAA BBB CCC
+
+  // sample2.txt
   AAA BBB CCC
   --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jun 11 18:01:17 2023 from 192.168.122.1
+  --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo yum -y install rsync
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ mkdir dirC
+    vm11$ cd $HOME
+    vm11$ mkdir dirC
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-  vm11$ cd $HOME
-  vm11$ rsync
-      > -a  // ファイル属性維持
-      > -u  // ファイル変更反映
-      > -v  // 反映ファイル表示
-      > --delete                 // ファイル削除反映
-      > -e ssh dirC/ vm12:dirC/  // ターミナルソフト
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ls -lh dirC/
   
   コマンドの実行結果
   --------------------------------------------------
-  makoto@vm12's password: (makoto@vm12のパスワード入力)
+  -rw-rw-r--. 1 makoto makoto 12  6月 11 19:11 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  6月 11 19:11 sample2.txt
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ rsync
+  > -a                       // ファイル属性維持
+  > -u                       // ファイル変更反映
+  > -v                       // 反映ファイル表示
+  > --delete                 // ファイル削除反映
+  > -e ssh dirC/ vm11:dirC/  // ターミナルソフト
+  
+  コマンドの実行結果
+  --------------------------------------------------
   sending incremental file list
+  
   ./
   sample1.txt
   sample2.txt
   
-  sent 228 bytes  received 57 bytes  38.00 bytes/sec
+  sent 226 bytes  received 57 bytes  566.00 bytes/sec
   total size is 24  speedup is 0.08
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ ls -lh dirC/
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:33 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:34 sample2.txt
+  Last login: Sun Jun 11 19:11:42 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ ls -lh dirC/
+    vm11$ cd $HOME
+    vm11$ ls -lh dirC/
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-rw-r--. 1 makoto makoto 12  4月 22 12:33 sample1.txt
-    -rw-rw-r--. 1 makoto makoto 12  4月 22 12:34 sample2.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 19:11 sample1.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 19:11 sample2.txt
     --------------------------------------------------
     
-  vm11$ cd $HOME/dirC
-  vm11$ vi sample1.txt
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ vi dirC/sample1.txt
   
   コマンドの実行結果
   --------------------------------------------------
   AAA BBB CCC DDD(追加)
   --------------------------------------------------
   
-  vm11$ cd $HOME/dirC
-  vm11$ rm sample2.txt
+  $ cd $HOME
+  $ rm dirC/sample2.txt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm11$ cd $HOME/dirC
-  vm11$ echo 'AAA BBB CCC' > sample3.txt
+  $ cd $HOME
+  $ echo 'AAA BBB CCC' > dirC/sample3.txt
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ rsync
-      > -a  // ファイル属性維持
-      > -u  // ファイル変更反映
-      > -v  // 反映ファイル表示
-      > --delete                 // ファイル削除反映
-      > -e ssh dirC/ vm12:dirC/  // ターミナルソフト
+  $ cd $HOME
+  $ ls -lh dirC/
   
   コマンドの実行結果
   --------------------------------------------------
-  makoto@vm12's password: (makoto@vm12のパスワード入力)
+  -rw-rw-r--. 1 makoto makoto 16  6月 11 19:15 sample1.txt
+  -rw-rw-r--. 1 makoto makoto 12  6月 11 19:15 sample3.txt
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ rsync
+  > -a                       // ファイル属性維持
+  > -u                       // ファイル変更反映
+  > -v                       // 反映ファイル表示
+  > --delete                 // ファイル削除反映
+  > -e ssh dirC/ vm11:dirC/  // ターミナルソフト
+  
+  コマンドの実行結果
+  --------------------------------------------------
   sending incremental file list
+
   deleting sample2.txt
   ./
   sample1.txt
   sample3.txt
   
-  sent 232 bytes  received 78 bytes  36.47 bytes/sec
+  sent 230 bytes  received 78 bytes  205.33 bytes/sec
   total size is 28  speedup is 0.09
   --------------------------------------------------
   
-  vm11$ cd $HOME
-  vm11$ ls -lh dirC/
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 16  4月 22 12:39 sample1.txt
-  -rw-rw-r--. 1 makoto makoto 12  4月 22 12:39 sample3.txt
+  Last login: Sun Jun 11 19:14:03 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ ls -lh dirC/
+    vm11$ cd $HOME
+    vm11$ ls -lh dirC/
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-rw-r--. 1 makoto makoto 16  4月 22 12:39 sample1.txt
-    -rw-rw-r--. 1 makoto makoto 12  4月 22 12:39 sample3.txt
+    -rw-rw-r-- 1 makoto makoto 16  6月 11 19:15 sample1.txt
+    -rw-rw-r-- 1 makoto makoto 12  6月 11 19:15 sample3.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
     --------------------------------------------------
     
   以下の確認に続く
@@ -1683,35 +1772,38 @@
   ## 作業内容
     ログイン前のメッセージをファイル(/etc/issue)で設定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo vi /etc/issue
+  $ cd $HOME
+  $ sudo virsh console vm11 -> 再起動を挟むのでSSH接続ではなくコンソール接続
   
   コマンドの実行結果
   --------------------------------------------------
-  System is \S         // 追加 \S = $(uname -s) = CentOS Linux 7 (Core)
-  Kernel is \r         // 追加 \r = $(uname -r) = 4.15.3
-  Architecture is \m   // 追加 \m = $(uname -m) = x86_64
-  Host is \n           // 追加 \n = $(uname -n) = vm11
+  (省略)
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl reboot
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  System is CentOS Linux 7 (Core)
-  Kernel is 4.15.3
-  Architecture is x86_64
-  Host is vm11
-  vm11 login: ■ (ログインプロンプト)
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/issue
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    System is \s        // 追加 \s = $(uname -s) = Linux
+    Kernel is \r        // 追加 \r = $(uname -r) = 4.20.1
+    Architecture is \m  // 追加 \m = $(uname -m) = x86_64
+    Host is \n          // 追加 \n = $(uname -n) = vm11
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl reboot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    System is Linux
+    Kernel is 4.20.1
+    Architecture is x86_64
+    Host is vm11
+    vm11 login: ■ (ログインプロンプト)
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1722,35 +1814,38 @@
   ## 作業内容
     ログイン後のメッセージをファイル(/etc/motd)で設定する
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo vi /etc/motd
+  $ cd $HOME
+  $ sudo virsh console vm11 -> 再起動を挟むのでSSH接続ではなくコンソール接続
   
   コマンドの実行結果
   --------------------------------------------------
-  This machine is for LPIC 201.
+  (省略)
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl reboot
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  System is CentOS Linux 7 (Core)
-  Kernel is 4.15.3
-  Architecture is x86_64
-  Host is vm11
-  vm11 login: makoto (ユーザー名を入力)
-  パスワード: (パスワードを入力)
-  最終ログイン: Sat Apr 22 12:52:28  ttyS0 上
-  This machine is for LPIC 201.  // ログイン後のメッセージ
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/motd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    This machine is for LPIC.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl reboot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    System is Linux
+    Kernel is 4.20.1
+    Architecture is x86_64
+    Host is vm11
+    vm11 login: makoto
+    パスワード:
+    前回のログイン: Sun Jun 11 19:37:24 端末: ttyS0
+    This machine is for LPIC.  // ログイン後のメッセージ
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
