@@ -1,4 +1,5 @@
 ================================================================================
+[001] コンテンツサーバー - 01
 [01] DNSクライアントコマンド - 01 (nslookup)
 [02] DNSクライアントコマンド - 02 (host)
 [03] DNSクライアントコマンド - 03 (dig)
@@ -7,6 +8,323 @@
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
 [07] コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
 [08] コマンド(rndc) - 02 (ゾーン転送をスレーブからマスターに依頼)
+================================================================================
+[001]
+  コンテンツサーバー - 01
+  
+[内容]
+  ## 作業内容
+    コンテンツサーバーを構築する
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh console vm11 -> ファイアーウォールのリロードを行うためコンソール接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo firewall-cmd --reload
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    //
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ nslookup -type=soa avswa.com -> 練習用ドメインの存在チェック
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  server can't find avswa.com: NXDOMAIN  // インターネット上に「avswa.com」のドメインは存在しないと判明
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ host avswa.com -> 練習用ドメインの存在チェック
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Host avswa.com not found: 3(NXDOMAIN)  // インターネット上に「avswa.com」のドメインは存在しないと判明
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo bash /usr/libexec/setup-named-chroot.sh /var/named/chroot on
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> スクリプトでchroot有効化
+    --------------------------------------------------
+    
+    vm11$ cd /var/named/chroot/etc
+    vm11$ sudo cp -p named.conf named.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 設定ファイルをバックアップ
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイル修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## プログラム(named)の詳細オプション
+    options
+    {
+      directory "/var/named";       # ゾーンファイル格納先 -> /var/named/chroot/var/named
+      listen-on-v6 { none; };       # 不使用(IPv6)
+      recursion no;                 # 再帰問合わせを受付しない
+      version "unknown";            # バージョン表示
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                  # マスター
+      file "avswa.com.zone";        # ファイル名
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                  # マスター
+      file "rev.avswa.com.zone";    # ファイル名
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 文法チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo vi /var/named/chroot/var/named/example.com.zone -> 正引きファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  $ORIGIN example.com.
+  $TTL 1D
+  example.com. IN SOA vm11.example.com. makoto.example.com. (
+    2023042101  ; serial
+    5M          ; refresh
+    5M          ; retry
+    1D          ; expire
+    1D          ; negative
+  )
+  
+  example.com.           IN  NS     vm11.example.com.  ; Master
+  example.com.           IN  NS     vm12.example.com.  ; Slave
+  vm11.example.com.      IN  A      192.168.122.11
+  vm12.example.com.      IN  A      192.168.122.12
+  vm13.example.com.      IN  A      192.168.122.13
+  vm14.example.com.      IN  A      192.168.122.14
+  www.example.com.       IN  CNAME  vm11.example.com.  ; Web Server
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo named-checkzone -> ゾーン情報をチェック
+      > -t /var/named/chroot  // ルート指定
+      > -w /var/named         // ファイルの場所
+      > example.com           // ゾーン名
+      > example.com.zone      // ファイル名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  zone example.com/IN: loaded serial 2023042101
+  OK
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo vi /var/named/chroot/var/named/example.com.rev.zone -> 逆引きファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  $ORIGIN example.com.
+  $TTL 1D
+  122.168.192.in-addr.arpa. IN SOA vm11.example.com. makoto.example.com. (
+    2023042101  ; serial
+    5M          ; refresh
+    5M          ; retry
+    1D          ; expire
+    1D          ; negative
+  )
+  
+  122.168.192.in-addr.arpa.       IN  NS     vm11.example.com.
+  11.122.168.192.in-addr.arpa.    IN  PTR    vm11.example.com.
+  12.122.168.192.in-addr.arpa.    IN  PTR    vm12.example.com.
+  13.122.168.192.in-addr.arpa.    IN  PTR    vm13.example.com.
+  14.122.168.192.in-addr.arpa.    IN  PTR    vm14.example.com.
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo named-checkzone -> ゾーン情報をチェック
+      > -t /var/named/chroot      // ルート指定
+      > -w /var/named             // ファイルの場所
+      > 122.168.192.in-addr.arpa  // ゾーン名
+      > example.com.rev.zone      // ファイル名
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  zone 122.168.192.in-addr.arpa/IN: loaded serial 2023042101
+  OK
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo systemctl disable named -> 自動起動を無効化
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> chroot有効化でDNSサービス名は「named-chroot」に変更されたため出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo systemctl enable named-chroot -> 自動起動を有効化
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service to
+  /usr/lib/systemd/system/named-chroot.service.
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo systemctl start named-chroot
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo firewall-cmd --add-service=dns --permanent
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ sudo firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ dig
+      > @vm11        // サーバー指定
+      > +noall       // 全セクション非表示
+      > +answer      // 回答セクション表示
+      > example.com  // ドメイン名指定
+      > soa          // レコード指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ dig
+      > @vm11        // サーバー指定
+      > +noall       // 全セクション非表示
+      > +answer      // 回答セクション表示
+      > example.com  // ドメイン名指定
+      > ns           // レコード指定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  example.com. 86400 IN NS vm11.example.com.
+  example.com. 86400 IN NS vm12.example.com.
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ dig
+      > @vm11             // サーバー指定
+      > vm11.example.com  // 正引き名前解決
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 <<>> @vm11 vm11.example.com
+  ; (1 server found)
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62044
+  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 2
+  ;; WARNING: recursion requested but not available
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 4096
+  
+  -- 質問セクション
+  ;; QUESTION SECTION:
+  ;vm11.example.com. IN A
+  
+  -- 回答セクション
+  ;; ANSWER SECTION:
+  vm11.example.com. 86400 IN A 192.168.122.11
+  
+  -- 権威セクション
+  ;; AUTHORITY SECTION:
+  example.com. 86400 IN NS vm11.example.com.
+  example.com. 86400 IN NS vm12.example.com.
+  
+  -- 追加セクション
+  ;; ADDITIONAL SECTION:
+  vm12.example.com. 86400 IN A 192.168.122.12
+  
+  ;; Query time: 1 msec
+  ;; SERVER: 192.168.122.11#53(192.168.122.11)
+  ;; WHEN: 土  4月 22 18:41:11 JST 2023
+  ;; MSG SIZE  rcvd: 110
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ dig
+      > @vm11             // サーバー指定
+      > +noall            // 全セクション非表示
+      > +answer           // 回答セクション表示
+      > vm11.example.com  // 正引き名前解決
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm11.example.com. 86400 IN A 192.168.122.11
+  --------------------------------------------------
+  
+  vm11$ cd $HOME
+  vm11$ dig
+      > @vm11             // サーバー指定
+      > +noall            // 全セクション非表示
+      > +answer           // 回答セクション表示
+      > -x 192.168.122.11 // 逆引き名前解決
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  11.122.168.192.in-addr.arpa. 86400 IN PTR vm11.example.com.
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
 ================================================================================
 [01]
   DNSクライアントコマンド - 01 (nslookup)
