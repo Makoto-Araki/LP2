@@ -135,178 +135,165 @@
   ## 作業内容
     ソースの修正部分(パッチ)の反映をコマンド(patch)で行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.1.11
-    MEMO : 仮想マシン
-  
   ## コマンド(patch)
-    patch -R           : 処理内容を取り消して元に戻す
-    patch -p0 XX < YY  : ファイル(XX)にパッチ(YY=patch/AAA)の差分を適用、パスを修正しない   -> patch/AAA
-    patch -p1 XX < YY  : ファイル(XX)にパッチ(YY=patch/AAA)の差分を適用、最初の'/'まで削除  -> AAA
+    patch -R        : 処理内容を取り消して元に戻す
+    patch -p0 < XX  : パッチ(XX)内の適用先(patch/file1)へパッチ適用時にパスを修正しない -> patch/file1
+    patch -p1 < XX  : パッチ(XX)内の適用先(patch/file1)へパッチ適用時に最初の'/'まで削除 -> file1
     
 [確認]
-  vm11$ cd $HOME
-  vm11$ vi sample5/file1.txt
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  AAA
+  Last login: Sun Jun 11 10:10:18 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cp -p sample5/file1.txt .(カレントディレクトリ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ vi file1.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA
-  BBB (追加)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ diff -u sample5/file1.txt(修正前) file1.txt(修正後) > patch1 -> パッチファイル作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ rm -f sample1.txt -> 修正後のファイル削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat patch1 -> パッチファイル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  --- sample5/file1.txt	2023-04-21 12:34:29.517289461 +0900  -> 修正前
-  +++ file1.txt	2023-04-21 12:36:21.439895861 +0900 -> 修正後、おそらく処理中では参照されていない
-  @@ -1 +1,2 @@
-   AAA
-  +BBB
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install tree
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tree
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  |-- file1.txt -> 既に削除済だがあえて記述
-  |-- patch1
-  |-- sample5
-       |-- file1.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ patch -p0 < patch1 -> パッチ適用
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  patching file sample5/file1.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat sample5/file1.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA
-  BBB (反映)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ patch -R -p0 < patch1 -> パッチ適用を取消
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  patching file sample5/file1.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat sample5/file1.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA (修正前に戻った)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tree
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  |-- file1.txt -> 既に削除済だがあえて記述
-  |-- patch1
-  |-- sample5
-       |-- file1.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat patch1
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  --- sample5/file1.txt	2023-04-21 12:34:29.517289461 +0900  -> 修正前
-  +++ file1.txt	2023-04-21 12:36:21.439895861 +0900 -> 修正後、おそらく処理中では参照されていない
-  @@ -1 +1,2 @@
-   AAA
-  +BBB
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/sample5
-  vm11$ patch -p1 < ../patch1 -> 修正前のパス「sample5/file1.txt」を「file1.txt」に変更
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  patching file file1.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/sample5
-  vm11$ cat file1.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA
-  BBB (反映)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/sample5
-  vm11$ patch -R -p1 < ../patch1 -> パッチ適用を取消
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  patching file file1.txt
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/sample5
-  vm11$ cat file1.txt
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  AAA (修正前に戻った)
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ mkdir temp3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi temp3/file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cp -p temp3/file1.txt .(カレントディレクトリ)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA
+    BBB (追加)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ diff -u temp3/file1.txt(修正前) file1.txt(修正後) > patch1 -> パッチファイル作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ rm -f file1.txt -> 修正後のファイル削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat patch1 -> パッチファイル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    --- temp3/file1.txt 2023-06-11 10:27:33.648000000 +0900  // パッチ適用先パスとして参照される
+    +++ file1.txt 2023-06-11 10:28:20.271000000 +0900        // おそらく参照されない
+    @@ -1 +1,2 @@
+     AAA
+    +BBB
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tree
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    |-- patch1
+    |-- temp3
+         |-- file1.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ patch -p0 < patch1 -> パッチ適用
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    patching file temp3/file1.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat temp3/file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA
+    BBB (反映)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ patch -R -p0 < patch1 -> パッチ適用を取消
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    patching file temp3/file1.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat temp3/file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA (修正前に戻った)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp3
+    vm11$ patch -p1 < ../patch1 -> パッチ適用先のパス「temp3/file1.txt」を「file1.txt」に変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    patching file file1.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp3
+    vm11$ cat file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA
+    BBB (反映)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp3
+    vm11$ patch -R -p1 < ../patch1 -> パッチ適用を取消
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    patching file file1.txt
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/temp3
+    vm11$ cat file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    AAA (修正前に戻った)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -317,168 +304,172 @@
   ## 作業内容
     サンプル(GNU-Hello)のソース取得・Makefile作成・コンパイル・インストール・実行までを行う
   
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
 [確認]
-  vm11$ cd $HOME
-  vm11$ wget --no-check-certificate https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 相手の証明書が期限切れだったのでリスクはあるが…証明書チェックをせずに続行した
+  Last login: Sun Jun 11 10:25:17 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar zxf hello-2.10.tar.gz
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ ls
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ABOUT-NLS      GNUmakefile    README         aclocal.m4     contrib        maint.mk
-  AUTHORS        INSTALL        README-dev     build-aux      doc            man
-  COPYING        Makefile.am    README-release config.in      hello.1        po
-  ChangeLog      Makefile.in    THANKS         configure      lib            src
-  ChangeLog.O    NEWS           TODO           configure.ac   m4             tests
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ cat README
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -- 省略 --
-
-  // コンパイルとインストールはファイル(INSTALL*)を参照
-  See the files ./INSTALL* for building and installation instructions.
-  
-  -- 省略 --
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ cat INSTALL
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -- 省略 --
-  
-  // コンパイルとインストールの手順
-  Briefly, the shell command `./configure && make && make install' should configure, build, and install this package.
-
-  -- 省略 --
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ ./configure
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  checking for a BSD-compatible install... /bin/install -c
-  checking whether build environment is sane... yes
-  checking for a thread-safe mkdir -p... /bin/mkdir -p
-  checking for gawk... gawk
-  checking whether make sets $(MAKE)... yes
-  checking whether make supports nested variables... yes
-  checking for gcc... gcc
-  checking whether the C compiler works... yes
-  checking for C compiler default output file name... a.out
-  checking for suffix of executables... 
-  
-  -- 省略 --
-  
-  checking where the gettext function comes from... libc
-  checking that generated files are newer than configure... done
-  configure: creating ./config.status
-  config.status: creating Makefile  // Makefile作成
-  config.status: creating po/Makefile.in
-  config.status: creating config.h
-  config.status: executing depfiles commands
-  config.status: executing po-directories commands
-  config.status: creating po/POTFILES
-  config.status: creating po/Makefile
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ grep -E '^clean:' Makefile -> ターゲット検索
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  clean: clean-recursive
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ grep -E '^uninstall:' Makefile -> ターゲット検索
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  uninstall: uninstall-recursive
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ make
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 実行ファイル「hello」が生成された
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ sudo make install
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> root権限が必要な場所に書き込む場合もあるので「sudo」使用
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ which hello
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /usr/local/bin/hello -> ディレクトリ「/usr/local/bin」配下はパスが通るためプロンプトに「hello」と入力して実行可能
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ hello
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  世界よ、こんにちは！ -> システム言語に合わせて出力
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ make clean -> コンパイル時に生成された不要ファイル削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ sudo make uninstall -> アンインストール
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm11$ cd $HOME/hello-2.10
-  vm11$ which hello
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> hello が見つからないとエラー出力
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ wget --no-check-certificate https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 相手の証明書が期限切れだったのでリスクはあるが…証明書チェックなしのオプションで実行した
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar zxf hello-2.10.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ABOUT-NLS       GNUmakefile     README          aclocal.m4      contrib         maint.mk
+    AUTHORS         INSTALL         README-dev      build-aux       doc             man
+    COPYING         Makefile.am     README-release  config.in       hello.1         po
+    ChangeLog       Makefile.in     THANKS          configure       lib             src
+    ChangeLog.O     NEWS            TODO            configure.ac    m4              tests
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ cat README
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    // コンパイルとインストールはファイル(INSTALL*)を参照
+    See the files ./INSTALL* for building and installation instructions.
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ cat INSTALL
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    // コンパイルとインストールの手順
+    Briefly, the shell command `./configure && make && make install' should configure, build, and install this package.
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ ./configure
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    checking for a BSD-compatible install... /bin/install -c
+    checking whether build environment is sane... yes
+    checking for a thread-safe mkdir -p... /bin/mkdir -p
+    checking for gawk... gawk
+    checking whether make sets $(MAKE)... yes
+    checking whether make supports nested variables... yes
+    checking for gcc... gcc
+    checking whether the C compiler works... yes
+    checking for C compiler default output file name... a.out
+    checking for suffix of executables... 
+    
+    ...
+    
+    checking where the gettext function comes from... libc
+    checking that generated files are newer than configure... done
+    configure: creating ./config.status   // config.status 作成
+    config.status: creating Makefile      // Makefile 作成
+    config.status: creating po/Makefile.in
+    config.status: creating config.h
+    config.status: executing depfiles commands
+    config.status: executing po-directories commands
+    config.status: creating po/POTFILES
+    config.status: creating po/Makefile
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ grep -E '^clean:|^uninstall:' Makefile -> ターゲット検索
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    uninstall: uninstall-recursive
+    clean: clean-recursive
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 実行ファイル「hello」が生成された
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> root権限が必要な場所に書き込む場合もあるので「sudo」使用
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ which hello
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /usr/local/bin/hello -> ディレクトリ「/usr/local/bin」配下はパスが通るためプロンプトに「hello」と入力して実行可能
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ hello
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    世界よ、こんにちは！ -> システム言語に合わせて出力
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ make clean -> コンパイル時に生成された不要ファイル削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ sudo make uninstall -> アンインストール
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME/hello-2.10
+    vm11$ which hello
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> hello が見つからないとエラー出力
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -488,11 +479,6 @@
 [内容]
   ## 作業内容
     バックアップをコマンド(tar)で行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド(tar)
     tar -c  : アーカイブ作成
@@ -514,84 +500,100 @@
     tar --delete  : アーカイブからファイル削除
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ ls -lh hello -> 以前作成したファイル群
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  -rw-rw-r--. 1 makoto makoto 265  4月 29 13:20 Makefile
-  -rw-rw-r--. 1 makoto makoto 157  4月 29 13:19 hello.c
-  -rw-rw-r--. 1 makoto makoto 134  4月 29 13:18 hello.h
-  -rw-rw-r--. 1 makoto makoto 109  4月 29 13:19 main.c
+  Last login: Sun Jun 11 10:56:03 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar -cvf hello.tar hello/* -> アーカイブ作成
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  hello/Makefile
-  hello/hello.c
-  hello/hello.h
-  hello/main.c
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar -tvf hello.tar -> アーカイブ内を閲覧
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r-- makoto/makoto   265 2023-04-29 13:20 hello/Makefile
-  -rw-rw-r-- makoto/makoto   157 2023-04-29 13:19 hello/hello.c
-  -rw-rw-r-- makoto/makoto   134 2023-04-29 13:18 hello/hello.h
-  -rw-rw-r-- makoto/makoto   109 2023-04-29 13:19 hello/main.c
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar -C hello -rvf hello.tar Makefile hello.h hello.c main.c -> ディレクトリ移動、アーカイブ追加
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Makefile
-  hello.h
-  hello.c
-  main.c
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar -tvf hello.tar -> アーカイブ内を閲覧
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r-- makoto/makoto   265 2023-04-29 13:20 hello/Makefile
-  -rw-rw-r-- makoto/makoto   157 2023-04-29 13:19 hello/hello.c
-  -rw-rw-r-- makoto/makoto   134 2023-04-29 13:18 hello/hello.h
-  -rw-rw-r-- makoto/makoto   109 2023-04-29 13:19 hello/main.c
-  -rw-rw-r-- makoto/makoto   265 2023-04-29 13:20 Makefile
-  -rw-rw-r-- makoto/makoto   134 2023-04-29 13:18 hello.h
-  -rw-rw-r-- makoto/makoto   157 2023-04-29 13:19 hello.c
-  -rw-rw-r-- makoto/makoto   109 2023-04-29 13:19 main.c
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar --delete Makefile hello.h hello.c main.c -vf hello.tar -> アーカイブから削除
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ tar -tvf hello.tar -> アーカイブ内を閲覧
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-rw-r-- makoto/makoto   265 2023-04-29 13:20 hello/Makefile
-  -rw-rw-r-- makoto/makoto   157 2023-04-29 13:19 hello/hello.c
-  -rw-rw-r-- makoto/makoto   134 2023-04-29 13:18 hello/hello.h
-  -rw-rw-r-- makoto/makoto   109 2023-04-29 13:19 hello/main.c
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh hello -> 以前作成したファイル群
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r-- 1 makoto makoto 265  6月  1 18:42 Makefile
+    -rw-rw-r-- 1 makoto makoto 123  6月  1 18:31 hello.c
+    -rw-rw-r-- 1 makoto makoto 134  6月  1 18:30 hello.h
+    -rw-rw-r-- 1 makoto makoto  75  6月  1 18:31 main.c
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar -cvf hello.tar hello/* -> アーカイブ作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    hello/Makefile
+    hello/hello.c
+    hello/hello.h
+    hello/main.c
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar -tvf hello.tar -> アーカイブ内を閲覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r-- makoto/makoto   265 2023-06-01 18:42 hello/Makefile
+    -rw-rw-r-- makoto/makoto   123 2023-06-01 18:31 hello/hello.c
+    -rw-rw-r-- makoto/makoto   134 2023-06-01 18:30 hello/hello.h
+    -rw-rw-r-- makoto/makoto    75 2023-06-01 18:31 hello/main.c
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar -C hello -rvf hello.tar Makefile hello.h hello.c main.c -> ディレクトリ移動、アーカイブ追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Makefile
+    hello.h
+    hello.c
+    main.c
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar -tvf hello.tar -> アーカイブ内を閲覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r-- makoto/makoto   265 2023-06-01 18:42 hello/Makefile
+    -rw-rw-r-- makoto/makoto   123 2023-06-01 18:31 hello/hello.c
+    -rw-rw-r-- makoto/makoto   134 2023-06-01 18:30 hello/hello.h
+    -rw-rw-r-- makoto/makoto    75 2023-06-01 18:31 hello/main.c
+    -rw-rw-r-- makoto/makoto   265 2023-06-01 18:42 Makefile  // アーカイブに追加
+    -rw-rw-r-- makoto/makoto   134 2023-06-01 18:30 hello.h   // アーカイブに追加
+    -rw-rw-r-- makoto/makoto   123 2023-06-01 18:31 hello.c   // アーカイブに追加
+    -rw-rw-r-- makoto/makoto    75 2023-06-01 18:31 main.c    // アーカイブに追加
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar --delete Makefile hello.h hello.c main.c -vf hello.tar -> アーカイブから削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ tar -tvf hello.tar -> アーカイブ内を閲覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-rw-r-- makoto/makoto   265 2023-06-01 18:42 hello/Makefile
+    -rw-rw-r-- makoto/makoto   123 2023-06-01 18:31 hello/hello.c
+    -rw-rw-r-- makoto/makoto   134 2023-06-01 18:30 hello/hello.h
+    -rw-rw-r-- makoto/makoto    75 2023-06-01 18:31 hello/main.c
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -601,11 +603,6 @@
 [内容]
   ## 作業内容
     バックアップをコマンド(cpio)で行う
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
   
   ## コマンド(cpio)
     cpio -o : アーカイブを作成
@@ -620,6 +617,14 @@
     cat XX | cpio -i -d : アーカイブ(XX)からファイル抽出、ディレクトリ作成
   
 [確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+  
   vm11$ cd $HOME
   vm11$ ls -lh hello -> 以前作成したファイル群
   
