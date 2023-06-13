@@ -1,8 +1,10 @@
 ================================================================================
 [001] コンテンツサーバー構築
-[002] クライアントコマンド(nslookup)
-[003] クライアントコマンド(host)
-[004] クライアントコマンド(dig)
+[002] クライアントコマンド - 01
+[003] クライアントコマンド - 02
+[004] クライアントコマンド - 03
+[005] ゾーンファイルの記述省略
+[006] アクセス制御リスト
 [04] 設定ファイル(/etc/named.conf) - 01 (コンテンツサーバー)
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
@@ -244,11 +246,11 @@
   
 ================================================================================
 [002]
-  クライアントコマンド(nslookup)
+  クライアントコマンド - 01
   
 [内容]
   ## 作業内容
-    クライアントコマンド(nslookup)でコンテンツサーバーに名前解決を依頼
+    コマンド(nslookup)でコンテンツサーバーに名前解決を依頼
   
   ## コマンド(nslookup)
     nslookup -type=XX   : レコードタイプ(XX)を指定
@@ -480,11 +482,11 @@
   
 ================================================================================
 [003]
-  クライアントコマンド(host)
+  クライアントコマンド - 02
   
 [内容]
   ## 作業内容
-    クライアントコマンド(host)でコンテンツサーバーに名前解決を依頼
+    コマンド(host)でコンテンツサーバーに名前解決を依頼
   
   ## コマンド(host)
     host -t XX  : レコードタイプ(XX)を指定
@@ -677,11 +679,11 @@
   
 ================================================================================
 [004]
-  クライアントコマンド(dig)
+  クライアントコマンド - 03
   
 [内容]
   ## 作業内容
-    クライアントコマンド(host)でコンテンツサーバーに名前解決を依頼
+    コマンド(host)でコンテンツサーバーに名前解決を依頼
   
   ## コマンド(dig)
     dig -x           : 逆引き名前解決を行う
@@ -1118,6 +1120,362 @@
   ;; MSG SIZE  rcvd: 122
   --------------------------------------------------
   
+  以下の確認に続く
+  
+================================================================================
+[005]
+  ゾーンファイルの記述省略
+  
+[内容]
+  ## 作業内容
+    ゾーンファイルの記述省略
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon Jun 12 23:00:33 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /var/named/chroot/var/named/avswa.com.zone -> 正引きファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $ORIGIN avswa.com.
+    $TTL 1D
+    avswa.com. IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061201  ; serial
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+    avswa.com.       IN  NS     vm11.avswa.com.  ; Master
+    vm11.avswa.com.  IN  A      192.168.122.11   ; Host1
+    vm12.avswa.com.  IN  A      192.168.122.12   ; Host2
+    www1.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site1
+    www2.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site2
+    mail.avswa.com.  IN  MX 10  vm11.avswa.com.  ; Mail Server
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/avswa.com.zone -> 正引きファイルの記述省略
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11 makoto (
+      2023061301  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                     IN  NS     vm11             ; Master
+    vm11             IN  A      192.168.122.11   ; Host1
+    vm12             IN  A      192.168.122.12   ; Host2
+    www1             IN  CNAME  vm11             ; Web Site1
+    www2             IN  CNAME  vm11             ; Web Site2
+    mail             IN  MX 10  vm11             ; Mail Server
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone  // ゾーン情報チェック
+        > -t /var/named/chroot  // ルート指定
+        > -w /var/named         // ファイル場所
+        > avswa.com             // ゾーン名
+        > avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone avswa.com/IN: loaded serial 2023061301
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /var/named/chroot/var/named/rev.avswa.com.zone -> 逆引きファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $ORIGIN avswa.com.
+    $TTL 1D
+    122.168.192.in-addr.arpa. IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061201  ; serial
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+    122.168.192.in-addr.arpa.     IN  NS   vm11.example.com.
+    11.122.168.192.in-addr.arpa.  IN  PTR  vm11.example.com.
+    12.122.168.192.in-addr.arpa.  IN  PTR  vm12.example.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/rev.avswa.com.zone -> 逆引きファイルの省略記述
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061301  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                                  IN  NS   vm11.example.com.
+    11                            IN  PTR  vm11.example.com.
+    12                            IN  PTR  vm12.example.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone      // ゾーン情報をチェック
+        > -t /var/named/chroot      // ルート指定
+        > -w /var/named             // ファイル場所
+        > 122.168.192.in-addr.arpa  // ゾーン名
+        > rev.avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061301
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  ==================================================
+         クライアントコマンドで名前解決を確認
+  ==================================================
+  
+  以下の確認に続く
+  
+================================================================================
+[006]
+  アクセス制御リスト
+  
+[内容]
+  ## 作業内容
+    アクセス制御リスト
+  
+[確認]
+  $ cd $HOME
+  $ nslookup -type=soa avswa.com vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: vm11
+  Address: 192.168.122.11#53
+  
+  avswa.com
+	  origin = vm11.avswa.com
+	  mail addr = makoto.avswa.com
+	  serial = 2023061301
+	  refresh = 300
+	  retry = 300
+	  expire = 86400
+	  minimum = 86400
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jun 11 21:10:16 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ nslookup -type=soa avswa.com vm11
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Server: vm11
+    Address: 192.168.122.11#53
+    
+    avswa.com
+	    origin = vm11.avswa.com
+	    mail addr = makoto.avswa.com
+	    serial = 2023061301
+	    refresh = 300
+	    retry = 300
+	    expire = 86400
+	    minimum = 86400
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 13 19:29:40 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /var/named/chroot/etc/named.conf -> 設定ファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## プログラム(named)の詳細オプション
+    options
+    {
+      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };       # Not Use IPv6
+      recursion no;                 # Contents Server = no, Cache Server = yes
+      version "unknown";            # Display Version
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                  # File Type
+      file "avswa.com.zone";        # File Name
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                  # File Type
+      file "rev.avswa.com.zone";    # File Name
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/named.conf -> アクセス制御リストの追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## アクセス制御リスト
+    acl accesible
+    {
+      192.168.122.11/32;
+      192.168.122.12/32;
+      localhost;
+    };
+    
+    ## プログラム(named)の詳細オプション
+    options
+    {
+      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };       # Not Use IPv6
+      recursion no;                 # Contents Server = no, Cache Server = yes
+      version "unknown";            # Display Version
+      allow-query { accesible; };   # Accesible Hosts  // 追加
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                  # File Type
+      file "avswa.com.zone";        # File Name
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                  # File Type
+      file "rev.avswa.com.zone";    # File Name
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ nslookup -type=soa avswa.com vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Server: vm11
+  Address: 192.168.122.11#53
+  
+  ** server can't find avswa.com: REFUSED
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 13 21:14:12 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ nslookup -type=soa avswa.com vm11
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Server: vm11
+    Address: 192.168.122.11#53
+    
+    avswa.com
+	    origin = vm11.avswa.com
+	    mail addr = makoto.avswa.com
+	    serial = 2023061301
+	    refresh = 300
+	    retry = 300
+	    expire = 86400
+	    minimum = 86400
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
