@@ -1920,6 +1920,16 @@
       file "rev.avswa.com.zone";           # File Name
       allow-transfer { key "tsig-key"; };  # TSIG Key  // 追加
     };
+    
+    ## ログ出力  // 追加
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1937,7 +1947,7 @@
     --------------------------------------------------
     $TTL 1D
     @ IN SOA vm11 makoto (
-      2023061401  ; serial  // シリアル更新
+      2023061402  ; serial  // シリアル更新
       5M          ; refresh
       5M          ; retry
       1D          ; expire
@@ -1961,7 +1971,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    zone avswa.com/IN: loaded serial 2023061401
+    zone avswa.com/IN: loaded serial 2023061402
     OK
     --------------------------------------------------
     
@@ -1972,7 +1982,7 @@
     --------------------------------------------------
     $TTL 1D
     @ IN SOA vm11.avswa.com. makoto.avswa.com. (
-      2023061401  ; serial  // シリアル更新
+      2023061402  ; serial  // シリアル更新
       5M          ; refresh
       5M          ; retry
       1D          ; expire
@@ -1993,7 +2003,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061401
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061402
     OK
     --------------------------------------------------
     
@@ -2018,7 +2028,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Wed Jun 14 12:24:38 2023 from 192.168.122.1
+  Last login: Wed Jun 14 18:40:33 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm12$ cd $HOME
@@ -2078,6 +2088,16 @@
       masters { 192.168.122.11; };  # Primary Server
       file "rev.avswa.com.zone";    # File Name
     };
+    
+    ## ログ出力  // 追加
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -2101,14 +2121,15 @@
     ==================================================
     
     vm12$ cd $HOME
-    vm12$ sudo grep -i tsig /var/log/messages -> TSIG保護下のゾーン転送ログ
+    vm12$ sudo grep zone /var/named/chroot/var/named/data/named.run -> TSIG保護下のゾーン転送ログ
     
     コマンドの実行結果
     --------------------------------------------------
-    Apr 22 19:10:33 vm12 named[1512]: transfer of 'example.com/IN' from 192.168.122.11#53: ...
-    Apr 22 19:10:33 vm12 named[1512]: zone example.com/IN: transferred serial 2023042101: TSIG 'tsig-key'
-    Apr 22 19:10:33 vm12 named[1512]: transfer of '122.168.192.in-addr.arpa/IN' from 192.168.122.11#53: ...
-    Apr 22 19:10:33 vm12 named[1512]: zone 122.168.192.in-addr.arpa/IN: transferred serial 2023042101: TSIG 'tsig-key'
+    ...
+    zone 122.168.192.in-addr.arpa/IN: sending notifies (serial 2023061401)
+    zone 122.168.192.in-addr.arpa/IN: Transfer started.
+    zone 122.168.192.in-addr.arpa/IN: transferred serial 2023061402: TSIG 'tsig-key'
+    zone 122.168.192.in-addr.arpa/IN: sending notifies (serial 2023061402)
     --------------------------------------------------
     
     vm12$ cd $HOME
