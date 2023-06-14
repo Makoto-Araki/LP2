@@ -6,7 +6,7 @@
 [005] ゾーンファイルの記述省略
 [006] アクセス制御リスト
 [007] スレーブサーバー構築
-[008] //
+[008] ゾーン転送の暗号化
 [04] 設定ファイル(/etc/named.conf) - 01 (コンテンツサーバー)
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
@@ -71,7 +71,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし、スクリプトでchroot有効化
+    (省略) -> スクリプトでchroot有効化
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -79,7 +79,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし、設定ファイルをバックアップ
+    (省略) -> 設定ファイルをバックアップ
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1267,10 +1267,6 @@
     Connection to vm11 closed.
     --------------------------------------------------
     
-  ==================================================
-         クライアントコマンドで名前解決を確認
-  ==================================================
-  
   以下の確認に続く
   
 ================================================================================
@@ -1341,35 +1337,6 @@
   --------------------------------------------------
   Last login: Tue Jun 13 19:29:40 2023 from 192.168.122.1
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /var/named/chroot/etc/named.conf -> 設定ファイル
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## プログラム(named)の詳細オプション
-    options
-    {
-      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };       # Not Use IPv6
-      recursion no;                 # Contents Server = no, Cache Server = yes
-      version "unknown";            # Display Version
-    };
-    
-    ## ゾーンファイル(正引き)
-    zone avswa.com IN
-    {
-      type master;                  # File Type
-      file "avswa.com.zone";        # File Name
-    };
-    
-    ## ゾーンファイル(逆引き)
-    zone 122.168.192.in-addr.arpa IN
-    {
-      type master;                  # File Type
-      file "rev.avswa.com.zone";    # File Name
-    };
-    --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ sudo vi /var/named/chroot/etc/named.conf -> アクセス制御リストの追加
@@ -1566,42 +1533,6 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /var/named/chroot/etc/named.conf -> 設定ファイルの確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## アクセス制御リスト
-    acl accesible
-    {
-      any;
-    };
-    
-    ## プログラム(named)の詳細オプション
-    options
-    {
-      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };       # Not Use IPv6
-      recursion no;                 # Contents Server = no, Cache Server = yes
-      version "unknown";            # Display Version
-      allow-query { accesible; };   # Accesible Hosts
-    };
-    
-    ## ゾーンファイル(正引き)
-    zone avswa.com IN
-    {
-      type master;                  # File Type
-      file "avswa.com.zone";        # File Name
-    };
-    
-    ## ゾーンファイル(逆引き)
-    zone 122.168.192.in-addr.arpa IN
-    {
-      type master;                  # File Type
-      file "rev.avswa.com.zone";    # File Name
-    };
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
     
     コマンドの実行結果
@@ -1703,7 +1634,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし、スクリプトでchroot有効化
+    (省略) -> スクリプトでchroot有効化
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1711,7 +1642,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし、設定ファイルをバックアップ
+    (省略) -> 設定ファイルをバックアップ
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1809,7 +1740,7 @@
     --------------------------------------------------
     
     ==================================================
-                ゾーン転送されるまで待機
+                    ゾーン転送まで待機
     ==================================================
     
     vm12$ cd $HOME
@@ -1872,11 +1803,11 @@
   
 ================================================================================
 [008]
-  //
+  ゾーン転送の暗号化
   
 [内容]
   ## 作業内容
-    //
+    ゾーン転送の暗号化 => TSIG の使用
   
 [確認]
   $ cd $HOME
@@ -1884,42 +1815,61 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Wed Jun 14 12:21:22 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /var/named/chroot/etc/named.conf -> 設定ファイルの確認
+    vm11$ dnssec-keygen -> TSIG用の鍵ファイル作成
+        > -a HMAC-MD5   // アルゴリズム
+        > -b 128        // 鍵長
+        > -n HOST       // 所有者のタイプ
+        > tsig-key      // 鍵の名前
     
     コマンドの実行結果
     --------------------------------------------------
-    ## アクセス制御リスト
-    acl accesible
-    {
-      any;
-    };
+    Ktsig-key.+157+57504
+    --------------------------------------------------
     
-    ## プログラム(named)の詳細オプション
-    options
-    {
-      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };       # Not Use IPv6
-      recursion no;                 # Contents Server = no, Cache Server = yes
-      version "unknown";            # Display Version
-      allow-query { accesible; };   # Accesible Hosts
-    };
+    vm11$ cd $HOME
+    vm11$ ls -lh Ktsig-key* -> TSIG用の鍵ファイル確認
     
-    ## ゾーンファイル(正引き)
-    zone avswa.com IN
-    {
-      type master;                  # File Type
-      file "avswa.com.zone";        # File Name
-    };
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw------- 1 makoto makoto  52  6月 14 14:25 Ktsig-key.+157+57504.key
+    -rw------- 1 makoto makoto 165  6月 14 14:25 Ktsig-key.+157+57504.private
+    --------------------------------------------------
     
-    ## ゾーンファイル(逆引き)
-    zone 122.168.192.in-addr.arpa IN
+    vm11$ cd $HOME
+    vm11$ cat Ktsig-key.+157+57504.key -> 公開鍵を確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    tsig-key. IN KEY 512 3 157 P6wTpHsNIepDXl2MKpAfQQ==
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat Ktsig-key.+157+57504.private -> 秘密鍵を確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Private-key-format: v1.3
+    Algorithm: 157 (HMAC_MD5)
+    Key: P6wTpHsNIepDXl2MKpAfQQ==  // ゾーン転送時の共有鍵に使用する
+    Bits: AAA=
+    Created: 20230614052508
+    Publish: 20230614052508
+    Activate: 20230614052508
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/tsig.key
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    key tsig-key
     {
-      type master;                  # File Type
-      file "rev.avswa.com.zone";    # File Name
+      algorithm hmac-md5;               # 暗号化アルゴリズム
+      secret P6wTpHsNIepDXl2MKpAfQQ==;  # 共有秘密鍵
     };
     --------------------------------------------------
     
@@ -1928,6 +1878,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";  // 追加
+    
     ## アクセス制御リスト
     acl accesible
     {
@@ -1943,27 +1896,29 @@
     ## プログラム(named)の詳細オプション
     options
     {
-      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };       # Not Use IPv6
-      recursion no;                 # Contents Server = no, Cache Server = yes
-      version "unknown";            # Display Version
-      allow-query { accesible; };   # Accesible Hosts
-      allow-transfer { transfer; }; # Zone Transfer Allowed Hosts          // 追加
-      notify yes;                   # Notify Slave Server of Zone Updates  // 追加
+      directory "/var/named";        # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };        # Not Use IPv6
+      recursion no;                  # Contents Server = no, Cache Server = yes
+      version "unknown";             # Display Version
+      allow-query { accesible; };    # Accesible Hosts
+      allow-transfer { transfer; };  # Zone Transfer Allowed Hosts
+      notify yes;                    # Notify Slave Server of Zone Updates
     };
     
     ## ゾーンファイル(正引き)
     zone avswa.com IN
     {
-      type master;                  # File Type
-      file "avswa.com.zone";        # File Name
+      type master;                         # File Type
+      file "avswa.com.zone";               # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key  // 追加
     };
     
     ## ゾーンファイル(逆引き)
     zone 122.168.192.in-addr.arpa IN
     {
-      type master;                  # File Type
-      file "rev.avswa.com.zone";    # File Name
+      type master;                         # File Type
+      file "rev.avswa.com.zone";           # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key  // 追加
     };
     --------------------------------------------------
     
@@ -1973,6 +1928,73 @@
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/avswa.com.zone -> 正引きファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11 makoto (
+      2023061401  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                     IN  NS     vm11             ; Master
+    vm11             IN  A      192.168.122.11   ; Host1
+    vm12             IN  A      192.168.122.12   ; Host2
+    www1             IN  CNAME  vm11             ; Web Site1
+    www2             IN  CNAME  vm11             ; Web Site2
+    mail             IN  MX 10  vm11             ; Mail Server
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone  // ゾーン情報チェック
+        > -t /var/named/chroot  // ルート指定
+        > -w /var/named         // ファイル場所
+        > avswa.com             // ゾーン名
+        > avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone avswa.com/IN: loaded serial 2023061401
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/rev.avswa.com.zone -> 逆引きファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061401  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                                  IN  NS   vm11.example.com.
+    11                            IN  PTR  vm11.example.com.
+    12                            IN  PTR  vm12.example.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone      // ゾーン情報をチェック
+        > -t /var/named/chroot      // ルート指定
+        > -w /var/named             // ファイル場所
+        > 122.168.192.in-addr.arpa  // ゾーン名
+        > rev.avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061401
+    OK
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1996,55 +2018,39 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Tue Jun 13 21:32:07 2023 from 192.168.122.1
+  Last login: Wed Jun 14 12:24:38 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo firewall-cmd --list-all
+    vm12$ sudo vi /var/named/chroot/etc/tsig.key
     
     コマンドの実行結果
     --------------------------------------------------
-    public (active)
-      target: default
-      icmp-block-inversion: no
-      interfaces: enp1s0
-      sources: 
-      services: cockpit dhcpv6-client dns ssh
-      ports: 12865/tcp 12866/tcp
-      protocols: 
-      forward: no
-      masquerade: no
-      forward-ports: 
-      source-ports: 
-      icmp-blocks: 
-      rich rules: 
+    key tsig-key
+    {
+      algorithm hmac-md5;               # 暗号化アルゴリズム
+      secret P6wTpHsNIepDXl2MKpAfQQ==;  # 共有秘密鍵
+    };
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo bash /usr/libexec/setup-named-chroot.sh /var/named/chroot on
+    vm12$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし、スクリプトでchroot有効化
-    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
     
-    vm12$ cd $HOME
-    vm12$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし、設定ファイルをバックアップ
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイル修正
-    
-    コマンドの実行結果
-    --------------------------------------------------
     ## アクセス制御リスト
     acl accesible
     {
       any;
+    };
+    
+    ## 共有秘密鍵
+    server 192.168.122.11
+    {
+      keys { "tsig-key"; };
     };
     
     ## プログラム(named)の詳細オプション
@@ -2083,51 +2089,26 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo systemctl is-enabled named
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    disabled
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl is-active named
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    inactive
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl is-enabled named-chroot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    disabled
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl is-active named-chroot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    inactive
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl enable named-chroot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Created symlink /etc/systemd/system/multi-user.target.wants/named-chroot.service → /usr/lib/systemd/system/named-chroot.service.
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo systemctl start named-chroot
+    vm12$ sudo systemctl restart named-chroot
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
+    --------------------------------------------------
+    
+    ==================================================
+                    ゾーン転送まで待機
+    ==================================================
+    
+    vm12$ cd $HOME
+    vm12$ sudo grep -i tsig /var/log/messages -> TSIG保護下のゾーン転送ログ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Apr 22 19:10:33 vm12 named[1512]: transfer of 'example.com/IN' from 192.168.122.11#53: ...
+    Apr 22 19:10:33 vm12 named[1512]: zone example.com/IN: transferred serial 2023042101: TSIG 'tsig-key'
+    Apr 22 19:10:33 vm12 named[1512]: transfer of '122.168.192.in-addr.arpa/IN' from 192.168.122.11#53: ...
+    Apr 22 19:10:33 vm12 named[1512]: zone 122.168.192.in-addr.arpa/IN: transferred serial 2023042101: TSIG 'tsig-key'
     --------------------------------------------------
     
     vm12$ cd $HOME
