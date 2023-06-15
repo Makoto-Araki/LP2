@@ -7,9 +7,10 @@
 [006] アクセス制御リスト
 [007] スレーブサーバー構築
 [008] ゾーン転送の暗号化
-[009] サーバー管理用の専用コマンドの使用設定
-[010] 専用コマンド - 01
-[011] 専用コマンド - 02
+[009] サーバー管理用の管理コマンドの使用設定
+[010] 管理コマンド - 01
+[011] 管理コマンド - 02
+[012] 管理コマンド - 03
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
 [07] コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
@@ -2174,11 +2175,11 @@
   
 ================================================================================
 [009]
-  サーバー管理用の専用コマンドの使用設定
+  サーバー管理用の管理コマンドの使用設定
   
 [内容]
   ## 作業内容
-    サーバー管理用の専用コマンドの使用設定 => RNDC の使用
+    サーバー管理用の管理コマンドの使用設定 => RNDC の使用
   
 [確認]
   $ cd $HOME
@@ -2464,7 +2465,7 @@
   
 ================================================================================
 [010]
-  専用コマンド - 01
+  管理コマンド - 01
   
 [内容]
   ## 作業内容
@@ -2586,7 +2587,7 @@
   
 ================================================================================
 [011]
-  専用コマンド - 02
+  管理コマンド - 02
   
 [内容]
   ## 作業内容
@@ -2823,6 +2824,261 @@
     --------------------------------------------------
     -rw-r--r-- 1 named named  27K  6月 15 18:39 named.run
     -rw-r--r-- 1 named named 3.9K  6月 15 18:39 named.stats  // 統計情報ファイル
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[012]
+  管理コマンド - 03
+  
+[内容]
+  ## 作業内容
+    メモリ上のキャッシュをダンプ出力
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 18:10:52 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
+    include "/etc/rndc.key";
+    
+    ## 操作可能ホスト
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## ゾーン転送リスト
+    acl transfer
+    {
+      192.168.122.12/32;
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      statistics-file "data/named.stats";  # Stats File -> /var/named/chroot/var/named/data/named.stats
+      dump-file "data/named.dump";         # Dump File -> /var/named/chroot/var/named/data/named.dump  // 追加
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+      allow-transfer { transfer; };        # Zone Transfer Allowed Hosts
+      notify yes;                          # Notify Slave Server of Zone Updates
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                         # File Type
+      file "avswa.com.zone";               # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                         # File Type
+      file "rev.avswa.com.zone";           # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rndc
+        > -b 192.168.122.11                  // IPアドレス
+        > -s vm11                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > dumpdb                             // メモリ上のキャッシュをダンプ出力
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls -lh /var/named/chroot/var/named/data
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 named named  23K  6月 15 19:21 named.dump  // ダンプファイル
+    -rw-r--r-- 1 named named  35K  6月 15 19:21 named.run
+    -rw-r--r-- 1 named named 3.8K  6月 15 18:18 named.stats
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 18:37:05 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
+    include "/etc/rndc.key";
+    
+    ## 操作可能ホスト
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.12 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## 共有鍵
+    server 192.168.122.11
+    {
+      keys { "tsig-key"; };
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      statistics-file "data/named.stats";  # Stats File -> /var/named/chroot/var/named/data/named.stats
+      dump-file "data/named.dump";         # Dump File -> /var/named/chroot/var/named/data/named.dump  // 追加
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type slave;                          # File Type
+      masters { 192.168.122.11; };         # Primary Server
+      file "avswa.com.zone";               # File Name
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type slave;                          # File Type
+      masters { 192.168.122.11; };         # Primary Server
+      file "rev.avswa.com.zone";           # File Name
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo rndc
+        > -b 192.168.122.12                  // IPアドレス
+        > -s vm12                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > dumpdb                             // メモリ上のキャッシュをダンプ出力
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ls -lh /var/named/chroot/var/named/data
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 named named  22K  6月 15 19:40 named.dump  // ダンプファイル
+    -rw-r--r-- 1 named named  33K  6月 15 19:40 named.run
+    -rw-r--r-- 1 named named 3.9K  6月 15 18:39 named.stats
     --------------------------------------------------
     
     vm12$ cd $HOME
