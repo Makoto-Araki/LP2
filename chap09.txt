@@ -2598,7 +2598,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Thu Jun 15 17:14:56 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2608,9 +2608,9 @@
     --------------------------------------------------
     ## 追加設定ロード
     include "/etc/tsig.key";
-    include "/etc/rndc.key";  // 追加
+    include "/etc/rndc.key";
     
-    ## 操作可能ホスト  // 追加
+    ## 操作可能ホスト
     controls
     {
       inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
@@ -2632,13 +2632,14 @@
     ## 詳細オプション
     options
     {
-      directory "/var/named";        # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };        # Not Use IPv6
-      recursion no;                  # Contents Server = no, Cache Server = yes
-      version "unknown";             # Display Version
-      allow-query { accesible; };    # Accesible Hosts
-      allow-transfer { transfer; };  # Zone Transfer Allowed Hosts
-      notify yes;                    # Notify Slave Server of Zone Updates
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      statistics-file "data/named.stats";  # Stats File -> /var/named/chroot/var/named/data/named.stats  // 追加
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+      allow-transfer { transfer; };        # Zone Transfer Allowed Hosts
+      notify yes;                          # Notify Slave Server of Zone Updates
     };
     
     ## ゾーンファイル(正引き)
@@ -2693,24 +2694,16 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    version                     : BIND 9.11.36-RedHat-9.11.36-8.el8 (Extended Support Version) <id:68dbd5b> (unknown)
-    running on vm11             : Linux x86_64 4.20.1 #1 SMP Thu Jun 1 20:35:58 JST 2023
-    boot time                   : Thu, 15 Jun 2023 08:03:27 GMT
-    last configured             : Thu, 15 Jun 2023 08:03:27 GMT
-    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
-    CPUs found                  : 1
-    worker threads              : 1
-    UDP listeners per interface : 1
-    number of zones             : 3 (0 automatic)
-    debug level                 : 0
-    xfers running               : 0
-    xfers deferred              : 0
-    soa queries in progress     : 0
-    query logging is OFF
-    recursive clients           : 0/900/1000
-    tcp clients                 : 2/150
-    TCP high-water              : 2
-    server is up and running
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls -lh /var/named/chroot/var/named/data
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 named named  28K  6月 15 18:18 named.run
+    -rw-r--r-- 1 named named 3.8K  6月 15 18:18 named.stats  // 統計情報ファイル
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2726,36 +2719,110 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Thu Jun 15 17:05:23 2023 from 192.168.122.1
+  Last login: Thu Jun 15 17:55:02 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
+    include "/etc/rndc.key";
+    
+    ## 操作可能ホスト
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.12 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## 共有鍵
+    server 192.168.122.11
+    {
+      keys { "tsig-key"; };
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      statistics-file "data/named.stats";  # Stats File -> /var/named/chroot/var/named/data/named.stats  // 追加
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type slave;                          # File Type
+      masters { 192.168.122.11; };         # Primary Server
+      file "avswa.com.zone";               # File Name
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type slave;                          # File Type
+      masters { 192.168.122.11; };         # Primary Server
+      file "rev.avswa.com.zone";           # File Name
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
     
     vm12$ cd $HOME
     vm12$ sudo rndc
         > -b 192.168.122.12                  // IPアドレス
         > -s vm12                            // ホスト名
         > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > status                             // ステータス表示
+        > stats                              // 統計情報をファイル出力
     
     コマンドの実行結果
     --------------------------------------------------
-    version                     : BIND 9.11.36-RedHat-9.11.36-8.el8 (Extended Support Version) <id:68dbd5b> (unknown)
-    running on vm12             : Linux x86_64 4.18.0-477.10.1.el8_8.x86_64 #1 SMP Tue May 16 11:38:37 UTC 2023
-    boot time                   : Thu, 15 Jun 2023 08:08:35 GMT
-    last configured             : Thu, 15 Jun 2023 08:08:35 GMT
-    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
-    CPUs found                  : 1
-    worker threads              : 1
-    UDP listeners per interface : 1
-    number of zones             : 3 (0 automatic)
-    debug level                 : 0
-    xfers running               : 0
-    xfers deferred              : 0
-    soa queries in progress     : 0
-    query logging is OFF
-    recursive clients           : 0/900/1000
-    tcp clients                 : 2/150
-    TCP high-water              : 2
-    server is up and running
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ls -lh /var/named/chroot/var/named/data
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 named named  27K  6月 15 18:39 named.run
+    -rw-r--r-- 1 named named 3.9K  6月 15 18:39 named.stats  // 統計情報ファイル
     --------------------------------------------------
     
     vm12$ cd $HOME
