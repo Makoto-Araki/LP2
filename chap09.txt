@@ -12,6 +12,7 @@
 [011] 管理コマンド - 02
 [012] 管理コマンド - 03
 [013] 管理コマンド - 04
+[014] 管理コマンド - 05
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
 [07] コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
@@ -3257,18 +3258,11 @@
         > -o /dev/stdout                              // 出力先
         > avswa.com                                   // 対象ゾーン
         > /var/named/chroot/var/named/avswa.com.zone  // ファイル名
+        > | grep serial
     
     コマンドの実行結果
     --------------------------------------------------
     zone avswa.com/IN: loaded serial 2023061501  // シリアル更新を確認
-    avswa.com.        86400 IN SOA vm11.avswa.com. makoto.avswa.com. 2023061501 300 300 86400 86400
-    avswa.com.        86400 IN NS vm11.avswa.com.
-    mail.avswa.com.   86400 IN MX 10 vm11.avswa.com.
-    vm11.avswa.com.   86400 IN A 192.168.122.11
-    vm12.avswa.com.   86400 IN A 192.168.122.12
-    www1.avswa.com.   86400 IN CNAME vm11.avswa.com.
-    www2.avswa.com.   86400 IN CNAME vm11.avswa.com.
-    OK
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -3278,15 +3272,212 @@
         > -o /dev/stdout                                  // 出力先
         > 122.168.192.in-addr.arpa                        // 対象ゾーン
         > /var/named/chroot/var/named/rev.avswa.com.zone  // ファイル名
+        > | grep serial                                   // シリアル出力
     
     コマンドの実行結果
     --------------------------------------------------
     zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061501  // シリアル更新を確認
-    122.168.192.in-addr.arpa.      86400 IN SOA vm11.avswa.com. makoto.avswa.com. 2023061501 300 300 86400 86400
-    122.168.192.in-addr.arpa.      86400 IN NS  vm11.example.com.
-    11.122.168.192.in-addr.arpa.   86400 IN PTR vm11.example.com.
-    12.122.168.192.in-addr.arpa.   86400 IN PTR vm12.example.com.
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[014]
+  管理コマンド - 05
+  
+[内容]
+  ## 作業内容
+    ゾーン情報の転送依頼
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 20:27:18 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/avswa.com.zone -> 正引きファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11 makoto (
+      2023061502  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                     IN  NS     vm11             ; Master
+    vm11             IN  A      192.168.122.11   ; Host1
+    vm12             IN  A      192.168.122.12   ; Host2
+    www1             IN  CNAME  vm11             ; Web Site1
+    www2             IN  CNAME  vm11             ; Web Site2
+    mail             IN  MX 10  vm11             ; Mail Server
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone  // ゾーン情報チェック
+        > -t /var/named/chroot  // ルート指定
+        > -w /var/named         // ファイル場所
+        > avswa.com             // ゾーン名
+        > avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone avswa.com/IN: loaded serial 2023061502
     OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/rev.avswa.com.zone -> 逆引きファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061502  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                                  IN  NS   vm11.example.com.
+    11                            IN  PTR  vm11.example.com.
+    12                            IN  PTR  vm12.example.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone      // ゾーン情報をチェック
+        > -t /var/named/chroot      // ルート指定
+        > -w /var/named             // ファイル場所
+        > 122.168.192.in-addr.arpa  // ゾーン名
+        > rev.avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061502
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rndc
+        > -b 192.168.122.11                  // IPアドレス
+        > -s vm11                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > reload                             // ゾーン情報をリロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    server reload successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 20:37:41 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo rndc
+        > -b 192.168.122.12                  // IPアドレス
+        > -s vm12                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > retransfer avswa.com               // ゾーン更新を通知
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo rndc
+        > -b 192.168.122.12                    // IPアドレス
+        > -s vm12                              // ホスト名
+        > -y /var/named/chroot/etc/rndc.key    // RNDCキー
+        > retransfer 122.168.192.in-addr.arpa  // ゾーン更新を通知
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo grep zone /var/named/chroot/var/named/data/named.run -> TSIG保護下のゾーン転送ログ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    zone avswa.com/IN: Transfer started.
+    zone avswa.com/IN: transferred serial 2023061502: TSIG 'tsig-key'
+    zone avswa.com/IN: Transfer started.
+    zone avswa.com/IN: transferred serial 2023061502: TSIG 'tsig-key'
+    zone 122.168.192.in-addr.arpa/IN: Transfer started.
+    zone 122.168.192.in-addr.arpa/IN: transferred serial 2023061502: TSIG 'tsig-key'
+    zone 122.168.192.in-addr.arpa/IN: sending notifies (serial 2023061502)
+    zone 122.168.192.in-addr.arpa/IN: Transfer started.
+    zone 122.168.192.in-addr.arpa/IN: transferred serial 2023061502: TSIG 'tsig-key'
+    zone 122.168.192.in-addr.arpa/IN: sending notifies (serial 2023061502)
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ls -lh /var/named/chroot/var/named | grep avswa -> ゾーン転送ファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 named named  408  6月 15 21:16 avswa.com.zone      // 正引きファイル
+    -rw-r--r-- 1 named named  330  6月 15 21:17 rev.avswa.com.zone  // 逆引きファイル
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo named-compilezone -> 正引きファイル
+        > -f raw                                      // 変換前 -> バイナリ(デフォルト)
+        > -F text                                     // 変換後 -> テキスト
+        > -o /dev/stdout                              // 出力先
+        > avswa.com                                   // 対象ゾーン
+        > /var/named/chroot/var/named/avswa.com.zone  // ファイル名
+        > | grep serial                               // シリアル出力
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone avswa.com/IN: loaded serial 2023061502  // シリアル更新を確認
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo named-compilezone -> 逆引きファイル
+        > -f raw                                          // 変換前 -> バイナリ(デフォルト)
+        > -F text                                         // 変換後 -> テキスト
+        > -o /dev/stdout                                  // 出力先
+        > 122.168.192.in-addr.arpa                        // 対象ゾーン
+        > /var/named/chroot/var/named/rev.avswa.com.zone  // ファイル名
+        > | grep serial                                   // シリアル出力
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061502  // シリアル更新を確認
     --------------------------------------------------
     
     vm12$ cd $HOME
