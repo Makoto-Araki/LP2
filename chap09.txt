@@ -7,6 +7,8 @@
 [006] アクセス制御リスト
 [007] スレーブサーバー構築
 [008] ゾーン転送の暗号化
+[009] サーバー管理用の専用コマンドの使用設定
+[010] //
 [04] 設定ファイル(/etc/named.conf) - 01 (コンテンツサーバー)
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
@@ -30,11 +32,39 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ host avswa.com
+  $ host -t soa avswa.com
   
   コマンドの実行結果
   --------------------------------------------------
   Host avswa.com not found: 3(NXDOMAIN)  // インターネット上に「avswa.com」のドメインは存在しないと判明
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ dig avswa.com soa
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ; <<>> DiG 9.11.36-RedHat-9.11.36-8.el8 <<>> avswa.com soa
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 42104
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+  
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 512
+
+  ;; QUESTION SECTION:
+  ;avswa.com. IN SOA
+  
+  // インターネット上に「avswa.com」のドメインは存在しないと判明
+  
+  ;; AUTHORITY SECTION:
+  com. 900 IN SOA a.gtld-servers.net. nstld.verisign-grs.com. 1686795543 1800 900 604800 86400
+  
+  ;; Query time: 29 msec
+  ;; SERVER: 192.168.1.1#53(192.168.1.1)
+  ;; WHEN: 木  6月 15 11:24:31 JST 2023
+  ;; MSG SIZE  rcvd: 111
   --------------------------------------------------
   
   $ cd $HOME
@@ -87,7 +117,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";       # Full Path -> /var/named/chroot/var/named
@@ -176,7 +206,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone      // ゾーン情報をチェック
+    vm11$ sudo named-checkzone      // ゾーン情報チェック
         > -t /var/named/chroot      // ルート指定
         > -w /var/named             // ファイル場所
         > 122.168.192.in-addr.arpa  // ゾーン名
@@ -767,7 +797,7 @@
     ;; OPT PSEUDOSECTION:
     ; EDNS: version: 0, flags:; udp: 1232
     ; COOKIE: eeeec54a8592a7527f9f4907648726ee8efa77dd2c99eaef (good)
-
+    
     ;; QUESTION SECTION:
     ;avswa.com. IN NS
     
@@ -799,7 +829,7 @@
     ;; OPT PSEUDOSECTION:
     ; EDNS: version: 0, flags:; udp: 1232
     ; COOKIE: 96e03e441cfe7ceb4f3bd8ad648727e20f5cd5e28ad7935c (good)
-
+    
     ;; QUESTION SECTION:
     ;vm11.avswa.com. IN A
     
@@ -896,7 +926,7 @@
     ;; OPT PSEUDOSECTION:
     ; EDNS: version: 0, flags:; udp: 1232
     ; COOKIE: 50a05bb927fdf6b21d8856cb64872c36f44574d2a6334fa4 (good)
-
+    
     ;; QUESTION SECTION:
     ;mail.avswa.com. IN MX
     
@@ -1006,7 +1036,7 @@
   ;; OPT PSEUDOSECTION:
   ; EDNS: version: 0, flags:; udp: 1232
   ; COOKIE: add50a10150c3afe2d14704364873b27c1f11eb5aa81812e (good)
-
+  
   ;; QUESTION SECTION:
   ;vm11.avswa.com. IN A
   
@@ -1071,7 +1101,7 @@
   ;; OPT PSEUDOSECTION:
   ; EDNS: version: 0, flags:; udp: 1232
   ; COOKIE: b1ad880aa27a7b13c1128c3164873ee9c0edd0505b921363 (good)
-
+  
   ;; QUESTION SECTION:
   ;11.122.168.192.in-addr.arpa. IN PTR
   
@@ -1343,7 +1373,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## アクセス制御リスト
+    ## アクセス制御リスト  // 追加 -> ホスト(192.168.1.X)からはアクセス不可
     acl accesible
     {
       192.168.122.11/32;
@@ -1351,7 +1381,7 @@
       localhost;
     };
     
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";       # Full Path -> /var/named/chroot/var/named
@@ -1458,13 +1488,13 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## アクセス制御リスト
+    ## アクセス制御リスト  // 修正 -> コンテンツサーバーは誰でもアクセス可能
     acl accesible
     {
-      any;  // コンテンツサーバーは誰でもアクセス可能 -> 逆に none だとアクセス不可になる
+      any;
     };
     
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";       # Full Path -> /var/named/chroot/var/named
@@ -1543,13 +1573,13 @@
       any;
     };
     
-    ## ゾーン転送リスト
+    ## ゾーン転送リスト  // 追加
     acl transfer
     {
       192.168.122.12/32;
     };
     
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";       # Full Path -> /var/named/chroot/var/named
@@ -1618,7 +1648,7 @@
       icmp-block-inversion: no
       interfaces: enp1s0
       sources: 
-      services: cockpit dhcpv6-client dns ssh
+      services: cockpit dhcpv6-client dns ssh  // dns を確認
       ports: 12865/tcp 12866/tcp
       protocols: 
       forward: no
@@ -1656,7 +1686,7 @@
       any;
     };
     
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";       # Full Path -> /var/named/chroot/var/named
@@ -1748,8 +1778,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r-- 1 named named  408  6月 14 13:16 avswa.com.zone
-    -rw-r--r-- 1 named named  330  6月 14 13:17 rev.avswa.com.zone
+    -rw-r--r-- 1 named named  408  6月 14 13:16 avswa.com.zone      // 正引きファイル
+    -rw-r--r-- 1 named named  330  6月 14 13:17 rev.avswa.com.zone  // 逆引きファイル
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1835,8 +1865,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw------- 1 makoto makoto  52  6月 14 14:25 Ktsig-key.+157+57504.key
-    -rw------- 1 makoto makoto 165  6月 14 14:25 Ktsig-key.+157+57504.private
+    -rw------- 1 makoto makoto  52  6月 14 14:25 Ktsig-key.+157+57504.key      // 公開鍵
+    -rw------- 1 makoto makoto 165  6月 14 14:25 Ktsig-key.+157+57504.private  // 秘密鍵
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1844,7 +1874,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    tsig-key. IN KEY 512 3 157 P6wTpHsNIepDXl2MKpAfQQ==
+    tsig-key. IN KEY 512 3 157 P6wTpHsNIepDXl2MKpAfQQ==  // ゾーン転送時の共有鍵に使用する
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1869,7 +1899,7 @@
     key tsig-key
     {
       algorithm hmac-md5;               # 暗号化アルゴリズム
-      secret P6wTpHsNIepDXl2MKpAfQQ==;  # 共有秘密鍵
+      secret P6wTpHsNIepDXl2MKpAfQQ==;  # 共有鍵
     };
     --------------------------------------------------
     
@@ -1878,8 +1908,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## 追加設定ロード
-    include "/etc/tsig.key";  // 追加
+    ## 追加設定ロード  // 追加
+    include "/etc/tsig.key";
     
     ## アクセス制御リスト
     acl accesible
@@ -1893,7 +1923,7 @@
       192.168.122.12/32;
     };
     
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";        # Full Path -> /var/named/chroot/var/named
@@ -2039,7 +2069,7 @@
     key tsig-key
     {
       algorithm hmac-md5;               # 暗号化アルゴリズム
-      secret P6wTpHsNIepDXl2MKpAfQQ==;  # 共有秘密鍵
+      secret P6wTpHsNIepDXl2MKpAfQQ==;  # 共有鍵
     };
     --------------------------------------------------
     
@@ -2048,7 +2078,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## 追加設定ロード
+    ## 追加設定ロード  // 追加
     include "/etc/tsig.key";
     
     ## アクセス制御リスト
@@ -2057,13 +2087,13 @@
       any;
     };
     
-    ## 共有秘密鍵
+    ## 共有鍵  // 追加
     server 192.168.122.11
     {
       keys { "tsig-key"; };
     };
     
-    ## プログラム(named)の詳細オプション
+    ## 詳細オプション
     options
     {
       directory "/var/named";       # Full Path -> /var/named/chroot/var/named
@@ -2130,6 +2160,280 @@
     zone 122.168.192.in-addr.arpa/IN: Transfer started.
     zone 122.168.192.in-addr.arpa/IN: transferred serial 2023061402: TSIG 'tsig-key'
     zone 122.168.192.in-addr.arpa/IN: sending notifies (serial 2023061402)
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[009]
+  サーバー管理用の専用コマンドの使用設定
+  
+[内容]
+  ## 作業内容
+    サーバー管理用の専用コマンドの使用設定 => RNDC の使用
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dnssec-keygen -> RNDC用の鍵ファイル作成
+        > -a HMAC-MD5   // アルゴリズム
+        > -b 128        // 鍵長
+        > -n USER       // 所有者のタイプ
+        > rndc-key      // 鍵の名前
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    //
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh Krndc-key* -> RNDC用の鍵ファイル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-------. 1 makoto makoto  50  4月 22 17:03 Krndc-key.+157+18277.key      // 公開鍵
+    -rw-------. 1 makoto makoto 165  4月 22 17:03 Krndc-key.+157+18277.private  // 秘密鍵
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat Krndc-key.+157+18277.key -> 公開鍵を確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rndc-key. IN KEY 0 3 157 ANS+aCoEL4oFLqfrtk7nFw==  // コマンド実行時の共有鍵に使用する
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat Krndc-key.+157+18277.private -> 秘密鍵を確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Private-key-format: v1.3
+    Algorithm: 157 (HMAC_MD5)
+    Key: ANS+aCoEL4oFLqfrtk7nFw==  // コマンド実行時の共有鍵に使用する
+    Bits: AAA=
+    Created: 20230422080345
+    Publish: 20230422080345
+    Activate: 20230422080345
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/rndc.key
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    key rndc-key
+    {
+      algorithm hmac-md5;                # 暗号化アルゴリズム
+      secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有鍵
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
+    include "/etc/rndc.key";  // 追加
+    
+    ## 操作可能ホスト  // 追加
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## ゾーン転送リスト
+    acl transfer
+    {
+      192.168.122.12/32;
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";        # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };        # Not Use IPv6
+      recursion no;                  # Contents Server = no, Cache Server = yes
+      version "unknown";             # Display Version
+      allow-query { accesible; };    # Accesible Hosts
+      allow-transfer { transfer; };  # Zone Transfer Allowed Hosts
+      notify yes;                    # Notify Slave Server of Zone Updates
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                         # File Type
+      file "avswa.com.zone";               # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                         # File Type
+      file "rev.avswa.com.zone";           # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /var/named/chroot/etc/rndc.key
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    key rndc-key
+    {
+      algorithm hmac-md5;                # 暗号化アルゴリズム
+      secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有鍵
+    };
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
+    include "/etc/rndc.key";  // 追加
+    
+    ## 操作可能ホスト  // 追加
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.12 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## 共有鍵
+    server 192.168.122.11
+    {
+      keys { "tsig-key"; };
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";       # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };       # Not Use IPv6
+      recursion no;                 # Contents Server = no, Cache Server = yes
+      version "unknown";            # Display Version
+      allow-query { accesible; };   # Accesible Hosts
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type slave;                   # File Type
+      masters { 192.168.122.11; };  # Primary Server
+      file "avswa.com.zone";        # File Name
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type slave;                   # File Type
+      masters { 192.168.122.11; };  # Primary Server
+      file "rev.avswa.com.zone";    # File Name
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -2308,7 +2612,7 @@
     inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
   };
   
-  ## プログラム(named)の詳細オプション
+  ## 詳細オプション
   options
   {
     directory "/var/named";              # ゾーンファイル格納先 -> /var/named/chroot/var/named
@@ -2631,7 +2935,7 @@
     inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
   };
   
-  ## プログラム(named)の詳細オプション
+  ## 詳細オプション
   options
   {
     directory "/var/named";  # ゾーンファイル格納先 -> /var/named/chroot/var/named
@@ -2938,7 +3242,7 @@
     inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
   };
   
-  ## プログラム(named)の詳細オプション
+  ## 詳細オプション
   options
   {
     directory "/var/named";                            # ゾーンファイル格納先 -> /var/named/chroot/var/named
