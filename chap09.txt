@@ -8,8 +8,8 @@
 [007] スレーブサーバー構築
 [008] ゾーン転送の暗号化
 [009] サーバー管理用の専用コマンドの使用設定
-[010] //
-[04] 設定ファイル(/etc/named.conf) - 01 (コンテンツサーバー)
+[010] 専用コマンド - 01
+[011] 専用コマンド - 02
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
 [07] コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
@@ -2186,7 +2186,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Wed Jun 14 20:06:13 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2198,7 +2198,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    Krndc-key.+157+43105
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2206,30 +2206,38 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-------. 1 makoto makoto  50  4月 22 17:03 Krndc-key.+157+18277.key      // 公開鍵
-    -rw-------. 1 makoto makoto 165  4月 22 17:03 Krndc-key.+157+18277.private  // 秘密鍵
+    -rw------- 1 makoto makoto  50  6月 15 16:52 Krndc-key.+157+43105.key      // 公開鍵
+    -rw------- 1 makoto makoto 165  6月 15 16:52 Krndc-key.+157+43105.private  // 秘密鍵
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ cat Krndc-key.+157+18277.key -> 公開鍵を確認
+    vm11$ cat Krndc-key.+157+43105.key -> 公開鍵を確認
     
     コマンドの実行結果
     --------------------------------------------------
-    rndc-key. IN KEY 0 3 157 ANS+aCoEL4oFLqfrtk7nFw==  // コマンド実行時の共有鍵に使用する
+    rndc-key. IN KEY 0 3 157 f78Jk6XTlJsWs/wefBlSFw==  // コマンド実行時の共有鍵に使用する
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ cat Krndc-key.+157+18277.private -> 秘密鍵を確認
+    vm11$ cat Krndc-key.+157+43105.private -> 秘密鍵を確認
     
     コマンドの実行結果
     --------------------------------------------------
     Private-key-format: v1.3
     Algorithm: 157 (HMAC_MD5)
-    Key: ANS+aCoEL4oFLqfrtk7nFw==  // コマンド実行時の共有鍵に使用する
+    Key: f78Jk6XTlJsWs/wefBlSFw==  // コマンド実行時の共有鍵に使用する
     Bits: AAA=
-    Created: 20230422080345
-    Publish: 20230422080345
-    Activate: 20230422080345
+    Created: 20230615075228
+    Publish: 20230615075228
+    Activate: 20230615075228
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cp -p /var/named/chroot/etc/rndc.key /var/named/chroot/etc/rndc.key.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2239,8 +2247,8 @@
     --------------------------------------------------
     key rndc-key
     {
-      algorithm hmac-md5;                # 暗号化アルゴリズム
-      secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有鍵
+      algorithm hmac-md5;                  # 暗号化アルゴリズム
+      secret "f78Jk6XTlJsWs/wefBlSFw==";   # 共有鍵
     };
     --------------------------------------------------
     
@@ -2340,8 +2348,16 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Wed Jun 14 19:44:38 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo cp -p /var/named/chroot/etc/rndc.key /var/named/chroot/etc/rndc.key.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
     
     vm12$ cd $HOME
     vm12$ sudo vi /var/named/chroot/etc/rndc.key
@@ -2350,8 +2366,8 @@
     --------------------------------------------------
     key rndc-key
     {
-      algorithm hmac-md5;                # 暗号化アルゴリズム
-      secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有鍵
+      algorithm hmac-md5;                  # 暗号化アルゴリズム
+      secret "f78Jk6XTlJsWs/wefBlSFw==";   # 共有鍵
     };
     --------------------------------------------------
     
@@ -2434,6 +2450,312 @@
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[010]
+  専用コマンド - 01
+  
+[内容]
+  ## 作業内容
+    ステータス表示
+  
+  ## コマンド(rndc)
+    rndc -b XX          : IPアドレス(XX)を指定
+    rndc -c XX          : 設定ファイル(デフォルトは /etc/rndc.conf )を指定
+    rndc -s XX          : ホスト名(XX)を指定
+    rndc -p XX          : ポート番号(XX)を指定
+    rndc -k XX          : 設定ファイル(XX)を指定
+    rndc -y XX          : RNDCキー(XX)を指定
+    rndc reload         : 設定ファイルとゾーン情報をリロード (シリアル番号更新時のみ)
+    rndc reload XX      : ゾーン情報(XX)のみリロード (シリアル番号更新時のみ)
+    rndc reconfig       : 設定ファイル(named.conf)と新規追加のゾーン情報のみリロード
+    rndc stats          : 統計情報をファイル出力
+    rndc status         : ステータス表示
+    rndc dumpdb -all    : ゾーン情報をファイルにダンプ、ゾーンとキャッシュ両方
+    rndc dumpdb -zones  : ゾーン情報をファイルにダンプ、ゾーンのみ
+    rndc dumpdb -cache  : ゾーン情報をファイルにダンプ、キャッシュのみ
+    rndc flush          : 全キャッシュを消去
+    rndc flushname XX   : キャッシュレコード(XX)を消去
+    rndc notify         : マスターからスレーブにゾーン更新を通知 (シリアル番号更新時のみ)
+    rndc retransfer     : スレーブからマスターにゾーン情報の転送依頼 (シリアル番号を無視)
+    rndc refresh        : スレーブからマスターにゾーン情報の転送強制 (シリアル番号を無視)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 16:51:42 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rndc
+        > -b 192.168.122.11                  // IPアドレス
+        > -s vm11                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > status                             // ステータス表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    version                     : BIND 9.11.36-RedHat-9.11.36-8.el8 (Extended Support Version) <id:68dbd5b> (unknown)
+    running on vm11             : Linux x86_64 4.20.1 #1 SMP Thu Jun 1 20:35:58 JST 2023
+    boot time                   : Thu, 15 Jun 2023 08:03:27 GMT
+    last configured             : Thu, 15 Jun 2023 08:03:27 GMT
+    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+    CPUs found                  : 1
+    worker threads              : 1
+    UDP listeners per interface : 1
+    number of zones             : 3 (0 automatic)
+    debug level                 : 0
+    xfers running               : 0
+    xfers deferred              : 0
+    soa queries in progress     : 0
+    query logging is OFF
+    recursive clients           : 0/900/1000
+    tcp clients                 : 2/150
+    TCP high-water              : 2
+    server is up and running
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 17:05:23 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo rndc
+        > -b 192.168.122.12                  // IPアドレス
+        > -s vm12                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > status                             // ステータス表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    version                     : BIND 9.11.36-RedHat-9.11.36-8.el8 (Extended Support Version) <id:68dbd5b> (unknown)
+    running on vm12             : Linux x86_64 4.18.0-477.10.1.el8_8.x86_64 #1 SMP Tue May 16 11:38:37 UTC 2023
+    boot time                   : Thu, 15 Jun 2023 08:08:35 GMT
+    last configured             : Thu, 15 Jun 2023 08:08:35 GMT
+    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+    CPUs found                  : 1
+    worker threads              : 1
+    UDP listeners per interface : 1
+    number of zones             : 3 (0 automatic)
+    debug level                 : 0
+    xfers running               : 0
+    xfers deferred              : 0
+    soa queries in progress     : 0
+    query logging is OFF
+    recursive clients           : 0/900/1000
+    tcp clients                 : 2/150
+    TCP high-water              : 2
+    server is up and running
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[011]
+  専用コマンド - 02
+  
+[内容]
+  ## 作業内容
+    統計情報をファイル出力
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/tsig.key";
+    include "/etc/rndc.key";  // 追加
+    
+    ## 操作可能ホスト  // 追加
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## ゾーン転送リスト
+    acl transfer
+    {
+      192.168.122.12/32;
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";        # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };        # Not Use IPv6
+      recursion no;                  # Contents Server = no, Cache Server = yes
+      version "unknown";             # Display Version
+      allow-query { accesible; };    # Accesible Hosts
+      allow-transfer { transfer; };  # Zone Transfer Allowed Hosts
+      notify yes;                    # Notify Slave Server of Zone Updates
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                         # File Type
+      file "avswa.com.zone";               # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                         # File Type
+      file "rev.avswa.com.zone";           # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rndc
+        > -b 192.168.122.11                  // IPアドレス
+        > -s vm11                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > stats                              // 統計情報をファイル出力
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    version                     : BIND 9.11.36-RedHat-9.11.36-8.el8 (Extended Support Version) <id:68dbd5b> (unknown)
+    running on vm11             : Linux x86_64 4.20.1 #1 SMP Thu Jun 1 20:35:58 JST 2023
+    boot time                   : Thu, 15 Jun 2023 08:03:27 GMT
+    last configured             : Thu, 15 Jun 2023 08:03:27 GMT
+    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+    CPUs found                  : 1
+    worker threads              : 1
+    UDP listeners per interface : 1
+    number of zones             : 3 (0 automatic)
+    debug level                 : 0
+    xfers running               : 0
+    xfers deferred              : 0
+    soa queries in progress     : 0
+    query logging is OFF
+    recursive clients           : 0/900/1000
+    tcp clients                 : 2/150
+    TCP high-water              : 2
+    server is up and running
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 15 17:05:23 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo rndc
+        > -b 192.168.122.12                  // IPアドレス
+        > -s vm12                            // ホスト名
+        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
+        > status                             // ステータス表示
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    version                     : BIND 9.11.36-RedHat-9.11.36-8.el8 (Extended Support Version) <id:68dbd5b> (unknown)
+    running on vm12             : Linux x86_64 4.18.0-477.10.1.el8_8.x86_64 #1 SMP Tue May 16 11:38:37 UTC 2023
+    boot time                   : Thu, 15 Jun 2023 08:08:35 GMT
+    last configured             : Thu, 15 Jun 2023 08:08:35 GMT
+    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
+    CPUs found                  : 1
+    worker threads              : 1
+    UDP listeners per interface : 1
+    number of zones             : 3 (0 automatic)
+    debug level                 : 0
+    xfers running               : 0
+    xfers deferred              : 0
+    soa queries in progress     : 0
+    query logging is OFF
+    recursive clients           : 0/900/1000
+    tcp clients                 : 2/150
+    TCP high-water              : 2
+    server is up and running
     --------------------------------------------------
     
     vm12$ cd $HOME
