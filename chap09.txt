@@ -13,6 +13,7 @@
 [012] 管理コマンド - 03
 [013] 管理コマンド - 04
 [014] 管理コマンド - 05
+[015] キャッシュサーバー構築
 [05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
 [06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
 [07] コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
@@ -1963,13 +1964,13 @@
     ## 詳細オプション
     options
     {
-      directory "/var/named";        # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };        # Not Use IPv6
-      recursion no;                  # Contents Server = no, Cache Server = yes
-      version "unknown";             # Display Version
-      allow-query { accesible; };    # Accesible Hosts
-      allow-transfer { transfer; };  # Zone Transfer Allowed Hosts
-      notify yes;                    # Notify Slave Server of Zone Updates
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+      allow-transfer { transfer; };        # Zone Transfer Allowed Hosts
+      notify yes;                          # Notify Slave Server of Zone Updates
     };
     
     ## ゾーンファイル(正引き)
@@ -2320,13 +2321,13 @@
     ## 詳細オプション
     options
     {
-      directory "/var/named";        # Full Path -> /var/named/chroot/var/named
-      listen-on-v6 { none; };        # Not Use IPv6
-      recursion no;                  # Contents Server = no, Cache Server = yes
-      version "unknown";             # Display Version
-      allow-query { accesible; };    # Accesible Hosts
-      allow-transfer { transfer; };  # Zone Transfer Allowed Hosts
-      notify yes;                    # Notify Slave Server of Zone Updates
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+      allow-transfer { transfer; };        # Zone Transfer Allowed Hosts
+      notify yes;                          # Notify Slave Server of Zone Updates
     };
     
     ## ゾーンファイル(正引き)
@@ -3440,7 +3441,7 @@
         > -b 192.168.122.12                  // IPアドレス
         > -s vm12                            // ホスト名
         > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > retransfer avswa.com               // ゾーン更新を通知
+        > retransfer avswa.com               // ゾーン情報の転送依頼
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3452,7 +3453,7 @@
         > -b 192.168.122.12                    // IPアドレス
         > -s vm12                              // ホスト名
         > -y /var/named/chroot/etc/rndc.key    // RNDCキー
-        > retransfer 122.168.192.in-addr.arpa  // ゾーン更新を通知
+        > retransfer 122.168.192.in-addr.arpa  // ゾーン情報の転送依頼
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3516,6 +3517,283 @@
     
     vm12$ cd $HOME
     vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[015]
+  キャッシュサーバー構築
+  
+[内容]
+  ## 作業内容
+    キャッシュサーバー構築
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo firewall-cmd --list-all
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    public
+      target: default
+      icmp-block-inversion: no
+      interfaces: 
+      sources: 
+      services: cockpit dhcpv6-client dns iscsi-target ssh  // dns を確認
+      ports: 12865/tcp 12866/tcp
+      protocols: 
+      forward: no
+      masquerade: no
+      forward-ports: 
+      source-ports: 
+      icmp-blocks: 
+      rich rules: 
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo bash /usr/libexec/setup-named-chroot.sh /var/named/chroot on
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> スクリプトでchroot有効化
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo cp -p /var/named/chroot/etc/named.conf /var/named/chroot/etc/named.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 設定ファイルをバックアップ
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo cp -p /var/named/chroot/etc/rndc.key /var/named/chroot/etc/rndc.key.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /var/named/chroot/etc/rndc.key
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    key rndc-key
+    {
+      algorithm hmac-md5;                  # 暗号化アルゴリズム
+      secret "f78Jk6XTlJsWs/wefBlSFw==";   # 共有鍵
+    };
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイル修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## 追加設定ロード
+    include "/etc/rndc.key";  // ここまで作業 - 2023-06-16
+    
+    ## 操作可能ホスト
+    controls
+    {
+      inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };
+      inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };
+    };
+    
+    ## アクセス制御リスト
+    acl accesible
+    {
+      any;
+    };
+    
+    ## ゾーン転送リスト
+    acl transfer
+    {
+      192.168.122.12/32;
+    };
+    
+    ## 詳細オプション
+    options
+    {
+      directory "/var/named";              # Full Path -> /var/named/chroot/var/named
+      statistics-file "data/named.stats";  # Stats File -> /var/named/chroot/var/named/data/named.stats
+      dump-file "data/named.dump";         # Dump File -> /var/named/chroot/var/named/data/named.dump  // 追加
+      listen-on-v6 { none; };              # Not Use IPv6
+      recursion no;                        # Contents Server = no, Cache Server = yes
+      version "unknown";                   # Display Version
+      allow-query { accesible; };          # Accesible Hosts
+      allow-transfer { transfer; };        # Zone Transfer Allowed Hosts
+      notify yes;                          # Notify Slave Server of Zone Updates
+    };
+    
+    ## ゾーンファイル(正引き)
+    zone avswa.com IN
+    {
+      type master;                         # File Type
+      file "avswa.com.zone";               # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ゾーンファイル(逆引き)
+    zone 122.168.192.in-addr.arpa IN
+    {
+      type master;                         # File Type
+      file "rev.avswa.com.zone";           # File Name
+      allow-transfer { key "tsig-key"; };  # TSIG Key
+    };
+    
+    ## ログ出力
+    logging
+    {
+      channel default_debug
+      {
+        file "data/named.run";
+        severity dynamic;
+      };
+    };
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 設定ファイルの書式チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/avswa.com.zone -> 正引きファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $ORIGIN avswa.com.
+    $TTL 1D
+    avswa.com. IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061201  ; serial
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+    avswa.com.       IN  NS     vm11.avswa.com.  ; Master
+    vm11.avswa.com.  IN  A      192.168.122.11   ; Host1
+    vm12.avswa.com.  IN  A      192.168.122.12   ; Host2
+    www1.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site1
+    www2.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site2
+    mail.avswa.com.  IN  MX 10  vm11.avswa.com.  ; Mail Server
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone  // ゾーン情報チェック
+        > -t /var/named/chroot  // ルート指定
+        > -w /var/named         // ファイル場所
+        > avswa.com             // ゾーン名
+        > avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone avswa.com/IN: loaded serial 2023061201
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/rev.avswa.com.zone -> 逆引きファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $ORIGIN avswa.com.
+    $TTL 1D
+    122.168.192.in-addr.arpa. IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061201  ; serial
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+    122.168.192.in-addr.arpa.     IN  NS   vm11.example.com.
+    11.122.168.192.in-addr.arpa.  IN  PTR  vm11.example.com.
+    12.122.168.192.in-addr.arpa.  IN  PTR  vm12.example.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone      // ゾーン情報チェック
+        > -t /var/named/chroot      // ルート指定
+        > -w /var/named             // ファイル場所
+        > 122.168.192.in-addr.arpa  // ゾーン名
+        > rev.avswa.com.zone        // ファイル名
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061201
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl is-enabled named
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    disabled
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl is-active named
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    inactive
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl is-enabled named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    disabled
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl is-active named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    inactive
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl enable named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created symlink /etc/systemd/system/multi-user.target.wants/named-chroot.service → /usr/lib/systemd/system/named-chroot.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl start named-chroot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------

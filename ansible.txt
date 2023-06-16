@@ -44,6 +44,11 @@
     IPV4 : 192.168.122.12
     MEMO : client2
   
+  ## 仮想マシン3
+    HOST : vm13
+    IPV4 : 192.168.122.13
+    MEMO : client3
+  
 [確認]
   実機での確認なし
   
@@ -378,11 +383,27 @@
   --------------------------------------------------
   
   $ cd $HOME
+  $ cp kickfile/vm11-ks.cfg kickfile/vm13-ks.cfg
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
   $ vi kickfile/vm12-ks.cfg
   
   コマンドの実行結果
   --------------------------------------------------
   (IPV4を192.168.122.12に変更、vm11をvm12に変更)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi kickfile/vm13-ks.cfg
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (IPV4を192.168.122.13に変更、vm11をvm13に変更)
   --------------------------------------------------
   
   $ cd $HOME
@@ -395,6 +416,14 @@
   
   $ cd $HOME
   $ ksvalidator kickfile/vm12-ks.cfg -> キックスタートファイル検証
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (OKの場合は何も出力されない)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ksvalidator kickfile/vm13-ks.cfg -> キックスタートファイル検証
   
   コマンドの実行結果
   --------------------------------------------------
@@ -434,11 +463,35 @@
   --------------------------------------------------
   
   $ cd $HOME/kickfile
+  $ cp vm11-mk.sh vm12-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME/kickfile
+  $ cp vm11-mk.sh vm13-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME/kickfile
   $ vi vm12-mk.sh
   
   コマンドの実行結果
   --------------------------------------------------
   (vm11をvm12に変更)
+  --------------------------------------------------
+  
+  $ cd $HOME/kickfile
+  $ vi vm13-mk.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (vm11をvm13に変更)
   --------------------------------------------------
   
   $ cd $HOME/kickfile
@@ -483,12 +536,12 @@
     コマンドの実行結果
     --------------------------------------------------
     PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.45 ms
+    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.16 ms
     64 bytes from 192.168.1.1: icmp_seq=2 ttl=254 time=1.13 ms
     
     --- 192.168.1.1 ping statistics ---
-    3 packets transmitted, 3 received, 0% packet loss, time 2004ms
-    rtt min/avg/max/mdev = 1.133/1.255/1.446/0.139 ms
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 1.130/1.144/1.158/0.014 ms
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -524,6 +577,7 @@
     ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
     192.168.122.11 vm11 -> 追加
     192.168.122.12 vm12 -> 追加
+    192.168.122.13 vm13 -> 追加
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -576,12 +630,12 @@
     コマンドの実行結果
     --------------------------------------------------
     PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.83 ms
-    64 bytes from 192.168.1.1: icmp_seq=2 ttl=254 time=1.27 ms
+    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.16 ms
+    64 bytes from 192.168.1.1: icmp_seq=2 ttl=254 time=1.13 ms
     
     --- 192.168.1.1 ping statistics ---
-    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-    rtt min/avg/max/mdev = 1.226/1.439/1.826/0.275 ms
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 1.130/1.144/1.158/0.014 ms
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -617,6 +671,7 @@
     ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
     192.168.122.11 vm11 -> 追加
     192.168.122.12 vm12 -> 追加
+    192.168.122.13 vm13 -> 追加
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -626,7 +681,101 @@
     --------------------------------------------------
     ログアウト -> ログインプロンプト表示 -> 「Ctrl + ]」 でホスト側のシェルに戻る
     --------------------------------------------------
+    
+  $ cd $HOME/kickfile
+  $ sudo bash vm13-mk.sh
   
+  コマンドの実行結果
+  --------------------------------------------------
+  (コマンド実行後に自動インストール開始 -> ログイン画面 -> makotoでログイン)
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ hostname
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    vm13
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ ip addr show
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+      link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+      inet 127.0.0.1/8 scope host lo
+        valid_lft forever preferred_lft forever
+      inet6 ::1/128 scope host 
+        valid_lft forever preferred_lft forever
+    
+    2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+      link/ether 52:54:00:2a:cb:e6 brd ff:ff:ff:ff:ff:ff
+      inet 192.168.122.13/24 brd 192.168.122.255 scope global noprefixroute enp1s0
+        valid_lft forever preferred_lft forever
+      inet6 fe80::5054:ff:fe2a:cbe6/64 scope link 
+        valid_lft forever preferred_lft forever
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# ping -c 2 192.168.1.1 -> 家庭用ルーターまでパケット到達
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
+    64 bytes from 192.168.1.1: icmp_seq=1 ttl=254 time=1.16 ms
+    64 bytes from 192.168.1.1: icmp_seq=2 ttl=254 time=1.13 ms
+    
+    --- 192.168.1.1 ping statistics ---
+    2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+    rtt min/avg/max/mdev = 1.130/1.144/1.158/0.014 ms
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ systemctl is-active sshd -> SSH稼働
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ vi .vimrc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    set tabstop=2 -> タブ幅の修正
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo visudo -> パスワード無しでsudoコマンドを実行可能にする
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    %wheel   ALL=(ALL)   NOPASSWD: ALL -> コメントアウト解除
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /etc/hosts -> 仮想マシンのエントリ追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11 -> 追加
+    192.168.122.12 vm12 -> 追加
+    192.168.122.13 vm13 -> 追加
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト -> ログインプロンプト表示 -> 「Ctrl + ]」 でホスト側のシェルに戻る
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -647,6 +796,7 @@
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
   192.168.122.11 vm11 -> 追加
   192.168.122.12 vm12 -> 追加
+  192.168.122.13 vm13 -> 追加
   --------------------------------------------------
   
   $ cd $HOME
@@ -685,6 +835,17 @@
   (省略) -> 初回接続時のみホスト認証用鍵をvm11から受取 -> .ssh/known_hostsに保存
   
   makoto@vm12's password: (makotoパスワード)
+  id_rsa.pub  100%  565   308.2KB/s   00:00
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ scp .ssh/id_rsa.pub makoto@vm13:id_rsa.pub -> 公開鍵を仮想マシンにSSH転送
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 初回接続時のみホスト認証用鍵をvm11から受取 -> .ssh/known_hostsに保存
+  
+  makoto@vm13's password: (makotoパスワード)
   id_rsa.pub  100%  565   308.2KB/s   00:00
   --------------------------------------------------
   
@@ -871,6 +1032,97 @@
     --------------------------------------------------
     
   $ cd $HOME
+  $ ssh vm13 -> パスワード認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  makoto@vm13's password: (makotoパスワード)
+  Last login: Fri Jun 16 12:38:17 2023
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ mkdir .ssh
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ chmod 700 .ssh -> アクセス権をmakotoのみ読書可能に設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ cat id_rsa.pub >> .ssh/authorized_keys -> 転送した公開鍵を規定ファイルに書き込む
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ chmod 600 .ssh/authorized_keys -> アクセス権をmakotoのみ読書可能に設定
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /etc/ssh/sshd_config -> 設定ファイルの編集
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# cat /etc/ssh/sshd_config | grep -vE '^#|^$'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    HostKey /etc/ssh/ssh_host_rsa_key
+    HostKey /etc/ssh/ssh_host_ecdsa_key
+    HostKey /etc/ssh/ssh_host_ed25519_key
+    SyslogFacility AUTHPRIV
+    PermitRootLogin no                       // YESからNOに変更
+    PubkeyAuthentication yes                 // コメントアウト解除
+    AuthorizedKeysFile .ssh/authorized_keys  // 公開鍵保存ファイルは変更なし
+    PasswordAuthentication no                // YESからNOに変更
+    ChallengeResponseAuthentication no
+    GSSAPIAuthentication yes
+    GSSAPICleanupCredentials no
+    UsePAM yes
+    X11Forwarding yes
+    PrintMotd no
+    AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+    AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+    AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+    AcceptEnv XMODIFIERS
+    Subsystem sftp /usr/libexec/openssh/sftp-server
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# sudo systemctl reload sshd -> 設定ファイルを再ロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+  
+  $ cd $HOME
   $ sudo virsh list --all -> 仮想マシン一覧
   
   コマンドの実行結果
@@ -878,6 +1130,7 @@
   Id   名前   状態
   2    vm11   実行中
   4    vm12   実行中
+  5    vm13   実行中
   --------------------------------------------------
   
   $ cd $HOME
@@ -897,6 +1150,14 @@
   --------------------------------------------------
   
   $ cd $HOME
+  $ sudo virsh destroy vm13 -> 仮想マシン停止
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm13' destroyed
+  --------------------------------------------------
+  
+  $ cd $HOME
   $ sudo virsh start vm11 -> 仮想マシン起動
   
   コマンドの実行結果
@@ -910,6 +1171,14 @@
   コマンドの実行結果
   --------------------------------------------------
   Domain 'vm12' started
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo virsh start vm13 -> 仮想マシン起動
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm13' started
   --------------------------------------------------
   
   $ cd $HOME
@@ -941,9 +1210,25 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Connection to vm11 closed.
+    Connection to vm12 closed.
     --------------------------------------------------
   
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jun 16 12:48:38 2023 from 192.168.122.1 -> パスワード入力が要求されなくなる
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1019,12 +1304,16 @@
   [vms]
   192.168.122.11
   192.168.122.12
+  192.168.122.13
   
-  [server1]
+  [host1]
   192.168.122.11
   
-  [client2]
+  [host2]
   192.168.122.12
+
+  [host3]
+  192.168.122.13
   --------------------------------------------------
   
   $ cd $HOME
@@ -1032,13 +1321,14 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  hosts (2):
+  hosts (3):
     192.168.122.11
     192.168.122.12
+    192.168.122.13
   --------------------------------------------------
   
   $ cd $HOME
-  $ ansible server1 --list-hosts -> 所属ホストを出力
+  $ ansible host1 --list-hosts -> 所属ホストを出力
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1047,12 +1337,21 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ ansible client2 --list-hosts -> 所属ホストを出力
+  $ ansible host2 --list-hosts -> 所属ホストを出力
   
   コマンドの実行結果
   --------------------------------------------------
   hosts (1):
     192.168.122.12
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible host3 --list-hosts -> 所属ホストを出力
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  hosts (1):
+    192.168.122.13
   --------------------------------------------------
   
   $ cd $HOME
@@ -1067,7 +1366,15 @@
     "changed": false,
     "ping": "pong"
   }
-  
+
+  192.168.122.13 | SUCCESS => {
+    "ansible_facts": {
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+  }
+
   192.168.122.11 | SUCCESS => {
     "ansible_facts": {
       "discovered_interpreter_python": "/usr/libexec/platform-python"
@@ -1078,7 +1385,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ ansible server1 -m ping -> 所属ホストにPing
+  $ ansible host1 -m ping -> 所属ホストにPing
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1092,7 +1399,7 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ ansible client2 -m ping -> 所属ホストにPing
+  $ ansible host2 -m ping -> 所属ホストにPing
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1106,7 +1413,21 @@
   --------------------------------------------------
   
   $ cd $HOME
-  $ ansible server1 -m setup -> 所属ホストから情報取得
+  $ ansible host3 -m ping -> 所属ホストにPing
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  192.168.122.13 | SUCCESS => {
+    "ansible_facts": {
+      "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+  }
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible host1 -m setup -> 所属ホストから情報取得
   
   コマンドの実行結果
   --------------------------------------------------
@@ -1177,17 +1498,21 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  ---                                 // 開始宣言 "---"
-  all:                                // グループ "all" を宣言
-    hosts:                            // グループ "all" の所属ホスト
-      vm11:                           // ホスト名
-        ansible_host: 192.168.122.11  // IPアドレス
-        ansible_user: makoto          // ユーザー
-        ansible_password: ma0122ma    // パスワード
-      vm12:                           // ホスト名
-        ansible_host: 192.168.122.12  // IPアドレス
-        ansible_user: makoto          // ユーザー
-        ansible_password: ma0122ma    // パスワード
+  ---                                 # 開始宣言 "---"
+  all:                                # グループ "all" を宣言
+    hosts:                            # グループ "all" の所属ホスト
+      vm11:                           # ホスト名
+        ansible_host: 192.168.122.11  # IPアドレス
+        ansible_user: makoto          # ユーザー
+        ansible_password: ma0122ma    # パスワード
+      vm12:
+        ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -1195,6 +1520,18 @@
   
   コマンドの実行結果
   --------------------------------------------------
+  vm13 | CHANGED | rc=0 >>
+    Static hostname: vm13
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 142a1af0020841cbafdeda5c9ef31671
+            Boot ID: 70de3ab3b0ae4db599decc2a3fb66bcd
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  
   vm12 | CHANGED | rc=0 >>
     Static hostname: vm12
           Icon name: computer-vm
@@ -1249,6 +1586,24 @@
             Chassis: vm
          Machine ID: 9e52818a469b4bec95fdf15bcac46f9a
             Boot ID: 98911c1d7e564a3c8b5d38a10370180c
+     Virtualization: kvm
+   Operating System: Rocky Linux 8.8 (Green Obsidian)
+        CPE OS Name: cpe:/o:rocky:rocky:8:GA
+             Kernel: Linux 4.18.0-477.10.1.el8_8.x86_64
+       Architecture: x86-64
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible vm13 -i ansible/myhost.yml -m command -a 'hostnamectl' -> 指定ホストのみにコマンド実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  vm13 | CHANGED | rc=0 >>
+    Static hostname: vm13
+          Icon name: computer-vm
+            Chassis: vm
+         Machine ID: 142a1af0020841cbafdeda5c9ef31671
+            Boot ID: 70de3ab3b0ae4db599decc2a3fb66bcd
      Virtualization: kvm
    Operating System: Rocky Linux 8.8 (Green Obsidian)
         CPE OS Name: cpe:/o:rocky:rocky:8:GA
@@ -1428,70 +1783,6 @@
   
 [確認]
   $ cd $HOME
-  $ ssh vm11 -> 公開鍵認証でSSH接続
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Sun May 28 19:00:41 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm11 closed.
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ ssh vm12 -> 公開鍵認証でSSH接続
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Sun May 28 18:41:41 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm12 closed.
-    --------------------------------------------------
-  
-  $ cd $HOME
   $ cat ansible/myhost.yml -> インベントリ確認
   
   コマンドの実行結果
@@ -1507,6 +1798,10 @@
         ansible_host: 192.168.122.12
         ansible_user: makoto
         ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -1515,22 +1810,22 @@
   コマンドの実行結果
   --------------------------------------------------
   ---
-  - name: Install Packages                // 手順名
-    hosts: all                            // 対象ホスト -> インベントリ参照
-    gather_facts: no                      // ファクト変数の収集なし
+  - name: Install Packages                # 手順名
+    hosts: all                            # 対象ホスト -> インベントリ参照
+    gather_facts: no                      # ファクト変数の収集なし
   
     tasks:
-      - name: Install net-tools package   // タスク名
-        ansible.builtin.dnf:              // モジュール
-          name: net-tools                 // パッケージ
-          state: present                  // 未インストール時のみインストール
-        become: yes                       // 管理者権限で実行
+      - name: Install net-tools package   # タスク名
+        ansible.builtin.dnf:              # モジュール
+          name: net-tools                 # パッケージ
+          state: present                  # 未インストール時のみインストール
+        become: yes                       # 管理者権限で実行
       
-      - name: Install traceroute package  // タスク名
-        ansible.builtin.dnf:              // モジュール
-          name: traceroute                // パッケージ
-          state: present                  // 未インストール時のみインストール
-        become: yes                       // 管理者権限で実行
+      - name: Install traceroute package  # タスク名
+        ansible.builtin.dnf:              # モジュール
+          name: traceroute                # パッケージ
+          state: present                  # 未インストール時のみインストール
+        become: yes                       # 管理者権限で実行
   --------------------------------------------------
   
   $ cd $HOME
@@ -1541,14 +1836,17 @@
   TASK [Install net-tools package]
   changed: [vm11]
   changed: [vm12]
+  changed: [vm13]
   
   TASK [Install traceroute package]
   changed: [vm12]
   changed: [vm11]
+  changed: [vm13]
   
   PLAY RECAP
   vm11 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   vm12 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm13 : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   --------------------------------------------------
   
   $ cd $HOME
@@ -1557,81 +1855,20 @@
   コマンドの実行結果
   --------------------------------------------------
   TASK [Install net-tools package]
-  ok: [vm11] -> 既にインストールされているためokと出力
-  ok: [vm12] -> 既にインストールされているためokと出力
+  ok: [vm11] -> 既にインストール済
+  ok: [vm12] -> 既にインストール済
+  ok: [vm13] -> 既にインストール済
   
   TASK [Install traceroute package]
-  ok: [vm11] -> 既にインストールされているためokと出力
-  ok: [vm12] -> 既にインストールされているためokと出力
+  ok: [vm11] -> 既にインストール済
+  ok: [vm12] -> 既にインストール済
+  ok: [vm13] -> 既にインストール済
   
   PLAY RECAP
-  vm11 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-  vm12 : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm11 :    ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm12 :    ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm13 :    ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   --------------------------------------------------
-  
-  $ cd $HOME
-  $ ssh vm11 -> 公開鍵認証でSSH接続
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    net-tools.x86_64   2.0-0.52.20160912git.el8   @baseos
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    traceroute.x86_64   3:2.1.0-6.el8   @baseos 
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm11 closed.
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ ssh vm12 -> 公開鍵認証でSSH接続
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Mon May 29 08:37:22 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ dnf list installed | grep -i net-tools -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    net-tools.x86_64   2.0-0.52.20160912git.el8   @baseos
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ dnf list installed | grep -i traceroute -> パッケージのインストール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    traceroute.x86_64   3:2.1.0-6.el8   @baseos 
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm11 closed.
-    --------------------------------------------------
   
   以下の確認に続く
   
@@ -1658,6 +1895,10 @@
         ansible_password: ma0122ma
       vm12:
         ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
         ansible_user: makoto
         ansible_password: ma0122ma
   --------------------------------------------------
@@ -1693,15 +1934,18 @@
   --------------------------------------------------
   TASK [Install epel-release package]
   changed: [vm12]
+  changed: [vm13]
   changed: [vm11]
   
   TASK [Install wget package]
   changed: [vm12]
   changed: [vm11]
+  changed: [vm13]
   
   PLAY RECAP
   vm11 :    ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   vm12 :    ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm13 :    ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   --------------------------------------------------
   
   以下の確認に続く
@@ -1729,6 +1973,10 @@
         ansible_password: ma0122ma
       vm12:
         ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
         ansible_user: makoto
         ansible_password: ma0122ma
   --------------------------------------------------
@@ -1835,6 +2083,10 @@
         ansible_host: 192.168.122.12
         ansible_user: makoto
         ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -1876,19 +2128,23 @@
   --------------------------------------------------
   TASK [Install netperf package]
   changed: [vm12]
+  changed: [vm13]
   changed: [vm11]
   
   TASK [Open port 12865]
+  changed: [vm13]
   changed: [vm11]
   changed: [vm12]
   
   TASK [Open port 12866]
+  changed: [vm13]
   changed: [vm12]
   changed: [vm11]
   
   PLAY RECAP
-  vm11 :    ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-  vm12 :    ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm11 :    ok=3    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm12 :    ok=3    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm13 :    ok=3    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   --------------------------------------------------
   
   以下の確認に続く
@@ -1916,6 +2172,10 @@
         ansible_password: ma0122ma
       vm12:
         ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
         ansible_user: makoto
         ansible_password: ma0122ma
   --------------------------------------------------
@@ -1975,6 +2235,10 @@
         ansible_password: ma0122ma
       vm12:
         ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
         ansible_user: makoto
         ansible_password: ma0122ma
   --------------------------------------------------
@@ -2090,6 +2354,10 @@
         ansible_host: 192.168.122.12
         ansible_user: makoto
         ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -2156,6 +2424,10 @@
         ansible_password: ma0122ma
       vm12:
         ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
         ansible_user: makoto
         ansible_password: ma0122ma
   --------------------------------------------------
@@ -2244,6 +2516,10 @@
         ansible_host: 192.168.122.12
         ansible_user: makoto
         ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -2320,6 +2596,10 @@
         ansible_password: ma0122ma
       vm12:
         ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
         ansible_user: makoto
         ansible_password: ma0122ma
   --------------------------------------------------
@@ -2417,6 +2697,10 @@
         ansible_host: 192.168.122.12
         ansible_user: makoto
         ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
   --------------------------------------------------
   
   $ cd $HOME
@@ -2464,22 +2748,27 @@
   TASK [Install bind package]
   changed: [vm12]
   changed: [vm11]
+  changed: [vm13]
   
   TASK [Install bind-chroot package]
   changed: [vm12]
+  changed: [vm13]
   changed: [vm11]
   
   TASK [Install bind-utils package]
   changed: [vm12]
+  changed: [vm13]
   changed: [vm11]
   
   TASK [Open dns service]
+  changed: [vm13]
   changed: [vm12]
   changed: [vm11]
   
   PLAY RECAP
-  vm11 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-  vm12 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm11 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm12 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  vm13 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   --------------------------------------------------
   
   以下の確認に続く
