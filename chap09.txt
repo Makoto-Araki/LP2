@@ -17,11 +17,9 @@
 [016] クライアントコマンド - 04
 [017] クライアントコマンド - 05
 [018] クライアントコマンド - 06
-
-[05] 設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
-[06] 設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
-[07] コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
-[08] コマンド(rndc) - 02 (ゾーン転送をスレーブからマスターに依頼)
+[019] 管理コマンド - 06
+[020] 管理コマンド - 07
+[021] ラウンドロビン
 ================================================================================
 [001]
   マスターサーバー構築
@@ -175,17 +173,14 @@
     avswa.com.       IN  NS     vm11.avswa.com.  ; Master
     vm11.avswa.com.  IN  A      192.168.122.11   ; Host1
     vm12.avswa.com.  IN  A      192.168.122.12   ; Host2
+    vm13.avswa.com.  IN  A      192.168.122.13   ; Host3
     www1.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site1
     www2.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site2
     mail.avswa.com.  IN  MX 10  vm11.avswa.com.  ; Mail Server
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone  // ゾーン情報チェック
-        > -t /var/named/chroot  // ルート指定
-        > -w /var/named         // ファイル場所
-        > avswa.com             // ゾーン名
-        > avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot avswa.com /var/named/avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -211,14 +206,11 @@
     122.168.192.in-addr.arpa.     IN  NS   vm11.example.com.
     11.122.168.192.in-addr.arpa.  IN  PTR  vm11.example.com.
     12.122.168.192.in-addr.arpa.  IN  PTR  vm12.example.com.
+    13.122.168.192.in-addr.arpa.  IN  PTR  vm13.example.com.
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone      // ゾーン情報チェック
-        > -t /var/named/chroot      // ルート指定
-        > -w /var/named             // ファイル場所
-        > 122.168.192.in-addr.arpa  // ゾーン名
-        > rev.avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot 122.168.192.in-addr.arpa /var/named/rev.avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1231,6 +1223,7 @@
     avswa.com.       IN  NS     vm11.avswa.com.  ; Master
     vm11.avswa.com.  IN  A      192.168.122.11   ; Host1
     vm12.avswa.com.  IN  A      192.168.122.12   ; Host2
+    vm13.avswa.com.  IN  A      192.168.122.13   ; Host3
     www1.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site1
     www2.avswa.com.  IN  CNAME  vm11.avswa.com.  ; Web Site2
     mail.avswa.com.  IN  MX 10  vm11.avswa.com.  ; Mail Server
@@ -1253,17 +1246,14 @@
                      IN  NS     vm11             ; Master
     vm11             IN  A      192.168.122.11   ; Host1
     vm12             IN  A      192.168.122.12   ; Host2
+    vm13             IN  A      192.168.122.13   ; Host3
     www1             IN  CNAME  vm11             ; Web Site1
     www2             IN  CNAME  vm11             ; Web Site2
     mail             IN  MX 10  vm11             ; Mail Server
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone  // ゾーン情報チェック
-        > -t /var/named/chroot  // ルート指定
-        > -w /var/named         // ファイル場所
-        > avswa.com             // ゾーン名
-        > avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot avswa.com /var/named/avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1289,6 +1279,7 @@
     122.168.192.in-addr.arpa.     IN  NS   vm11.example.com.
     11.122.168.192.in-addr.arpa.  IN  PTR  vm11.example.com.
     12.122.168.192.in-addr.arpa.  IN  PTR  vm12.example.com.
+    13.122.168.192.in-addr.arpa.  IN  PTR  vm13.example.com.
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1308,14 +1299,11 @@
                                   IN  NS   vm11.example.com.
     11                            IN  PTR  vm11.example.com.
     12                            IN  PTR  vm12.example.com.
+    13                            IN  PTR  vm13.example.com.
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone      // ゾーン情報をチェック
-        > -t /var/named/chroot      // ルート指定
-        > -w /var/named             // ファイル場所
-        > 122.168.192.in-addr.arpa  // ゾーン名
-        > rev.avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot 122.168.192.in-addr.arpa /var/named/rev.avswa.com.zone -> ゾーン情報をチェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1826,11 +1814,11 @@
     
     vm12$ cd $HOME
     vm12$ sudo named-compilezone -> 正引きファイル
-        > -f raw                                      // 変換前 -> バイナリ(デフォルト)
-        > -F text                                     // 変換後 -> テキスト
-        > -o /dev/stdout                              // 出力先
-        > avswa.com                                   // 対象ゾーン
-        > /var/named/chroot/var/named/avswa.com.zone  // ファイル名
+        > -f raw                                          // 変換前 -> バイナリ(デフォルト)
+        > -F text                                         // 変換後 -> テキスト
+        > -o /dev/stdout                                  // 出力先
+        > avswa.com                                       // 対象ゾーン
+        > /var/named/chroot/var/named/avswa.com.zone      // ファイル名
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1840,6 +1828,7 @@
     mail.avswa.com.   86400 IN MX 10 vm11.avswa.com.
     vm11.avswa.com.   86400 IN A 192.168.122.11
     vm12.avswa.com.   86400 IN A 192.168.122.12
+    vm13.avswa.com.   86400 IN A 192.168.122.13
     www1.avswa.com.   86400 IN CNAME vm11.avswa.com.
     www2.avswa.com.   86400 IN CNAME vm11.avswa.com.
     OK
@@ -1860,6 +1849,7 @@
     122.168.192.in-addr.arpa.      86400 IN NS vm11.example.com.
     11.122.168.192.in-addr.arpa.   86400 IN PTR vm11.example.com.
     12.122.168.192.in-addr.arpa.   86400 IN PTR vm12.example.com.
+    13.122.168.192.in-addr.arpa.   86400 IN PTR vm13.example.com.
     OK
     --------------------------------------------------
     
@@ -2029,17 +2019,14 @@
                      IN  NS     vm11             ; Master
     vm11             IN  A      192.168.122.11   ; Host1
     vm12             IN  A      192.168.122.12   ; Host2
+    vm13             IN  A      192.168.122.13   ; Host3
     www1             IN  CNAME  vm11             ; Web Site1
     www2             IN  CNAME  vm11             ; Web Site2
     mail             IN  MX 10  vm11             ; Mail Server
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone  // ゾーン情報チェック
-        > -t /var/named/chroot  // ルート指定
-        > -w /var/named         // ファイル場所
-        > avswa.com             // ゾーン名
-        > avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot avswa.com /var/named/avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2064,14 +2051,11 @@
                                   IN  NS   vm11.example.com.
     11                            IN  PTR  vm11.example.com.
     12                            IN  PTR  vm12.example.com.
+    13                            IN  PTR  vm13.example.com.
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone      // ゾーン情報をチェック
-        > -t /var/named/chroot      // ルート指定
-        > -w /var/named             // ファイル場所
-        > 122.168.192.in-addr.arpa  // ゾーン名
-        > rev.avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot 122.168.192.in-addr.arpa /var/named/rev.avswa.com.zone -> ゾーン情報をチェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2543,11 +2527,7 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > status                             // ステータス表示
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key status -> ステータス表示
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2588,11 +2568,7 @@
   --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -b 192.168.122.12                  // IPアドレス
-        > -s vm12                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > status                             // ステータス表示
+    vm12$ sudo rndc -k /var/named/chroot/etc/rndc.key status -> ステータス表示
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2728,11 +2704,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > stats                              // 統計情報をファイル出力
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key stats -> 統計情報をファイル出力
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2847,11 +2819,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -b 192.168.122.12                  // IPアドレス
-        > -s vm12                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > stats                              // 統計情報をファイル出力
+    vm12$ sudo rndc -k /var/named/chroot/etc/rndc.key stats -> 統計情報をファイル出力
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2980,11 +2948,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > dumpdb                             // メモリ上のキャッシュをダンプ出力
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key dumpdb -> メモリ上のキャッシュをダンプ出力
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3101,11 +3065,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -b 192.168.122.12                  // IPアドレス
-        > -s vm12                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > dumpdb                             // メモリ上のキャッシュをダンプ出力
+    vm12$ sudo rndc -k /var/named/chroot/etc/rndc.key dumpdb -> メモリ上のキャッシュをダンプ出力
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3166,17 +3126,14 @@
                      IN  NS     vm11             ; Master
     vm11             IN  A      192.168.122.11   ; Host1
     vm12             IN  A      192.168.122.12   ; Host2
+    vm13             IN  A      192.168.122.13   ; Host3
     www1             IN  CNAME  vm11             ; Web Site1
     www2             IN  CNAME  vm11             ; Web Site2
     mail             IN  MX 10  vm11             ; Mail Server
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone  // ゾーン情報チェック
-        > -t /var/named/chroot  // ルート指定
-        > -w /var/named         // ファイル場所
-        > avswa.com             // ゾーン名
-        > avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot avswa.com /var/named/avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3201,14 +3158,11 @@
                                   IN  NS   vm11.example.com.
     11                            IN  PTR  vm11.example.com.
     12                            IN  PTR  vm12.example.com.
+    13                            IN  PTR  vm11.example.com.
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone      // ゾーン情報をチェック
-        > -t /var/named/chroot      // ルート指定
-        > -w /var/named             // ファイル場所
-        > 122.168.192.in-addr.arpa  // ゾーン名
-        > rev.avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot 122.168.192.in-addr.arpa /var/named/rev.avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3217,11 +3171,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > reload                             // ゾーン情報をリロード
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key reload -> ゾーン情報をリロード
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3229,11 +3179,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > notify avswa.com                   // ゾーン更新を通知
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key notify avswa.com -> ゾーン更新を通知
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3241,11 +3187,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > notify 122.168.192.in-addr.arpa    // ゾーン更新を通知
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key notify 122.168.192.in-addr.arpa -> ゾーン更新を通知
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3269,7 +3211,7 @@
   --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo grep zone /var/named/chroot/var/named/data/named.run -> TSIG保護下のゾーン転送ログ
+    vm12$ sudo grep zone /var/named/chroot/var/named/data/named.run -> ゾーン転送ログ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3292,11 +3234,11 @@
     
     vm12$ cd $HOME
     vm12$ sudo named-compilezone -> 正引きファイル
-        > -f raw                                      // 変換前 -> バイナリ(デフォルト)
-        > -F text                                     // 変換後 -> テキスト
-        > -o /dev/stdout                              // 出力先
-        > avswa.com                                   // 対象ゾーン
-        > /var/named/chroot/var/named/avswa.com.zone  // ファイル名
+        > -f raw                                          // 変換前 -> バイナリ(デフォルト)
+        > -F text                                         // 変換後 -> テキスト
+        > -o /dev/stdout                                  // 出力先
+        > avswa.com                                       // 対象ゾーン
+        > /var/named/chroot/var/named/avswa.com.zone      // ファイル名
         > | grep serial
     
     コマンドの実行結果
@@ -3362,17 +3304,14 @@
                      IN  NS     vm11             ; Master
     vm11             IN  A      192.168.122.11   ; Host1
     vm12             IN  A      192.168.122.12   ; Host2
+    vm13             IN  A      192.168.122.13   ; Host3
     www1             IN  CNAME  vm11             ; Web Site1
     www2             IN  CNAME  vm11             ; Web Site2
     mail             IN  MX 10  vm11             ; Mail Server
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone  // ゾーン情報チェック
-        > -t /var/named/chroot  // ルート指定
-        > -w /var/named         // ファイル場所
-        > avswa.com             // ゾーン名
-        > avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot avswa.com /var/named/avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3397,14 +3336,11 @@
                                   IN  NS   vm11.example.com.
     11                            IN  PTR  vm11.example.com.
     12                            IN  PTR  vm12.example.com.
+    13                            IN  PTR  vm13.example.com.
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo named-checkzone      // ゾーン情報をチェック
-        > -t /var/named/chroot      // ルート指定
-        > -w /var/named             // ファイル場所
-        > 122.168.192.in-addr.arpa  // ゾーン名
-        > rev.avswa.com.zone        // ファイル名
+    vm11$ sudo named-checkzone -t /var/named/chroot 122.168.192.in-addr.arpa /var/named/rev.avswa.com.zone -> ゾーン情報チェック
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3413,11 +3349,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo rndc
-        > -b 192.168.122.11                  // IPアドレス
-        > -s vm11                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > reload                             // ゾーン情報をリロード
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key reload -> ゾーン情報をリロード
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3441,11 +3373,7 @@
   --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -b 192.168.122.12                  // IPアドレス
-        > -s vm12                            // ホスト名
-        > -y /var/named/chroot/etc/rndc.key  // RNDCキー
-        > retransfer avswa.com               // ゾーン情報の転送依頼
+    vm12$ sudo rndc -k /var/named/chroot/etc/rndc.key retransfer avswa.com -> ゾーン情報の転送依頼
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3453,11 +3381,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -b 192.168.122.12                    // IPアドレス
-        > -s vm12                              // ホスト名
-        > -y /var/named/chroot/etc/rndc.key    // RNDCキー
-        > retransfer 122.168.192.in-addr.arpa  // ゾーン情報の転送依頼
+    vm12$ sudo rndc -k /var/named/chroot/etc/rndc.key retransfer 122.168.192.in-addr.arpa -> ゾーン情報の転送依頼
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3465,7 +3389,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo grep zone /var/named/chroot/var/named/data/named.run -> TSIG保護下のゾーン転送ログ
+    vm12$ sudo grep zone /var/named/chroot/var/named/data/named.run -> ゾーン転送ログ
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3493,12 +3417,12 @@
     
     vm12$ cd $HOME
     vm12$ sudo named-compilezone -> 正引きファイル
-        > -f raw                                      // 変換前 -> バイナリ(デフォルト)
-        > -F text                                     // 変換後 -> テキスト
-        > -o /dev/stdout                              // 出力先
-        > avswa.com                                   // 対象ゾーン
-        > /var/named/chroot/var/named/avswa.com.zone  // ファイル名
-        > | grep serial                               // シリアル出力
+        > -f raw                                          // 変換前 -> バイナリ(デフォルト)
+        > -F text                                         // 変換後 -> テキスト
+        > -o /dev/stdout                                  // 出力先
+        > avswa.com                                       // 対象ゾーン
+        > /var/named/chroot/var/named/avswa.com.zone      // ファイル名
+        > | grep serial                                   // シリアル出力
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4136,1419 +4060,120 @@
   以下の確認に続く
   
 ================================================================================
-[04]
-  設定ファイル(/etc/named.conf) - 01 (コンテンツサーバー)
+[019]
+  管理コマンド - 06
   
 [内容]
   ## 作業内容
-    設定ファイル(/etc/named.conf)を編集してコンテンツサーバー(マスター)を構築する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
+    キャッシュを全消去
   
 [確認]
-  vm11$ cd $HOME
-  vm11$ sudo yum -y install bind bind-chroot bind-utils -> パッケージ追加
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm11$ cd /usr/libexec
-  vm11$ sudo ./setup-named-chroot.sh /var/named/chroot on -> スクリプト実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> chroot有効化
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dnssec-keygen -> RNDC用の鍵ファイル作成
-      > -a HMAC-MD5  // アルゴリズム
-      > -b 128       // 鍵長
-      > -n USER      // 所有者のタイプ
-      > rndc-key     // 鍵の名前
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Krndc-key.+157+18277
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh Krndc-key* -> RNDC用の鍵ファイル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-------. 1 makoto makoto  50  4月 22 17:03 Krndc-key.+157+18277.key      // 公開鍵
-  -rw-------. 1 makoto makoto 165  4月 22 17:03 Krndc-key.+157+18277.private  // 秘密鍵
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat Krndc-key.+157+18277.key -> 公開鍵を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  rndc-key. IN KEY 0 3 157 ANS+aCoEL4oFLqfrtk7nFw== -> 共有鍵「ANS+aCoEL4oFLqfrtk7nFw==」
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat Krndc-key.+157+18277.private -> 秘密鍵を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Private-key-format: v1.3
-  Algorithm: 157 (HMAC_MD5)
-  Key: ANS+aCoEL4oFLqfrtk7nFw==  -> 共有鍵「ANS+aCoEL4oFLqfrtk7nFw==」でコマンド(rndc)によるリモート制御に使用
-  Bits: AAA=
-  Created: 20230422080345
-  Publish: 20230422080345
-  Activate: 20230422080345
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/etc/rndc.key
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## コマンド(rndc)用の共有鍵
-  key rndc-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
-  };
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dnssec-keygen -> TSIG用の鍵ファイル作成
-      > -a HMAC-MD5  // アルゴリズム
-      > -b 128       // 鍵長
-      > -n HOST      // 所有者のタイプ
-      > tsig-key     // 鍵の名前
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Ktsig-key.+157+27770
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ ls -lh Ktsig-key* -> TSIG用の鍵ファイル確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-------. 1 makoto makoto  52  4月 22 17:21 Ktsig-key.+157+27770.key      // 公開鍵
-  -rw-------. 1 makoto makoto 165  4月 22 17:21 Ktsig-key.+157+27770.private  // 秘密鍵
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat Ktsig-key.+157+27770.key -> 公開鍵を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  tsig-key. IN KEY 512 3 157 obXsw+PVisK1sF8QYSrz3w== -> 共有鍵「obXsw+PVisK1sF8QYSrz3w==」
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ cat Ktsig-key.+157+27770.private -> 秘密鍵を確認
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Private-key-format: v1.3
-  Algorithm: 157 (HMAC_MD5)
-  Key: obXsw+PVisK1sF8QYSrz3w==  -> 共有鍵「obXsw+PVisK1sF8QYSrz3w==」でゾーン転送時に使用
-  Bits: AAA=
-  Created: 20230422082120
-  Publish: 20230422082120
-  Activate: 20230422082120
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/etc/tsig.key
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ゾーン転送のセキュリティ対策(TSIG)
-  key tsig-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret obXsw+PVisK1sF8QYSrz3w==;   # 共有秘密鍵
-  };
-  --------------------------------------------------
-  
-  vm11$ cd /var/named/chroot/etc
-  vm11$ sudo cp -p named.conf named.conf.org -> バックアップ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイル修正
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## 追加設定をロード
-  include "/etc/rndc.key";
-  include "/etc/tsig.key";
-  
-  ## プログラム(named)の操作可能ホスト
-  controls
-  {
-    inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };              # ローカルホストからのアクセス許可
-    inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
-  };
-  
-  ## 詳細オプション
-  options
-  {
-    directory "/var/named";              # ゾーンファイル格納先 -> /var/named/chroot/var/named
-    listen-on-v6 { none; };              # 不使用(IPv6)
-    allow-transfer { 192.168.122.12; };  # ゾーン転送許可ホスト
-    notify yes;                          # ゾーン更新をスレーブに通知
-    recursion no;                        # 再帰問合わせを受付
-    version "unknown";                   # バージョン表示
-  };
-  
-  ## ゾーンファイル(正引き)
-  zone example.com IN
-  {
-    type master;                         # マスター
-    file "example.com.zone";             # ファイル名
-    allow-transfer { key "tsig-key"; };  # ゾーン転送時の共有鍵情報
-  };
-  
-  ## ゾーンファイル(逆引き)
-  zone 122.168.192.in-addr.arpa IN
-  {
-    type master;                         # マスター
-    file "example.com.rev.zone";         # ファイル名
-    allow-transfer { key "tsig-key"; };  # ゾーン転送時の共有鍵情報
-  };
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 文法チェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/var/named/example.com.zone -> 正引きファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  $ORIGIN example.com.
-  $TTL 1D
-  example.com. IN SOA vm11.example.com. makoto.example.com. (
-    2023042101  ; serial
-    5M          ; refresh
-    5M          ; retry
-    1D          ; expire
-    1D          ; negative
-  )
-  
-  example.com.           IN  NS     vm11.example.com.  ; Master
-  example.com.           IN  NS     vm12.example.com.  ; Slave
-  vm11.example.com.      IN  A      192.168.122.11
-  vm12.example.com.      IN  A      192.168.122.12
-  vm13.example.com.      IN  A      192.168.122.13
-  vm14.example.com.      IN  A      192.168.122.14
-  www.example.com.       IN  CNAME  vm11.example.com.  ; Web Server
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo named-checkzone -> ゾーン情報をチェック
-      > -t /var/named/chroot  // ルート指定
-      > -w /var/named         // ファイルの場所
-      > example.com           // ゾーン名
-      > example.com.zone      // ファイル名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone example.com/IN: loaded serial 2023042101
-  OK
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/var/named/example.com.rev.zone -> 逆引きファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  $ORIGIN example.com.
-  $TTL 1D
-  122.168.192.in-addr.arpa. IN SOA vm11.example.com. makoto.example.com. (
-    2023042101  ; serial
-    5M          ; refresh
-    5M          ; retry
-    1D          ; expire
-    1D          ; negative
-  )
-  
-  122.168.192.in-addr.arpa.       IN  NS     vm11.example.com.
-  11.122.168.192.in-addr.arpa.    IN  PTR    vm11.example.com.
-  12.122.168.192.in-addr.arpa.    IN  PTR    vm12.example.com.
-  13.122.168.192.in-addr.arpa.    IN  PTR    vm13.example.com.
-  14.122.168.192.in-addr.arpa.    IN  PTR    vm14.example.com.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo named-checkzone -> ゾーン情報をチェック
-      > -t /var/named/chroot      // ルート指定
-      > -w /var/named             // ファイルの場所
-      > 122.168.192.in-addr.arpa  // ゾーン名
-      > example.com.rev.zone      // ファイル名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone 122.168.192.in-addr.arpa/IN: loaded serial 2023042101
-  OK
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl disable named -> 自動起動を無効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> chroot有効化でDNSサービス名は「named-chroot」に変更されたため出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl enable named-chroot -> 自動起動を有効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service to
-  /usr/lib/systemd/system/named-chroot.service.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo systemctl start named-chroot
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --add-service=dns --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dig
-      > @vm11        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +answer      // 回答セクション表示
-      > example.com  // ドメイン名指定
-      > soa          // レコード指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dig
-      > @vm11        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +answer      // 回答セクション表示
-      > example.com  // ドメイン名指定
-      > ns           // レコード指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN NS vm11.example.com.
-  example.com. 86400 IN NS vm12.example.com.
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dig
-      > @vm11             // サーバー指定
-      > vm11.example.com  // 正引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 <<>> @vm11 vm11.example.com
-  ; (1 server found)
-  ;; global options: +cmd
-  ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62044
-  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 2
-  ;; WARNING: recursion requested but not available
-  
-  ;; OPT PSEUDOSECTION:
-  ; EDNS: version: 0, flags:; udp: 4096
-  
-  -- 質問セクション
-  ;; QUESTION SECTION:
-  ;vm11.example.com. IN A
-  
-  -- 回答セクション
-  ;; ANSWER SECTION:
-  vm11.example.com. 86400 IN A 192.168.122.11
-  
-  -- 権威セクション
-  ;; AUTHORITY SECTION:
-  example.com. 86400 IN NS vm11.example.com.
-  example.com. 86400 IN NS vm12.example.com.
-  
-  -- 追加セクション
-  ;; ADDITIONAL SECTION:
-  vm12.example.com. 86400 IN A 192.168.122.12
-  
-  ;; Query time: 1 msec
-  ;; SERVER: 192.168.122.11#53(192.168.122.11)
-  ;; WHEN: 土  4月 22 18:41:11 JST 2023
-  ;; MSG SIZE  rcvd: 110
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dig
-      > @vm11             // サーバー指定
-      > +noall            // 全セクション非表示
-      > +answer           // 回答セクション表示
-      > vm11.example.com  // 正引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  vm11.example.com. 86400 IN A 192.168.122.11
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ dig
-      > @vm11             // サーバー指定
-      > +noall            // 全セクション非表示
-      > +answer           // 回答セクション表示
-      > -x 192.168.122.11 // 逆引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  11.122.168.192.in-addr.arpa. 86400 IN PTR vm11.example.com.
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[05]
-  設定ファイル(/etc/named.conf) - 02 (コンテンツサーバー)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(/etc/named.conf)を編集してコンテンツサーバー(スレーブ)を構築する
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install bind bind-chroot bind-utils -> パッケージ追加
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/libexec
-  vm12$ sudo ./setup-named-chroot.sh /var/named/chroot on -> スクリプト実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> chroot有効化
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo vi /var/named/chroot/etc/rndc.key
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## コマンド(rndc)用の共有鍵
-  key rndc-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
-  };
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo vi /var/named/chroot/etc/tsig.key
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ゾーン転送のセキュリティ対策(TSIG)
-  key tsig-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret obXsw+PVisK1sF8QYSrz3w==;   # 共有秘密鍵
-  };
-  --------------------------------------------------
-  
-  vm12$ cd /var/named/chroot/etc
-  vm12$ sudo cp -p named.conf named.conf.org -> バックアップ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイル修正
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## 追加設定をロード
-  include "/etc/rndc.key";
-  include "/etc/tsig.key";
-  
-  ## プログラム(named)の操作可能ホスト
-  controls
-  {
-    inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };              # ローカルホストからのアクセス許可
-    inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
-  };
-  
-  ## 詳細オプション
-  options
-  {
-    directory "/var/named";  # ゾーンファイル格納先 -> /var/named/chroot/var/named
-    listen-on-v6 { none; };  # 不使用(IPv6)
-    recursion no;            # 再帰問合わせを受付
-    version "unknown";       # バージョン表示
-  };
-  
-  ## コンテンツサーバー(マスター)
-  server 192.168.122.11
-  {
-    keys { "tsig-key"; };    # 前述の共有鍵(tsig-key)を使用
-  };
-  
-  ## ゾーンファイル(正引き)
-  zone "example.com" IN
-  {
-    type slave;                          # スレーブ
-    masters { 192.168.122.11; };         # マスター情報
-    file "slaves/example.com.zone";      # ファイル名
-  };
-  
-  ## ゾーンファイル(逆引き)
-  zone "122.168.192.in-addr.arpa" IN
-  {
-    type slave;                          # スレーブ
-    masters { 192.168.122.11; };         # マスター情報
-    file "slaves/example.com.rev.zone";  # ファイル名
-  };
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 文法チェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo systemctl disable named -> 自動起動を無効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> chroot有効化でDNSサービス名は「named-chroot」に変更されたため出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo systemctl enable named-chroot -> 自動起動を有効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service to
-  /usr/lib/systemd/system/named-chroot.service.
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo systemctl start named-chroot
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo firewall-cmd --add-service=dns --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  ==================================================
-  ゾーン情報がマスターからスレーブへ転送されるまで待機
-  ==================================================
-  
-  vm12$ cd $HOME
-  vm12$ sudo grep -i tsig /var/log/messages -> TSIG保護下のゾーン転送ログ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Apr 22 19:10:33 vm12 named[1512]: transfer of 'example.com/IN' from 192.168.122.11#53: ...
-  Apr 22 19:10:33 vm12 named[1512]: zone example.com/IN: transferred serial 2023042101: TSIG 'tsig-key'
-  Apr 22 19:10:33 vm12 named[1512]: transfer of '122.168.192.in-addr.arpa/IN' from 192.168.122.11#53: ...
-  Apr 22 19:10:33 vm12 named[1512]: zone 122.168.192.in-addr.arpa/IN: transferred serial 2023042101: TSIG 'tsig-key'
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo ls -lh /var/named/chroot/var/named/slaves -> TSIG保護下のゾーン転送ファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 named named 472  4月 22 19:14 example.com.rev.zone
-  -rw-r--r--. 1 named named 423  4月 22 19:14 example.com.zone
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo named-compilezone -> ゾーン転送ファイルの正引きファイル
-      > -f raw                                               // 変換前はバイナリ(デフォルト)
-      > -F text                                              // 変換後はテキスト
-      > -o /dev/stdout                                       // 出力先
-      > example.com                                          // 対象ゾーン
-      > /var/named/chroot/var/named/slaves/example.com.zone  // ファイル名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone example.com/IN: loaded serial 2023042101
-  example.com.       86400 IN SOA    vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-  example.com.       86400 IN NS     vm11.example.com.
-  example.com.       86400 IN NS     vm12.example.com.
-  vm11.example.com.  86400 IN A      192.168.122.11
-  vm12.example.com.  86400 IN A      192.168.122.12
-  vm13.example.com.  86400 IN A      192.168.122.13
-  vm14.example.com.  86400 IN A      192.168.122.14
-  www.example.com.   86400 IN CNAME  vm11.example.com.
-  OK
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo named-compilezone -> ゾーン転送ファイルの逆引きファイル
-      > -f raw                                                   // 変換前はバイナリ(デフォルト)
-      > -F text                                                  // 変換後はテキスト
-      > -o /dev/stdout                                           // 出力先
-      > 122.168.192.in-addr.arpa                                 // 対象ゾーン
-      > /var/named/chroot/var/named/slaves/example.com.rev.zone  // ファイル名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone 122.168.192.in-addr.arpa/IN: loaded serial 2023042101
-  122.168.192.in-addr.arpa.     86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-  122.168.192.in-addr.arpa.     86400 IN NS vm11.example.com.
-  11.122.168.192.in-addr.arpa.  86400 IN PTR vm11.example.com.
-  12.122.168.192.in-addr.arpa.  86400 IN PTR vm12.example.com.
-  13.122.168.192.in-addr.arpa.  86400 IN PTR vm13.example.com.
-  14.122.168.192.in-addr.arpa.  86400 IN PTR vm14.example.com.
-  OK
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ dig
-      > @vm12        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +answer      // 回答セクション表示
-      > example.com  // ドメイン名指定
-      > soa          // レコード指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ dig
-      > @vm12        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +answer      // 回答セクション表示
-      > example.com  // ドメイン名指定
-      > ns           // レコード指定
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN NS vm11.example.com.
-  example.com. 86400 IN NS vm12.example.com.
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ dig
-      > @vm12             // サーバー指定
-      > vm11.example.com  // 正引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 <<>> @vm12 vm11.example.com
-  ; (1 server found)
-  ;; global options: +cmd
-  ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 10879
-  ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 2
-  ;; WARNING: recursion requested but not available
-  
-  ;; OPT PSEUDOSECTION:
-  ; EDNS: version: 0, flags:; udp: 4096
-  
-  -- 質問セクション
-  ;; QUESTION SECTION:
-  ;vm11.example.com. IN A
-  
-  -- 回答セクション
-  ;; ANSWER SECTION:
-  vm11.example.com. 86400 IN A 192.168.122.11
-  
-  -- 権威セクション
-  ;; AUTHORITY SECTION:
-  example.com. 86400 IN NS vm11.example.com.
-  example.com. 86400 IN NS vm12.example.com.
-  
-  -- 追加セクション
-  ;; ADDITIONAL SECTION:
-  vm12.example.com. 86400 IN A 192.168.122.12
-  
-  ;; Query time: 0 msec
-  ;; SERVER: 192.168.122.12#53(192.168.122.12)
-  ;; WHEN: 土  4月 22 19:38:12 JST 2023
-  ;; MSG SIZE  rcvd: 110
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ dig
-      > @vm12             // サーバー指定
-      > +noall            // 全セクション非表示
-      > +answer           // 回答セクション表示
-      > vm11.example.com  // 正引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  vm11.example.com. 86400 IN A 192.168.122.11
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ dig
-      > @vm12              // サーバー指定
-      > +noall             // 全セクション非表示
-      > +answer            // 回答セクション表示
-      > -x 192.168.122.11  // 逆引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  11.122.168.192.in-addr.arpa. 86400 IN PTR vm11.example.com.
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[06]
-  設定ファイル(/etc/named.conf) - 03 (キャッシュサーバー)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(/etc/named.conf)を編集してキャッシュサーバーを構築する
-  
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
-[確認]
-  vm13$ cd $HOME
-  vm13$ sudo yum -y install bind bind-chroot bind-utils -> パッケージ追加
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm13$ cd /usr/libexec
-  vm13$ sudo ./setup-named-chroot.sh /var/named/chroot on -> スクリプト実行
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> chroot有効化
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo vi /var/named/chroot/etc/rndc.key
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## コマンド(rndc)用の共有鍵
-  key rndc-key
-  {
-    algorithm hmac-md5;                # 暗号化アルゴリズム
-    secret ANS+aCoEL4oFLqfrtk7nFw==;   # 共有秘密鍵
-  };
-  --------------------------------------------------
-  
-  vm13$ cd /var/named/chroot/etc
-  vm13$ sudo cp -p named.conf named.conf.org -> バックアップ
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo vi /var/named/chroot/etc/named.conf -> 設定ファイル修正
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## 追加設定をロード
-  include "/etc/rndc.key";
-  
-  ## プログラム(named)の操作可能ホスト
-  controls
-  {
-    inet 127.0.0.1 allow { localhost; } keys { "rndc-key"; };              # ローカルホストからのアクセス許可
-    inet 192.168.122.11 allow { 192.168.122.0/24; } keys { "rndc-key"; };  # ネットワーク(192.168.122.0)からのアクセス許可
-  };
-  
-  ## 詳細オプション
-  options
-  {
-    directory "/var/named";                            # ゾーンファイル格納先 -> /var/named/chroot/var/named
-    listen-on-v6 { none; };                            # 不使用(IPv6)
-    recursion yes;                                     # 再帰問合わせを受付
-    recursive-clients 300;                             # 再帰問合わせを受付可能なクライアント数
-    allow-query { 192.168.122.0/24; localhost; };      # 問合わせの受付ホスト
-    allow-recursion { 192.168.122.0/24; localhost; };  # 再帰問合わせの受付ホスト
-    forward only;                                      # フォワードのみ
-    forwarders { 192.168.122.11; 192.168.122.1; };     # フォワード先
-    version "unknown";                                 # バージョン表示
-  };
-  
-  ## ルートサーバー情報
-  zone "." IN
-  {
-    type hint;        # 不明
-    file "named.ca";  # ファイル格納先 -> /var/named/chroot/var/named/named.ca
-  };
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo named-checkconf -t /var/named/chroot /etc/named.conf -> 文法チェック
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo systemctl disable named -> 自動起動を無効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> chroot有効化でDNSサービス名は「named-chroot」に変更されたため出力なし
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo systemctl enable named-chroot -> 自動起動を有効化
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created symlink from /etc/systemd/system/multi-user.target.wants/named-chroot.service to
-  /usr/lib/systemd/system/named-chroot.service.
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo systemctl start named-chroot
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo firewall-cmd --add-service=dns --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ sudo firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ dig
-      > @vm13             // サーバー指定
-      > vm11.example.com  // 正引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm13 vm11.example.com
-  ; (1 server found)
-  ;; global options: +cmd
-  ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9872
-  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
-  
-  ;; OPT PSEUDOSECTION:
-  ; EDNS: version: 0, flags:; udp: 4096
-  
-  -- 質問セクション
-  ;; QUESTION SECTION:
-  ;vm11.example.com. IN A
-  
-  -- 回答セクション
-  ;; ANSWER SECTION:
-  vm11.example.com. 86400 IN A 192.168.122.11
-  
-  ;; Query time: 9 msec
-  ;; SERVER: 192.168.122.13#53(192.168.122.13)
-  ;; WHEN: 土  4月 22 19:38:12 JST 2023
-  ;; MSG SIZE  rcvd: 61
-  --------------------------------------------------
-  
-  vm13$ cd $HOME
-  vm13$ dig
-      > @vm13             // サーバー指定
-      > ns11.yahoo.co.jp  // 正引き名前解決
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.8 <<>> @vm13 ns11.yahoo.co.jp
-  ; (1 server found)
-  ;; global options: +cmd
-  ;; Got answer:
-  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 7498
-  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
-  
-  ;; OPT PSEUDOSECTION:
-  ; EDNS: version: 0, flags:; udp: 4096
-  
-  -- 質問セクション
-  ;; QUESTION SECTION:
-  ;ns11.yahoo.co.jp. IN A
-  
-  -- 回答セクション
-  ;; ANSWER SECTION:
-  ns11.yahoo.co.jp. 260 IN A 124.83.255.37
-  
-  ;; Query time: 21 msec
-  ;; SERVER: 192.168.122.13#53(192.168.122.13)
-  ;; WHEN: 土  4月 22 19:38:12 JST 2023
-  ;; MSG SIZE  rcvd: 61
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[07]
-  コマンド(rndc) - 01 (ゾーン更新をマスターからスレーブに通知)
-  
-[内容]
-  ## 作業内容
-    コマンド(rndc)でDNSサーバーを制御する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : マスター
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : スレーブ
-  
-  ## コマンド(rndc)
-    rndc -b XX          : IPアドレス(XX)を指定
-    rndc -c XX          : 設定ファイル(XX)を指定
-    rndc -s XX          : ホスト名(XX)を指定
-    rndc -p XX          : ポート番号(XX)を指定
-    rndc -k XX          : 設定ファイル(XX)を指定
-    rndc -y XX          : RNDCキー(XX)を指定
-    rndc reload         : 設定ファイルとゾーン情報をリロード (シリアル番号更新時のみ)
-    rndc reload XX      : ゾーン情報(XX)のみリロード (シリアル番号更新時のみ)
-    rndc reconfig       : 設定ファイル(named.conf)と新規追加のゾーン情報のみリロード
-    rndc stats          : 統計情報をファイル出力
-    rndc status         : ステータス表示
-    rndc dumpdb -all    : ゾーン情報をファイルにダンプ、ゾーンとキャッシュ両方
-    rndc dumpdb -zones  : ゾーン情報をファイルにダンプ、ゾーンのみ
-    rndc dumpdb -cache  : ゾーン情報をファイルにダンプ、キャッシュのみ
-    rndc flush          : 全キャッシュを消去
-    rndc flushname XX   : キャッシュレコード(XX)を消去
-    rndc notify         : マスターからスレーブにゾーン更新を通知 (シリアル番号更新時のみ)
-    rndc retransfer     : スレーブからマスターにゾーン情報の転送依頼 (シリアル番号を無視)
-    rndc refresh        : スレーブからマスターにゾーン情報の転送強制 (シリアル番号を無視)
-  
-[確認]
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > status                             // ステータス表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  version: BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 (Extended Support Version) <id:7107deb> (unknown)
-  running on vm11             : Linux x86_64 4.15.3 #1 SMP Sun Apr 16 08:02:00 JST 2023
-  boot time                   : Sat, 22 Apr 2023 09:34:05 GMT
-  last configured             : Sat, 22 Apr 2023 09:34:05 GMT
-  configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
-  CPUs found                  : 1
-  worker threads              : 1
-  UDP listeners per interface : 1
-  number of zones             : 3 (0 automatic)
-  debug level                 : 0
-  xfers running               : 0
-  xfers deferred              : 0
-  soa queries in progress     : 0
-  query logging is OFF
-  recursive clients           : 0/900/1000
-  tcp clients                 : 2/150
-  server is up and running
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dig
-      > @vm11        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +authority   // 権威セクション表示
-      > example.com  // ゾーン名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-
-  // シリアル番号は「2023042101」
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dig
-      > @vm11                     // サーバー指定
-      > +noall                    // 全セクション非表示
-      > +authority                // 権威セクション表示
-      > 122.168.192.in-addr.arpa  // ゾーン名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-
-  // シリアル番号は「2023042101」
+  Last login: Sat Jun 17 12:39:49 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-        > (-y rndc-key)                      // キー指定
-        > status                             // ステータス表示
+    vm13$ cd $HOME
+    vm13$ dig @localhost +noall +answer +norec www.yahoo.co.jp a
     
     コマンドの実行結果
     --------------------------------------------------
-    version                     : BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 (Extended Support Version) <id:7107deb> (unknown)
-    running on vm12             : Linux x86_64 3.10.0-1160.el7.x86_64 #1 SMP Mon Oct 19 16:18:59 UTC 2020
-    boot time                   : Sat, 22 Apr 2023 10:10:32 GMT
-    last configured             : Sat, 22 Apr 2023 10:10:32 GMT
-    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
-    CPUs found                  : 1
-    worker threads              : 1
-    UDP listeners per interface : 1
-    number of zones             : 3 (0 automatic)
-    debug level                 : 0
-    xfers running               : 0
-    xfers deferred              : 0
-    soa queries in progress     : 0
-    query logging is OFF
-    recursive clients           : 0/900/1000
-    tcp clients                 : 2/150
-    server is up and running
+    www.yahoo.co.jp. 521 IN CNAME edge12.g.yimg.jp.
+    edge12.g.yimg.jp. 20 IN A     182.22.25.252
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12        // サーバー指定
-        > +noall       // 全セクション非表示
-        > +authority   // 権威セクション表示
-        > example.com  // ゾーン名
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-
-    // シリアル番号は「2023042101」
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12                     // サーバー指定
-        > +noall                    // 全セクション非表示
-        > +authority                // 権威セクション表示
-        > 122.168.192.in-addr.arpa  // ゾーン名
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042101 300 300 86400 86400
-
-    // シリアル番号は「2023042101」
-    --------------------------------------------------
-    
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/var/named/example.com.zone -> シリアル番号更新
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  2023042101 -> 2023042201
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/var/named/example.com.rev.zone -> シリアル番号更新
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  2023042101 -> 2023042201
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > reload example.com                 // ゾーン指定でリロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone reload queued
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > reload 122.168.192.in-addr.arpa    // ゾーン指定でリロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone reload queued
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dig
-      > @vm11        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +authority   // 権威セクション表示
-      > example.com  // ゾーン名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-  // シリアル番号は「2023042101 -> 2023042201」
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dig
-      > @vm11                     // サーバー指定
-      > +noall                    // 全セクション非表示
-      > +authority                // 権威セクション表示
-      > 122.168.192.in-addr.arpa  // ゾーン名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-  // シリアル番号は「2023042101 -> 2023042201」
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > notify example.com                 // ゾーン指定でマスターからスレーブに通知
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone notify queued
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > notify 122.168.192.in-addr.arpa    // ゾーン指定でマスターからスレーブに通知
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone notify queued
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12        // サーバー指定
-        > +noall       // 全セクション非表示
-        > +authority   // 権威セクション表示
-        > example.com  // ゾーン名
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-    // シリアル番号は「2023042101 -> 2023042201」
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12                     // サーバー指定
-        > +noall                    // 全セクション非表示
-        > +authority                // 権威セクション表示
-        > 122.168.192.in-addr.arpa  // ゾーン名
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-    // シリアル番号は「2023042101 -> 2023042201」
-    --------------------------------------------------
-    
-  以下の確認に続く
-  
-================================================================================
-[08]
-  コマンド(rndc) - 02 (ゾーン転送をスレーブからマスターに依頼)
-  
-[内容]
-  ## 作業内容
-    コマンド(rndc)でDNSサーバーを制御する
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : マスター
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : スレーブ
-  
-[確認]
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > status                             // ステータス表示
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  version                     : BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 (Extended Support Version) <id:7107deb> (unknown)
-  running on vm11             : Linux x86_64 4.15.3 #1 SMP Sun Apr 16 08:02:00 JST 2023
-  boot time                   : Sat, 22 Apr 2023 09:34:05 GMT
-  last configured             : Sat, 22 Apr 2023 09:34:05 GMT
-  configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
-  CPUs found                  : 1
-  worker threads              : 1
-  UDP listeners per interface : 1
-  number of zones             : 3 (0 automatic)
-  debug level                 : 0
-  xfers running               : 0
-  xfers deferred              : 0
-  soa queries in progress     : 0
-  query logging is OFF
-  recursive clients           : 0/900/1000
-  tcp clients                 : 2/150
-  server is up and running
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dig
-      > @vm11        // サーバー指定
-      > +noall       // 全セクション非表示
-      > +authority   // 権威セクション表示
-      > example.com  // ゾーン名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-  // シリアル番号は「2023042201」
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo dig
-      > @vm11                     // サーバー指定
-      > +noall                    // 全セクション非表示
-      > +authority                // 権威セクション表示
-      > 122.168.192.in-addr.arpa  // ゾーン名
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-  // シリアル番号は「2023042201」
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-        > (-y rndc-key)                      // キー指定
-        > status                             // ステータス表示
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    version                     : BIND 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 (Extended Support Version) <id:7107deb> (unknown)
-    running on vm12             : Linux x86_64 3.10.0-1160.el7.x86_64 #1 SMP Mon Oct 19 16:18:59 UTC 2020
-    boot time                   : Sat, 22 Apr 2023 10:10:32 GMT
-    last configured             : Sat, 22 Apr 2023 10:10:32 GMT
-    configuration file          : /etc/named.conf (/var/named/chroot/etc/named.conf)
-    CPUs found                  : 1
-    worker threads              : 1
-    UDP listeners per interface : 1
-    number of zones             : 3 (0 automatic)
-    debug level                 : 0
-    xfers running               : 0
-    xfers deferred              : 0
-    soa queries in progress     : 0
-    query logging is OFF
-    recursive clients           : 0/900/1000
-    tcp clients                 : 2/150
-    server is up and running
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12        // サーバー指定
-        > +noall       // 全セクション非表示
-        > +authority   // 権威セクション表示
-        > example.com  // ゾーン名
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-    // シリアル番号は「2023042201」
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12                     // サーバー指定
-        > +noall                    // 全セクション非表示
-        > +authority                // 権威セクション表示
-        > 122.168.192.in-addr.arpa  // ゾーン名
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042201 300 300 86400 86400
-
-    // シリアル番号は「2023042201」
-    --------------------------------------------------
-    
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/var/named/example.com.zone -> シリアル番号更新
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  2023042201 -> 2023042202
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo vi /var/named/chroot/var/named/example.com.rev.zone -> シリアル番号更新
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  2023042201 -> 2023042202
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > reload example.com                 // ゾーン指定でリロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone reload queued
-  --------------------------------------------------
-  
-  vm11$ cd $HOME
-  vm11$ sudo rndc
-      > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-      > (-y rndc-key)                      // キー指定
-      > reload 122.168.192.in-addr.arpa    // ゾーン指定でリロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  zone reload queued
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -k /var/named/chroot/etc/rndc.key  // 設定ファイル指定
-        > (-y rndc-key)                      // キー指定
-        > retransfer example.com             // ゾーン指定でマスターへ転送依頼
+    vm13$ cd $HOME
+    vm13$ sudo rndc -k /var/named/chroot/etc/rndc.key flush -> キャッシュを全消去
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo rndc
-        > -k /var/named/chroot/etc/rndc.key    // 設定ファイル指定
-        > (-y rndc-key)                        // キー指定
-        > retransfer 122.168.192.in-addr.arpa  // ゾーン指定でマスターへ転送依頼
+    vm13$ cd $HOME
+    vm13$ dig @localhost +noall +answer +norec www.yahoo.co.jp a
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12        // サーバー指定
-        > +noall       // 全セクション非表示
-        > +authority   // 権威セクション表示
-        > example.com  // ゾーン名
+    vm13$ cd $HOME
+    vm13$ exit
     
     コマンドの実行結果
     --------------------------------------------------
-    example.com. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042202 300 300 86400 86400
-    
-    // シリアル番号は「2023042201 -> 2023042202」
+    Connection to vm11 closed.
     --------------------------------------------------
     
-    vm12$ cd $HOME
-    vm12$ sudo dig
-        > @vm12                     // サーバー指定
-        > +noall                    // 全セクション非表示
-        > +authority                // 権威セクション表示
-        > 122.168.192.in-addr.arpa  // ゾーン名
+  以下の確認に続く
+  
+================================================================================
+[020]
+  管理コマンド - 07
+  
+[内容]
+  ## 作業内容
+    キャッシュ中から特定レコードを消去
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sat Jun 17 15:34:37 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ dig @localhost +noall +answer +norec www1.avswa.com a
     
     コマンドの実行結果
     --------------------------------------------------
-    122.168.192.in-addr.arpa. 86400 IN SOA vm11.example.com. makoto.example.com. 2023042202 300 300 86400 86400
+    www1.avswa.com. 86389 IN CNAME vm11.avswa.com.
+    --------------------------------------------------
     
-    // シリアル番号は「2023042201 -> 2023042202」
+    vm13$ cd $HOME
+    vm13$ dig @localhost +noall +answer +norec www2.avswa.com a
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    www2.avswa.com. 86371 IN CNAME vm11.avswa.com.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo rndc -k /var/named/chroot/etc/rndc.key flushname www1.avswa.com -> キャッシュ中から特定レコードを消去
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ dig @localhost +noall +answer +norec www1.avswa.com a
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ dig @localhost +noall +answer +norec www2.avswa.com a
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    www2.avswa.com. 86310 IN CNAME vm11.avswa.com.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
     --------------------------------------------------
     
   以下の確認に続く
