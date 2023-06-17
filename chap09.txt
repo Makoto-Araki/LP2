@@ -4179,3 +4179,110 @@
   以下の確認に続く
   
 ================================================================================
+[021]
+  ラウンドロビン
+  
+[内容]
+  ## 作業内容
+    ホスト名に対応するIPアドレスを複数返して負荷分散を図る
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sat Jun 17 16:09:18 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/avswa.com.zone -> 正引きファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11 makoto (
+      2023061701  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                     IN  NS     vm11             ; Master
+    vm11             IN  A      192.168.122.11   ; Host1
+    vm12             IN  A      192.168.122.12   ; Host2
+    vm13             IN  A      192.168.122.13   ; Host3
+    www              IN  A      192.168.122.11   ; Web Site  // www.avswa.com に対応するIPアドレスが複数
+    www              IN  A      192.168.122.12   ; Web Site  // www.avswa.com に対応するIPアドレスが複数
+    www              IN  A      192.168.122.13   ; Web Site  // www.avswa.com に対応するIPアドレスが複数
+    mail             IN  MX 10  vm11             ; Mail Server
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone -t /var/named/chroot avswa.com /var/named/avswa.com.zone -> ゾーン情報チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone avswa.com/IN: loaded serial 2023061701
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/named/chroot/var/named/rev.avswa.com.zone -> 逆引きファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $TTL 1D
+    @ IN SOA vm11.avswa.com. makoto.avswa.com. (
+      2023061701  ; serial  // シリアル更新
+      5M          ; refresh
+      5M          ; retry
+      1D          ; expire
+      1D          ; negative
+    )
+    
+                                  IN  NS   vm11.example.com.
+    11                            IN  PTR  vm11.example.com.
+    12                            IN  PTR  vm12.example.com.
+    13                            IN  PTR  vm13.example.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo named-checkzone -t /var/named/chroot 122.168.192.in-addr.arpa /var/named/rev.avswa.com.zone -> ゾーン情報チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    zone 122.168.192.in-addr.arpa/IN: loaded serial 2023061701
+    OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rndc -k /var/named/chroot/etc/rndc.key reload -> ゾーン情報をリロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    server reload successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dig @localhost +noall +answer www.avswa.com a
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    www.avswa.com.  86400  IN  A  192.168.122.12
+    www.avswa.com.  86400  IN  A  192.168.122.13
+    www.avswa.com.  86400  IN  A  192.168.122.11
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
