@@ -24,6 +24,7 @@
 [023] プレイブック - 09
 [024] プレイブック - 10
 [025] プレイブック - 11
+[026] プレイブック - 12
 ================================================================================
 [001]
   構築予定の仮想マシン一覧
@@ -2769,6 +2770,87 @@
   vm11 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   vm12 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
   vm13 :    ok=4    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[026]
+  プレイブック - 12
+  
+[内容]
+  ## 作業内容
+    プレイブック - 12
+  
+[確認]
+  $ cd $HOME
+  $ cat ansible/myhost.yml -> インベントリ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  all:
+    hosts:
+      vm11:
+        ansible_host: 192.168.122.11
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm12:
+        ansible_host: 192.168.122.12
+        ansible_user: makoto
+        ansible_password: ma0122ma
+      vm13:
+        ansible_host: 192.168.122.13
+        ansible_user: makoto
+        ansible_password: ma0122ma
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ vi ansible/mybook12.yml -> プレイブック作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ---
+  - name: Install Packages
+    hosts: vm11
+    gather_facts: no
+    
+    tasks:
+      - name: Install sqlite package
+        ansible.builtin.dnf:
+          name: sqlite
+          state: present
+        become: yes
+      
+      - name: Install pdns package
+        ansible.builtin.dnf:
+          name: pdns
+          state: present
+        become: yes
+      
+      - name: Install pdns-backend-sqlite package
+        ansible.builtin.dnf:
+          name: pdns-backend-sqlite
+          state: present
+        become: yes
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ansible-playbook -i ansible/myhost.yml ansible/mybook12.yml -> プレイブック実行
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  TASK [Install sqlite package]
+  changed: [vm11]
+  
+  TASK [Install pdns package]
+  changed: [vm11]
+  
+  TASK [Install pdns-backend-sqlite package]
+  changed: [vm11]
+  
+  PLAY RECAP
+  vm11 :    ok=3    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
   --------------------------------------------------
   
   以下の確認に続く

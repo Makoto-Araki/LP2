@@ -21,6 +21,8 @@
 [020] 管理コマンド - 07
 [021] ラウンドロビン
 [022] ソフトウェア停止
+[X01] PowerDNS - 01
+[X02] PowerDNS - 02
 ================================================================================
 [001]
   マスターサーバー構築
@@ -4391,6 +4393,291 @@
     Connection to vm13 closed.
     --------------------------------------------------
   
+  以下の確認に続く
+  
+================================================================================
+[X01]
+  PowerDNS - 01
+  
+[内容]
+  ## 作業内容
+    マスターサーバー構築 => 参照(https://doc.powerdns.com/authoritative/guides/basic-database.html)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sat Jun 17 19:46:51 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ which sqlite3 -> コマンド確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /usr/bin/sqlite3
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo find / -name pdns.conf -> 設定ファイル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /etc/pdns/pdns.conf
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pdns/pdns.conf -> ファイル末尾に追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    launch=gsqlite3
+    gsqlite3-database=/var/lib/powerdns/pdns.sqlite3
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir /var/lib/powerdns
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/share/doc/pdns/schema.sqlite3.sql -> バックエンドデータベース作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chown -R pdns:pdns /var/lib/powerdns
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl start pdns
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ systemctl is-active pdns
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dig @localhost www.example.com a -> サンプルレコード問合せ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ; <<>> DiG 9.11.36-RedHat-9.11.36-8.el8 <<>> @localhost www.example.com a
+    ; (2 servers found)
+    ;; global options: +cmd
+    ;; Got answer:
+    ;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 33177  // REFUSED -> 該当レコードなし
+    ;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+    ;; WARNING: recursion requested but not available
+    
+    ;; OPT PSEUDOSECTION:
+    ; EDNS: version: 0, flags:; udp: 1232
+    ;; QUESTION SECTION:
+    ;www.example.com. IN A
+    
+    ;; Query time: 11 msec
+    ;; SERVER: ::1#53(::1)
+    ;; WHEN: 日  6月 18 11:19:20 JST 2023
+    ;; MSG SIZE  rcvd: 44
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo -u pdns pdnsutil create-zone avswa.com vm11.avswa.com -> ゾーン追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Creating empty zone 'avswa.com'
+    Also adding one NS record
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo -u pdns pdnsutil clear-zone avswa.com -> ゾーン情報クリア(メンテナンス用に記述)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME -> ゾーンにレコード登録
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com . SOA 'vm11.avswa.com. makoto.example.com. 2023061801 300 300 300 300'
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com 'vm11' A 192.168.122.11
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com 'vm12' A 192.168.122.12
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com 'vm13' A 192.168.122.13
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com 'www1' CNAME 'vm11.avswa.com'
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com 'www2' CNAME 'vm12.avswa.com'
+    vm11$ sudo -u pdns pdnsutil add-record avswa.com 'mail' MX '10 vm11.avswa.com'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // avswa.com
+    New rrset:
+    avswa.com. 3600 IN SOA vm11.avswa.com makoto.example.com 2023061801 300 300 300 300
+    
+    // vm11
+    New rrset:
+    vm11.avswa.com. 3600 IN A 192.168.122.11
+    
+    // vm12
+    New rrset:
+    vm12.avswa.com. 3600 IN A 192.168.122.12
+    
+    // vm13
+    New rrset:
+    vm13.avswa.com. 3600 IN A 192.168.122.13
+    
+    // www1
+    New rrset:
+    www1.avswa.com. 3600 IN CNAME vm11.avswa.com
+    
+    // www2
+    New rrset:
+    www2.avswa.com. 3600 IN CNAME vm12.avswa.com
+    
+    // mail
+    New rrset:
+    mail.avswa.com. 3600 IN MX 10 vm11.avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo -u pdns pdnsutil list-zone avswa.com -> ゾーン情報
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $ORIGIN .
+    avswa.com 3600 IN SOA vm11.avswa.com makoto.example.com 2023061801 300 300 300 300
+    vm11.avswa.com 3600 IN A     192.168.122.11
+    vm12.avswa.com 3600 IN A     192.168.122.12
+    vm13.avswa.com 3600 IN A     192.168.122.13
+    www1.avswa.com 3600 IN CNAME vm11.avswa.com.
+    www2.avswa.com 3600 IN CNAME vm12.avswa.com.
+    mail.avswa.com 3600 IN MX 10 vm11.avswa.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo -u pdns pdnsutil create-zone 122.168.192.in-addr.arpa vm11.avswa.com -> ゾーン追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Creating empty zone '122.168.192.in-addr.arpa'
+    Also adding one NS record
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo -u pdns pdnsutil clear-zone 122.168.192.in-addr.arpa -> ゾーン情報クリア(メンテナンス用に記述)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME -> ゾーンにレコード登録
+    vm11$ sudo -u pdns pdnsutil add-record 122.168.192.in-addr.arpa . SOA 'vm11.avswa.com. makoto.example.com. 2023061801 300 300 300 300'
+    vm11$ sudo -u pdns pdnsutil add-record 122.168.192.in-addr.arpa 11 PTR vm11.avswa.com
+    vm11$ sudo -u pdns pdnsutil add-record 122.168.192.in-addr.arpa 12 PTR vm12.avswa.com
+    vm11$ sudo -u pdns pdnsutil add-record 122.168.192.in-addr.arpa 13 PTR vm13.avswa.com
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 122.168.192.in-addr.arpa
+    New rrset:
+    122.168.192.in-addr.arpa. 3600 IN SOA vm11.avswa.com makoto.example.com 2023061801 300 300 300 300
+    
+    // 192.168.122.11
+    New rrset:
+    11.122.168.192.in-addr.arpa. 3600 IN PTR vm11.avswa.com
+
+    // 192.168.122.12
+    New rrset:
+    12.122.168.192.in-addr.arpa. 3600 IN PTR vm12.avswa.com
+    
+    // 192.168.122.13
+    New rrset:
+    13.122.168.192.in-addr.arpa. 3600 IN PTR vm13.avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo -u pdns pdnsutil list-zone 122.168.192.in-addr.arpa -> ゾーン情報
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    $ORIGIN .
+    122.168.192.in-addr.arpa 3600 IN SOA vm11.avswa.com makoto.example.com 2023061801 300 300 300 300
+    11.122.168.192.in-addr.arpa 3600 IN PTR vm11.avswa.com
+    12.122.168.192.in-addr.arpa 3600 IN PTR vm12.avswa.com
+    13.122.168.192.in-addr.arpa 3600 IN PTR vm13.avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ dig @localhost +short vm11.avswa.com a
+    vm11$ dig @localhost +short vm12.avswa.com a
+    vm11$ dig @localhost +short vm13.avswa.com a
+    vm11$ dig @localhost +short www1.avswa.com a
+    vm11$ dig @localhost +short www2.avswa.com a
+    vm11$ dig @localhost +short mail.avswa.com mx
+    vm11$ dig @localhost +short -x 192.168.122.11 ptr
+    vm11$ dig @localhost +short -x 192.168.122.12 ptr
+    vm11$ dig @localhost +short -x 192.168.122.13 ptr
+
+    コマンドの実行結果
+    --------------------------------------------------
+    // vm11.avswa.com
+    192.168.122.11
+    
+    // vm12.avswa.com
+    192.168.122.12
+    
+    // vm13.avswa.com
+    192.168.122.13
+    
+    // www1.avswa.com
+    vm11.avswa.com.
+    192.168.122.11
+
+    // www2.avswa.com
+    vm12.avswa.com.
+    192.168.122.12
+    
+    // mail.avswa.com
+    10 vm11.avswa.com.
+
+    // 192.168.122.11
+    vm11.avswa.com.
+
+    // 192.168.122.12
+    vm12.avswa.com.
+
+    // 192.168.122.13
+    vm13.avswa.com.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
