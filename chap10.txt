@@ -1,5 +1,6 @@
 ================================================================================
 [001] 単独サイト
+[002] CGI
 [002] アクセス権限
 [003] 外部設定ファイル
 [01] ソースから構築 - 01 (APR)
@@ -42,7 +43,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Sun Jun 18 19:12:06 2023 from 192.168.122.1
+  Last login: Mon Jun 19 11:46:58 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -79,95 +80,65 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## ルートディレクトリ
-    ServerRoot "/etc/httpd"
+    ServerRoot "/etc/httpd"           // ルートディレクトリ
+    Listen 80                         // 受付ポート
+    Include conf.modules.d/*.conf     // モジュールロード => /etc/httpd/conf.modules.d/*.conf
+    User apache                       // 実行ユーザー
+    Group apache                      // 実行グループ
+    ServerAdmin makoto@localhost      // 管理者メール
+    ServerName www.avswa.com:80       // FQDN
+    DocumentRoot "/var/www/html"      // ドキュメントルート
+    ErrorLog "logs/error_log"         // エラーログ => /etc/httpd/logs/error_log
+    LogLevel warn                     // ログレベル
+    AddDefaultCharset UTF-8           // デフォルト文字コード
+    ErrorDocument 404 /missing.html   // エラー画面 => /var/www/html/missing.html
+    EnableSendfile on                 // 不明
+    AccessFileName .htaccess          // 設定上書ファイル
+    IncludeOptional conf.d/*.conf     // 追加設定
     
-    ## 受付ポート
-    Listen 80
-    
-    ## モジュール => /etc/httpd/conf.modules.d/*.conf
-    Include conf.modules.d/*.conf
-    
-    ## 実行ユーザー
-    User apache
-    
-    ## 実行グループ
-    Group apache
-    
-    ## 管理者メール
-    ServerAdmin makoto@localhost
-    
-    ## ホスト名
-    ServerName www.avswa.com:80
-    
-    ## ドキュメントルート
-    DocumentRoot "/var/www/html"
-    
-    ## エラーログ => /etc/httpd/logs/error_log
-    ErrorLog "logs/error_log"
-    
-    ## ログレベル
-    LogLevel warn
-    
-    ## 文字コード
-    AddDefaultCharset UTF-8
-    
-    ## アクセス権限 => /
     <Directory />
-      AllowOverride none              // 設定上書不可
-      Require all denied              // 全ホストアクセス不可
+      AllowOverride none              // 設定の上書不可
+      Require all denied              // 全ホストがアクセス不可
     </Directory>
     
-    ## アクセス権限 => /var/www
     <Directory "/var/www">
-      AllowOverride None              // 設定上書不可
-      Require all denied              // 全ホストアクセス不可
+      AllowOverride None              // 設定の上書不可
+      Require all denied              // 全ホストがアクセス不可
     </Directory>
     
-    ## アクセス権限 => /var/www/html
     <Directory "/var/www/html">
-      AllowOverride None              // 設定上書不可
-      Require all granted             // 全ホストアクセス可能
-      Options Indexes FollowSymLinks  // Enable DirectoryIndex
+      AllowOverride None              // 設定の上書不可
+      Require all granted             // 全ホストがアクセス可能
+      Options Indexes FollowSymLinks  // オプション有効 => DirectoryIndex
     </Directory>
     
-    ## アクセス権限 => /var/www/cgi-bin
     <Directory "/var/www/cgi-bin">
-      AllowOverride None              // 設定上書不可
-      Require all granted             // 全ホストアクセス可能
+      AllowOverride None              // 設定の上書不可
+      Require all granted             // 全ホストがアクセス可能
       Options None                    // 全オプション無効
     </Directory>
     
-    ## モジュール => dir
     <IfModule dir_module>
-      DirectoryIndex index.html
+      DirectoryIndex index.html       // デフォルトファイル
     </IfModule>
     
-    ## モジュール => alias_module
     <IfModule alias_module>
-      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"  // 参照 => http://localhost/cgi-bin/file.cgi => /var/www/cgi-bin/file.cgi
     </IfModule>
     
-    ## ファイル対象 => .ht*
     <Files ".ht*">
-      Require all denied
+      Require all denied              // 全ホストがアクセス不可 => .htaccess
     </Files>
     
-    ## モジュール => mime_magic_module
     <IfModule mime_magic_module>
-      MIMEMagicFile conf/magic
+      MIMEMagicFile conf/magic        // MIMEタイプファイルの格納場所
     </IfModule>
     
-    ## モジュール => log_config_module
     <IfModule log_config_module>
-      <IfModule logio_module>
-        LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
-      </IfModule>
       LogFormat "%h %l %u %t \"%r\" %>s %b" common
       CustomLog "logs/access_log" common
     </IfModule>
     
-    ## モジュール => mime_module
     <IfModule mime_module>
       TypesConfig /etc/mime.types
       AddType application/x-compress .Z
@@ -175,15 +146,14 @@
       AddType text/html .shtml
       AddOutputFilter INCLUDES .shtml
     </IfModule>
+    --------------------------------------------------
     
-    ## エラー画面 => /etc/httpd/missing.html
-    ErrorDocument 404 /missing.html
+    vm11$ cd $HOME
+    vm11$ sudo apachectl configtest
     
-    ## UNKNOWN
-    EnableSendfile on
-    
-    ## 追加設定ファイル
-    IncludeOptional conf.d/*.conf
+    コマンドの実行結果
+    --------------------------------------------------
+    Syntax OK
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -219,7 +189,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/
+    vm11$ curl http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
@@ -227,7 +197,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/aaa.html -> 存在しないファイル
+    vm11$ curl http://localhost/aaa.html -> 存在しないファイル
     
     コマンドの実行結果
     --------------------------------------------------
@@ -242,34 +212,109 @@
     Connection to vm11 closed.
     --------------------------------------------------
     
+  以下の確認に続く
+  
+================================================================================
+[002]
+  CGI
+  
+[内容]
+  ## 作業内容
+    CGI
+  
+[確認]
   $ cd $HOME
-  $ sudo vi /etc/hosts
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11 vm11.avswa.com  // 修正
-  192.168.122.12 vm12 vm12.avswa.com  // 修正
-  192.168.122.13 vm13 vm13.avswa.com  // 修正
+  Last login: Tue Jun 20 08:14:53 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  $ cd $HOME
-  $ curl http://vm11.avswa.com:80/
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ curl http://vm11.avswa.com:80/aaa.html -> 存在しないファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>エラー画面</h1></body></html>
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep alias -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    alias_module (shared)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ which perl
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /usr/bin/perl
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/cgi-bin/file1.cgi -> CGI
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #!/usr/bin/perl
+    
+    print <<EOF;
+    Content-type: text/html
+    
+    <html><body><h1>Hello World</h1></body></html>
+    EOF
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chown apache:apache /var/www/cgi-bin/file1.cgi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 700 /var/www/cgi-bin/file1.cgi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/cgi-bin/file1.cgi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Hello World</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
