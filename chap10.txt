@@ -1,4 +1,7 @@
 ================================================================================
+[001] 単独サイト
+[002] アクセス権限
+[003] 外部設定ファイル
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -25,6 +28,570 @@
 [21] ソースから構築(Squid)
 [22] 制御コマンド(Squid)
 [23] 設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
+================================================================================
+[001]
+  単独サイト
+  
+[内容]
+  ## 作業内容
+    単独サイト
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jun 18 19:12:06 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo firewall-cmd --list-all
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    public
+      target: default
+      icmp-block-inversion: no
+      interfaces: 
+      sources: 
+      services: cockpit dhcpv6-client dns http https iscsi-target ssh  // http, https を確認
+      ports: 12865/tcp 12866/tcp
+      protocols: 
+      forward: no
+      masquerade: no
+      forward-ports: 
+      source-ports: 
+      icmp-blocks: 
+      rich rules: 
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cp -p /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.org -> 設定ファイルのバックアップ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## ルートディレクトリ
+    ServerRoot "/etc/httpd"
+    
+    ## 受付ポート
+    Listen 80
+    
+    ## モジュール => /etc/httpd/conf.modules.d/*.conf
+    Include conf.modules.d/*.conf
+    
+    ## 実行ユーザー
+    User apache
+    
+    ## 実行グループ
+    Group apache
+    
+    ## 管理者メール
+    ServerAdmin makoto@localhost
+    
+    ## ホスト名
+    ServerName www.avswa.com:80
+    
+    ## ドキュメントルート
+    DocumentRoot "/var/www/html"
+    
+    ## エラーログ => /etc/httpd/logs/error_log
+    ErrorLog "logs/error_log"
+    
+    ## ログレベル
+    LogLevel warn
+    
+    ## 文字コード
+    AddDefaultCharset UTF-8
+    
+    ## アクセス権限 => /
+    <Directory />
+      AllowOverride none              // 設定上書不可
+      Require all denied              // 全ホストアクセス不可
+    </Directory>
+    
+    ## アクセス権限 => /var/www
+    <Directory "/var/www">
+      AllowOverride None              // 設定上書不可
+      Require all denied              // 全ホストアクセス不可
+    </Directory>
+    
+    ## アクセス権限 => /var/www/html
+    <Directory "/var/www/html">
+      AllowOverride None              // 設定上書不可
+      Require all granted             // 全ホストアクセス可能
+      Options Indexes FollowSymLinks  // Enable DirectoryIndex
+    </Directory>
+    
+    ## アクセス権限 => /var/www/cgi-bin
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None              // 設定上書不可
+      Require all granted             // 全ホストアクセス可能
+      Options None                    // 全オプション無効
+    </Directory>
+    
+    ## モジュール => dir
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    ## モジュール => alias_module
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    ## ファイル対象 => .ht*
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    ## モジュール => mime_magic_module
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    ## モジュール => log_config_module
+    <IfModule log_config_module>
+      <IfModule logio_module>
+        LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+      </IfModule>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    ## モジュール => mime_module
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
+    
+    ## エラー画面 => /etc/httpd/missing.html
+    ErrorDocument 404 /missing.html
+    
+    ## UNKNOWN
+    EnableSendfile on
+    
+    ## 追加設定ファイル
+    IncludeOptional conf.d/*.conf
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/html/index.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/html/missing.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>エラー画面</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl enable httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created symlink /etc/systemd/system/multi-user.target.wants/httpd.service → /usr/lib/systemd/system/httpd.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl start httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/aaa.html -> 存在しないファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>エラー画面</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo vi /etc/hosts
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11 vm11.avswa.com  // 修正
+  192.168.122.12 vm12 vm12.avswa.com  // 修正
+  192.168.122.13 vm13 vm13.avswa.com  // 修正
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ curl http://vm11.avswa.com:80/
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ curl http://vm11.avswa.com:80/aaa.html -> 存在しないファイル
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>エラー画面</h1></body></html>
+  --------------------------------------------------
+  
+  以下の確認に続く
+  
+================================================================================
+[002]
+  アクセス権限
+  
+[内容]
+  ## 作業内容
+    アクセス権限
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jun 18 19:15:00 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    ## アクセス権限 => /var/www/html
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    ## アクセス権限 => /var/www/html/dirA  // 追加
+    <Directory "/var/www/html/dirA">       // 追加
+      AllowOverride None                   // 追加
+      Require all denied                   // 追加 => 全ホストをアクセス不可
+      Options Indexes                      // 追加
+    </Directory>                           // 追加
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir /var/www/html/dirA
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/html/dirA/index.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>This page is in dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/dirA/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+    <html>
+    <head>
+    <title>403 Forbidden</title>
+    </head>
+    <body>
+    <h1>Forbidden</h1>
+    <p>You don't have permission to access this resource.</p>
+    </body>
+    </html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    ## アクセス権限 => /var/www/html
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    ## アクセス権限 => /var/www/html/dirA
+    <Directory "/var/www/html/dirA">
+      AllowOverride None
+      Require all granted  // 修正 => 全ホストをアクセス可能
+      Options Indexes
+    </Directory>
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/dirA/ -> アクセス可能になった
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>This page is in dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[003]
+  外部設定ファイル
+  
+[内容]
+  ## 作業内容
+    外部設定ファイル
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon Jun 19 11:27:06 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    ## アクセス権限 => /var/www/html
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    ## アクセス権限 => /var/www/html/dirA
+    <Directory "/var/www/html/dirA">
+      AllowOverride All    // 修正 => .htaccess の全設定を有効
+      Require all denied   // 修正 => 全ホストをアクセス不可
+      Options Indexes
+    </Directory>
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/dirA/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+    <html>
+    <head>
+    <title>403 Forbidden</title>
+    </head>
+    <body>
+    <h1>Forbidden</h1>
+    <p>You don't have permission to access this resource.</p>
+    </body>
+    </html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/html/dirA/.htaccess
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Require all granted  // 全ホストをアクセス可能にする
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/dirA/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>This page is in dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    
+    ## アクセス権限 => /var/www/html
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    ## アクセス権限 => /var/www/html/dirA
+    <Directory "/var/www/html/dirA">
+      AllowOverride None   // 修正 => .htaccess の全設定を無効
+      Require all granted  // 修正 => 全ホストのアクセス可能
+      Options Indexes
+    </Directory>
+    
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rm /var/www/html/dirA/.htaccess
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost:80/dirA/ -> アクセス可能になった
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>This page is in dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
 ================================================================================
 [01]
   ソースから構築 - 01 (APR)
