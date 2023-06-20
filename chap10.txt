@@ -4,7 +4,7 @@
 [003] サーバ情報の取得 - 02
 [004] アクセスログ
 [005] エラーログ
-[002] CGI
+[006] プログラム実行 - CGI
 [002] アクセス権限
 [003] 外部設定ファイル
 [01] ソースから構築 - 01 (APR)
@@ -517,14 +517,11 @@
     コマンドの実行結果
     --------------------------------------------------
     ServerRoot "/etc/httpd"
-    
     ...
-    
     <IfModule log_config_module>
       LogFormat "%h %l %u %t \"%r\" %>s %b" common
       CustomLog "logs/access_log" common
     </IfModule>
-    
     ...
     --------------------------------------------------
     
@@ -580,12 +577,67 @@
   以下の確認に続く
   
 ================================================================================
-[002]
-  CGI
+[005]
+  エラーログ
   
 [内容]
   ## 作業内容
-    CGI
+    エラーログ
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 20 10:32:10 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    ...
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/httpd/logs/error_log | tail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [Tue Jun 20 09:29:58.990807 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00493: SIGUSR1 received.  Doing graceful restart
+    [Tue Jun 20 09:29:59.104822 2023] [lbmethod_heartbeat:notice] [pid 828:tid 140015928953152] AH02282: No slotmem from mod_heartmonitor
+    [Tue Jun 20 09:29:59.106023 2023] [http2:warn] [pid 828:tid 140015928953152] AH02951: mod_ssl does not seem to be enabled
+    [Tue Jun 20 09:29:59.107999 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00489: Apache/2.4.37 (rocky) configured -- resuming normal operations
+    [Tue Jun 20 09:29:59.108040 2023] [core:notice] [pid 828:tid 140015928953152] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+    [Tue Jun 20 09:50:07.068113 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00493: SIGUSR1 received.  Doing graceful restart
+    [Tue Jun 20 09:50:07.233972 2023] [lbmethod_heartbeat:notice] [pid 828:tid 140015928953152] AH02282: No slotmem from mod_heartmonitor
+    [Tue Jun 20 09:50:07.234949 2023] [http2:warn] [pid 828:tid 140015928953152] AH02951: mod_ssl does not seem to be enabled
+    [Tue Jun 20 09:50:07.247644 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00489: Apache/2.4.37 (rocky) configured -- resuming normal operations
+    [Tue Jun 20 09:50:07.247687 2023] [core:notice] [pid 828:tid 140015928953152] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[006]
+  プログラム実行 - CGI
+  
+[内容]
+  ## 作業内容
+    プログラム実行 - CGI
   
 [確認]
   $ cd $HOME
@@ -602,11 +654,9 @@
     コマンドの実行結果
     --------------------------------------------------
     ...
-    
     <IfModule alias_module>
       ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
     </IfModule>
-    
     ...
     --------------------------------------------------
     
