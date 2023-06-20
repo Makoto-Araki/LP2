@@ -1,5 +1,7 @@
 ================================================================================
-[001] 単独サイト
+[001] 基本設定
+[002] サーバ情報の取得 - 01
+[003] サーバ情報の取得 - 02
 [002] CGI
 [002] アクセス権限
 [003] 外部設定ファイル
@@ -31,11 +33,11 @@
 [23] 設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
 ================================================================================
 [001]
-  単独サイト
+  基本設定
   
 [内容]
   ## 作業内容
-    単独サイト
+    基本設定
   
 [確認]
   $ cd $HOME
@@ -119,19 +121,19 @@
     </Directory>
     
     <IfModule dir_module>
-      DirectoryIndex index.html       // デフォルトファイル
+      DirectoryIndex index.html
     </IfModule>
     
     <IfModule alias_module>
-      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"  // 参照 => http://localhost/cgi-bin/file.cgi => /var/www/cgi-bin/file.cgi
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
     </IfModule>
     
     <Files ".ht*">
-      Require all denied              // 全ホストがアクセス不可 => .htaccess
+      Require all denied
     </Files>
     
     <IfModule mime_magic_module>
-      MIMEMagicFile conf/magic        // MIMEタイプファイルの格納場所
+      MIMEMagicFile conf/magic
     </IfModule>
     
     <IfModule log_config_module>
@@ -202,6 +204,282 @@
     コマンドの実行結果
     --------------------------------------------------
     <html><body><h1>エラー画面</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[002]
+  サーバ情報の取得 - 01
+  
+[内容]
+  ## 作業内容
+    サーバ情報の取得 - 01
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 20 08:31:58 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep status -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    status_module (shared)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>   // 追加
+      SetHandler server-status  // 追加
+    </Location>                 // 追加
+
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl configtest
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Syntax OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/server-status -> http://vm11.avswa.com/server-status
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ホスト側のブラウザから閲覧推奨
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[003]
+  サーバ情報の取得 - 02
+  
+[内容]
+  ## 作業内容
+    サーバ情報の取得 - 02
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 20 09:19:18 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep info -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    info_module (shared)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>   // 追加
+      SetHandler server-info  // 追加
+    </Location>               // 追加
+    
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl configtest
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Syntax OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/server-info -> http://vm11.avswa.com/server-info
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ホスト側のブラウザから閲覧推奨
     --------------------------------------------------
     
     vm11$ cd $HOME
