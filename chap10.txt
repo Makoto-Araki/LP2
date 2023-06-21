@@ -1508,7 +1508,7 @@
   以下の確認に続く
   
 ================================================================================
-[003]
+[011]
   外部設定ファイル
   
 [内容]
@@ -1521,7 +1521,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Mon Jun 19 11:27:06 2023 from 192.168.122.1
+  //
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1529,27 +1529,91 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ...
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    ServerTokens Prod
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
     
-    ## アクセス権限 => /var/www/html
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
     <Directory "/var/www/html">
       AllowOverride None
       Require all granted
       Options Indexes FollowSymLinks
     </Directory>
     
-    ## アクセス権限 => /var/www/html/dirA
     <Directory "/var/www/html/dirA">
-      AllowOverride All    // 修正 => .htaccess の全設定を有効
-      Require all denied   // 修正 => 全ホストをアクセス不可
+      AllowOverride All  // 修正 : None -> All (.htaccess の全設定を有効)
+      Require all denied
       Options Indexes
     </Directory>
     
-    ...
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo systemctl restart httpd
+    vm11$ sudo apachectl graceful -> 安全に再起動
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1557,28 +1621,19 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/
+    vm11$ curl http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
+    //
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/dirA/
+    vm11$ curl http://localhost/dirA/
     
     コマンドの実行結果
     --------------------------------------------------
-    <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-    <html>
-    <head>
-    <title>403 Forbidden</title>
-    </head>
-    <body>
-    <h1>Forbidden</h1>
-    <p>You don't have permission to access this resource.</p>
-    </body>
-    </html>
+    //
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1590,7 +1645,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo systemctl restart httpd
+    vm11$ sudo apachectl graceful -> 安全に再起動
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1598,7 +1653,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/
+    vm11$ curl http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1606,67 +1661,11 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/dirA/
+    vm11$ curl http://localhost/dirA/
     
     コマンドの実行結果
     --------------------------------------------------
-    <html><body><h1>This page is in dirA</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/httpd/conf/httpd.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ...
-    
-    ## アクセス権限 => /var/www/html
-    <Directory "/var/www/html">
-      AllowOverride None
-      Require all granted
-      Options Indexes FollowSymLinks
-    </Directory>
-    
-    ## アクセス権限 => /var/www/html/dirA
-    <Directory "/var/www/html/dirA">
-      AllowOverride None   // 修正 => .htaccess の全設定を無効
-      Require all granted  // 修正 => 全ホストのアクセス可能
-      Options Indexes
-    </Directory>
-    
-    ...
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo rm /var/www/html/dirA/.htaccess
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl restart httpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ curl http://localhost:80/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ curl http://localhost:80/dirA/ -> アクセス可能になった
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>This page is in dirA</h1></body></html>
+    //
     --------------------------------------------------
     
     vm11$ cd $HOME
