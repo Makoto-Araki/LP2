@@ -7,7 +7,8 @@
 [006] プログラム実行 - CGI
 [007] リダイレクト
 [008] バージョン情報
-[002] アクセス権限
+[009] 各ユーザーのホームディレクトリ公開
+[010] アクセス制御
 [003] 外部設定ファイル
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
@@ -1034,12 +1035,12 @@
   以下の確認に続く
   
 ================================================================================
-[002]
-  アクセス権限
+[009]
+  各ユーザーのホームディレクトリ公開
   
 [内容]
   ## 作業内容
-    アクセス権限
+    各ユーザーのホームディレクトリ公開
   
 [確認]
   $ cd $HOME
@@ -1047,7 +1048,204 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Sun Jun 18 19:15:00 2023 from 192.168.122.1
+  Last login: Tue Jun 20 12:52:24 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls -lh /etc/httpd/conf.d
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r-- 1 root root  400  5月 18 01:28 README
+    -rw-r--r-- 1 root root 2.9K  5月 18 01:28 autoindex.conf
+    -rw-r--r-- 1 root root 1.3K  5月 18 01:26 userdir.conf
+    -rw-r--r-- 1 root root  574  5月 18 01:26 welcome.conf
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/httpd/conf.d/userdir.conf | grep -vE '^#|^.*#'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <IfModule mod_userdir.c>
+      UserDir disabled  // ホームディレクトリを公開しない
+    </IfModule>
+    
+    <Directory "/home/*/public_html">
+      AllowOverride FileInfo AuthConfig Limit Indexes
+      Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+      Require method GET POST OPTIONS
+    </Directory>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep userdir
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    userdir_module (shared)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir /etc/skel/public_html -> スケルトンにディレクトリ追加
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo useradd user1
+    vm11$ sudo useradd user2
+    vm11$ sudo useradd user3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ echo 'user1' | sudo passwd --stdin user1 1>/dev/null
+    vm11$ echo 'user2' | sudo passwd --stdin user2 1>/dev/null
+    vm11$ echo 'user3' | sudo passwd --stdin user3 1>/dev/null
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 711 /home/user1
+    vm11$ sudo chmod 711 /home/user2
+    vm11$ sudo chmod 711 /home/user3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 755 /home/user1/public_html
+    vm11$ sudo chmod 755 /home/user2/public_html
+    vm11$ sudo chmod 755 /home/user3/public_html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su -c "echo '<html><body><h1>User1</h1></body></html>' >> ~user1/public_html/index.html" user1
+    vm11$ su -c "echo '<html><body><h1>User2</h1></body></html>' >> ~user2/public_html/index.html" user2
+    vm11$ su -c "echo '<html><body><h1>User3</h1></body></html>' >> ~user3/public_html/index.html" user3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    パスワード: (各ユーザーのパスワード入力)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf.d/userdir.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <IfModule mod_userdir.c>
+      UserDir public_html  // 修正 : disable => public_html
+    </IfModule>
+    
+    <Directory "/home/*/public_html">
+      AllowOverride All  // 修正 : FileInfo AuthConfig Limit Indexes => All
+      Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+      Require method GET POST OPTIONS
+    </Directory>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ getenforce
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Enforcing
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ setenforce 0 -> SELinux無効
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su -c 'curl http://localhost/~user1/' user1
+    vm11$ su -c 'curl http://localhost/~user2/' user2
+    vm11$ su -c 'curl http://localhost/~user3/' user3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // user1
+    パスワード: (パスワード入力)
+    <html><body><h1>User1</h1></body></html>
+
+    // user2
+    パスワード: (パスワード入力)
+    <html><body><h1>User2</h1></body></html>
+    
+    // user3
+    パスワード: (パスワード入力)
+    <html><body><h1>User3</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/~user1/
+    vm11$ curl http://localhost/~user2/
+    vm11$ curl http://localhost/~user3/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // user1
+    <html><body><h1>User1</h1></body></html>
+    
+    // user2
+    <html><body><h1>User2</h1></body></html>
+    
+    // user3
+    <html><body><h1>User3</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[010]
+  アクセス制御
+  
+[内容]
+  ## 作業内容
+    アクセス制御
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Wed Jun 21 11:50:47 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1055,23 +1253,87 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ...
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    ServerTokens Prod
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
     
-    ## アクセス権限 => /var/www/html
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
     <Directory "/var/www/html">
       AllowOverride None
       Require all granted
       Options Indexes FollowSymLinks
     </Directory>
     
-    ## アクセス権限 => /var/www/html/dirA  // 追加
-    <Directory "/var/www/html/dirA">       // 追加
-      AllowOverride None                   // 追加
-      Require all denied                   // 追加 => 全ホストをアクセス不可
-      Options Indexes                      // 追加
-    </Directory>                           // 追加
+    <Directory "/var/www/html/dirA">  // 追加
+      AllowOverride None              // 追加
+      Require all granted             // 追加 => 全ホストをアクセス可
+      Options Indexes                 // 追加
+    </Directory>                      // 追加
     
-    ...
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1087,11 +1349,11 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    <html><body><h1>This page is in dirA</h1></body></html>
+    <html><body><h1>dirA</h1></body></html>
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo systemctl restart httpd
+    vm11$ sudo apachectl graceful -> 安全に再起動
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1099,7 +1361,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/
+    vm11$ curl http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1107,7 +1369,119 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost:80/dirA/
+    vm11$ curl http://localhost/dirA/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    ServerTokens Prod
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/html/dirA">
+      AllowOverride None
+      Require all denied  // 修正 => 全ホストをアクセス不可
+      Options Indexes
+    </Directory>
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/dirA/ -> アクセス不可
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1121,54 +1495,6 @@
     <p>You don't have permission to access this resource.</p>
     </body>
     </html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/httpd/conf/httpd.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ...
-    
-    ## アクセス権限 => /var/www/html
-    <Directory "/var/www/html">
-      AllowOverride None
-      Require all granted
-      Options Indexes FollowSymLinks
-    </Directory>
-    
-    ## アクセス権限 => /var/www/html/dirA
-    <Directory "/var/www/html/dirA">
-      AllowOverride None
-      Require all granted  // 修正 => 全ホストをアクセス可能
-      Options Indexes
-    </Directory>
-    
-    ...
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl restart httpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ curl http://localhost:80/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ curl http://localhost:80/dirA/ -> アクセス可能になった
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>This page is in dirA</h1></body></html>
     --------------------------------------------------
     
     vm11$ cd $HOME
