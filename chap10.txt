@@ -4,12 +4,13 @@
 [003] サーバ情報の取得 - 02
 [004] アクセスログ
 [005] エラーログ
-[006] プログラム実行 - 01
+[006] プログラム実行 - CGI
 [007] リダイレクト
 [008] バージョン情報
 [009] 各ユーザーのホームディレクトリ公開
 [010] アクセス制御
-[011] 外部設定ファイル
+[011] 外部設定ファイル - 01
+[012] 外部設定ファイル - 02
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -636,11 +637,11 @@
   
 ================================================================================
 [006]
-  プログラム実行 - 01
+  プログラム実行 - CGI
   
 [内容]
   ## 作業内容
-    プログラム実行 - 01
+    プログラム実行 - CGI
   
 [確認]
   $ cd $HOME
@@ -1177,7 +1178,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ setenforce 0 -> SELinux無効
+    vm11$ sudo setenforce 0 -> SELinux無効
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1509,11 +1510,11 @@
   
 ================================================================================
 [011]
-  外部設定ファイル
+  外部設定ファイル - 01
   
 [内容]
   ## 作業内容
-    外部設定ファイル
+    外部設定ファイル - 01
   
 [確認]
   $ cd $HOME
@@ -1675,6 +1676,185 @@
     コマンドの実行結果
     --------------------------------------------------
     <html><body><h1>dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[012]
+  外部設定ファイル - 02
+  
+[内容]
+  ## 作業内容
+    外部設定ファイル - 02
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Wed Jun 21 17:47:15 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    ServerTokens Prod
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/html/dirA">
+      AllowOverride All  // 確認 :  All (.htaccess の全設定を有効)
+      Require all denied
+      Options Indexes
+    </Directory>
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/html/dirA/.htaccess
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Require all granted
+    Options +ExecCGI            // 追加 : CGI実行可能
+    AddHandler cgi-script .cgi  // 追加
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/html/dirA/file1.cgi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #!/usr/bin/perl
+    
+    print <<EOF;
+    Content-type: text/html
+    
+    <html><body><h1>Hello World</h1></body></html>
+    EOF
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 755 /var/www/html/dirA/file1.cgi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/dirA/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>dirA</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/dirA/file1.cgi
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Hello World</h1></body></html>
     --------------------------------------------------
     
     vm11$ cd $HOME
