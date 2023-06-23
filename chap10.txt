@@ -15,6 +15,7 @@
 [014] ダイジェスト認証
 [015] ホストベースのアクセス制御 - 01
 [016] ホストベースのアクセス制御 - 02
+[017] バーチャルホスト - 01
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -2765,6 +2766,335 @@
     
     vm12$ cd $HOME
     vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[017]
+  バーチャルホスト - 01
+  
+[内容]
+  ## 作業内容
+    名前ベースのバーチャルホスト
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jun 23 05:21:40 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep dir -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dir_module (shared) -> DSO
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep alias -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    alias_module (shared) -> DSO
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep mime_magic -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mime_magic_module (shared) -> DSO
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep log_config -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    log_config_module (shared) -> DSO
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep mime_module -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mime_module (shared) -> DSO
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf -> 設定ファイルを一新する
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost                  // 削除
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"                  // 削除
+    ErrorLog "logs/error_log"                     // 削除
+    LogLevel warn
+    ServerTokens Prod
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    DirectoryIndex index.html                     // 追加
+    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"     // 追加
+    MIMEMagicFile conf/magic                      // 追加
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common  // 追加
+    TypesConfig /etc/mime.types                   // 追加
+    AddType application/x-compress .Z             // 追加
+    AddType application/x-gzip .gz .tgz           // 追加
+    AddType text/html .shtml                      // 追加
+    AddOutputFilter INCLUDES .shtml               // 追加
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <VirtualHost *:80>                            // 追加
+      ServerAdmin makoto@localhost                // 追加
+      ServerName site1.avswa.com:80               // 追加
+      DocumentRoot "/var/www/site1"               // 追加
+      ErrorLog "logs/site1_err_log"               // 追加
+      CustomLog "logs/site1_log" common           // 追加
+    </VirtualHost>                                // 追加
+    
+    <VirtualHost *:80>                            // 追加
+      ServerAdmin makoto@localhost                // 追加
+      ServerName site2.avswa.com:80               // 追加
+      DocumentRoot "/var/www/site2"               // 追加
+      ErrorLog "logs/site2_err_log"               // 追加
+      CustomLog "logs/site2_log" common           // 追加
+    </VirtualHost>                                // 追加
+    
+    <Directory "/var/www/site1">                  // 追加
+      AllowOverride None                          // 追加
+      Require all granted                         // 追加
+      Options Indexes FollowSymLinks              // 追加
+    </Directory>                                  // 追加
+    
+    <Directory "/var/www/site2">                  // 追加
+      AllowOverride None                          // 追加
+      Require all granted                         // 追加
+      Options Indexes FollowSymLinks              // 追加
+    </Directory>                                  // 追加
+    
+    <Directory "/var/www/html">                   // 削除
+      AllowOverride None                          // 削除
+      Require all granted                         // 削除
+      Options Indexes FollowSymLinks              // 削除
+    </Directory>                                  // 削除
+    
+    <Directory "/var/www/html/dirA">              // 削除
+      AllowOverride All                           // 削除
+      Require all denied                          // 削除
+      Options Indexes                             // 削除
+    </Directory>                                  // 削除
+    
+    <Directory "/var/www/html/dirB">              // 削除
+      AuthType basic                              // 削除
+      AuthName "Enter user and pass"              // 削除
+      AuthUserFile /etc/httpd/conf/htpasswd       // 削除
+      AllowOverride All                           // 削除
+      Require valid-user                          // 削除
+      Options Indexes                             // 削除
+    </Directory>                                  // 削除
+    
+    <Directory "/var/www/html/dirC">              // 削除
+      AuthType digest                             // 削除
+      AuthName "dirC"                             // 削除
+      AuthUserFile /etc/httpd/conf/htdigest       // 削除
+      AllowOverride All                           // 削除
+      Require valid-user                          // 削除
+      Options Indexes                             // 削除
+    </Directory>                                  // 削除
+    
+    <Directory "/var/www/html/dirD">              // 削除
+      AllowOverride All                           // 削除
+      Order allow,deny                            // 削除
+      Allow from all                              // 削除
+      Deny from 192.168.122.12/32                 // 削除
+      Options Indexes                             // 削除
+    </Directory>                                  // 削除
+    
+    <Directory "/var/www/html/dirE">              // 削除
+      AllowOverride All                           // 削除
+      Require all denied                          // 削除
+      Require ip 192.168.122.12                   // 削除
+      Options Indexes                             // 削除
+    </Directory>                                  // 削除
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>                         // 削除
+      DirectoryIndex index.html                   // 削除
+    </IfModule>                                   // 削除
+    
+    <IfModule alias_module>                       // 削除
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"   // 削除
+    </IfModule>                                   // 削除
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    
+    <IfModule mime_magic_module>                    // 削除
+      MIMEMagicFile conf/magic                      // 削除
+    </IfModule>                                     // 削除
+    
+    <IfModule log_config_module>                    // 削除
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common  // 削除
+      CustomLog "logs/access_log" common            // 削除
+    </IfModule>                                     // 削除
+    
+    <IfModule mime_module>                          // 削除
+      TypesConfig /etc/mime.types                   // 削除
+      AddType application/x-compress .Z             // 削除
+      AddType application/x-gzip .gz .tgz           // 削除
+      AddType text/html .shtml                      // 削除
+      AddOutputFilter INCLUDES .shtml               // 削除
+    </IfModule>                                     // 削除
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir /var/www/site1
+    vm11$ sudo mkdir /var/www/site2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 777 /var/www/site1
+    vm11$ sudo chmod 777 /var/www/site2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /var/www/site1/index.html
+    vm11$ sudo vi /var/www/site2/index.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // site1
+    <html><body><h1>Site1</h1></body></html>
+    
+    // site2
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl configtest
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Syntax OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/hosts
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11 site1.avswa.com site2.avswa.com  // 修正
+    192.168.122.12 vm12
+    192.168.122.13 vm13
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://site1.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://site2.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls -lh /etc/httpd/logs/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--. 1 root root 11K  6月 23 05:38 access_log
+    -rw-r--r--. 1 root root 53K  6月 23 12:40 error_log
+    -rw-r--r--. 1 root root   0  6月 23 12:40 site1_err_log  // エラーログ => サイズ0でデータなし
+    -rw-r--r--. 1 root root 133  6月 23 12:44 site1_log      // アクセスログ
+    -rw-r--r--. 1 root root   0  6月 23 12:40 site2_err_log
+    -rw-r--r--. 1 root root  72  6月 23 12:44 site2_log
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/httpd/logs/site1_log -> アクセスログ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    192.168.122.11 - - [23/Jun/2023:12:44:22 +0900] "GET / HTTP/1.1" 200 41
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/httpd/logs/site2_log -> アクセスログ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    192.168.122.11 - - [23/Jun/2023:12:44:26 +0900] "GET / HTTP/1.1" 200 41
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
