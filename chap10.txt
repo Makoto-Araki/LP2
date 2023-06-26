@@ -1,24 +1,24 @@
 ================================================================================
-[001] 基本設定
-[002] サーバ情報の取得 - 01
-[003] サーバ情報の取得 - 02
-[004] アクセスログ
-[005] エラーログ
-[006] プログラム実行 - CGI
-[007] リダイレクト
-[008] バージョン情報
-[009] 各ユーザーのホームディレクトリ公開
-[010] アクセス制御
-[011] 外部設定ファイル - 01
-[012] 外部設定ファイル - 02
-[013] 基本認証
-[014] ダイジェスト認証
-[015] ホストベースのアクセス制御 - 01
-[016] ホストベースのアクセス制御 - 02
-[017] バーチャルホスト
-[018] SSL/TLS - 01
-[019] SSL/TLS - 02
-[020] SSL/TLS - 03
+[001] httpd - 基本設定
+[002] httpd - サーバ情報の取得 - 01
+[003] httpd - サーバ情報の取得 - 02
+[004] httpd - アクセスログ
+[005] httpd - エラーログ
+[006] httpd - プログラム実行 - CGI
+[007] httpd - リダイレクト
+[008] httpd - バージョン情報
+[009] httpd - 各ユーザーのホームディレクトリ公開
+[010] httpd - アクセス制御
+[011] httpd - 外部設定ファイル - 01
+[012] httpd - 外部設定ファイル - 02
+[013] httpd - 基本認証
+[014] httpd - ダイジェスト認証
+[015] httpd - ホストベースのアクセス制御 - 01
+[016] httpd - ホストベースのアクセス制御 - 02
+[017] httpd - バーチャルホスト
+[018] httpd - SSL/TLS - 01
+[019] httpd - SSL/TLS - 02
+[020] httpd - SSL/TLS - 03
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -47,7 +47,7 @@
 [23] 設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
 ================================================================================
 [001]
-  基本設定
+  httpd - 基本設定
   
 [内容]
   ## 作業内容
@@ -232,7 +232,7 @@
   
 ================================================================================
 [002]
-  サーバ情報の取得 - 01
+  httpd - サーバ情報の取得 - 01
   
 [内容]
   ## 作業内容
@@ -368,7 +368,7 @@
   
 ================================================================================
 [003]
-  サーバ情報の取得 - 02
+  httpd - サーバ情報の取得 - 02
   
 [内容]
   ## 作業内容
@@ -508,7 +508,7 @@
   
 ================================================================================
 [004]
-  アクセスログ
+  httpd - アクセスログ
   
 [内容]
   ## 作業内容
@@ -590,7 +590,7 @@
   
 ================================================================================
 [005]
-  エラーログ
+  httpd - エラーログ
   
 [内容]
   ## 作業内容
@@ -645,7 +645,7 @@
   
 ================================================================================
 [006]
-  プログラム実行 - CGI
+  httpd - プログラム実行 - CGI
   
 [内容]
   ## 作業内容
@@ -746,7 +746,7 @@
   
 ================================================================================
 [007]
-  リダイレクト
+  httpd - リダイレクト
   
 [内容]
   ## 作業内容
@@ -912,7 +912,7 @@
   
 ================================================================================
 [008]
-  バージョン情報
+  httpd - バージョン情報
   
 [内容]
   ## 作業内容
@@ -1010,7 +1010,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ http://localhost/server-info -> ホスト側のブラウザから閲覧
+    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1026,7 +1026,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ http://localhost/server-info -> ホスト側のブラウザから閲覧
+    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1045,7 +1045,7 @@
   
 ================================================================================
 [009]
-  各ユーザーのホームディレクトリ公開
+  httpd - 各ユーザーのホームディレクトリ公開
   
 [内容]
   ## 作業内容
@@ -1242,7 +1242,7 @@
   
 ================================================================================
 [010]
-  アクセス制御
+  httpd - アクセス制御
   
 [内容]
   ## 作業内容
@@ -1370,14 +1370,6 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ curl http://localhost/dirA/
     
     コマンドの実行結果
@@ -1482,14 +1474,6 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ curl http://localhost/dirA/ -> アクセス不可
     
     コマンドの実行結果
@@ -1518,7 +1502,7 @@
   
 ================================================================================
 [011]
-  外部設定ファイル - 01
+  httpd - 外部設定ファイル - 01
   
 [内容]
   ## 作業内容
@@ -1630,14 +1614,6 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ curl http://localhost/dirA/
     
     コマンドの実行結果
@@ -1671,14 +1647,6 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ curl http://localhost/dirA/
     
     コマンドの実行結果
@@ -1698,7 +1666,7 @@
   
 ================================================================================
 [012]
-  外部設定ファイル - 02
+  httpd - 外部設定ファイル - 02
   
 [内容]
   ## 作業内容
@@ -1842,22 +1810,6 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ curl http://localhost/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ curl http://localhost/dirA/
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    <html><body><h1>dirA</h1></body></html>
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ curl http://localhost/dirA/file1.cgi
     
     コマンドの実行結果
@@ -1877,7 +1829,7 @@
   
 ================================================================================
 [013]
-  基本認証
+  httpd - 基本認証
   
 [内容]
   ## 作業内容
@@ -2090,7 +2042,7 @@
   
 ================================================================================
 [014]
-  ダイジェスト認証
+  httpd - ダイジェスト認証
   
 [内容]
   ## 作業内容
@@ -2312,7 +2264,7 @@
   
 ================================================================================
 [015]
-  ホストベースのアクセス制御 - 01
+  httpd - ホストベースのアクセス制御 - 01
   
 [内容]
   ## 作業内容
@@ -2542,7 +2494,7 @@
   
 ================================================================================
 [016]
-  ホストベースのアクセス制御 - 02
+  httpd - ホストベースのアクセス制御 - 02
   
 [内容]
   ## 作業内容
@@ -2779,7 +2731,7 @@
   
 ================================================================================
 [017]
-  バーチャルホスト
+  httpd - バーチャルホスト
   
 [内容]
   ## 作業内容
@@ -2844,10 +2796,10 @@
     Include conf.modules.d/*.conf
     User apache
     Group apache
-    ServerAdmin makoto@localhost                  // 削除
+    ServerAdmin makoto@localhost                    // 削除
     ServerName www.avswa.com:80
-    DocumentRoot "/var/www/html"                  // 削除
-    ErrorLog "logs/error_log"                     // 削除
+    DocumentRoot "/var/www/html"                    // 削除
+    ErrorLog "logs/error_log"                       // 削除
     LogLevel warn
     ServerTokens Prod
     AddDefaultCharset UTF-8
@@ -2855,15 +2807,15 @@
     EnableSendfile on
     AccessFileName .htaccess
     IncludeOptional conf.d/*.conf
-    DirectoryIndex index.html                     // 追加
-    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"     // 追加
-    MIMEMagicFile conf/magic                      // 追加
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common  // 追加
-    TypesConfig /etc/mime.types                   // 追加
-    AddType application/x-compress .Z             // 追加
-    AddType application/x-gzip .gz .tgz           // 追加
-    AddType text/html .shtml                      // 追加
-    AddOutputFilter INCLUDES .shtml               // 追加
+    DirectoryIndex index.html                       // 追加
+    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"       // 追加
+    MIMEMagicFile conf/magic                        // 追加
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common    // 追加
+    TypesConfig /etc/mime.types                     // 追加
+    AddType application/x-compress .Z               // 追加
+    AddType application/x-gzip .gz .tgz             // 追加
+    AddType text/html .shtml                        // 追加
+    AddOutputFilter INCLUDES .shtml                 // 追加
     
     <Directory />
       AllowOverride none
@@ -2875,78 +2827,78 @@
       Require all denied
     </Directory>
     
-    <VirtualHost *:80>                            // 追加
-      ServerAdmin makoto@localhost                // 追加
-      ServerName site1.avswa.com:80               // 追加
-      DocumentRoot "/var/www/site1"               // 追加
-      ErrorLog "logs/site1_err_log"               // 追加
-      CustomLog "logs/site1_log" common           // 追加
-    </VirtualHost>                                // 追加
+    <VirtualHost *:80>                              // 追加
+      ServerAdmin makoto@localhost                  // 追加
+      ServerName site1.avswa.com:80                 // 追加
+      DocumentRoot "/var/www/site1"                 // 追加
+      ErrorLog "logs/site1_err_log"                 // 追加
+      CustomLog "logs/site1_log" common             // 追加
+    </VirtualHost>                                  // 追加
     
-    <VirtualHost *:80>                            // 追加
-      ServerAdmin makoto@localhost                // 追加
-      ServerName site2.avswa.com:80               // 追加
-      DocumentRoot "/var/www/site2"               // 追加
-      ErrorLog "logs/site2_err_log"               // 追加
-      CustomLog "logs/site2_log" common           // 追加
-    </VirtualHost>                                // 追加
+    <VirtualHost *:80>                              // 追加
+      ServerAdmin makoto@localhost                  // 追加
+      ServerName site2.avswa.com:80                 // 追加
+      DocumentRoot "/var/www/site2"                 // 追加
+      ErrorLog "logs/site2_err_log"                 // 追加
+      CustomLog "logs/site2_log" common             // 追加
+    </VirtualHost>                                  // 追加
     
-    <Directory "/var/www/site1">                  // 追加
-      AllowOverride None                          // 追加
-      Require all granted                         // 追加
-      Options Indexes FollowSymLinks              // 追加
-    </Directory>                                  // 追加
+    <Directory "/var/www/site1">                    // 追加
+      AllowOverride None                            // 追加
+      Require all granted                           // 追加
+      Options Indexes FollowSymLinks                // 追加
+    </Directory>                                    // 追加
     
-    <Directory "/var/www/site2">                  // 追加
-      AllowOverride None                          // 追加
-      Require all granted                         // 追加
-      Options Indexes FollowSymLinks              // 追加
-    </Directory>                                  // 追加
+    <Directory "/var/www/site2">                    // 追加
+      AllowOverride None                            // 追加
+      Require all granted                           // 追加
+      Options Indexes FollowSymLinks                // 追加
+    </Directory>                                    // 追加
     
-    <Directory "/var/www/html">                   // 削除
-      AllowOverride None                          // 削除
-      Require all granted                         // 削除
-      Options Indexes FollowSymLinks              // 削除
-    </Directory>                                  // 削除
+    <Directory "/var/www/html">                     // 削除
+      AllowOverride None                            // 削除
+      Require all granted                           // 削除
+      Options Indexes FollowSymLinks                // 削除
+    </Directory>                                    // 削除
     
-    <Directory "/var/www/html/dirA">              // 削除
-      AllowOverride All                           // 削除
-      Require all denied                          // 削除
-      Options Indexes                             // 削除
-    </Directory>                                  // 削除
+    <Directory "/var/www/html/dirA">                // 削除
+      AllowOverride All                             // 削除
+      Require all denied                            // 削除
+      Options Indexes                               // 削除
+    </Directory>                                    // 削除
     
-    <Directory "/var/www/html/dirB">              // 削除
-      AuthType basic                              // 削除
-      AuthName "Enter user and pass"              // 削除
-      AuthUserFile /etc/httpd/conf/htpasswd       // 削除
-      AllowOverride All                           // 削除
-      Require valid-user                          // 削除
-      Options Indexes                             // 削除
-    </Directory>                                  // 削除
+    <Directory "/var/www/html/dirB">                // 削除
+      AuthType basic                                // 削除
+      AuthName "Enter user and pass"                // 削除
+      AuthUserFile /etc/httpd/conf/htpasswd         // 削除
+      AllowOverride All                             // 削除
+      Require valid-user                            // 削除
+      Options Indexes                               // 削除
+    </Directory>                                    // 削除
     
-    <Directory "/var/www/html/dirC">              // 削除
-      AuthType digest                             // 削除
-      AuthName "dirC"                             // 削除
-      AuthUserFile /etc/httpd/conf/htdigest       // 削除
-      AllowOverride All                           // 削除
-      Require valid-user                          // 削除
-      Options Indexes                             // 削除
-    </Directory>                                  // 削除
+    <Directory "/var/www/html/dirC">                // 削除
+      AuthType digest                               // 削除
+      AuthName "dirC"                               // 削除
+      AuthUserFile /etc/httpd/conf/htdigest         // 削除
+      AllowOverride All                             // 削除
+      Require valid-user                            // 削除
+      Options Indexes                               // 削除
+    </Directory>                                    // 削除
     
-    <Directory "/var/www/html/dirD">              // 削除
-      AllowOverride All                           // 削除
-      Order allow,deny                            // 削除
-      Allow from all                              // 削除
-      Deny from 192.168.122.12/32                 // 削除
-      Options Indexes                             // 削除
-    </Directory>                                  // 削除
+    <Directory "/var/www/html/dirD">                // 削除
+      AllowOverride All                             // 削除
+      Order allow,deny                              // 削除
+      Allow from all                                // 削除
+      Deny from 192.168.122.12/32                   // 削除
+      Options Indexes                               // 削除
+    </Directory>                                    // 削除
     
-    <Directory "/var/www/html/dirE">              // 削除
-      AllowOverride All                           // 削除
-      Require all denied                          // 削除
-      Require ip 192.168.122.12                   // 削除
-      Options Indexes                             // 削除
-    </Directory>                                  // 削除
+    <Directory "/var/www/html/dirE">                // 削除
+      AllowOverride All                             // 削除
+      Require all denied                            // 削除
+      Require ip 192.168.122.12                     // 削除
+      Options Indexes                               // 削除
+    </Directory>                                    // 削除
     
     <Directory "/var/www/cgi-bin">
       AllowOverride None
@@ -2954,13 +2906,13 @@
       Options None
     </Directory>
     
-    <IfModule dir_module>                         // 削除
-      DirectoryIndex index.html                   // 削除
-    </IfModule>                                   // 削除
+    <IfModule dir_module>                           // 削除
+      DirectoryIndex index.html                     // 削除
+    </IfModule>                                     // 削除
     
-    <IfModule alias_module>                       // 削除
-      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"   // 削除
-    </IfModule>                                   // 削除
+    <IfModule alias_module>                         // 削除
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"     // 削除
+    </IfModule>                                     // 削除
     
     <Files ".ht*">
       Require all denied
@@ -3074,10 +3026,10 @@
     --------------------------------------------------
     -rw-r--r--. 1 root root 11K  6月 23 05:38 access_log
     -rw-r--r--. 1 root root 53K  6月 23 12:40 error_log
-    -rw-r--r--. 1 root root   0  6月 23 12:40 site1_err_log  // エラーログ => サイズ0でデータなし
+    -rw-r--r--. 1 root root   0  6月 23 12:40 site1_err_log  // エラーログ => データなし
     -rw-r--r--. 1 root root 133  6月 23 12:44 site1_log      // アクセスログ
-    -rw-r--r--. 1 root root   0  6月 23 12:40 site2_err_log
-    -rw-r--r--. 1 root root  72  6月 23 12:44 site2_log
+    -rw-r--r--. 1 root root   0  6月 23 12:40 site2_err_log  // エラーログ => データなし
+    -rw-r--r--. 1 root root  72  6月 23 12:44 site2_log      // アクセスログ
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3108,7 +3060,7 @@
   
 ================================================================================
 [018]
-  SSL/TLS - 01
+  httpd - SSL/TLS - 01
   
 [内容]
   ## 作業内容
@@ -3135,7 +3087,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Fri Jun 23 16:47:38 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3201,9 +3153,19 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo echo "01" > /opt/pki/siteCA/serial
-    vm11$ sudo echo "00" > /opt/pki/siteCA/crlnum
+    vm11$ sudo touch /opt/pki/siteCA/serial
+    vm11$ sudo touch /opt/pki/siteCA/crlnum
     
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ su - root
+    vm11# echo "01" >> /opt/pki/siteCA/serial
+    vm11# echo "00" >> /opt/pki/siteCA/crlnum
+    vm11# exit
+
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
@@ -3243,7 +3205,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm12$ sudo openssl ca                             // 証明書署名要求(CSR)を自己署名・デジタル証明書を作成
+    vm12$ sudo openssl ca                             // 証明書署名要求(CSR)を自己署名・サーバー証明書を作成
         > -config /opt/pki/config/openssl-siteCA.cnf  // 設定ファイル
         > -batch                                      // 対話形式は使用しない
         > -in /opt/pki/siteCA/siteCaReq.pem           // 証明書署名要求(CSR)
@@ -3255,18 +3217,84 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> デジタル証明書の内容が出力
+    Using configuration from /opt/pki/config/openssl-siteCA.cnf
+    Check that the request matches the signature
+    Signature ok
+    Certificate Details:
+        Serial Number: 1 (0x1)
+        Validity
+            Not Before: Jun 26 04:19:41 2023 GMT
+            Not After : Jun 25 04:19:41 2024 GMT
+        Subject:
+            countryName         = JP
+            stateOrProvinceName = Saitama
+            organizationName    = avswa.com
+            commonName          = .avswa.com
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                67:55:D1:BE:13:72:ED:15:D6:2C:66:BE:74:F4:2B:F0:ED:94:3A:58
+            X509v3 Authority Key Identifier: 
+                keyid:67:55:D1:BE:13:72:ED:15:D6:2C:66:BE:74:F4:2B:F0:ED:94:3A:58
+            X509v3 Basic Constraints: 
+                CA:TRUE
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+    Certificate is to be certified until Jun 25 04:19:41 2024 GMT (365 days)
+    Write out database with 1 new entries
+    Data Base Updated
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo openssl x509                           // デジタル証明書の内容確認
+    vm11$ sudo openssl x509                           // サーバー証明書の内容確認
         > -in /opt/pki/siteCA/siteCaCert.pem          // サーバー証明書
         > -text                                       // テキスト出力
         > -noout                                      // 出力ファイルなし
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> デジタル証明書の内容が出力
+    Certificate:
+        Data:
+            Version: 3 (0x2)
+            Serial Number: 1 (0x1)
+            Signature Algorithm: sha256WithRSAEncryption
+            Issuer: C = JP, ST = Saitama, O = avswa.com, CN = .avswa.com
+            Validity
+                Not Before: Jun 26 04:19:41 2023 GMT
+                Not After : Jun 25 04:19:41 2024 GMT
+            Subject: C = JP, ST = Saitama, O = avswa.com, CN = .avswa.com
+            Subject Public Key Info:
+                Public Key Algorithm: rsaEncryption
+                    RSA Public-Key: (2048 bit)
+                    Modulus:
+                    …
+                    Exponent: 65537 (0x10001)
+            X509v3 extensions:
+                X509v3 Subject Key Identifier: 
+                    67:55:D1:BE:13:72:ED:15:D6:2C:66:BE:74:F4:2B:F0:ED:94:3A:58
+                X509v3 Authority Key Identifier: 
+                    keyid:67:55:D1:BE:13:72:ED:15:D6:2C:66:BE:74:F4:2B:F0:ED:94:3A:58
+                X509v3 Basic Constraints: 
+                    CA:TRUE
+                X509v3 Key Usage: 
+                    Certificate Sign, CRL Sign
+        Signature Algorithm: sha256WithRSAEncryption
+        …
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat /opt/pki/siteCA/index.txt -> データベース
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    V 240625041941Z 01 unknown /C=JP/ST=Saitama/O=avswa.com/CN=.avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat /opt/pki/siteCA/serial -> シリアル番号
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    02 -> 次に使用される番号の模様
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3281,7 +3309,7 @@
   
 ================================================================================
 [019]
-  SSL/TLS - 02
+  httpd - SSL/TLS - 02
   
 [内容]
   ## 作業内容
@@ -3294,7 +3322,7 @@
       |-- /siteCA
             |-- …
             |-- /private          // 認証局の秘密鍵
-            |-- siteCaCert.pem    // 認証局のデジタル証明書
+            |-- siteCaCert.pem    // 認証局のサーバー証明書
       |-- /site
             |-- site1.csr         // サイト(site1)の証明書署名要求(CSR)
             |-- site1.crt         // サイト(site1)のサーバー証明書
@@ -3307,7 +3335,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Mon Jun 26 13:02:57 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3327,7 +3355,7 @@
       default_ca = CA_default  // セクション「CA_default」を参照
     
     [ CA_default ]
-      dir = /opt/pki/SiteCA
+      dir = /opt/pki/siteCA
       certs = $dir/certs
       crl_dir = $dir/crl
       database = $dir/index.txt
@@ -3390,7 +3418,7 @@
         > -key /opt/pki/site/site1.key                    // 秘密鍵ファイル
         > -out /opt/pki/site/site1.csr                    // 証明書署名要求(CSR)
         > -passin pass:ma0122ma                           // 秘密鍵のパスフレーズ
-        > -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=avswa.com/CN=site1.example.com"  // サイト情報
+        > -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=avswa.com/CN=site1.avswa.com"  // サイト情報
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3403,7 +3431,7 @@
         > -key /opt/pki/site/site2.key                    // 秘密鍵ファイル
         > -out /opt/pki/site/site2.csr                    // 証明書署名要求(CSR)
         > -passin pass:ma0122ma                           // 秘密鍵のパスフレーズ
-        > -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=avswa.com/CN=site2.example.com"  // サイト情報
+        > -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=avswa.com/CN=site2.avswa.com"  // サイト情報
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3423,7 +3451,31 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> デジタル証明書の内容が出力
+    Using configuration from /opt/pki/config/openssl-site.cnf
+    Check that the request matches the signature
+    Signature ok
+    Certificate Details:
+        Serial Number: 2 (0x2)
+        Validity
+            Not Before: Jun 26 04:56:34 2023 GMT
+            Not After : Jun 25 04:56:34 2024 GMT
+        Subject:
+            countryName         = JP
+            stateOrProvinceName = Saitama
+            organizationName    = avswa.com
+            commonName          = site1.avswa.com
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                C1:F8:7D:CC:69:99:88:BA:5E:23:C1:D8:A6:39:C4:34:9D:6F:36:73
+            X509v3 Authority Key Identifier: 
+                keyid:67:55:D1:BE:13:72:ED:15:D6:2C:66:BE:74:F4:2B:F0:ED:94:3A:58
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Key Usage: 
+                Digital Signature, Non Repudiation, Key Encipherment
+    Certificate is to be certified until Jun 25 04:56:34 2024 GMT (365 days)
+    Write out database with 1 new entries
+    Data Base Updated
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3439,7 +3491,31 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> デジタル証明書の内容が出力
+    Using configuration from /opt/pki/config/openssl-site.cnf
+    Check that the request matches the signature
+    Signature ok
+    Certificate Details:
+        Serial Number: 3 (0x3)
+        Validity
+            Not Before: Jun 26 05:01:31 2023 GMT
+            Not After : Jun 25 05:01:31 2024 GMT
+        Subject:
+            countryName         = JP
+            stateOrProvinceName = Saitama
+            organizationName    = avswa.com
+            commonName          = site2.avswa.com
+        X509v3 extensions:
+            X509v3 Subject Key Identifier: 
+                73:2E:1C:53:9D:26:C5:21:92:50:B5:7E:B5:DD:26:20:C7:B4:97:84
+            X509v3 Authority Key Identifier: 
+                keyid:67:55:D1:BE:13:72:ED:15:D6:2C:66:BE:74:F4:2B:F0:ED:94:3A:58
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Key Usage: 
+                Digital Signature, Non Repudiation, Key Encipherment
+    Certificate is to be certified until Jun 25 05:01:31 2024 GMT (365 days)
+    Write out database with 1 new entries
+    Data Base Updated
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3454,7 +3530,7 @@
   
 ================================================================================
 [020]
-  SSL/TLS - 03
+  httpd - SSL/TLS - 03
   
 [内容]
   ## 作業内容
@@ -3464,10 +3540,8 @@
     /opt/pki
       |-- /site
             |-- site1.key  // サイト(site1)の秘密鍵
-            |-- site1.csr  // サイト(site1)の証明書署名要求(CSR)
             |-- site1.crt  // サイト(site1)のサーバー証明書
             |-- site2.key  // サイト(site2)の秘密鍵
-            |-- site2.csr  // サイト(site2)の証明書署名要求(CSR)
             |-- site2.crt  // サイト(site2)のサーバー証明書
   
 [確認]
@@ -3476,7 +3550,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Mon Jun 26 13:44:26 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3484,324 +3558,261 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    //
+    -rw-r--r--. 1 root root 4.3K  6月 26 13:56 site1.crt
+    -rw-r--r--. 1 root root 1001  6月 26 13:49 site1.csr
+    -rw-------. 1 root root 1.8K  6月 26 13:47 site1.key
+    -rw-r--r--. 1 root root 4.3K  6月 26 14:01 site2.crt
+    -rw-r--r--. 1 root root 1001  6月 26 13:50 site2.csr
+    -rw-------. 1 root root 1.8K  6月 26 13:48 site2.key
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep ssl -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なしのためインストールが必要
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo dnf -y install mod_ssl
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
     --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ sudo vi /etc/httpd/conf/httpd.conf
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## 追加モジュール
-  LoadModule ssl_module modules/mod_ssl.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ## ServerAdmin makoto@example.com -> httpd-vhosts.conf に移動
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-
-  ## キープアライブ
-  KeepAlive on
-
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  ## DocumentRoot "/usr/local/apache2/htdocs" -> httpd-vhosts.conf に移動
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerName www.avswa.com
+    LogLevel warn
+    ServerTokens Prod
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    DirectoryIndex index.html
+    ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    MIMEMagicFile conf/magic
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common
+    TypesConfig /etc/mime.types
     AddType application/x-compress .Z
     AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  
-  ## 追加設定ファイル
-  IncludeOptional conf/extra/httpd-vhosts.conf
-  IncludeOptional conf/extra/httpd-ssl.conf
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# vi httpd-vhosts.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <VirtualHost *:80>
-    ServerName site1.example.com
-    ServerAdmin site1@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site1"
-    CustomLog "logs/site1_access_log" common
-    ErrorLog "logs/site1_error_log"
-  </VirtualHost>
-  
-  <VirtualHost *:80>
-    ServerName site2.example.com
-    ServerAdmin site2@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site2"
-    CustomLog "logs/site2_access_log" common
-    ErrorLog "logs/site2_error_log"
-  </VirtualHost>
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# vi httpd-ssl.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## リスニング対象のポート番号
-  Listen 443
-
-  ## クライアント接続時に許可する暗号化ランク
-  SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
-  SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
-
-  ## 負荷の低い暗号化アルゴリズムを自動選択
-  SSLHonorCipherOrder on
-
-  ## サポートするプロトコル
-  SSLProtocol all -SSLv3
-  SSLProxyProtocol all -SSLv3
-
-  ## 秘密鍵パスフレーズ入力時の入力方式
-  SSLPassPhraseDialog builtin
-  
-  ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
-  <FilesMatch "\.(cgi|shtml|phtml|php)$">
-    SSLOptions +StdEnvVars
-  </FilesMatch>
-  
-  ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
-  <Directory "/usr/local/apache2/cgi-bin">
-    SSLOptions +StdEnvVars
-  </Directory>
-  
-  ## MSIE関連の問題解決
-  BrowserMatch "MSIE [2-5]" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
-  
-  ## HTTPS接続時のデフォルト設定(site1)
-  <VirtualHost *:443>
-    ServerName site1.example.com
-    ServerAdmin site1@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site1"
-    SSLEngine on
-    SSLCertificateFile "/opt/pki/site/site1.crt"
-    SSLCertificateKeyFile "/opt/pki/site/site1.key"
-  </VirtualHost>
-
-  ## HTTPS接続時のデフォルト設定(site2)
-  <VirtualHost *:443>
-    ServerName site2.example.com
-    ServerAdmin site2@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site2"
-    SSLEngine on
-    SSLCertificateFile "/opt/pki/site/site2.crt"
-    SSLCertificateKeyFile "/opt/pki/site/site2.key"
-  </VirtualHost>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/htdocs
-  vm12# mkdir site1 site2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/htdocs
-  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
-  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Apache/2.4.52 mod_ssl (Pass Phrase Dialog)
-  Some of your private key files are encrypted for security reasons.
-  In order to read them you have to provide the pass phrases.
-  
-  Private key site2.example.com:443:0 (/opt/pki/site/site2.key)
-  Enter pass phrase: (秘密鍵のパスフレーズを入力)
-  
-  // パスフレーズの認証が正常に行われた旨のメッセージ出力
-  OK: Pass Phrase Dialog successful.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
+    AddType text/html .shtml
+    AddOutputFilter INCLUDES .shtml
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <VirtualHost *:80>
+      ServerAdmin makoto@localhost
+      ServerName site1.avswa.com:80
+      DocumentRoot "/var/www/site1"
+      ErrorLog "logs/site1_err_log"
+      CustomLog "logs/site1_log" common
+    </VirtualHost>
+    
+    <VirtualHost *:80>
+      ServerAdmin makoto@localhost
+      ServerName site2.avswa.com:80
+      DocumentRoot "/var/www/site2"
+      ErrorLog "logs/site2_err_log"
+      CustomLog "logs/site2_log" common
+    </VirtualHost>
+    
+    <Directory "/var/www/site1">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/site2">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf.d/ssl.conf -> 設定ファイルの修正
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Listen 443
+    
+    SSLRandomSeed startup builtin                        // 不明
+    SSLRandomSeed connect builtin                        // 不明
+    SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES           // 暗号化の優先順位
+    SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES      // 暗号化の優先順位(プロキシ接続)
+    SSLHonorCipherOrder on                               // 低負荷の暗号化を自動選択
+    SSLProtocol all -SSLv3                               // サポートプロトコル
+    SSLProxyProtocol all -SSLv3                          // サポートプロトコル(プロキシ接続)
+    SSLPassPhraseDialog exec:/etc/ssl/certs/pass_ssl.sh  // 秘密鍵パスフレーズ入力時の入力方式
+    
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+      SSLOptions +StdEnvVars  // SSL/TLS関連の環境変数をCGI/SSIで使用可能
+    </FilesMatch>
+    
+    <Directory "/usr/local/apache2/cgi-bin">
+      SSLOptions +StdEnvVars  // SSL/TLS関連の環境変数をCGI/SSIで使用可能
+    </Directory>
+    
+    <VirtualHost *:443>
+      ServerName site1.avswa.com:443
+      ServerAdmin makoto@localost
+      DocumentRoot "/var/www/site1"
+      ErrorLog "logs/site1_err_log"
+      CustomLog "logs/site1_log" common
+      SSLEngine on
+      SSLCertificateFile "/opt/pki/site/site1.crt"
+      SSLCertificateKeyFile "/opt/pki/site/site1.key"
+    </VirtualHost>
+    
+    <VirtualHost *:443>
+      ServerName site2.avswa.com:443
+      ServerAdmin makoto@localhost
+      DocumentRoot "/var/www/site2"
+      ErrorLog "logs/site2_err_log"
+      CustomLog "logs/site2_log" common
+      SSLEngine on
+      SSLCertificateFile "/opt/pki/site/site2.crt"
+      SSLCertificateKeyFile "/opt/pki/site/site2.key"
+    </VirtualHost>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/ssl/certs/pass_ssl.sh -> スクリプト作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #!/bin/bash
+    
+    case $1 in
+      site1.avswa.com:443)
+        echo 'ma0122ma';;
+      site2.avswa.com:443)
+        echo 'ma0122ma';;
+    esac
+    
+    exit 0
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 755 /etc/ssl/certs/pass_ssl.sh -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ httpd -M | grep ssl -> モジュール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ssl_module (shared) -> DSO
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ getenforce
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Enforcing
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo setenforce 0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl configtest 
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Syntax OK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://site1.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://site2.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --cacert /opt/pki/siteCA/siteCaCert.pem https://site1.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --cacert /opt/pki/siteCA/siteCaCert.pem https://site2.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ apachectl stop (Apacheを停止する)
   
   コマンドの実行結果
   --------------------------------------------------
