@@ -23,6 +23,8 @@
 [022] nginx - 基本設定
 [023] nginx - アクセスログ
 [024] nginx - エラーログ
+[025] nginx - リダイレクト
+[026] nginx - バージョン情報
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -3968,7 +3970,6 @@
       server {
         listen 80;                             // Port 80
         server_name vm11.avswa.com;            // Hostname
-        
         error_page 404 /404.html;              // Error 404 => http://vm11.avswa.com/404.html => /etc/nginx/html/404.html
         error_page 500 502 503 504 /50x.html;  // Error 50x => http://vm11.avswa.com/50x.html => /etc/nginx/html/50x.html
         
@@ -4126,15 +4127,15 @@
     127.0.0.1 - - [27/Jun/2023:16:30:34 +0900] "GET / HTTP/1.1" 200 51 "-" "curl/7.61.1" "-"
     127.0.0.1 - - [27/Jun/2023:16:30:36 +0900] "GET / HTTP/1.1" 200 51 "-" "curl/7.61.1" "-"
     
-    $remote_addr             => 127.0.0.1
-    $remote_user             => -
-    [$time_local]            => [27/Jun/2023:16:30:34 +0900]
-    "$request"               => "GET / HTTP/1.1"
-    $status                  => 200
-    $body_bytes_sent         => 51
-    "$http_referer"          => "-"
-    "$http_user_agent"       => "curl/7.61.1"
-    "$http_x_forwarded_for"  => "-"
+    $remote_addr            => 127.0.0.1
+    $remote_user            => -
+    [$time_local]           => [27/Jun/2023:16:30:34 +0900]
+    "$request"              => "GET / HTTP/1.1"
+    $status                 => 200
+    $body_bytes_sent        => 51
+    "$http_referer"         => "-"
+    "$http_user_agent"      => "curl/7.61.1"
+    "$http_x_forwarded_for" => "-"
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -4161,7 +4162,204 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Tue Jun 27 16:30:10 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    …
+    error_log /var/log/nginx/error.log;
+    …
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /var/log/nginx/error.log | tail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    2023/06/27 15:10:04 [error] 3570#0: *14 open() "/etc/nginx/html/501.html" failed (2: No such file or directory), client: 192.168.122.11, server: vm11.avswa.com, request: "GET /501.html HTTP/1.1", host: "vm11.avswa.com"
+    2023/06/27 15:10:43 [error] 3570#0: *15 open() "/etc/nginx/html/aaa.html" failed (2: No such file or directory), client: 192.168.122.1, server: vm11.avswa.com, request: "GET /aaa.html HTTP/1.1", host: "vm11.avswa.com"
+    2023/06/27 15:35:35 [error] 3621#0: *18 open() "/etc/nginx/html/aaa.html" failed (2: No such file or directory), client: 127.0.0.1, server: vm11.avswa.com, request: "GET /aaa.html HTTP/1.1", host: "localhost"
+    2023/06/27 15:38:33 [error] 3621#0: *19 open() "/etc/nginx/html/aaa.html" failed (2: No such file or directory), client: 127.0.0.1, server: vm11.avswa.com, request: "GET /aaa.html HTTP/1.1", host: "localhost"
+    2023/06/27 15:38:51 [error] 3621#0: *21 open() "/etc/nginx/html/aaa.html" failed (2: No such file or directory), client: 127.0.0.1, server: vm11.avswa.com, request: "GET /aaa.html HTTP/1.1", host: "localhost"
+    2023/06/27 16:24:33 [error] 3759#0: *26 open() "/etc/nginx/html/aaa.html" failed (2: No such file or directory), client: 127.0.0.1, server: vm11.avswa.com, request: "GET /aaa.html HTTP/1.1", host: "localhost"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[025]
+  nginx - リダイレクト
+  
+[内容]
+  ## 作業内容
+    リダイレクト
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 27 17:24:50 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user nginx;
+    worker_processes 1;
+    error_log /var/log/nginx/error.log;
+    pid /run/nginx.pid;
+    include /usr/share/nginx/modules/*.conf;
+    
+    ## Events Modules
+    events {
+      worker_connections 1024;
+    }
+    
+    ## HTTP Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      
+      server {
+        listen 80;
+        server_name vm11.avswa.com;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        rewrite ^/index.html$ work1.html redirect;  // 追加 : http://vm11.avswa.com/index.html => http://vm11.avswa.com/work1.html
+        
+        location / {
+          root /etc/nginx/html;
+          index index.html index.htm;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/html/work1.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Work1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -t
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s reload -> 設定を再ロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/index.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html>
+    <head>
+    <title>302 Found</title>
+    </head>
+    <body bgcolor="white">
+    <center><h1>302 Found</h1></center>  // デフォルトではステータス(302)を返す模様
+    <hr>
+    <center>nginx/1.14.1</center>
+    </body>
+    </html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    …
+      server {
+        …
+        rewrite ^/index.html$ work1.html redirect;  // 削除
+        …
+      }
+    …
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo rm /etc/nginx/html/work1.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s reload -> 設定を再ロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[026]
+  nginx - バージョン情報
+  
+[内容]
+  ## 作業内容
+    バージョン情報
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 20 12:21:23 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -4170,26 +4368,104 @@
     コマンドの実行結果
     --------------------------------------------------
     ServerRoot "/etc/httpd"
+    Listen 80
+    Include conf.modules.d/*.conf
+    User apache
+    Group apache
+    ServerAdmin makoto@localhost
+    ServerName www.avswa.com:80
+    DocumentRoot "/var/www/html"
     ErrorLog "logs/error_log"
     LogLevel warn
-    …
+    ServerTokens Prod  // 追加 => Server: Apache
+    AddDefaultCharset UTF-8
+    ErrorDocument 404 /missing.html
+    EnableSendfile on
+    AccessFileName .htaccess
+    IncludeOptional conf.d/*.conf
+    
+    <Directory />
+      AllowOverride none
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www">
+      AllowOverride None
+      Require all denied
+    </Directory>
+    
+    <Directory "/var/www/html">
+      AllowOverride None
+      Require all granted
+      Options Indexes FollowSymLinks
+    </Directory>
+    
+    <Directory "/var/www/cgi-bin">
+      AllowOverride None
+      Require all granted
+      Options None
+    </Directory>
+    
+    <IfModule dir_module>
+      DirectoryIndex index.html
+    </IfModule>
+    
+    <IfModule alias_module>
+      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+    </IfModule>
+    
+    <Files ".ht*">
+      Require all denied
+    </Files>
+    
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+    
+    <Location /server-info>
+      SetHandler server-info
+    </Location>
+    
+    <IfModule mime_magic_module>
+      MIMEMagicFile conf/magic
+    </IfModule>
+    
+    <IfModule log_config_module>
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      CustomLog "logs/access_log" common
+    </IfModule>
+    
+    <IfModule mime_module>
+      TypesConfig /etc/mime.types
+      AddType application/x-compress .Z
+      AddType application/x-gzip .gz .tgz
+      AddType text/html .shtml
+      AddOutputFilter INCLUDES .shtml
+    </IfModule>
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /etc/httpd/logs/error_log | tail
+    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
     
     コマンドの実行結果
     --------------------------------------------------
-    [Tue Jun 20 09:29:58.990807 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00493: SIGUSR1 received.  Doing graceful restart
-    [Tue Jun 20 09:29:59.104822 2023] [lbmethod_heartbeat:notice] [pid 828:tid 140015928953152] AH02282: No slotmem from mod_heartmonitor
-    [Tue Jun 20 09:29:59.106023 2023] [http2:warn] [pid 828:tid 140015928953152] AH02951: mod_ssl does not seem to be enabled
-    [Tue Jun 20 09:29:59.107999 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00489: Apache/2.4.37 (rocky) configured -- resuming normal operations
-    [Tue Jun 20 09:29:59.108040 2023] [core:notice] [pid 828:tid 140015928953152] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
-    [Tue Jun 20 09:50:07.068113 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00493: SIGUSR1 received.  Doing graceful restart
-    [Tue Jun 20 09:50:07.233972 2023] [lbmethod_heartbeat:notice] [pid 828:tid 140015928953152] AH02282: No slotmem from mod_heartmonitor
-    [Tue Jun 20 09:50:07.234949 2023] [http2:warn] [pid 828:tid 140015928953152] AH02951: mod_ssl does not seem to be enabled
-    [Tue Jun 20 09:50:07.247644 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00489: Apache/2.4.37 (rocky) configured -- resuming normal operations
-    [Tue Jun 20 09:50:07.247687 2023] [core:notice] [pid 828:tid 140015928953152] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+    (省略) -> 出力されなかった
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo apachectl graceful -> 安全に再起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [Current Configuration] -> ServerTokens: Prod を確認
     --------------------------------------------------
     
     vm11$ cd $HOME
