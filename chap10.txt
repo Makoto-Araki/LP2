@@ -4359,101 +4359,84 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  Last login: Tue Jun 20 12:21:23 2023 from 192.168.122.1
+  //
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    vm11$ curl -I http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
-    ServerRoot "/etc/httpd"
-    Listen 80
-    Include conf.modules.d/*.conf
-    User apache
-    Group apache
-    ServerAdmin makoto@localhost
-    ServerName www.avswa.com:80
-    DocumentRoot "/var/www/html"
-    ErrorLog "logs/error_log"
-    LogLevel warn
-    ServerTokens Prod  // 追加 => Server: Apache
-    AddDefaultCharset UTF-8
-    ErrorDocument 404 /missing.html
-    EnableSendfile on
-    AccessFileName .htaccess
-    IncludeOptional conf.d/*.conf
-    
-    <Directory />
-      AllowOverride none
-      Require all denied
-    </Directory>
-    
-    <Directory "/var/www">
-      AllowOverride None
-      Require all denied
-    </Directory>
-    
-    <Directory "/var/www/html">
-      AllowOverride None
-      Require all granted
-      Options Indexes FollowSymLinks
-    </Directory>
-    
-    <Directory "/var/www/cgi-bin">
-      AllowOverride None
-      Require all granted
-      Options None
-    </Directory>
-    
-    <IfModule dir_module>
-      DirectoryIndex index.html
-    </IfModule>
-    
-    <IfModule alias_module>
-      ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
-    </IfModule>
-    
-    <Files ".ht*">
-      Require all denied
-    </Files>
-    
-    <Location /server-status>
-      SetHandler server-status
-    </Location>
-    
-    <Location /server-info>
-      SetHandler server-info
-    </Location>
-    
-    <IfModule mime_magic_module>
-      MIMEMagicFile conf/magic
-    </IfModule>
-    
-    <IfModule log_config_module>
-      LogFormat "%h %l %u %t \"%r\" %>s %b" common
-      CustomLog "logs/access_log" common
-    </IfModule>
-    
-    <IfModule mime_module>
-      TypesConfig /etc/mime.types
-      AddType application/x-compress .Z
-      AddType application/x-gzip .gz .tgz
-      AddType text/html .shtml
-      AddOutputFilter INCLUDES .shtml
-    </IfModule>
+    HTTP/1.1 200 OK
+    Server: nginx/1.14.1  // バージョン情報が見えてしまう
+    Date: Tue, 27 Jun 2023 12:02:40 GMT
+    Content-Type: text/html
+    Content-Length: 51
+    Last-Modified: Tue, 27 Jun 2023 05:54:02 GMT
+    Connection: keep-alive
+    ETag: "649a797a-33"
+    Accept-Ranges: bytes
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
+    vm11$ sudo vi /etc/nginx/nginx.conf
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力されなかった
+    user nginx;
+    worker_processes 1;
+    error_log /var/log/nginx/error.log;
+    pid /run/nginx.pid;
+    include /usr/share/nginx/modules/*.conf;
+
+    ## Events Modules
+    events {
+      worker_connections 1024;
+    }
+    
+    ## HTTP Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      server_tokens off;  // 追加
+      
+      server {
+        listen 80;
+        server_name vm11.avswa.com;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        
+        location / {
+          root /etc/nginx/html;
+          index index.html index.htm;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+    }
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo apachectl graceful -> 安全に再起動
+    vm11$ sudo nginx -t
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s reload -> 設定を再ロード
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4461,11 +4444,19 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
+    vm11$ curl -I http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
-    [Current Configuration] -> ServerTokens: Prod を確認
+    HTTP/1.1 200 OK
+    Server: nginx  // バージョン情報が見えなくなった
+    Date: Tue, 27 Jun 2023 12:04:29 GMT
+    Content-Type: text/html
+    Content-Length: 51
+    Last-Modified: Tue, 27 Jun 2023 05:54:02 GMT
+    Connection: keep-alive
+    ETag: "649a797a-33"
+    Accept-Ranges: bytes
     --------------------------------------------------
     
     vm11$ cd $HOME
