@@ -19,6 +19,8 @@
 [018] httpd - SSL/TLS - 01
 [019] httpd - SSL/TLS - 02
 [020] httpd - SSL/TLS - 03
+[021] httpd - ソフトウェア停止
+[022] nginx - 基本設定
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -3812,21 +3814,253 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ apachectl stop (Apacheを停止する)
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[021]
+  httpd - ソフトウェア停止
+  
+[内容]
+  ## 作業内容
+    ソフトウェア停止
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Mon Jun 26 15:55:17 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl stop httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl disable httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Removed /etc/systemd/system/multi-user.target.wants/httpd.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
+================================================================================
+[022]
+  nginx - 基本設定
+  
+[内容]
+  ## 作業内容
+    基本設定
+  
+  ## コマンド(nginx)
+    nginx            // Nginxを起動する
+    nginx -s stop    // Nginxを停止する
+    nginx -s quit    // Nginxを安全に停止する
+    nginx -s reload  // Nginxの設定ファイルを読み込む
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  ログアウト
+  Last login: Tue Jun 27 12:50:44 2023 from 192.168.122.1
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ ps aux | grep nginx | grep -v grep
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ソフトウェアが起動していない
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -> ソフトウェア起動
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ps aux | grep nginx | grep -v grep
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    root   3378  0.0  0.1  103424  2168 ?  Ss   13:07   0:00  nginx: master process nginx  // マスタープロセス
+    nginx  3379  0.0  0.5  124740  7984 ?  S    13:07   0:00  nginx: worker process        // ワーカープロセス
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ http://vm11.avswa.com/ -> ホスト側のブラウザから閲覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (ウェルカムページが表示)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s quit -> 安全に停止
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cp -p /etc/nginx/nginx.conf /etc/nginx/nginx.conf.org -> 設定ファイルのバックアップ
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## Worker Process
+    worker_processes 1;
+    
+    ## Events Modules
+    events {
+      worker_connections 1024;
+    }
+    
+    ## HTTP Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      server {
+        listen 80;                             # Port 80
+        server_name vm11.avswa.com;            # Hostname
+        
+        error_page 404 /404.html;              # Error 404 => http://vm11.avswa.com/404.html => /etc/nginx/html/404.html
+        error_page 500 502 503 504 /50x.html;  # Error 50x => http://vm11.avswa.com/50x.html => /etc/nginx/html/50x.html
+        
+        location / {                           # Location 
+          root /etc/nginx/html;                # http://vm11.avswa.com/ => /etc/nginx/html/
+          index index.html index.htm;
+        }
+        
+        location = /404.html {                 # Location http://vm11.avswa.com/404.html
+          root /etc/nginx/html;                # DocumentRoot => /etc/nginx/html
+        }
+        
+        location = /50x.html {                 # Location http://vm11.avswa.com/50x.html
+          root /etc/nginx/html;                # DocumentRoot => /etc/nginx/html
+        }
+      }
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -t
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir -p /etc/nginx/html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/html/index.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/html/404.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Error-404</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/html/50x.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Error-50x</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl enable nginx
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /usr/lib/systemd/system/nginx.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl start nginx
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/aaa.html -> 存在しないファイル
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Error-404</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
