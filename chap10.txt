@@ -21,6 +21,8 @@
 [020] httpd - SSL/TLS - 03
 [021] httpd - ソフトウェア停止
 [022] nginx - 基本設定
+[023] nginx - アクセスログ
+[024] nginx - エラーログ
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -570,14 +572,14 @@
     --------------------------------------------------
     ::1 - - [20/Jun/2023:10:32:39 +0900] "GET / HTTP/1.1" 200 51
     ::1 - - [20/Jun/2023:10:33:39 +0900] "GET / HTTP/1.1" 200 51
-
-    ::1                           // %h  => リモートホスト
-    -                             // %l  => リモートログ名
-    -                             // %u  => ユーザー名
-    [20/Jun/2023:10:32:39 +0900]  // %t  => 処理時刻
-    "GET / HTTP/1.1"              // %r  => リクエストヘッダ
-    200                           // %>s => ステータスコード
-    51                            // %b  => バイト数
+    
+    %h  => ::1                           // リモートホスト
+    %l  => -                             // リモートログ名
+    %u  => -                             // ユーザー名
+    %t  => [20/Jun/2023:10:32:39 +0900]  // 処理時刻
+    %r  => "GET / HTTP/1.1"              // リクエストヘッダ
+    %>s => 200                           // ステータスコード
+    %b  => 51                            // バイト数
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3943,8 +3945,11 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ## Worker Process
+    user nginx;
     worker_processes 1;
+    error_log /var/log/nginx/error.log;
+    pid /run/nginx.pid;
+    include /usr/share/nginx/modules/*.conf;
     
     ## Events Modules
     events {
@@ -3957,24 +3962,27 @@
       default_type application/octet-stream;
       sendfile on;
       keepalive_timeout 65;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      
       server {
-        listen 80;                             # Port 80
-        server_name vm11.avswa.com;            # Hostname
+        listen 80;                             // Port 80
+        server_name vm11.avswa.com;            // Hostname
         
-        error_page 404 /404.html;              # Error 404 => http://vm11.avswa.com/404.html => /etc/nginx/html/404.html
-        error_page 500 502 503 504 /50x.html;  # Error 50x => http://vm11.avswa.com/50x.html => /etc/nginx/html/50x.html
+        error_page 404 /404.html;              // Error 404 => http://vm11.avswa.com/404.html => /etc/nginx/html/404.html
+        error_page 500 502 503 504 /50x.html;  // Error 50x => http://vm11.avswa.com/50x.html => /etc/nginx/html/50x.html
         
-        location / {                           # Location 
-          root /etc/nginx/html;                # http://vm11.avswa.com/ => /etc/nginx/html/
+        location / {                           // Location 
+          root /etc/nginx/html;                // http://vm11.avswa.com/ => /etc/nginx/html/
           index index.html index.htm;
         }
         
-        location = /404.html {                 # Location http://vm11.avswa.com/404.html
-          root /etc/nginx/html;                # DocumentRoot => /etc/nginx/html
+        location = /404.html {                 // Location http://vm11.avswa.com/404.html
+          root /etc/nginx/html;                // DocumentRoot => /etc/nginx/html
         }
         
-        location = /50x.html {                 # Location http://vm11.avswa.com/50x.html
-          root /etc/nginx/html;                # DocumentRoot => /etc/nginx/html
+        location = /50x.html {                 // Location http://vm11.avswa.com/50x.html
+          root /etc/nginx/html;                // DocumentRoot => /etc/nginx/html
         }
       }
     }
@@ -4051,6 +4059,137 @@
     コマンドの実行結果
     --------------------------------------------------
     <html><body><h1>Error-404</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[023]
+  nginx - アクセスログ
+  
+[内容]
+  ## 作業内容
+    アクセスログ
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 27 16:01:22 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    …
+    http {
+      …
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      …
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /var/log/nginx/access.log | tail -n 2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1 - - [27/Jun/2023:16:30:34 +0900] "GET / HTTP/1.1" 200 51 "-" "curl/7.61.1" "-"
+    127.0.0.1 - - [27/Jun/2023:16:30:36 +0900] "GET / HTTP/1.1" 200 51 "-" "curl/7.61.1" "-"
+    
+    $remote_addr             => 127.0.0.1
+    $remote_user             => -
+    [$time_local]            => [27/Jun/2023:16:30:34 +0900]
+    "$request"               => "GET / HTTP/1.1"
+    $status                  => 200
+    $body_bytes_sent         => 51
+    "$http_referer"          => "-"
+    "$http_user_agent"       => "curl/7.61.1"
+    "$http_x_forwarded_for"  => "-"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[024]
+  nginx - エラーログ
+  
+[内容]
+  ## 作業内容
+    エラーログ
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/httpd/conf/httpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ServerRoot "/etc/httpd"
+    ErrorLog "logs/error_log"
+    LogLevel warn
+    …
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/httpd/logs/error_log | tail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [Tue Jun 20 09:29:58.990807 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00493: SIGUSR1 received.  Doing graceful restart
+    [Tue Jun 20 09:29:59.104822 2023] [lbmethod_heartbeat:notice] [pid 828:tid 140015928953152] AH02282: No slotmem from mod_heartmonitor
+    [Tue Jun 20 09:29:59.106023 2023] [http2:warn] [pid 828:tid 140015928953152] AH02951: mod_ssl does not seem to be enabled
+    [Tue Jun 20 09:29:59.107999 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00489: Apache/2.4.37 (rocky) configured -- resuming normal operations
+    [Tue Jun 20 09:29:59.108040 2023] [core:notice] [pid 828:tid 140015928953152] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
+    [Tue Jun 20 09:50:07.068113 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00493: SIGUSR1 received.  Doing graceful restart
+    [Tue Jun 20 09:50:07.233972 2023] [lbmethod_heartbeat:notice] [pid 828:tid 140015928953152] AH02282: No slotmem from mod_heartmonitor
+    [Tue Jun 20 09:50:07.234949 2023] [http2:warn] [pid 828:tid 140015928953152] AH02951: mod_ssl does not seem to be enabled
+    [Tue Jun 20 09:50:07.247644 2023] [mpm_event:notice] [pid 828:tid 140015928953152] AH00489: Apache/2.4.37 (rocky) configured -- resuming normal operations
+    [Tue Jun 20 09:50:07.247687 2023] [core:notice] [pid 828:tid 140015928953152] AH00094: Command line: '/usr/sbin/httpd -D FOREGROUND'
     --------------------------------------------------
     
     vm11$ cd $HOME
