@@ -27,6 +27,7 @@
 [026] nginx - バージョン情報
 [027] nginx - 各ユーザーのホームディレクトリ公開
 [028] nginx - アクセス制御
+[029] nginx - 基本認証
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -4880,6 +4881,159 @@
     <center>nginx</center>
     </body>
     </html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[029]
+  nginx - 基本認証
+  
+[内容]
+  ## 作業内容
+    基本認証
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 29 03:11:12 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user nginx;
+    worker_processes 1;
+    error_log /var/log/nginx/error.log;
+    pid /run/nginx.pid;
+    include /usr/share/nginx/modules/*.conf;
+    
+    ## Events Modules
+    events {
+      worker_connections 1024;
+    }
+    
+    ## HTTP Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      server_tokens off;
+      
+      server {
+        listen 80;
+        server_name vm11.avswa.com;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        
+        location / {
+          root /etc/nginx/html;
+          index index.html index.htm;
+        }
+        
+        location /dirA {
+          alias /etc/nginx/html/dirA;
+          index index.html index.htm;
+          deny all;
+        }
+        
+        location /dirB {                                  // 追加
+          alias /etc/nginx/html/dirB;                     // 追加
+          index index.html index.htm;                     // 追加
+          auth_basic "Enter user and pass";               // 追加
+          auth_basic_user_file /etc/httpd/conf/htpasswd;  // 追加
+        }                                                 // 追加
+        
+        location ~ ^/~(.+?)(/.*)?$ {
+          alias /home/$1/public_html$2;
+          index index.html index.htm;
+          autoindex on;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/httpd/conf/htpasswd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user1:$apr1$Yj0PGaD5$i9rn8DYqtjrKmFvqzf0Ar.
+    user2:$apr1$VkwgSRiP$OMjvy3mTjk3KS1W0hIkJV/
+    user3:$apr1$lfCeU3jb$cjq.gOW3KQsFsEF6/IqWE.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo mkdir /etc/nginx/html/dirB
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chmod 777 /etc/nginx/html/dirB
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/html/dirB/index.html
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>dirB</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -t
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s reload -> 設定を再ロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl -u user1:user1 http://localhost/dirB/ -> 基本認証でアクセス
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>dirB</h1></body></html>
     --------------------------------------------------
     
     vm11$ cd $HOME
