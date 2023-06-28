@@ -25,6 +25,7 @@
 [024] nginx - エラーログ
 [025] nginx - リダイレクト
 [026] nginx - バージョン情報
+[027] nginx - 各ユーザーのホームディレクトリ公開
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -934,6 +935,14 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
+    vm11$ curl -I http://localhost/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    //
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
     vm11$ sudo vi /etc/httpd/conf/httpd.conf
     
     コマンドの実行結果
@@ -948,7 +957,7 @@
     DocumentRoot "/var/www/html"
     ErrorLog "logs/error_log"
     LogLevel warn
-    ServerTokens Prod  // 追加 => Server: Apache
+    ServerTokens Prod  // 追加
     AddDefaultCharset UTF-8
     ErrorDocument 404 /missing.html
     EnableSendfile on
@@ -1016,11 +1025,11 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
+    vm11$ sudo apachectl configtest
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力されなかった
+    //
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1032,11 +1041,11 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ http://vm11.avswa.com/server-info -> ホスト側のブラウザから閲覧
+    vm11$ curl -I http://localhost/
     
     コマンドの実行結果
     --------------------------------------------------
-    [Current Configuration] -> ServerTokens: Prod を確認
+    //
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1327,10 +1336,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None              // 追加
+      Require all denied              // 追加 => 全ホストをアクセス不可
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None              // 追加
+      Require all denied              // 追加 => 全ホストをアクセス不可
     </Location>
     
     <IfModule mime_magic_module>
@@ -1447,10 +1460,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -1587,10 +1604,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -1751,10 +1772,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -1931,10 +1956,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -2153,10 +2182,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -2383,10 +2416,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -2620,10 +2657,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>
@@ -2926,10 +2967,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     
     <IfModule mime_magic_module>                    // 削除
@@ -3666,10 +3711,14 @@
     
     <Location /server-status>
       SetHandler server-status
+      AllowOverride None
+      Require all denied
     </Location>
     
     <Location /server-info>
       SetHandler server-info
+      AllowOverride None
+      Require all denied
     </Location>
     --------------------------------------------------
     
@@ -4359,7 +4408,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Tue Jun 27 20:34:24 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -4388,7 +4437,7 @@
     error_log /var/log/nginx/error.log;
     pid /run/nginx.pid;
     include /usr/share/nginx/modules/*.conf;
-
+    
     ## Events Modules
     events {
       worker_connections 1024;
@@ -4457,6 +4506,157 @@
     Connection: keep-alive
     ETag: "649a797a-33"
     Accept-Ranges: bytes
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[027]
+  nginx - 各ユーザーのホームディレクトリ公開
+  
+[内容]
+  ## 作業内容
+    各ユーザーのホームディレクトリ公開
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Tue Jun 27 21:01:23 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user nginx;
+    worker_processes 1;
+    error_log /var/log/nginx/error.log;
+    pid /run/nginx.pid;
+    include /usr/share/nginx/modules/*.conf;
+    
+    ## Events Modules
+    events {
+      worker_connections 1024;
+    }
+    
+    ## HTTP Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      server_tokens off;
+      
+      server {
+        listen 80;
+        server_name vm11.avswa.com;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        
+        location / {
+          root /etc/nginx/html;
+          index index.html index.htm;
+        }
+        
+        location ~ ^/~(.+?)(/.*)?$ {     // 追加
+          alias /home/$1/public_html$2;  // 追加
+          index index.html index.htm;    // 追加
+          autoindex on;                  // 追加
+        }                                // 追加
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -t
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s reload -> 設定を再ロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ getenforce
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Enforcing
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo setenforce 0 -> SELinux無効
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su -c 'curl http://localhost/~user1/' user1
+    vm11$ su -c 'curl http://localhost/~user2/' user2
+    vm11$ su -c 'curl http://localhost/~user3/' user3
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // user1
+    パスワード: (パスワード入力)
+    <html><body><h1>User1</h1></body></html>
+    
+    // user2
+    パスワード: (パスワード入力)
+    <html><body><h1>User2</h1></body></html>
+    
+    // user3
+    パスワード: (パスワード入力)
+    <html><body><h1>User3</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://localhost/~user1/
+    vm11$ curl http://localhost/~user2/
+    vm11$ curl http://localhost/~user3/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // user1
+    <html><body><h1>User1</h1></body></html>
+    
+    // user2
+    <html><body><h1>User2</h1></body></html>
+    
+    // user3
+    <html><body><h1>User3</h1></body></html>
     --------------------------------------------------
     
     vm11$ cd $HOME
