@@ -5659,7 +5659,7 @@
   ## 使用マシン
     HOST : vm11
     IPV4 : 192.168.122.11
-    MEMO : 複数サイト(HTTPS)
+    MEMO : 複数サイト(HTTPS) => 既に設定済み
   
   ## 使用マシン
     HOST : vm12
@@ -5667,107 +5667,100 @@
     MEMO : リバースプロキシ
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## Worker Process Counts
-  worker_processes 1;
-  
-  ## Module Events
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web Server
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    server {
-      listen 80;                     # Port 80
-      server_name vm12.example.com;  # FQDN
-      location / {                   # / = 'http://vm12.example.com/'
-        root html;                   # DocumentRoot
-        index index.html index.htm;  # DirectoryIndex
-      }
-      error_page 500 502 503 504 /50x.html;
-      location = /50x.html {
-        root html;
-      }
-    }
-  }
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/nginx/html/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ngix -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --add-service={http,https} --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Thu Jun 29 09:54:16 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ su - root (rootユーザーに変更)
+    vm11$ cd $HOME
+    vm11$ cp /opt/pki/siteCA/siteCaCert.pem /etc/nginx/html/site1/
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略)
+    (省略) -> 出力なし
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# curl http://localhost (Webページ要求に対する応答)
+    vm11$ cd $HOME
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
-    curl: (7) Failed connect to localhost:80; 接続を拒否されました
+    Connection to vm11 closed.
     --------------------------------------------------
     
-    vm13# cd /etc/nginx/conf
-    vm13# vi nginx.conf (設定ファイル編集)
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 29 12:45:44 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /etc/hosts
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+    192.168.122.11 vm11 site1.avswa.com site2.avswa.com  // 修正
+    192.168.122.12 vm12
+    192.168.122.13 vm13
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ curl http://site1.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ curl http://site2.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ wget http://site1.avswa.com/siteCaCert.pem
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    2023-06-29 15:55:48 (272 MB/s) - `siteCaCert.pem' へ保存完了 [4329/4329]
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ curl --cacert siteCaCert.pem https://site1.avswa.com/ -> 認証局(CA)の公開鍵があればHTTPS通信も可能
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ curl --cacert siteCaCert.pem https://site2.avswa.com/ -> 認証局(CA)の公開鍵があればHTTPS通信も可能
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /etc/nginx/nginx.conf
     
     コマンドの実行結果
     --------------------------------------------------
@@ -5785,77 +5778,81 @@
       default_type application/octet-stream;
       sendfile on;
       keepalive_timeout 65;
+      
       server {
-        listen 80;                           # Port 80
-        server_name localhost;               # FQDN
-        location / {                         # / = 'http://localhost/'
-          proxy_pass http://192.168.122.12;  # Redirect
-        }
+        listen 80;
+        server_name localhost;
+        error_page 404 /404.html;
         error_page 500 502 503 504 /50x.html;
+        
+        location /site1 {
+          proxy_pass http://site1.avswa.com/;
+        }
+        
+        location /site2 {
+          proxy_pass http://site2.avswa.com/;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
         location = /50x.html {
-          root html;
+          root /etc/nginx/html;
         }
       }
     }
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# ngix -t (設定ファイルの構文チェック)
+    vm12$ cd $HOME
+    vm12$ sudo ngix -t
     
     コマンドの実行結果
     --------------------------------------------------
-    nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-    nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# nginx (Nginxを起動する)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm13# cd $HOME
-    vm13# curl http://localhost (Webページ要求に対する応答)
+    vm12$ cd $HOME
+    vm12$ ps aux | grep nginx | grep -v grep
     
     コマンドの実行結果
     --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
+    (省略) -> ソフトウェアが起動していない
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# nginx -s quit (Nginxを安全に停止する)
+    vm12$ cd $HOME
+    vm12$ sudo nginx -> Nginxを起動
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# exit (rootユーザーからログアウト)
+    vm12$ cd $HOME
+    vm12$ curl http://localhost/site1/
     
     コマンドの実行結果
     --------------------------------------------------
-    ログアウト
+    <html><body><h1>Site1</h1></body></html>
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
+    vm12$ cd $HOME
+    vm12$ curl http://localhost/site2/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm12 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================

@@ -2978,7 +2978,7 @@
   --------------------------------------------------
   ---
   - name: Install Packages
-    hosts: vm11
+    hosts: vm11,vm12
     gather_facts: no
     
     tasks:
@@ -2996,9 +2996,11 @@
   --------------------------------------------------
   TASK [Install nginx package]
   changed: [vm11]
-  
+  changed: [vm12]
+
   PLAY RECAP
   vm11 :    ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+  vm12 :    ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
   --------------------------------------------------
   
   以下の確認に続く
