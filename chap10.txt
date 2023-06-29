@@ -30,6 +30,7 @@
 [029] nginx - 基本認証
 [030] nginx - ホストベースのアクセス制御
 [031] nginx - バーチャルホスト
+[032] nginx - SSL/TLS
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -5407,6 +5408,233 @@
     --------------------------------------------------
     192.168.122.11 - - [29/Jun/2023:05:33:34 +0900] "GET / HTTP/1.1" 200 41 "-" "curl/7.61.1" "-"
     192.168.122.11 - - [29/Jun/2023:05:33:39 +0900] "GET / HTTP/1.1" 200 41 "-" "curl/7.61.1" "-"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[032]
+  nginx - SSL/TLS
+  
+[内容]
+  ## 作業内容
+    バーチャルホスト内の各サイトをHTTPS化
+  
+  ## ディレクトリ構成
+    /opt/pki
+      |-- /site
+            |-- site1.key  // サイト(site1)の秘密鍵
+            |-- site1.crt  // サイト(site1)のサーバー証明書
+            |-- site2.key  // サイト(site2)の秘密鍵
+            |-- site2.crt  // サイト(site2)のサーバー証明書
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jun 29 05:28:52 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /opt/pki/site | grep -E 'site1|site2' -> サーバー証明書の確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--. 1 root root 4.3K  6月 26 13:56 site1.crt
+    -rw-r--r--. 1 root root 1001  6月 26 13:49 site1.csr
+    -rw-------. 1 root root 1.8K  6月 26 13:47 site1.key
+    -rw-r--r--. 1 root root 4.3K  6月 26 14:01 site2.crt
+    -rw-r--r--. 1 root root 1001  6月 26 13:50 site2.csr
+    -rw-------. 1 root root 1.8K  6月 26 13:48 site2.key
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/nginx/nginx.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    user nginx;
+    worker_processes 1;
+    error_log /var/log/nginx/error.log;
+    pid /run/nginx.pid;
+    include /usr/share/nginx/modules/*.conf;
+    
+    ## Events Modules
+    events {
+      worker_connections 1024;
+    }
+    
+    ## HTTP Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      log_format main '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"';
+      access_log /var/log/nginx/access.log main;
+      server_tokens off;
+      
+      server {
+        listen 80;
+        server_name site1.avswa.com;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        
+        location / {
+          root /etc/nginx/html/site1;
+          index index.html index.htm;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+      
+      server {
+        listen 80;
+        server_name site2.avswa.com;
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+        
+        location / {
+          root /etc/nginx/html/site2;
+          index index.html index.htm;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+      
+      server {
+        listen 443 ssl;
+        server_name site1.avswa.com;
+        ssl_certificate_key /opt/pki/site/site1.key;
+        ssl_certificate /opt/pki/site/site1.crt;
+        ssl_password_file /etc/nginx/site1-pass;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        
+        location / {
+          root /etc/nginx/html/site1;
+          index index.html index.htm;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+      
+      server {
+        listen 443 ssl;
+        server_name site2.avswa.com;
+        ssl_certificate_key /opt/pki/site/site2.key;
+        ssl_certificate /opt/pki/site/site2.crt;
+        ssl_password_file /etc/nginx/site2-pass;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        
+        location / {
+          root /etc/nginx/html/site2;
+          index index.html index.htm;
+        }
+        
+        location = /404.html {
+          root /etc/nginx/html;
+        }
+        
+        location = /50x.html {
+          root /etc/nginx/html;
+        }
+      }
+    }
+    --------------------------------------------------
+    
+    vm11$ su - root
+    vm11# echo 'ma0122ma' > /etc/nginx/site1-pass
+    vm11# echo 'ma0122ma' > /etc/nginx/site2-pass
+    vm11# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -t 
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo nginx -s reload -> 設定を再ロード
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://site1.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl http://site2.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --cacert /opt/pki/siteCA/siteCaCert.pem https://site1.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --cacert /opt/pki/siteCA/siteCaCert.pem https://site2.avswa.com/
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
     --------------------------------------------------
     
     vm11$ cd $HOME
