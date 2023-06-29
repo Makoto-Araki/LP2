@@ -31,6 +31,7 @@
 [030] nginx - ホストベースのアクセス制御
 [031] nginx - バーチャルホスト
 [032] nginx - SSL/TLS
+[033] nginx - リバースプロキシ
 [01] ソースから構築 - 01 (APR)
 [02] ソースから構築 - 02 (APR-Util)
 [03] ソースから構築 - 03 (PCRE)
@@ -5645,6 +5646,216 @@
     Connection to vm11 closed.
     --------------------------------------------------
     
+  以下の確認に続く
+  
+================================================================================
+[033]
+  nginx - リバースプロキシ
+  
+[内容]
+  ## 作業内容
+    リバースプロキシ
+  
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 複数サイト(HTTPS)
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : リバースプロキシ
+  
+[確認]
+  vm12$ cd $HOME
+  vm12$ su - root (rootユーザーに変更)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd /etc/nginx/conf
+  vm12# vi nginx.conf (設定ファイル編集)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## Worker Process Counts
+  worker_processes 1;
+  
+  ## Module Events
+  events {
+    worker_connections 1024;
+  }
+  
+  ## Web Server
+  http {
+    include mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    server {
+      listen 80;                     # Port 80
+      server_name vm12.example.com;  # FQDN
+      location / {                   # / = 'http://vm12.example.com/'
+        root html;                   # DocumentRoot
+        index index.html index.htm;  # DirectoryIndex
+      }
+      error_page 500 502 503 504 /50x.html;
+      location = /50x.html {
+        root html;
+      }
+    }
+  }
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/nginx/html/index.html
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  <html><body><h1>単独サイト</h1></body></html>
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# ngix -t (設定ファイルの構文チェック)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
+  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --add-service={http,https} --permanent
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# nginx (Nginxを起動する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ su - root (rootユーザーに変更)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略)
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# curl http://localhost (Webページ要求に対する応答)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    curl: (7) Failed connect to localhost:80; 接続を拒否されました
+    --------------------------------------------------
+    
+    vm13# cd /etc/nginx/conf
+    vm13# vi nginx.conf (設定ファイル編集)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## Worker Process Counts
+    worker_processes 1;
+    
+    ## Module Events
+    events {
+      worker_connections 1024;
+    }
+    
+    ## Web Server
+    http {
+      include mime.types;
+      default_type application/octet-stream;
+      sendfile on;
+      keepalive_timeout 65;
+      server {
+        listen 80;                           # Port 80
+        server_name localhost;               # FQDN
+        location / {                         # / = 'http://localhost/'
+          proxy_pass http://192.168.122.12;  # Redirect
+        }
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+          root html;
+        }
+      }
+    }
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# ngix -t (設定ファイルの構文チェック)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
+    nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# nginx (Nginxを起動する)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# curl http://localhost (Webページ要求に対する応答)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>単独サイト</h1></body></html>
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# nginx -s quit (Nginxを安全に停止する)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13# cd $HOME
+    vm13# exit (rootユーザーからログアウト)
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
+  vm12# cd $HOME
+  vm12# nginx -s quit (Nginxを安全に停止する)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# exit (rootユーザーからログアウト)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ログアウト
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
