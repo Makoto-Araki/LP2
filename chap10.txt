@@ -32,32 +32,15 @@
 [031] nginx - バーチャルホスト
 [032] nginx - SSL/TLS
 [033] nginx - リバースプロキシ
-[01] ソースから構築 - 01 (APR)
-[02] ソースから構築 - 02 (APR-Util)
-[03] ソースから構築 - 03 (PCRE)
-[04] ソースから構築 - 04 (OPENSSL)
-[05] ソースから構築 - 05 (NGHTTP2)
-[06] ソースから構築 - 06 (Apache)
-[07] 制御コマンド(Apache)
-[08] 設定ファイル(httpd.conf) - 01 (単独サイト)
-[09] 設定ファイル(httpd.conf) - 02 (複数サイト)
-[10] 設定ファイル(httpd.conf) - 03 (認証局)
-[11] 設定ファイル(httpd.conf) - 04 (スクリプト)
-[12] 設定ファイル(httpd.conf) - 05 (単独サイトのHTTPS化)
-[13] 設定ファイル(httpd.conf) - 06 (複数サイトのHTTPS化)
-[X1] 設定ファイル(httpd.conf) - 07 (基本認証)
-[X2] 設定ファイル(httpd.conf) - 08 (ダイジェスト認証)
-[X3] 設定ファイル(httpd.conf) - 09 (ホストベースのアクセス制御)
-[14] ソースから構築(Nginx)
-[15] 制御コマンド(Nginx)
-[16] 設定ファイル(nginx.conf) - 01 (単独サイト)
-[17] 設定ファイル(nginx.conf) - 02 (複数サイト)
-[18] 設定ファイル(nginx.conf) - 03 (単独サイトのHTTPS化)
-[19] 設定ファイル(nginx.conf) - 04 (複数サイトのHTTPS化)
-[20] 設定ファイル(nginx.conf) - 05 (リバースプロキシ)
-[21] ソースから構築(Squid)
-[22] 制御コマンド(Squid)
-[23] 設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
+[034] squid - 基本設定
+[035] squid - フィルタリング(URL)
+[036] squid - ソフトウェア停止
+[X01] compile - 01
+[X02] compile - 02
+[X03] compile - 03
+[X04] compile - 04
+[X05] compile - 05
+[X06] compile - 06
 ================================================================================
 [001]
   httpd - 基本設定
@@ -5856,4763 +5839,956 @@
   以下の確認に続く
   
 ================================================================================
-[01]
-  ソースから構築 - 01 (APR)
+[034]
+  squid - 基本設定
   
 [内容]
   ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    基本設定
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install wget gcc expat-devel (パッケージ追加)
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz (ソース取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.0.tar.gz.sha256 (チェックサム取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo sha256sum -c apr-1.7.0.tar.gz.sha256 (チェックサム確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  apr-1.7.0.tar.gz: 完了
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf apr-1.7.0.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo ./configure --prefix=/usr/local/apr-1.7.0 (Makefile生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-1.7.0
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[02]
-  ソースから構築 - 02 (APR-Util)
-  
-[内容]
-  ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://dlcdn.apache.org//apr/apr-util-1.6.1.tar.gz (ソース取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-util-1.6.1.tar.gz.sha256 (チェックサム取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo sha256sum -c apr-util-1.6.1.tar.gz.sha256 (チェックサム確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  apr-util-1.6.1.tar.gz: 完了
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf apr-util-1.6.1.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-util-1.6.1
-  vm12$ sudo ./configure --prefix=/usr/local/apr-util-1.6.1 --with-apr=/usr/local/apr-1.7.0 (Makefile生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-util-1.6.1
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/apr-util-1.6.1
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[03]
-  ソースから構築 - 03 (PCRE)
-  
-[内容]
-  ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install gcc-c++ (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src (ソース取得)
-  vm12$ sudo wget --no-check-certificate https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf pcre-8.45.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/pcre-8.45
-  vm12$ sudo ./configure --prefix=/usr/local/pcre-8.45 (Makefile生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/pcre-8.45
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/pcre-8.45
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[04]
-  ソースから構築 - 04 (OPENSSL)
-  
-[内容]
-  ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install perl (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.0h.tar.gz (ソース取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf openssl-1.1.0h.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/openssl-1.1.0h
-  vm12$ sudo ./config --openssldir=/usr/local/openssl-1.1.0 (Makefile生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/openssl-1.1.0h
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/openssl-1.1.0h
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[05]
-  ソースから構築 - 05 (NGHTTP2)
-  
-[内容]
-  ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12$ cd /usr/local/src (ソース取得)
-  vm12$ sudo wget --no-check-certificate https://github.com/nghttp2/nghttp2/releases/download/v1.31.0/nghttp2-1.31.0.tar.gz
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf nghttp2-1.31.0.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/nghttp2-1.31.0 (Makefile生成)
-  vm12$ sudo env OPENSSL_CFLAGS="-I/usr/local/openssl/include" OPENSSL_LIBS="-L/usr/local/openssl/lib -lssl -lcrypto" ./configure
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/nghttp2-1.31.0
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/nghttp2-1.31.0
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[06]
-  ソースから構築 - 06 (Apache)
-  
-[内容]
-  ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://dlcdn.apache.org//httpd/httpd-2.4.52.tar.gz (ソース取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate https://downloads.apache.org/httpd/httpd-2.4.52.tar.gz.sha256 (チェックサム取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo sha256sum -c httpd-2.4.52.tar.gz.sha256 (チェックサム確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  httpd-2.4.52.tar.gz: 完了
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf httpd-2.4.52.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/httpd-2.4.52
-  vm12$ sudo cat INSTALL (INSTALL確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> インストール概要を確認、以降は概要に従い作業する
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/httpd-2.4.52
-  vm12$ (Makefile生成)
-    sudo ./configure
-    --prefix=/usr/local/apache2
-    --with-apr=/usr/local/apr-1.7.0            // APR
-    --with-apr-util=/usr/local/apr-util-1.6.1  // APR-Util
-    --with-pcre=/usr/local/pcre-8.45           // PCRE
-    --with-ssl=/usr/local/openssl-1.1.0        // OPENSSL
-    --with-mpm=prefork                         // PHP(prefork)
-    --enable-http2            // HTTP2
-    --enable-ssl              // SSL
-    --enable-so               // APXS
-    --enable-mods-shared=all  // Dynamic Modules
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/httpd-2.4.52
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/httpd-2.4.52
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo useradd -d /tmp -s /sbin/nologin apache (実行用ユーザー追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  useradd: 警告: ホームディレクトリが既に存在します。
-  skel ディレクトリからのコピーは行いません。
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo passwd apache (パスワード更新)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ユーザー apache のパスワードを変更。
-  新しいパスワード: (パスワード入力)
-  新しいパスワードを再入力してください: (パスワード入力)
-  passwd: すべての認証トークンが正しく更新できました。
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo chown -R apache:apache /usr/local/apache2 (所有者とグループの変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo vi /etc/bashrc (シェルの設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (末尾に追加) -> PATH=$PATH:/usr/local/apache2/bin
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ source /etc/bashrc (シェルの設定ファイルを読み込み)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ which apachectl (コマンドのパス開通を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /usr/local/apache2/bin/apachectl
-  --------------------------------------------------
-  
-  #vm12$ cd $HOME
-  #vm12$ sudo vi /usr/lib/systemd/system/httpd.service (自動起動のためサービスファイルを作成)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #[Unit]
-  #Description=Apache httpd daemon
-  #
-  #[Service]
-  #Type=forking
-  #ExecStart=/usr/local/apache2/bin/apachectl -k start
-  #ExecStop=/usr/local/apache2/bin/apachectl -k stop
-  #
-  #[Install]
-  #WantedBy=multi-user.target
-  #--------------------------------------------------
-  
-  #vm12$ cd $HOME
-  #vm12$ sudo systemctl daemon-reload (サービスファイルをシステムに通知)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> 出力なし
-  #--------------------------------------------------
-  
-  #vm12$ cd $HOME
-  #vm12$ sudo systemctl enable httpd (サービスの自動起動)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service to /usr/lib/systemd/system/httpd.service.
-  #--------------------------------------------------
-  
-  #vm12$ cd $HOME
-  #vm12$ sudo systemctl start httpd (サービスの起動)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> 出力なし
-  #--------------------------------------------------
-  
-  #vm12$ cd $HOME
-  #vm12$ sudo systemctl status httpd (サービスの状態)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #● httpd.service - Apache httpd daemon
-  #   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
-  #   Active: active (running) since 日 2022-01-16 19:00:28 JST; 45s ago
-  #  Process: 3384 ExecStart=/usr/local/apache2/bin/apachectl -k start (code=exited, status=0/SUCCESS)
-  # Main PID: 3387 (httpd)
-  #   CGroup: /system.slice/httpd.service
-  #           ├─3387 /usr/local/apache2/bin/httpd -k start
-  #           ├─3388 /usr/local/apache2/bin/httpd -k start
-  #           ├─3389 /usr/local/apache2/bin/httpd -k start
-  #           ├─3390 /usr/local/apache2/bin/httpd -k start
-  #           ├─3391 /usr/local/apache2/bin/httpd -k start
-  #           └─3392 /usr/local/apache2/bin/httpd -k start
-  #
-  #1月 16 19:00:28 vm12 systemd[1]      : Starting Apache httpd daemon…
-  #1月 16 19:00:28 vm12 apachectl[3384] : AH00558: httpd: Could not reliably d…e
-  #1月 16 19:00:28 vm12 systemd[1]      : Started Apache httpd daemon.
-  #Hint: Some lines were ellipsized, use -l to show in full.
-  #--------------------------------------------------
-  
-  #vm12$ cd $HOME
-  #vm12$ sudo systemctl stop httpd (サービスの停止)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #(省略) -> 出力なし
-  #--------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[07]
-  制御コマンド(Apache)
-  
-[内容]
-  ## 作業内容
-    制御コマンド(apachectl)で「Apache」の制御を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## コマンド(apachectl)
-    apachectl start       // Apacheを起動する
-    apachectl stop        // Apacheを停止する
-    apachectl restart     // Apacheを再起動する
-    apachectl graceful    // Apacheを安全に再起動する
-    apachectl reload      // Apacheの設定ファイルを再読込する
-    apachectl configtest  // Apacheの設定ファイルの構文チェック
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (修正前) #ServerName www.example.com:80 -> ServerNameが未設定の場合は制御コマンドが失敗するため修正
-  (修正後)  ServerName www.example.com:80
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  root      2399  0.0  0.1  70520  1988 ?        Ss   13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2400  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2401  0.0  0.2  70520  2228 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2402  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2403  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  daemon    2404  0.0  0.1  70520  1488 ?        S    13:37   0:00 /usr/local/apache2/bin/httpd -k start
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl localhost:80 (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>It works!</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ps aux | grep httpd | grep -v grep (Apacheのプロセスを確認する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[08]
-  設定ファイル(httpd.conf) - 01 (単独サイト)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(httpd.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /usr/local/apache2         // ServerRoot
-      | -- /conf               // Config-Directory
-              | -- httpd.conf  // Main-Config
-      | -- /htdocs             // DocumentRoot
-              | -- index.html  // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf
-  vm12# cp -p httpd.conf httpd.conf.org (設定ファイルのバックアップ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ServerAdmin makoto@example.com
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-  
-  ## キープアライブ
-  KeepAlive on
-  
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  DocumentRoot "/usr/local/apache2/htdocs"
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/htdocs/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[09]
-  設定ファイル(httpd.conf) - 02 (複数サイト)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(httpd.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /usr/local/apache2
-      | -- /conf
-              | -- httpd.conf                 // Main-Config
-              | -- /extra                     // Extra-Config
-                      | -- httpd-vhosts.conf  // VirtualHost
-      | -- /htdocs
-              | -- site1               // DocumentRoot1
-                      | -- index.html  // HTML1
-              | -- site2               // DocumentRoot2
-                      | -- index.html  // HTML2
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ## ServerAdmin makoto@example.com -> httpd-vhosts.conf に移動
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-
-  ## キープアライブ
-  KeepAlive on
-
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  ## DocumentRoot "/usr/local/apache2/htdocs" -> httpd-vhosts.conf に移動
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  
-  ## 追加設定ファイル
-  IncludeOptional  conf/extra/httpd-vhosts.conf
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# cp -p httpd-vhosts.conf httpd-vhosts.conf.org (設定ファイルのバックアップ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# vi httpd-vhosts.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <VirtualHost *:80>
-    ServerName site1.example.com
-    ServerAdmin site1@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site1"
-    CustomLog "logs/site1_access_log" common
-    ErrorLog "logs/site1_error_log"
-  </VirtualHost>
-  
-  <VirtualHost *:80>
-    ServerName site2.example.com
-    ServerAdmin site2@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site2"
-    CustomLog "logs/site2_access_log" common
-    ErrorLog "logs/site2_error_log"
-  </VirtualHost>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/htdocs
-  vm12# mkdir site1 site2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/htdocs
-  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
-  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[10]
-  設定ファイル(httpd.conf) - 03 (認証局)
-  
-[内容]
-  ## 作業内容
-    認証局を作成、自己認証する
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /opt/pki
-      | -- /config
-              | -- openssl-SiteCA.cnf  // 設定ファイル
-      | -- /SiteCA
-              | -- /certs          // 検証用の証明書
-              | -- /crl            // 失効リスト
-              | -- /newcerts       // 認証局が発行した証明書
-              | -- /private        // 認証局の秘密鍵
-              | -- serial          // シリアル番号
-              | -- crlnum          // CRL番号
-              | -- index.txt       // 認証局の管理データベース
-              | -- SiteCaReq.pem   // 認証局の証明書署名要求
-              | -- SiteCaCert.pem  // 認証局のデジタル証明書
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /opt
-  vm12# mkdir -p pki/config (ディレクトリ作成)
-  vm12# mkdir -p pki/SiteCA (ディレクトリ作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# mkdir certs crl newcerts private (ディレクトリ作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/config
-  vm12# vi openssl-SiteCA.cnf (設定ファイルの作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ ca ]
-    default_ca = CA_default  # セクション「CA_default」を参照
-  
-  [ CA_default ]
-    dir = /opt/pki/SiteCA
-    certs = $dir/certs
-    crl_dir = $dir/crl
-    database = $dir/index.txt
-    new_certs_dir = $dir/newcerts
-    serial = $dir/serial
-    crlnumber = $dir/crlnum
-    crl = $dir/crl.pem
-    RANDFILE = $dir/.rand
-    name_opt = CA_default
-    cert_opt = CA_default
-    default_days = 365
-    default_crl_days = 30
-    default_bits = 2048
-    default_md = sha256
-    preserve = no
-    policy = policy_match  # セクション「policy_match」を参照
-  
-  [ policy_match ]
-    countryName = match
-    stateOrProvinceName = match
-    organizationName = match
-    organizationalUnitName = optional
-    commonName = supplied
-    emailAddress = optional
-  
-  [ v3_ca ]
-    subjectKeyIdentifier = hash
-    authorityKeyIdentifier = keyid:always,issuer
-    basicConstraints = CA:true      # CAフラグ
-    keyUsage = cRLSign,keyCertSign  # 鍵用途(CRL署名、鍵署名)
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# echo "01" > serial (ファイル作成)
-  vm12# echo "00" > crlnum (ファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# touch index.txt (データベース作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# (認証局の秘密鍵を生成)
-    openssl genrsa                              // コマンド
-    -out /opt/pki/SiteCA/private/SiteCaKey.pem  // 秘密鍵ファイル
-    -aes256                                     // 暗号化アルゴリズム
-    -passout pass:ma0122ma                      // 秘密鍵のパスフレーズ
-    2048                                        // 鍵長
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  openssl: error while loading shared libraries: libssl.so.1.1: cannot open shared object file: No such file or directory
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# ldd $(which openssl) (共有ライブラリ調査)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  linux-vdso.so.1 =>  (0x00007ffe87bea000)
-  libssl.so.1.1 => not found     // ライブラリの参照失敗
-  libcrypto.so.1.1 => not found  // ライブラリの参照失敗
-  libdl.so.2 => /lib64/libdl.so.2 (0x00007f55067e5000)
-  libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f55065c9000)
-  libc.so.6 => /lib64/libc.so.6 (0x00007f55061fb000)
-  /lib64/ld-linux-x86-64.so.2 (0x00007f55069e9000)
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# find / -name libssl.so.1.1 (共有ライブラリ検索)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /usr/local/lib64/libssl.so.1.1 -> 共有ライブラリ検索リストに追加
-  /usr/local/src/openssl-1.1.0h/libssl.so.1.1
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# find / -name libcrypto.so.1.1 (共有ライブラリ検索)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /usr/local/lib64/libcrypto.so.1.1 -> 共有ライブラリ検索リストに追加
-  /usr/local/src/openssl-1.1.0h/libcrypto.so.1.1
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/ld.so.conf (共有ライブラリ検索リストを修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /usr/local/lib64/ -> 末尾に追加
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ldconfig (共有ライブラリ検索キャッシュを更新)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# (ルート認証局の秘密鍵を生成)
-    openssl genrsa                              // コマンド
-    -out /opt/pki/SiteCA/private/SiteCaKey.pem  // 秘密鍵ファイル
-    -aes256                                     // 暗号化アルゴリズム
-    -passout pass:ma0122ma                      // 秘密鍵のパスフレーズ
-    2048                                        // 鍵長
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Generating RSA private key, 2048 bit long modulus …
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# (証明書署名要求(CSR)を作成)
-    openssl req                                 // コマンド
-    -new                                        // 証明書署名要求(CSR)生成
-    -key /opt/pki/SiteCA/private/SiteCaKey.pem  // 秘密鍵ファイル
-    -out /opt/pki/SiteCA/SiteCaReq.pem          // 証明書署名要求(CSR)
-    -passin pass:ma0122ma                       // 秘密鍵のパスフレーズ
-    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=$SiteCA.example.com"  // 認証局の情報
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# (証明書署名要求(CSR)を自己署名・デジタル証明書を作成)
-    openssl ca                                  // コマンド
-    -config /opt/pki/config/openssl-SiteCA.cnf  // 設定ファイル
-    -batch                                      // 対話形式は使用しない
-    -in /opt/pki/SiteCA/SiteCaReq.pem           // 証明書署名要求(CSR)
-    -out /opt/pki/SiteCA/SiteCaCert.pem         // デジタル証明書
-    -keyfile /opt/pki/SiteCA/private/SiteCaKey.pem  // 秘密鍵ファイル
-    -selfsign                                   // 自己署名
-    -passin pass:ma0122ma                       // 秘密鍵のパスフレーズ
-    -extensions v3_ca                           // 設定ファイルの拡張セクションもロード
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デジタル証明書の内容が出力
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# openssl x509 -in SiteCaCert.pem -text -noout (デジタル証明書の内容確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デジタル証明書の内容が出力
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[11]
-  設定ファイル(httpd.conf) - 04 (スクリプト)
-  
-[内容]
-  ## 作業内容
-    認証局がサイト署名に使用するスクリプトを作成する
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /opt/pki
-      | -- /config
-              | -- openssl-site.cnf  // 設定ファイル
-      | -- /SiteCA
-              | -- /private          // 認証局の秘密鍵
-              | -- SiteCaCert.pem    // 認証局のデジタル証明書
-              | -- SignSite.sh       // スクリプト
-      | -- /site
-              | -- AA.csr  // サイト(AA)の証明書署名要求(CSR)
-              | -- AA.crt  // サイト(AA)のデジタル証明書
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki
-  vm12# mkdir site (ディレクトリ作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/config
-  vm12# vi openssl-site.cnf (設定ファイルの作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [ ca ]
-    default_ca = CA_default  # セクション「CA_default」を参照
-  
-  [ CA_default ]
-    dir = /opt/pki/SiteCA
-    certs = $dir/certs
-    crl_dir = $dir/crl
-    database = $dir/index.txt
-    new_certs_dir = $dir/newcerts
-    serial = $dir/serial
-    crlnumber = $dir/crlnum
-    crl = $dir/crl.pem
-    RANDFILE = $dir/.rand
-    name_opt = CA_default
-    cert_opt = CA_default
-    default_days = 365
-    default_crl_days = 30
-    default_bits = 2048
-    default_md = sha256
-    preserve = no
-    policy = policy_match  # セクション「policy_match」を参照
-  
-  [ policy_match ]
-    countryName = match
-    stateOrProvinceName = match
-    organizationName = match
-    organizationalUnitName = optional
-    commonName = supplied
-    emailAddress = optional
-  
-  [ v3_ca ]
-    subjectKeyIdentifier = hash
-    authorityKeyIdentifier = keyid:always,issuer
-    basicConstraints = CA:false                                   # CAフラグ
-    keyUsage = nonRepudiation, digitalSignature, keyEncipherment  # 鍵用途(デジタル署名、鍵暗号化)
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# vi SignSite.sh (スクリプト作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #!/bin/bash
-  
-  openssl ca \
-  -config /opt/pki/config/openssl-site.cnf \
-  -batch \
-  -in /opt/pki/site/$1.csr \
-  -out /opt/pki/site/$1.crt \
-  -keyfile /opt/pki/SiteCA/private/SiteCaKey.pem \
-  -cert /opt/pki/SiteCA/SiteCaCert.pem \
-  -passin pass:ma0122ma \
-  -extensions v3_ca
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(AA)の秘密鍵を作成)
-    openssl genrsa             // コマンド
-    -out /opt/pki/site/AA.key  // 秘密鍵ファイル
-    -aes256                    // 暗号化アルゴリズム
-    -passout pass:ma0122ma     // 秘密鍵のパスフレーズ
-    2048                       // 鍵長
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Generating RSA private key, 2048 bit long modulus …
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(AA)の証明書署名要求(CSR)を作成)
-    openssl req                // コマンド
-    -new                       // 新規作成
-    -key /opt/pki/site/AA.key  // 秘密鍵ファイル
-    -out /opt/pki/site/AA.csr  // 証明書署名要求(CSR)
-    -passin pass:ma0122ma      // 秘密鍵のパスフレーズ
-    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=AA.example.com"  // サイト情報
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# bash SignSite.sh AA (サイト署名スクリプトを実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デジタル証明書の内容が出力
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[12]
-  設定ファイル(httpd.conf) - 05 (単独サイトのHTTPS化)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(httpd.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /opt/pki
-      | -- /site
-              | -- vm12.key  // サイト(vm12)の秘密鍵
-              | -- vm12.csr  // サイト(vm12)の証明書署名要求(CSR)
-              | -- vm12.crt  // サイト(vm12)のデジタル証明書
-    /usr/local/apache2
-      | -- /conf
-              | -- httpd.conf              // Main-Config
-              | -- /extra                  // Extra-Config
-                      | -- httpd-ssl.conf  // SSL
-      | -- /htdocs                         // DocumentRoot
-              | -- index.html              // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(vm12)の秘密鍵を作成)
-    openssl genrsa               // コマンド
-    -out /opt/pki/site/vm12.key  // 秘密鍵ファイル
-    -aes256                      // 暗号化アルゴリズム
-    -passout pass:ma0122ma       // 秘密鍵のパスフレーズ
-    2048                         // 鍵長
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Generating RSA private key, 2048 bit long modulus …
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(vm12)の証明書署名要求(CSR)を作成)
-    openssl req                  // コマンド
-    -new                         // 新規作成
-    -key /opt/pki/site/vm12.key  // 秘密鍵ファイル
-    -out /opt/pki/site/vm12.csr  // 証明書署名要求(CSR)
-    -passin pass:ma0122ma        // 秘密鍵のパスフレーズ
-    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=vm12.example.com"  // サイト情報
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# bash SignSite.sh vm12 (サイト署名スクリプトを実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デジタル証明書の内容が出力
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/site
-  vm12# ls -lh vm12* (デジタル証明書の確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 4.3K  1月 18 12:48 vm12.crt  // デジタル証明書
-  -rw-r--r--. 1 root root 1001  1月 18 12:47 vm12.csr  // 証明書署名要求(CSR)
-  -rw-------. 1 root root 1.8K  1月 18 12:46 vm12.key  // 秘密鍵ファイル
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf
-  vm12# vi httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## 追加モジュール
-  LoadModule ssl_module modules/mod_ssl.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ServerAdmin makoto@example.com
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-  
-  ## キープアライブ
-  KeepAlive on
-  
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  DocumentRoot "/usr/local/apache2/htdocs"
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  
-  ## 追加設定ファイル
-  IncludeOptional conf/extra/httpd-ssl.conf
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# cp -p httpd-ssl.conf httpd-ssl.conf.org (設定ファイルのバックアップ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# vi httpd-ssl.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## リスニング対象のポート番号
-  Listen 443
-
-  ## クライアント接続時に許可する暗号化ランク
-  SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
-  SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
-
-  ## 負荷の低い暗号化アルゴリズムを自動選択
-  SSLHonorCipherOrder on
-
-  ## サポートするプロトコル
-  SSLProtocol all -SSLv3
-  SSLProxyProtocol all -SSLv3
-
-  ## 秘密鍵パスフレーズ入力時の入力方式
-  SSLPassPhraseDialog builtin
-  
-  ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
-  <FilesMatch "\.(cgi|shtml|phtml|php)$">
-    SSLOptions +StdEnvVars
-  </FilesMatch>
-  
-  ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
-  <Directory "/usr/local/apache2/cgi-bin">
-    SSLOptions +StdEnvVars
-  </Directory>
-  
-  ## MSIE関連の問題解決
-  BrowserMatch "MSIE [2-5]" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
-  
-  ## HTTPS接続時のデフォルト設定
-  <VirtualHost _default_:443>
-    SSLEngine on
-    SSLCertificateFile "/opt/pki/site/vm12.crt"
-    SSLCertificateKeyFile "/opt/pki/site/vm12.key"
-  </VirtualHost>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/htdocs/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Apache/2.4.52 mod_ssl (Pass Phrase Dialog)
-  Some of your private key files are encrypted for security reasons.
-  In order to read them you have to provide the pass phrases.
-  
-  Private key vm12.example.com:443:0 (/opt/pki/site/vm12.key)
-  Enter pass phrase: (秘密鍵のパスフレーズを入力)
-  
-  // パスフレーズの認証が正常に行われた旨のメッセージ出力
-  OK: Pass Phrase Dialog successful.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[13]
-  設定ファイル(httpd.conf) - 06 (複数サイトのHTTPS化)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(httpd.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /opt/pki
-      | -- /site
-              | -- site1.key  // サイト(site1)の秘密鍵
-              | -- site1.csr  // サイト(site1)の証明書署名要求(CSR)
-              | -- site1.crt  // サイト(site1)のデジタル証明書
-              | -- site2.key  // サイト(site2)の秘密鍵
-              | -- site2.csr  // サイト(site2)の証明書署名要求(CSR)
-              | -- site2.crt  // サイト(site2)のデジタル証明書
-    /usr/local/apache2
-      | -- /conf
-              | -- httpd.conf                 // Main-Config
-              | -- /extra                     // Extra-Config
-                      | -- httpd-vhosts.conf  // VirtualHost
-                      | -- httpd-ssl.conf     // SSL
-      | -- /htdocs
-              | -- site1               // DocumentRoot1
-                      | -- index.html  // HTML1
-              | -- site2               // DocumentRoot2
-                      | -- index.html  // HTML2
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(site1)の秘密鍵を作成)
-    openssl genrsa                // コマンド
-    -out /opt/pki/site/site1.key  // 秘密鍵ファイル
-    -aes256                       // 暗号化アルゴリズム
-    -passout pass:ma0122ma        // 秘密鍵のパスフレーズ
-    2048                          // 鍵長
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Generating RSA private key, 2048 bit long modulus …
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(site1)の証明書署名要求(CSR)を作成)
-    openssl req                   // コマンド
-    -new                          // 新規作成
-    -key /opt/pki/site/site1.key  // 秘密鍵ファイル
-    -out /opt/pki/site/site1.csr  // 証明書署名要求(CSR)
-    -passin pass:ma0122ma         // 秘密鍵のパスフレーズ
-    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=site1.example.com"  // サイト情報
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# bash SignSite.sh site1 (サイト署名スクリプトを実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デジタル証明書の内容が出力
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(site2)の秘密鍵を作成)
-    openssl genrsa                // コマンド
-    -out /opt/pki/site/site2.key  // 秘密鍵ファイル
-    -aes256                       // 暗号化アルゴリズム
-    -passout pass:ma0122ma        // 秘密鍵のパスフレーズ
-    2048                          // 鍵長
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Generating RSA private key, 2048 bit long modulus …
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (サイト(site2)の証明書署名要求(CSR)を作成)
-    openssl req                   // コマンド
-    -new                          // 新規作成
-    -key /opt/pki/site/site2.key  // 秘密鍵ファイル
-    -out /opt/pki/site/site2.csr  // 証明書署名要求(CSR)
-    -passin pass:ma0122ma         // 秘密鍵のパスフレーズ
-    -subj "/C=JP/ST=Saitama/L=Tokorozawa/O=example.com/CN=site2.example.com"  // サイト情報
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/SiteCA
-  vm12# bash SignSite.sh site2 (サイト署名スクリプトを実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> デジタル証明書の内容が出力
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/site
-  vm12# ls -lh | grep -E 'site1|site2' (デジタル証明書の確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 4.3K  1月 18 20:11 site1.crt  // デジタル証明書
-  -rw-r--r--. 1 root root 1001  1月 18 20:10 site1.csr
-  -rw-------. 1 root root 1.8K  1月 18 20:06 site1.key
-  -rw-r--r--. 1 root root 4.3K  1月 18 20:15 site2.crt  // デジタル証明書
-  -rw-r--r--. 1 root root 1001  1月 18 20:15 site2.csr
-  -rw-------. 1 root root 1.8K  1月 18 20:13 site2.key
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf
-  vm12# vi httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## 追加モジュール
-  LoadModule ssl_module modules/mod_ssl.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ## ServerAdmin makoto@example.com -> httpd-vhosts.conf に移動
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-
-  ## キープアライブ
-  KeepAlive on
-
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  ## DocumentRoot "/usr/local/apache2/htdocs" -> httpd-vhosts.conf に移動
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ## ErrorLog "logs/error_log" -> httpd-vhosts.conf に移動
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  
-  ## 追加設定ファイル
-  IncludeOptional conf/extra/httpd-vhosts.conf
-  IncludeOptional conf/extra/httpd-ssl.conf
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# vi httpd-vhosts.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <VirtualHost *:80>
-    ServerName site1.example.com
-    ServerAdmin site1@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site1"
-    CustomLog "logs/site1_access_log" common
-    ErrorLog "logs/site1_error_log"
-  </VirtualHost>
-  
-  <VirtualHost *:80>
-    ServerName site2.example.com
-    ServerAdmin site2@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site2"
-    CustomLog "logs/site2_access_log" common
-    ErrorLog "logs/site2_error_log"
-  </VirtualHost>
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf/extra
-  vm12# vi httpd-ssl.conf (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## リスニング対象のポート番号
-  Listen 443
-
-  ## クライアント接続時に許可する暗号化ランク
-  SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
-  SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
-
-  ## 負荷の低い暗号化アルゴリズムを自動選択
-  SSLHonorCipherOrder on
-
-  ## サポートするプロトコル
-  SSLProtocol all -SSLv3
-  SSLProxyProtocol all -SSLv3
-
-  ## 秘密鍵パスフレーズ入力時の入力方式
-  SSLPassPhraseDialog builtin
-  
-  ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
-  <FilesMatch "\.(cgi|shtml|phtml|php)$">
-    SSLOptions +StdEnvVars
-  </FilesMatch>
-  
-  ## SSL/TLS関連の環境変数をCGI/SSIで使用可能
-  <Directory "/usr/local/apache2/cgi-bin">
-    SSLOptions +StdEnvVars
-  </Directory>
-  
-  ## MSIE関連の問題解決
-  BrowserMatch "MSIE [2-5]" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
-  
-  ## HTTPS接続時のデフォルト設定(site1)
-  <VirtualHost *:443>
-    ServerName site1.example.com
-    ServerAdmin site1@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site1"
-    SSLEngine on
-    SSLCertificateFile "/opt/pki/site/site1.crt"
-    SSLCertificateKeyFile "/opt/pki/site/site1.key"
-  </VirtualHost>
-
-  ## HTTPS接続時のデフォルト設定(site2)
-  <VirtualHost *:443>
-    ServerName site2.example.com
-    ServerAdmin site2@example.com
-    DocumentRoot "/usr/local/apache2/htdocs/site2"
-    SSLEngine on
-    SSLCertificateFile "/opt/pki/site/site2.crt"
-    SSLCertificateKeyFile "/opt/pki/site/site2.key"
-  </VirtualHost>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/htdocs
-  vm12# mkdir site1 site2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/htdocs
-  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
-  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Apache/2.4.52 mod_ssl (Pass Phrase Dialog)
-  Some of your private key files are encrypted for security reasons.
-  In order to read them you have to provide the pass phrases.
-  
-  Private key site2.example.com:443:0 (/opt/pki/site/site2.key)
-  Enter pass phrase: (秘密鍵のパスフレーズを入力)
-  
-  // パスフレーズの認証が正常に行われた旨のメッセージ出力
-  OK: Pass Phrase Dialog successful.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X1]
-  設定ファイル(httpd.conf) - 07 (基本認証)
-  
-[内容]
-  ## 作業内容
-    サイト(http://vm12.example.com)アクセス時に基本認証を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /usr/local/apache2         // ServerRoot
-      | -- /conf               // Config-Directory
-              | -- httpd.conf  // Main-Config
-      | -- /htdocs             // DocumentRoot
-              | -- index.html  // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ServerAdmin makoto@example.com
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-  
-  ## キープアライブ
-  KeepAlive on
-  
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  DocumentRoot "/usr/local/apache2/htdocs"
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    AuthType basic                                 // 基本認証
-    AuthName "Enter USER and PASS"                 // 入力メッセージ
-    AuthUserFile /usr/local/apache2/conf/htpasswd  // パスワードファイル
-    Require valid-user                             // 基本認証パス時にアクセス可
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# htpasswd -c /usr/local/apache2/conf/htpasswd Kate (パスワードファイルにユーザー登録)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  New password: (Kate1と入力)
-  Re-type new password: (Kate1と入力)
-  Adding password for user Kate
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/htdocs/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl -u Kate:Kate1 http://vm12.example.com (サイトアクセス時に基本認証)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X2]
-  設定ファイル(httpd.conf) - 08 (ダイジェスト認証)
-  
-[内容]
-  ## 作業内容
-    サイト(http://vm12.example.com)アクセス時にダイジェスト認証を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /usr/local/apache2         // ServerRoot
-      | -- /conf               // Config-Directory
-              | -- httpd.conf  // Main-Config
-      | -- /htdocs             // DocumentRoot
-              | -- index.html  // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## 追加モジュール
-  LoadModule auth_digest_module modules/mod_auth_digest.so
-
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ServerAdmin makoto@example.com
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-  
-  ## キープアライブ
-  KeepAlive on
-  
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  DocumentRoot "/usr/local/apache2/htdocs"
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    AuthType Digest                                // ダイジェスト認証
-    AuthName "DocRoot"                             // 認証領域名
-    AuthUserFile /usr/local/apache2/conf/htdigest  // パスワードファイル
-    Require valid-user                             // ダイジェスト認証パス時にアクセス可
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# htdigest -c /usr/local/apache2/conf/htdigest DocRoot(認証領域名) Jill (パスワードファイルにユーザー登録)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Adding password for Jill in realm DocRoot.
-  New password: (Jill1と入力)
-  Re-type new password: (Jill1と入力)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/htdocs/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --digest --user Jill:Jill1 http://vm12.example.com (サイトアクセス時にダイジェスト認証)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[X3]
-  設定ファイル(httpd.conf) - 09 (ホストベースのアクセス制御)
-  
-[内容]
-  ## 作業内容
-    サイト(http://vm12.example.com)アクセス時にホストベースのアクセス制御を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /usr/local/apache2         // ServerRoot
-      | -- /conf               // Config-Directory
-              | -- httpd.conf  // Main-Config
-      | -- /htdocs             // DocumentRoot
-              | -- index.html  // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /usr/local/apache2/conf
-  vm12# cp -p httpd.conf httpd.conf.org (設定ファイルのバックアップ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/conf/httpd.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ロードするモジュール一覧
-  LoadModule authn_file_module modules/mod_authn_file.so
-  LoadModule authn_core_module modules/mod_authn_core.so
-  LoadModule authz_host_module modules/mod_authz_host.so
-  LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-  LoadModule authz_user_module modules/mod_authz_user.so
-  LoadModule authz_core_module modules/mod_authz_core.so
-  LoadModule access_compat_module modules/mod_access_compat.so
-  LoadModule auth_basic_module modules/mod_auth_basic.so
-  LoadModule reqtimeout_module modules/mod_reqtimeout.so
-  LoadModule filter_module modules/mod_filter.so
-  LoadModule mime_module modules/mod_mime.so
-  LoadModule log_config_module modules/mod_log_config.so
-  LoadModule env_module modules/mod_env.so
-  LoadModule headers_module modules/mod_headers.so
-  LoadModule setenvif_module modules/mod_setenvif.so
-  LoadModule version_module modules/mod_version.so
-  LoadModule unixd_module modules/mod_unixd.so
-  LoadModule status_module modules/mod_status.so
-  LoadModule autoindex_module modules/mod_autoindex.so
-  LoadModule dir_module modules/mod_dir.so
-  LoadModule alias_module modules/mod_alias.so
-  
-  ## トップディレクトリ
-  ServerRoot "/usr/local/apache2"
-  
-  ## リスニング対象のポート番号
-  Listen 80
-  
-  ## 子プロセスの実行ユーザー
-  User apache
-  
-  ## 子プロセスの実行グループ
-  Group apache
-  
-  ## HTTPヘッダ内のバージョン表示
-  ServerTokens prod
-  
-  ## サーバー管理者のメールアドレス
-  ServerAdmin makoto@example.com
-  
-  ## ホスト名
-  ServerName vm12.example.com
-  
-  ## 起動する子プロセス数
-  StartServers 1
-  
-  ## 待機する子プロセス最小数
-  MinSpareServers 1
-  
-  ## 待機する子プロセス最大数
-  MaxSpareServers 5
-  
-  ## 生成される子プロセス数の上限
-  ServerLimit 5
-  
-  ## 最大同時接続数
-  MaxRequestWorkers 5
-  
-  ## 接続タイムアウト(秒)
-  Timeout 10
-  
-  ## キープアライブ
-  KeepAlive on
-  
-  ## キープアライブ上限リクエスト数
-  MaxKeepAliveRequests 100
-  
-  ## キープアライブタイムアウト(秒)
-  KeepAliveTimeout 10
-  
-  ## ディレクトリ(/)に適用
-  <Directory />
-    AllowOverride none
-    Require all denied
-  </Directory>
-  
-  ## ドキュメントルート
-  DocumentRoot "/usr/local/apache2/htdocs"
-  
-  ## ディレクトリのインデックスとして返すファイル名
-  DirectoryIndex index.html
-  
-  ## ディレクトリ(/usr/local/apache2/htdocs)に適用
-  <Directory "/usr/local/apache2/htdocs">
-    Options Indexes FollowSymLinks
-    AllowOverride None
-    Require all denied         // 全ホストを拒否
-    Require ip 192.168.122.12  // ホスト(192.168.122.12)のみ許可
-  </Directory>
-  
-  ## 外部設定ファイル
-  AccessFileName .htaccess
-  
-  ## 外部設定ファイル(.htaccess)が存在する場合のみ適用
-  <Files ".htaccess">
-    Require all denied
-  </Files>
-  
-  ## ログレベル
-  LogLevel warn
-  
-  ## ログ書式(common)を定義
-  LogFormat "%h %l %u %t \"%r\" %>s %b" common
-  
-  ## アクセスログ出力場所(ServerRoot + logs/access_log)
-  CustomLog "logs/access_log" common
-  
-  ## エラーログ出力場所(ServerRoot + logs/error_log)
-  ErrorLog "logs/error_log"
-  
-  ## CGI(http://(ServerName)/cgi-bin/sample.cgi -> /usr/local/apache2/cgi-bin/sample.cgi)
-  ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
-  
-  ## ディレクトリ(/usr/local/apache2/cgi-bin)に適用
-  <Directory "/usr/local/apache2/cgi-bin">
-    Options None
-    AllowOverride None
-    Require all granted
-  </Directory>
-  
-  ## リクエストヘッダ追加
-  RequestHeader unset Proxy early
-  
-  ## モジュール(mime_module)のロード時のみ適用
-  <IfModule mime_module>
-    TypesConfig conf/mime.types
-    AddType application/x-compress .Z
-    AddType application/x-gzip .gz .tgz
-  </IfModule>
-  
-  ## モジュール(ssl_module)のロード時のみ適用
-  <IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-  </IfModule>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl configtest (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Syntax OK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/apache2/htdocs/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# apachectl start (Apacheを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
+  Last login: Fri Jun 30 17:10:48 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo vi /etc/hosts
+    vm11$ cd $HOME
+    vm11$ curl http://site1.avswa.com/ -> サイトアクセス可能
     
     コマンドの実行結果
     --------------------------------------------------
-    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-    192.168.122.11 vm11
-    192.168.122.12 vm12 vm12.example.com (修正)
-    192.168.122.13 vm13
-    192.168.122.14 vm14
+    <html><body><h1>Site1</h1></body></html>
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ curl http://vm12.example.com
+    vm11$ cd $HOME
+    vm11$ curl http://site2.avswa.com/ -> サイトアクセス可能
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> You don't have permission to access this resource. のメッセージ
+    <html><body><h1>Site2</h1></body></html>
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# apachectl stop (Apacheを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[14]
-  ソースから構築(Nginx)
-  
-[内容]
-  ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## 前提条件
-    PCRE (Apacheでインストール済み)
-    OPENSSL (Apacheでインストール済み)
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ sudo yum -y install zlib zlib-static (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate http://nginx.org/download/nginx-1.21.5.tar.gz (ソース取得)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf nginx-1.21.5.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/nginx-1.21.5
-  vm12$ (Makefile生成)
-    sudo ./configure
-    --prefix=/etc/nginx
-    --sbin-path=/usr/sbin/nginx
-    --with-pcre=/usr/local/src/pcre-8.45  // PCRE(ソース)
-    --with-http_addition_module
-    --with-http_dav_module
-    --with-http_gzip_static_module
-    --with-http_realip_module
-    --with-http_stub_status_module
-    --with-http_ssl_module
-    --with-http_sub_module
-    --with-mail
-    --with-mail_ssl_module
-    --with-openssl=/usr/local/src/openssl-1.1.0h  // OPENSSL(ソース)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/nginx-1.21.5
-  vm12$ sudo make (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/nginx-1.21.5
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ which nginx (コマンドのパス開通を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /usr/sbin/nginx
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[15]
-  制御コマンド(Nginx)
-  
-[内容]
-  ## 作業内容
-    制御コマンド(nginx)で「Nginx」の制御を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## コマンド(nginx)
-    nginx            // Nginxを起動する
-    nginx -s stop    // Nginxを停止する
-    nginx -s quit    // Nginxを安全に停止する
-    nginx -s reload  // Nginxの設定ファイルを読み込む
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ps aux | grep nginx | grep -v grep (Nginxのプロセスを確認する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-  root      1364  0.0  0.0  20976   880 ?        Ss   10:45   0:00 nginx: master process nginx  // マスタープロセス
-  nobody    1365  0.0  0.1  21436  1572 ?        S    10:45   0:00 nginx: worker process        // ワーカープロセス
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl localhost:80 (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> Nginxのデフォルトページ表示
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ps aux | grep nginx | grep -v grep (Nginxのプロセスを確認する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[16]
-  設定ファイル(nginx.conf) - 01 (単独サイト)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(nginx.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /etc/nginx
-      | -- /conf
-              | -- nginx.conf  // Main-Config
-      | -- /html               // DocumentRoot
-              | -- index.html  // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ワーカープロセス数
-  worker_processes 1;
-  
-  ## events モジュール
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web サーバー
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    server {
-      listen 80;                     # Port 80
-      server_name vm12.example.com;  # FQDN
-      location / {                   # / = 'http://vm12.example.com/'
-        root html;                   # DocumentRoot
-        index index.html index.htm;  # DirectoryIndex
-      }
-      error_page 500 502 503 504 /50x.html;
-      location = /50x.html {
-        root html;
-      }
-    }
-  }
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ngix -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/nginx/html/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[17]
-  設定ファイル(nginx.conf) - 02 (複数サイト)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(nginx.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /etc/nginx
-      | -- /conf
-              | -- nginx.conf  // Main-Config
-              | -- vhost.conf  // Extra-Config
-      | -- /html
-              | -- site1               // DocumentRoot1
-                      | -- index.html  // HTML1
-              | -- site2               // DocumentRoot2
-                      | -- index.html  // HTML2
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ワーカープロセス数
-  worker_processes 1;
-  
-  ## events モジュール
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web サーバー
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    include vhost.conf;  # 追加設定ファイル
-  }
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi vhost.conf (設定ファイルの作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## site1
-  server {
-    listen 80;                      # Port 80
-    server_name site1.example.com;  # FQDN
-    location / {                    # / = 'http://site1.example.com/'
-      root /etc/nginx/html/site1;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-
-  ## site2
-  server {
-    listen 80;                      # Port 80
-    server_name site2.example.com;  # FQDN
-    location / {                    # / = 'http://site2.example.com/'
-      root /etc/nginx/html/site2;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com site1.example.com site2.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/html
-  vm12# mkdir site1 site2
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/html
-  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
-  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[18]
-  設定ファイル(nginx.conf) - 03 (単独サイトのHTTPS化)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(nginx.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /opt/pki
-      | -- /site
-              | -- vm12.key  // サイト(vm12)の秘密鍵
-              | -- vm12.csr  // サイト(vm12)の証明書署名要求(CSR)
-              | -- vm12.crt  // サイト(vm12)のデジタル証明書
-    /etc/nginx
-      | -- /conf
-              | -- nginx.conf  // Main-Config
-      | -- /html               // DocumentRoot
-              | -- index.html  // HTML
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/site
-  vm12# ls -lh vm12* (デジタル証明書の確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 4.3K  1月 18 12:48 vm12.crt  // デジタル証明書
-  -rw-r--r--. 1 root root 1001  1月 18 12:47 vm12.csr  // 証明書署名要求(CSR)
-  -rw-------. 1 root root 1.8K  1月 18 12:46 vm12.key  // 秘密鍵ファイル
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ワーカープロセス数
-  worker_processes 1;
-  
-  ## events モジュール
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web サーバー
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    
-    ## HTTP(80)
-    server {
-      listen 80;                     # Port 80
-      server_name vm12.example.com;  # FQDN
-      location / {                   # / = 'http://vm12.example.com/'
-        root html;                   # DocumentRoot
-        index index.html index.htm;  # DirectoryIndex
-      }
-      error_page 500 502 503 504 /50x.html;
-      location = /50x.html {
-        root html;
-      }
-    }
-    
-    ## HTTPS(443)
-    server {
-      listen 443 ssl;                # Port 443
-      server_name vm12.example.com;  # FQDN
-      ssl_certificate_key /opt/pki/site/vm12.key;   # 秘密鍵ファイル
-      ssl_certificate /opt/pki/site/vm12.crt;       # デジタル証明書
-      ssl_password_file /etc/nginx/conf/vm12-pass;  # 秘密鍵パスフレーズを記録したファイル
-      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;          # プロトコル
-      ssl_ciphers HIGH:!aNULL:!MD5;                 # 暗号化アルゴリズム
-      ssl_prefer_server_ciphers on;                 # 不明
-      ssl_session_cache shared:SSL:10m;             # 不明
-      ssl_session_timeout 10m;                      # 不明
-      location / {                   # / = 'https://vm12.example.com/'
-        root html;                   # DocumentRoot
-        index index.html index.htm;  # DirectoryIndex
-      }
-      error_page 500 502 503 504 /50x.html;
-      location = /50x.html {
-        root html;
-      }
-    }
-  }
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# echo (パスフレーズ) > vm12-pass (秘密鍵パスフレーズを記録したファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/nginx/html/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 vm12.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://vm12.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[19]
-  設定ファイル(nginx.conf) - 04 (複数サイトのHTTPS化)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(nginx.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /opt/pki
-      | -- /site
-              | -- site1.key  // サイト(site1)の秘密鍵
-              | -- site1.csr  // サイト(site1)の証明書署名要求(CSR)
-              | -- site1.crt  // サイト(site1)のデジタル証明書
-              | -- site2.key  // サイト(site2)の秘密鍵
-              | -- site2.csr  // サイト(site2)の証明書署名要求(CSR)
-              | -- site2.crt  // サイト(site2)のデジタル証明書
-    /etc/nginx
-      | -- /conf
-              | -- nginx.conf  // Main-Config
-              | -- vhost.conf  // Extra-Config
-      | -- /html
-              | -- site1               // DocumentRoot1
-                      | -- index.html  // HTML1
-              | -- site2               // DocumentRoot2
-                      | -- index.html  // HTML2
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /opt/pki/site
-  vm12# ls -lh | grep -E 'site1|site2' (デジタル証明書の確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rw-r--r--. 1 root root 4.3K  1月 18 20:11 site1.crt  // デジタル証明書
-  -rw-r--r--. 1 root root 1001  1月 18 20:10 site1.csr
-  -rw-------. 1 root root 1.8K  1月 18 20:06 site1.key
-  -rw-r--r--. 1 root root 4.3K  1月 18 20:15 site2.crt  // デジタル証明書
-  -rw-r--r--. 1 root root 1001  1月 18 20:15 site2.csr
-  -rw-------. 1 root root 1.8K  1月 18 20:13 site2.key
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ワーカープロセス数
-  worker_processes 1;
-  
-  ## events モジュール
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web サーバー
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    include vhost.conf;  # 追加設定ファイル
-  }
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi vhost.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## site1(80)
-  server {
-    listen 80;                      # Port 80
-    server_name site1.example.com;  # FQDN
-    location / {                    # / = 'http://site1.example.com/'
-      root /etc/nginx/html/site1;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-
-  ## site2(80)
-  server {
-    listen 80;                      # Port 80
-    server_name site2.example.com;  # FQDN
-    location / {                    # / = 'http://site2.example.com/'
-      root /etc/nginx/html/site2;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-
-  ## site1(443)
-  server {
-    listen 443 ssl;                 # Port 443
-    server_name site1.example.com;  # FQDN
-    ssl_certificate_key /opt/pki/site/site1.key;   # 秘密鍵ファイル
-    ssl_certificate /opt/pki/site/site1.crt;       # デジタル証明書
-    ssl_password_file /etc/nginx/conf/site1-pass;  # 秘密鍵パスフレーズを記録したファイル
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;           # プロトコル
-    ssl_ciphers HIGH:!aNULL:!MD5;                  # 暗号化アルゴリズム
-    ssl_prefer_server_ciphers on;                  # 不明
-    ssl_session_cache shared:SSL:10m;              # 不明
-    ssl_session_timeout 10m;                       # 不明
-    location / {                    # / = 'https://site1.example.com/'
-      root /etc/nginx/html/site1;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-
-  ## site2(443)
-  server {
-    listen 443 ssl;                 # Port 443
-    server_name site2.example.com;  # FQDN
-    ssl_certificate_key /opt/pki/site/site2.key;   # 秘密鍵ファイル
-    ssl_certificate /opt/pki/site/site2.crt;       # デジタル証明書
-    ssl_password_file /etc/nginx/conf/site2-pass;  # 秘密鍵パスフレーズを記録したファイル
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;           # プロトコル
-    ssl_ciphers HIGH:!aNULL:!MD5;                  # 暗号化アルゴリズム
-    ssl_prefer_server_ciphers on;                  # 不明
-    ssl_session_cache shared:SSL:10m;              # 不明
-    ssl_session_timeout 10m;                       # 不明
-    location / {                    # / = 'https://site2.example.com/'
-      root /etc/nginx/html/site2;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# echo (パスフレーズ) > site1-pass (秘密鍵パスフレーズを記録したファイル作成)
-  vm12# echo (パスフレーズ) > site2-pass (秘密鍵パスフレーズを記録したファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site1.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --cacert /opt/pki/SiteCA/SiteCaCert.pem https://site2.example.com (Webページ要求に対する応答)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[20]
-  設定ファイル(nginx.conf) - 05 (リバースプロキシ)
-  
-[内容]
-  ## 作業内容
-    設定ファイル(nginx.conf)で様々なサイト構築パターンを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 単独サイト
-  
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : リバースプロキシ
-  
-  ## ディレクトリ構成(vm12)
-    /etc/nginx
-      | -- /conf
-              | -- nginx.conf  // Main-Config
-      | -- /html               // DocumentRoot
-              | -- index.html  // HTML
-  
-  ## ディレクトリ構成(vm13)
-    /etc/nginx
-      | -- /conf
-              | -- nginx.conf  // Main-Config
-  
-[確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略)
-  --------------------------------------------------
-  
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## Worker Process Counts
-  worker_processes 1;
-  
-  ## Module Events
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web Server
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    server {
-      listen 80;                     # Port 80
-      server_name vm12.example.com;  # FQDN
-      location / {                   # / = 'http://vm12.example.com/'
-        root html;                   # DocumentRoot
-        index index.html index.htm;  # DirectoryIndex
-      }
-      error_page 500 502 503 504 /50x.html;
-      location = /50x.html {
-        root html;
-      }
-    }
-  }
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/nginx/html/index.html
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>単独サイト</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# ngix -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --add-service={http,https} --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-    
-    vm13$ cd $HOME
-    vm13$ su - root (rootユーザーに変更)
+    vm11$ cd $HOME
+    vm11$ sudo firewall-cmd --list-all
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略)
+    public
+      target: default
+      icmp-block-inversion: no
+      interfaces: 
+      sources: 
+      services: cockpit dhcpv6-client dns http https iscsi-target squid ssh  // squid を確認
+      ports: 12865/tcp 12866/tcp
+      protocols: 
+      forward: no
+      masquerade: no
+      forward-ports: 
+      source-ports: 
+      icmp-blocks: 
+      rich rules: 
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# curl http://localhost (Webページ要求に対する応答)
+    vm11$ cd $HOME
+    vm11$ systemctl is-active squid
     
     コマンドの実行結果
     --------------------------------------------------
-    curl: (7) Failed connect to localhost:80; 接続を拒否されました
+    inactive -> ソフトウェアが起動していない
     --------------------------------------------------
     
-    vm13# cd /etc/nginx/conf
-    vm13# vi nginx.conf (設定ファイル編集)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## Worker Process Counts
-    worker_processes 1;
-    
-    ## Module Events
-    events {
-      worker_connections 1024;
-    }
-    
-    ## Web Server
-    http {
-      include mime.types;
-      default_type application/octet-stream;
-      sendfile on;
-      keepalive_timeout 65;
-      server {
-        listen 80;                           # Port 80
-        server_name localhost;               # FQDN
-        location / {                         # / = 'http://localhost/'
-          proxy_pass http://192.168.122.12;  # Redirect
-        }
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-          root html;
-        }
-      }
-    }
-    --------------------------------------------------
-    
-    vm13# cd $HOME
-    vm13# ngix -t (設定ファイルの構文チェック)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-    nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-    --------------------------------------------------
-    
-    vm13# cd $HOME
-    vm13# nginx (Nginxを起動する)
+    vm11$ cd $HOME
+    vm11$ sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.org
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# curl http://localhost (Webページ要求に対する応答)
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/squid/squid.conf
     
     コマンドの実行結果
     --------------------------------------------------
-    <html><body><h1>単独サイト</h1></body></html>
+    ## ネットワーク定義
+    # acl localnet src 0.0.0.1-0.255.255.255  # RFC 1122 "this" network (LAN)
+    # acl localnet src 10.0.0.0/8             # RFC 1918 local private network (LAN)
+    # acl localnet src 100.64.0.0/10          # RFC 6598 shared address space (CGN)
+    # acl localnet src 169.254.0.0/16         # RFC 3927 link-local (directly plugged) machines
+    # acl localnet src 172.16.0.0/12          # RFC 1918 local private network (LAN)
+    acl localnet src 192.168.122.0/24         # RFC 1918 local private network (LAN)
+    # acl localnet src fc00::/7               # RFC 4193 local private network range
+    # acl localnet src fe80::/10              # RFC 4291 link-local (directly plugged) machines
+    
+    ## ポート定義
+    acl SSL_ports  port 443                   # ssl/tls
+    acl Safe_ports port 80                    # http
+    acl Safe_ports port 21                    # ftp
+    acl Safe_ports port 443                   # https
+    acl Safe_ports port 70                    # gopher
+    acl Safe_ports port 210                   # wais
+    acl Safe_ports port 1025-65535            # unregistered ports
+    acl Safe_ports port 280                   # http-mgmt
+    acl Safe_ports port 488                   # gss-http
+    acl Safe_ports port 591                   # filemaker
+    acl Safe_ports port 777                   # multiling http
+    
+    ## フィルタリング(URL)
+    acl blacklist dstdomain "/etc/squid/blacklist"
+    http_access deny blacklist
+    
+    ## アクセス拒否
+    http_access deny !Safe_ports
+    
+    ## キャッシュマネージャーへのアクセス制御
+    http_access allow localhost manager
+    http_access deny manager
+    
+    ## ローカルアクセス制御
+    http_access allow localnet
+    http_access allow localhost
+    http_access deny all
+    
+    ## 待受ポート番号
+    http_port 3128
+    
+    ## コアダンプ出力先
+    coredump_dir /usr/local/squid-5.3/var/cache/squid
+    
+    ## キャッシュ更新間隔
+    refresh_pattern ^ftp: 1440 20% 10080
+    refresh_pattern ^gopher: 1440 0% 1440
+    refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
+    refresh_pattern . 0 20% 4320
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# nginx -s quit (Nginxを安全に停止する)
+    vm11$ cd $HOME
+    vm11$ getenforce
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Enforcing
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo setenforce 0
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# exit (rootユーザーからログアウト)
+    vm11$ cd $HOME
+    vm11$ sudo systemctl start squid
     
     コマンドの実行結果
     --------------------------------------------------
-    ログアウト
+    (省略) -> 出力なし
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
+    vm11$ cd $HOME
+    vm11$ curl --proxy http://localhost:3128 http://site1.avswa.com -> プロキシ経由
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --proxy http://localhost:3128 http://site2.avswa.com -> プロキシ経由
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[21]
-  ソースから構築(Squid)
+[035]
+  squid - フィルタリング(URL)
   
 [内容]
   ## 作業内容
-    ソースからコンパイルとインストール
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    フィルタリング(URL)
   
 [確認]
-  vm12$ cd /usr/local/src
-  vm12$ sudo wget --no-check-certificate http://www.squid-cache.org/Versions/v5/squid-5.3.tar.gz (ソース取得)
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  Last login: Fri Jun 30 18:30:51 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm12$ cd /usr/local/src
-  vm12$ sudo tar -zxf squid-5.3.tar.gz (アーカイブ解凍と展開)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/squid-5.3
-  vm12$ sudo ./configure --prefix=/usr/local/squid-5.3 (Makefile生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/squid-5.3
-  vm12$ sudo make all (ビルド実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/src/squid-5.3
-  vm12$ sudo make install (インストール実行)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ sudo chown -R nobody:nobody /usr/local/squid-5.3 (権限変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12$ cd /usr/lib/systemd/system
-  vm12$ sudo vi squid.service (権限変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [Unit]
-  Description=Squid caching proxy
-  After=syslog.target network.target nss-lookup.target
-  
-  [Service]
-  Type=forking
-  LimitNOFILE=16384
-  # EnvironmentFile=/etc/sysconfig/squid
-  # EnvironmentFile=/usr/local/squid-5.3/etc/squid.conf
-  Environment="SQUID_CONF=/usr/local/squid-5.3/etc/squid.conf"
-  ExecStartPre=/usr/local/squid-5.3/libexec/cache_swap.sh
-  ExecStart=/usr/local/squid-5.3/sbin/squid $SQUID_OPTS -f $SQUID_CONF
-  ExecReload=/usr/local/squid-5.3/sbin/squid $SQUID_OPTS -k reconfigure -f $SQUID_CONF
-  ExecStop=/usr/local/squid-5.3/sbin/squid -k shutdown -f $SQUID_CONF
-  TimeoutSec=0
-  
-  [Install]
-  WantedBy=multi-user.target
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/squid-5.3/libexec
-  vm12$ sudo vi cache_swap.sh (シェルの設定ファイル編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  #!/bin/bash
-
-  if [ -f /etc/sysconfig/squid ]; then
-    . /etc/sysconfig/squid
-  fi
-  
-  SQUID_CONF=${SQUID_CONF:-"/usr/local/squid-5.3/etc/squid.conf"}
-  CACHE_SWAP=`sed -e 's/#.*//g' $SQUID_CONF | grep cache_dir | awk '{ print $3 }'`
-  
-  for adir in $CACHE_SWAP; do
-    if [ ! -d $adir/00 ]; then
-      echo -n "init_cache_dir $adir… "
-      squid -N -z -F -f $SQUID_CONF >> /usr/local/squid-5.3/var/logs/squid.out 2>&1
-    fi
-  done
-  --------------------------------------------------
-  
-  vm12$ cd /usr/local/squid-5.3/libexec
-  vm12$ sudo chmod +x cache_swap.sh (権限付与)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ curl --proxy http://localhost:3128 http://site1.avswa.com
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --proxy http://localhost:3128 http://site2.avswa.com
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site2</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/squid/blacklist
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    site2.avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl reload squid
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --proxy http://localhost:3128 http://site1.avswa.com
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    <html><body><h1>Site1</h1></body></html>
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ curl --proxy http://localhost:3128 http://site2.avswa.com
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> プロキシからエラー表示
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[22]
-  制御コマンド(Squid)
+[036]
+  squid - ソフトウェア停止
   
 [内容]
   ## 作業内容
-    制御コマンド(systemctl)で「Squid」の制御を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## コマンド(squid)
-    systemctl start  squid  // Squidを起動する
-    systemctl stop   squid  // Squidを停止する
-    systemctl status squid  // Squidを確認する
-    systemctl reload squid  // Squidの設定を再読込
+    ソフトウェア停止
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  Last login: Fri Jun 30 19:47:54 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl start squid (Squidを起動する)
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl stop nginx
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl disable nginx
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Removed /etc/systemd/system/multi-user.target.wants/nginx.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl stop squid
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl disable squid
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Thu Jun 29 16:22:53 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl status squid (Squidのプロセスを確認する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ● squid.service - Squid caching proxy
-     Loaded: loaded (/usr/lib/systemd/system/squid.service; disabled; vendor preset: disabled)
-     Active: active (running) since 金 2022-01-21 08:57:02 JST; 8s ago
-    Process: 1236 ExecStart=/usr/local/squid-5.3/sbin/squid $SQUID_OPTS -f $SQUID_CONF (code=exited, status=0/SUCCESS)
-    Process: 1231 ExecStartPre=/usr/local/squid-5.3/libexec/cache_swap.sh (code=exited, status=0/SUCCESS)
-   Main PID: 1238 (squid)
-     CGroup: /system.slice/squid.service
-             ├─1238 /usr/local/squid-5.3/sbin/squid -f /usr/local/squid-5.3/etc…
-             ├─1240 (squid-1) --kid squid-1 -f /usr/local/squid-5.3/etc/squid.c…
-             └─1241 (logfile-daemon) /usr/local/squid-5.3/var/logs/access.log
-  
-  1月 21 08:57:01 vm12 systemd[1]: Starting Squid caching proxy…
-  1月 21 08:57:02 vm12 systemd[1]: Started Squid caching proxy.
-  1月 21 08:57:02 vm12 squid[1238]: Squid Parent: will start 1 kids
-  1月 21 08:57:02 vm12 squid[1238]: Squid Parent: (squid-1) process 1240 started
-  Hint: Some lines were ellipsized, use -l to show in full.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl stop squid (Squidを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
+    
+    vm12$ cd $HOME
+    vm12$ sudo systemctl stop nginx
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo systemctl disable nginx
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm12 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[23]
-  設定ファイル(squid.conf) - 01 (サイトのフィルタリング)
+[X01]
+  compile - 01
   
 [内容]
   ## 作業内容
-    設定ファイル(squid.conf)でサイトのフィルタリングを試してみる
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## ディレクトリ構成
-    /usr/local/squid-5.3
-      | -- /etc
-              | -- squid.conf  // Main-Config
+    ソースからコンパイルとインストール (APR)
   
 [確認]
-  vm12$ cd $HOME
-  vm12$ su - root (rootユーザーに変更)
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略)
+  Last login: Fri Jun 30 21:15:33 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dnf -y install wget gcc expat-devel tar make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.4.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-1.7.4.tar.gz.sha256
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo sha256sum -c apr-1.7.4.tar.gz.sha256
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    apr-1.7.4.tar.gz: 完了
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo tar -zxf apr-1.7.4.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/apr-1.7.4
+    vm13$ sudo ./configure --prefix=/usr/local/apr-1.7.4
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> Makefile
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/apr-1.7.4
+    vm13$ sudo make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ビルド実行
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/apr-1.7.4
+    vm13$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
-  vm12# cd /etc/nginx/conf
-  vm12# vi nginx.conf (設定ファイル編集)
+================================================================================
+[X02]
+  compile - 02
+  
+[内容]
+  ## 作業内容
+    ソースからコンパイルとインストール (APR-Util)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  ## ワーカープロセス数
-  worker_processes 1;
-  
-  ## events モジュール
-  events {
-    worker_connections 1024;
-  }
-  
-  ## Web サーバー
-  http {
-    include mime.types;
-    default_type application/octet-stream;
-    sendfile on;
-    keepalive_timeout 65;
-    include vhost.conf;  # 追加設定ファイル
-  }
+  Last login: Sat Jul  1 07:56:49 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://dlcdn.apache.org//apr/apr-util-1.6.3.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://www.apache.org/dist/apr/apr-util-1.6.3.tar.gz.sha256
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo sha256sum -c apr-util-1.6.3.tar.gz.sha256
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    apr-util-1.6.3.tar.gz: 完了
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo tar -zxf apr-util-1.6.3.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/apr-util-1.6.3
+    vm13$ sudo ./configure --prefix=/usr/local/apr-util-1.6.3 --with-apr=/usr/local/apr-1.7.4
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> Makefile
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/apr-util-1.6.3
+    vm13$ sudo make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ビルド実行
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/apr-util-1.6.3
+    vm13$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
-  vm12# cd /etc/nginx/conf
-  vm12# vi vhost.conf (設定ファイルの作成)
+================================================================================
+[X03]
+  compile - 03
+  
+[内容]
+  ## 作業内容
+    ソースからコンパイルとインストール (PCRE)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  ## site1
-  server {
-    listen 80;                      # Port 80
-    server_name site1.example.com;  # FQDN
-    location / {                    # / = 'http://site1.example.com/'
-      root /etc/nginx/html/site1;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
-
-  ## site2
-  server {
-    listen 80;                      # Port 80
-    server_name site2.example.com;  # FQDN
-    location / {                    # / = 'http://site2.example.com/'
-      root /etc/nginx/html/site2;   # DocumentRoot
-      index index.html index.htm;   # DirectoryIndex
-    }
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-      root html;
-    }
-  }
+  Last login: Sat Jul  1 08:21:41 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dnf -y install gcc-c++ pcre-devel
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo tar -zxf pcre-8.45.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/pcre-8.45
+    vm13$ sudo ./configure --prefix=/usr/local/pcre-8.45
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> Makefile
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/pcre-8.45
+    vm13$ sudo make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ビルド実行
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/pcre-8.45
+    vm13$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
-  vm12# cd $HOME
-  vm12# vi /etc/hosts (設定ファイルの修正)
+================================================================================
+[X04]
+  compile - 04
+  
+[内容]
+  ## 作業内容
+    ソースからコンパイルとインストール (OPENSSL)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.122.11 vm11
-  192.168.122.12 vm12 site1.example.com site2.example.com (修正)
-  192.168.122.13 vm13
-  192.168.122.14 vm14
+  Last login: Sat Jul  1 08:29:16 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo dnf -y install perl
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.0h.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo tar -zxf openssl-1.1.0h.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/openssl-1.1.0h
+    vm13$ sudo ./config --openssldir=/usr/local/openssl-1.1.0
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> Makefile
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/openssl-1.1.0h
+    vm13$ sudo make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ビルド実行
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/openssl-1.1.0h
+    vm13$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
-  vm12# cd /etc/nginx/html
-  vm12# mkdir site1 site2
+================================================================================
+[X05]
+  compile - 05
+  
+[内容]
+  ## 作業内容
+    ソースからコンパイルとインストール (NGHTTP2)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Sat Jul  1 08:35:58 2023 from 192.168.122.1
   --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://github.com/nghttp2/nghttp2/releases/download/v1.31.0/nghttp2-1.31.0.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo tar -zxf nghttp2-1.31.0.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/nghttp2-1.31.0
+    vm13$ sudo env OPENSSL_CFLAGS="-I/usr/local/openssl/include" OPENSSL_LIBS="-L/usr/local/openssl/lib -lssl -lcrypto" ./configure
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> Makefile
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/nghttp2-1.31.0
+    vm13$ sudo make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ビルド実行
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/nghttp2-1.31.0
+    vm13$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
   
-  vm12# cd /etc/nginx/html
-  vm12# echo "<html><body><h1>サイト1</h1></body></html>" > site1/index.html
-  vm12# echo "<html><body><h1>サイト2</h1></body></html>" > site2/index.html
+================================================================================
+[X06]
+  compile - 06
+  
+[内容]
+  ## 作業内容
+    ソースからコンパイルとインストール (Apache)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm13 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Last login: Sat Jul  1 08:53:37 2023 from 192.168.122.1
   --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -t (設定ファイルの構文チェック)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  nginx: the configuration file /etc/nginx/conf/nginx.conf syntax is ok
-  nginx: configuration file /etc/nginx/conf/nginx.conf test is successful
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --add-service={http,https} --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx (Nginxを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/squid-5.3/etc/squid.conf
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ##
-  ## 最小限の設定(推奨)
-  ##
-  
-  ## アクセス可能なネットワーク
-  # acl localnet src 0.0.0.1-0.255.255.255  # RFC 1122 "this" network (LAN)
-  # acl localnet src 10.0.0.0/8             # RFC 1918 local private network (LAN)
-  # acl localnet src 100.64.0.0/10          # RFC 6598 shared address space (CGN)
-  # acl localnet src 169.254.0.0/16         # RFC 3927 link-local (directly plugged) machines
-  # acl localnet src 172.16.0.0/12          # RFC 1918 local private network (LAN)
-  acl localnet src 192.168.122.0/24         # RFC 1918 local private network (LAN)
-  # acl localnet src fc00::/7               # RFC 4193 local private network range
-  # acl localnet src fe80::/10              # RFC 4291 link-local (directly plugged) machines
-  
-  ## ポート番号の定義
-  acl SSL_ports  port 443         # ssl/tls
-  acl Safe_ports port 80          # http
-  acl Safe_ports port 21          # ftp
-  acl Safe_ports port 443         # https
-  acl Safe_ports port 70          # gopher
-  acl Safe_ports port 210         # wais
-  acl Safe_ports port 1025-65535  # unregistered ports
-  acl Safe_ports port 280         # http-mgmt
-  acl Safe_ports port 488         # gss-http
-  acl Safe_ports port 591         # filemaker
-  acl Safe_ports port 777         # multiling http
-  
-  ## フィルタリング(URL)
-  acl blacklist dstdomain "/usr/local/squid-5.3/etc/blacklist"
-  http_access deny blacklist
-  
-  ##
-  ## 最小限のアクセス制御(推奨)
-  ##
-  
-  ## 不安全ポート(上の定義)やフィルタリングのアクセス拒否
-  http_access deny !Safe_ports
-  
-  ## SSLポート(上の定義)以外のアクセス拒否
-  http_access deny CONNECT !SSL_ports
-  
-  ## キャッシュマネージャーへのアクセス制御
-  http_access allow localhost manager
-  http_access deny manager
-  
-  ##
-  ## 独自のアクセス制御を以下に記述
-  ##
-  
-  ## ローカルアクセス制御
-  http_access allow localnet
-  http_access allow localhost
-  http_access deny all
-  
-  ## 待受ポート番号
-  http_port 3128
-  
-  ## コアダンプ出力先
-  coredump_dir /usr/local/squid-5.3/var/cache/squid
-  
-  ## キャッシュ更新間隔
-  refresh_pattern ^ftp: 1440 20% 10080
-  refresh_pattern ^gopher: 1440 0% 1440
-  refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
-  refresh_pattern . 0 20% 4320
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /usr/local/squid-5.3/etc/blacklist
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  site2.example.com
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --add-service=squid --permanent
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --reload
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl start squid (Squidを起動する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site1.example.com (サーバーに直接に問い合わせる)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl http://site2.example.com (サーバーに直接に問い合わせる)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト2</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --proxy http://localhost:3128 http://site1.example.com (プロキシ経由で問い合わせる)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  <html><body><h1>サイト1</h1></body></html>
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# curl --proxy http://localhost:3128 http://site2.example.com (プロキシ経由で問い合わせる)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> The following error was encountered while trying to retrieve the URL: http://site2.example.com/
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl stop squid (Squidを停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# nginx -s quit (Nginxを安全に停止する)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# exit (rootユーザーからログアウト)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://dlcdn.apache.org//httpd/httpd-2.4.57.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo wget --no-check-certificate https://downloads.apache.org/httpd/httpd-2.4.57.tar.gz.sha256
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo sha256sum -c httpd-2.4.57.tar.gz.sha256
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    httpd-2.4.57.tar.gz: 完了
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src
+    vm13$ sudo tar -zxf httpd-2.4.57.tar.gz
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/httpd-2.4.57
+    vm13$ sudo cat INSTALL
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール概要を確認、以降は概要に従い作業する
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/httpd-2.4.57
+    vm13$ sudo ./configure
+        > --prefix=/usr/local/apache2                // DESTINATION
+        > --with-apr=/usr/local/apr-1.7.4            // APR
+        > --with-apr-util=/usr/local/apr-util-1.6.3  // APR-UTIL
+        > --with-pcre=/usr/local/pcre-8.45           // PCRE
+        > --with-ssl=/usr/local/openssl-1.1.0        // OPENSSL
+        > --with-mpm=prefork                         // PHP(prefork)
+        > --enable-http2                             // HTTP2
+        > --enable-ssl                               // SSL
+        > --enable-so                                // APXS
+        > --enable-mods-shared=all                   // DDL
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> Makefile
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/httpd-2.4.57
+    vm13$ sudo make
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> ビルド実行
+    --------------------------------------------------
+    
+    vm13$ cd /usr/local/src/httpd-2.4.57
+    vm13$ sudo make install
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> インストール
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ LANG=C sudo useradd -d /tmp -s /sbin/nologin apache
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    useradd: warning: the home directory already exists.
+    Not copying any file from skel directory into it.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ LANG=C sudo passwd apache
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Changing password for user apache.
+    New password: (apache)
+    BAD PASSWORD: The password is shorter than 8 characters
+    Retype new password: (apache)
+    passwd: all authentication tokens updated successfully.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo chown -R apache:apache /usr/local/apache2
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /etc/bashrc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (末尾に追加) -> PATH=$PATH:/usr/local/apache2/bin
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ source /etc/bashrc
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ which apachectl
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /usr/local/apache2/bin/apachectl
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo vi /usr/lib/systemd/system/httpd.service -> 自動起動のためサービスファイルを作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [Unit]
+    Description=Apache httpd daemon
+    
+    [Service]
+    Type=forking
+    ExecStart=/usr/local/apache2/bin/apachectl -k start
+    ExecStop=/usr/local/apache2/bin/apachectl -k stop
+    
+    [Install]
+    WantedBy=multi-user.target
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl daemon-reload -> システムに通知
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl enable httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created symlink /etc/systemd/system/multi-user.target.wants/httpd.service → /usr/lib/systemd/system/httpd.service.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl start httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl is-active httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl stop httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ sudo systemctl disable httpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Removed /etc/systemd/system/multi-user.target.wants/httpd.service.
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm13 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
