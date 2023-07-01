@@ -1,5 +1,5 @@
 ================================================================================
-[01] Samba - 01 (共有フォルダ - 誰でもアクセス可能)
+[01] Samba - 01
 [02] Samba - 02 (共有フォルダ - 登録ユーザーのみアクセス可能)
 [03] Samba - 03 (ホームディレクトリ)
 [04] Samba - 04 (パスワード変更)
@@ -10,256 +10,248 @@
 [09] NFS - 02 (NFS)
 ================================================================================
 [01]
-  Samba - 01 (共有フォルダ - 誰でもアクセス可能)
+  Samba - 01
   
 [内容]
   ## 作業内容
     共有フォルダを作成、Windows側から誰でもアクセス可能にする
   
   ## 使用マシン
-    HOST : localhost               # ホスト名を「FS01」に変更
-    IPV4 : 192.168.1.3             # DHCP
-    MEMO : ノート(CentOS7)         # Windows用ファイルサーバーに構築する
-    USER : root                    # OSユーザーで kate, mike を追加する
+    HOST : rock
+    IPV4 : dhcp
+    MEMO : Rocky Linux
+    USER : makoto
   
   ## 使用マシン
-    HOST : localhost               # ホスト名を「PC01」に変更
-    IPV4 : 192.168.1.2             # DHCP
-    MEMO : ノート(Windows10)       # ドメイン未参加(WORKGROUP)
-    USER : Owner                   # 元々存在していたユーザー(Administrators)
-  
-  ## 設定情報(Samba)
-    DIRECTORY : /home/samba        # サーバー側ディレクトリ
-    SHARENAME : share              # 共有名
+    HOST : pc01
+    IPV4 : dhcp
+    MEMO : Windows10 -> WORKGROUP
+    USER : Owner
   
 [確認]
-  # cd $HOME
-  # yum -y install samba samba-client (パッケージ追加)
+  $ cd $HOME
+  $ sudo dnf -y install samba samba-client
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> エラー出力が無ければOK
   --------------------------------------------------
   
-  # cd $HOME
-  # hostnamectl set-hostname FS01 (ホスト名変更)
+  $ cd $HOME
+  $ sudo useradd -s /usr/bin/bash kate
+  $ sudo useradd -s /usr/bin/bash mike
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (省略) -> Linux側のOSユーザーを作成
   --------------------------------------------------
   
-  # cd $HOME
-  # useradd -s /usr/bin/bash kate (ユーザー追加)
-  # useradd -s /usr/bin/bash mike (ユーザー追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  # cd $HOME
-  # LANG=C passwd kate (パスワード変更)
-  # LANG=C passwd mike (パスワード変更)
+  $ cd $HOME
+  $ LANG=C sudo passwd kate
+  $ LANG=C sudo passwd mike
   
   コマンドの実行結果
   --------------------------------------------------
   // Kate
   Changing password for user kate.
-  New password: (ka0122maと入力)
-  Retype new password: (ka0122maと入力)
+  New password: (ka0122ma)
+  Retype new password: (ka0122ma)
   passwd: all authentication tokens updated successfully.
   
   // Mike
   Changing password for user mike.
-  New password: (mi0122maと入力)
-  Retype new password: (mi0122maと入力)
+  New password: (mi0122ma)
+  Retype new password: (mi0122ma)
   passwd: all authentication tokens updated successfully.
   --------------------------------------------------
   
-  # cd $HOME
-  # mkdir -p /home/samba (共有フォルダ作成)
+  $ cd $HOME
+  $ sudo mkdir -p /home/samba
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (省略) -> 共有フォルダ作成
   --------------------------------------------------
   
-  # cd $HOME
-  # chmod 777 /home/samba (共有フォルダの権限変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 誰でも閲覧可能、変更可能にする
-  --------------------------------------------------
-  
-  # cd $HOME
-  # echo 'AAA AAA AAA' > file1.txt (ファイル作成)
-  # echo 'BBB BBB BBB' > file2.txt (ファイル作成)
-  # echo 'CCC CCC CCC' > file3.txt (ファイル作成)
-  # echo 'DDD DDD DDD' > file4.txt (ファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  # cd $HOME
-  # chmod 777 file[1-4].txt (権限変更)
+  $ cd $HOME
+  $ sudo chmod 777 /home/samba
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 誰でも閲覧可能、変更可能にする
   --------------------------------------------------
   
-  # cd /etc/samba
-  # cp -p smb.conf smb.conf.org (設定ファイルのバックアップ)
+  $ cd $HOME
+  $ echo 'AAA AAA AAA' > file1.txt
+  $ echo 'BBB BBB BBB' > file2.txt
+  $ echo 'CCC CCC CCC' > file3.txt
+  $ echo 'DDD DDD DDD' > file4.txt
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (省略) -> ファイル作成
   --------------------------------------------------
   
-  # cd /etc/samba
-  # vi smb.conf (設定ファイルの修正)
+  $ cd $HOME
+  $ sudo chmod 777 file[1-4].txt
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 誰でも閲覧可能、変更可能にする
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo cp -p /etc/samba/smb.conf /etc/samba/smb.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 設定ファイルのバックアップ
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo vi /etc/samba/smb.conf
   
   コマンドの実行結果
   --------------------------------------------------
   [global]
-    workgroup = WORKGROUP                         // This server is WORKGROUP
+    workgroup = WORKGROUP                         // This server is WORKGROUP at Windows Network
     server role = STANDALONE                      // This server is not Domain Controller
-    netbios name = FS01                           // NetBIOS
+    netbios name = rock                           // NetBIOS Name
     server string = File Server for Windows User  // Description
     hosts allow = 192.168.1. 127.                 // Accessible Hosts
     guest account = makoto                        // Guest behaves as makoto user in Linux
     map to guest = Bad User                       // If input user is not existed, Samba reckon guest(makoto)
     log file = /var/log/samba/%m.log              // Samba log
     max log size = 0                              // Samba log size is unlimited
-    encrypt passwords = Yes                       // Samba use encrypt password
     wins support = No                             // Samba needs no WINS, uses /etc/samba/lmhosts
     security = user                               // Samba needs Linux Account
     passdb backend = smbpasswd                    // Samba stores user data in smbpasswd
     smb passwd file = /etc/samba/smbpasswd        // Smbpasswd file
     create mask = 0777                            // File Permission
     directory mask = 0777                         // Directory Permission
-    local master = No                             // Master Browser is not me
-    preferred master = No                         // Master Browser is not me
-    domain master = No                            // Master Browser is not me
-    os level = 10                                 // Master Browser is not me
+    local master = No                             // Master Browser is not this Linux machine
+    preferred master = No                         // Master Browser is not this Linux machine
+    domain master = No                            // Master Browser is not this Linux machine
+    os level = 10                                 // Master Browser is not this Linux machine
     
   [share]
-    comment = share directory in FS01  // Description
-    browseable = Yes                   // Windows User can browse this SHARE
-    writable = Yes                     // Windows User can write in this SHARE
-    path = /home/samba                 // Specify the directory path for this SHARE
-    public = Yes                       // Guest User can access this SHARE
-    guest ok = Yes                     // Guest User can access this SHARE
-    guest only = Yes                   // Guest User can access this SHARE
+    comment = share directory in rock             // Description
+    browseable = Yes                              // Windows User can browse this SHARE
+    writable = Yes                                // Windows User can write in this SHARE
+    path = /home/samba                            // Specify the directory path for this SHARE
+    public = Yes                                  // Guest User can access this SHARE
+    guest ok = Yes                                // Guest User can access this SHARE
+    guest only = Yes                              // Guest User can access this SHARE
   --------------------------------------------------
   
-  # cd $HOME
-  # testparm (構文チェック)
+  $ cd $HOME
+  $ sudo testparm -> 設定ファイルの書式チェック
   
   コマンドの実行結果
   --------------------------------------------------
   Load smb config files from /etc/samba/smb.conf
-  Loaded services file OK.      // 構文チェックに異常なし
-  Server role: ROLE_STANDALONE  // スタンドアロン
+  Loaded services file OK.
+  Weak crypto is allowed by GnuTLS (e.g. NTLM as a compatibility fallback)
   
-  // Enterキー押下で先に進む
+  // スタンドアロン
+  Server role: ROLE_STANDALONE
+  
+  // Enterで先に進む
   Press enter to see a dump of your service definitions
   
-  # Global parameters
+  // グローバル
   [global]
-    domain master = No
-    guest account = makoto
-    local master = No
-    log file = /var/log/samba/%m.log
-    map to guest = Bad User
-    max log size = 0
-    os level = 10
-    passdb backend = smbpasswd
-    preferred master = No
-    security = USER
-    server role = standalone server
-    server string = File Server for Windows User
-    smb passwd file = /etc/samba/smbpasswd
-    idmap config * : backend = tdb
-    create mask = 0777
-    directory mask = 0777
-    hosts allow = 192.168.1. 127.
+	  domain master = No
+	  guest account = makoto
+	  local master = No
+	  log file = /var/log/samba/%m.log
+	  map to guest = Bad User
+	  max log size = 0
+	  os level = 10
+	  passdb backend = smbpasswd
+	  preferred master = No
+	  security = USER
+	  server role = standalone server
+	  server string = File Server for Windows User
+	  smb passwd file = /etc/samba/smbpasswd
+	  idmap config * : backend = tdb
+	  create mask = 0777
+	  directory mask = 0777
+	  hosts allow = 192.168.1. 127.
   
+  // 共有フォルダ
   [share]
-    comment = share directory in FS01
-    guest ok = Yes
-    guest only = Yes
-    path = /home/samba
-    read only = No
+	  comment = share directory in rock
+	  guest ok = Yes
+	  guest only = Yes
+	  path = /home/samba
+	  read only = No
   --------------------------------------------------
   
-  # cd $HOME
-  # pdbedit -a kate (Sambaユーザー登録)
-  # pdbedit -a mike (Sambaユーザー登録)
+  $ cd $HOME
+  $ sudo pdbedit -a kate
+  $ sudo pdbedit -a mike
   
   コマンドの実行結果
   --------------------------------------------------
   // Kate
-  new password         : (ka0122maと入力)
-  retype new password  : (ka0122maと入力)
-  Unix username        : kate
-  NT username          : 
-  Account Flags        : [U          ]
-  User SID             : S-1-5-21-333211391-2767060413-2512415146-3002
-  Primary Group SID    : S-1-5-21-333211391-2767060413-2512415146-513
-  Full Name            : 
-  Home Directory       : \\fs01\kate
-  HomeDir Drive        : 
-  Logon Script         : 
-  Profile Path         : \\fs01\kate\profile
-  Domain               : FS01
-  Account desc         : 
-  Workstations         : 
-  Munged dial          : 
-  Logon time           : 0
-  Logoff time          : never
-  Kickoff time         : never
-  Password last set    : 日, 23  1月 2022 23:48:12 JST
-  Password can change  : 日, 23  1月 2022 23:48:12 JST
-  Password must change : never
-  Last bad password    : 0
-  Bad password count   : 0
-  Logon hours          : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  new password               : (ka0122ma)
+  retype new password        : (ka0122ma)
+  startsmbfilepwent_internal : file /etc/samba/smbpasswd did not exist. File successfully created.
+  Unix username              : kate
+  NT username                : 
+  Account Flags              : [U          ]
+  User SID                   : S-1-5-21-4149390873-1238832848-2495149049-3002
+  Primary Group SID          : S-1-5-21-4149390873-1238832848-2495149049-513
+  Full Name                  : 
+  Home Directory             : \\ROCK\kate
+  HomeDir Drive              : 
+  Logon Script               : 
+  Profile Path               : \\ROCK\kate\profile
+  Domain                     : ROCK
+  Account desc               : 
+  Workstations               : 
+  Munged dial                : 
+  Logon time                 : 0
+  Logoff time                : never
+  Kickoff time               : never
+  Password last set          : 土, 01  7月 2023 12:35:53 JST
+  Password can change        : 土, 01  7月 2023 12:35:53 JST
+  Password must change       : never
+  Last bad password          : 0
+  Bad password count         : 0
+  Logon hours                : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   
   // Mike
-  new password         : (mi0122maと入力)
-  retype new password  : (mi0122maと入力)
-  Unix username        : mike
-  NT username          : 
-  Account Flags        : [U          ]
-  User SID             : S-1-5-21-333211391-2767060413-2512415146-3004
-  Primary Group SID    : S-1-5-21-333211391-2767060413-2512415146-513
-  Full Name            : 
-  Home Directory       : \\fs01\mike
-  HomeDir Drive        : 
-  Logon Script         : 
-  Profile Path         : \\fs01\mike\profile
-  Domain               : FS01
-  Account desc         : 
-  Workstations         : 
-  Munged dial          : 
-  Logon time           : 0
-  Logoff time          : never
-  Kickoff time         : never
-  Password last set    : 日, 23  1月 2022 23:52:23 JST
-  Password can change  : 日, 23  1月 2022 23:52:23 JST
-  Password must change : never
-  Last bad password    : 0
-  Bad password count   : 0
-  Logon hours          : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  new password               : (mi0122ma)
+  retype new password        : (mi0122ma)
+  Unix username              : mike
+  NT username                : 
+  Account Flags              : [U          ]
+  User SID                   : S-1-5-21-4149390873-1238832848-2495149049-3004
+  Primary Group SID          : S-1-5-21-4149390873-1238832848-2495149049-513
+  Full Name                  : 
+  Home Directory             : \\ROCK\mike
+  HomeDir Drive              : 
+  Logon Script               : 
+  Profile Path               : \\ROCK\mike\profile
+  Domain                     : ROCK
+  Account desc               : 
+  Workstations               : 
+  Munged dial                : 
+  Logon time                 : 0
+  Logoff time                : never
+  Kickoff time               : never
+  Password last set          : 土, 01  7月 2023 12:45:10 JST
+  Password can change        : 土, 01  7月 2023 12:45:10 JST
+  Password must change       : never
+  Last bad password          : 0
+  Bad password count         : 0
+  Logon hours                : FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   --------------------------------------------------
   
-  # cd $HOME
-  # pdbedit -L (Sambaユーザーの一覧)
+  $ cd $HOME
+  $ sudo pdbedit -L
   
   コマンドの実行結果
   --------------------------------------------------
@@ -267,45 +259,68 @@
   mike:1002:
   --------------------------------------------------
   
-  # cd $HOME
-  # vi /etc/samba/lmhosts (設定ファイル修正) -> Windows側でも同ファイルを用意
+  $ cd $HOME
+  $ sudo chmod 600 /etc/samba/smbpasswd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ifconfig enp0s25 | grep inet
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  inet 192.168.1.4  netmask 255.255.255.0  broadcast 192.168.1.255  // rock の IPv4 が判明
+  inet6 fe80::7258:12ff:fe26:accf  prefixlen 64  scopeid 0x20<link>
+  inet6 2400:4052:20c0:bc00:7258:12ff:fe26:accf  prefixlen 64  scopeid 0x0<global>
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo vi /etc/samba/lmhosts -> Windows側でも同ファイルを用意
   
   コマンドの実行結果
   --------------------------------------------------
   127.0.0.1 localhost
-  192.168.1.2 PC01 (追加)
-  192.168.1.3 FS01 (追加)
+  192.168.1.2 pc01  // 追加 => 事前に調査
+  192.168.1.4 rock  // 追加
   --------------------------------------------------
   
-  # cd $HOME
-  # vi /etc/hosts (設定ファイル修正) -> Windows側でも同ファイルを用意
+  $ cd $HOME
+  $ sudo vi /etc/hosts -> Windows側でも同ファイルを用意
   
   コマンドの実行結果
   --------------------------------------------------
   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  192.168.1.2 PC01 (追加)
-  192.168.1.3 FS01 (追加)
+  
+  192.168.122.11 vm11 vm11.avswa.com
+  192.168.122.12 vm12 vm12.avswa.com
+  192.168.122.13 vm13 vm13.avswa.com
+  
+  192.168.1.2 pc01  // 追加 => 事前に調査
+  192.168.1.4 rock  // 追加
   --------------------------------------------------
   
-  # cd $HOME
-  # firewall-cmd --add-service=samba --permanent (設定ファイル修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  # cd $HOME
-  # firewall-cmd --reload (設定ファイル修正)
+  $ cd $HOME
+  $ sudo firewall-cmd --add-service=samba --permanent
   
   コマンドの実行結果
   --------------------------------------------------
   success
   --------------------------------------------------
   
-  # cd $HOME
-  # systemctl start smb nmb (Sambaサービスの起動)
+  $ cd $HOME
+  $ sudo firewall-cmd --reload
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  success
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo systemctl start smb nmb
   
   コマンドの実行結果
   --------------------------------------------------
@@ -316,63 +331,60 @@
     Sambaクライアントで接続(Sambaユーザー登録済み)
   ==================================================
   
-  # cd $HOME
-  # setenforce 0 (SELinuxの無効化)
+  $ cd $HOME
+  $ sudo setenforce 0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
   --------------------------------------------------
   
-  # cd $HOME
-  # smbclient -U kate //FS01/share (Sambaクライアントで共有フォルダに接続)
+  $ cd $HOME
+  $ smbclient -U kate //rock/share -> Sambaクライアントで共有フォルダに接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Enter WORKGROUP\kate's password: (ka0122maと入力)
+  Password for [WORKGROUP\kate]: (ka0122ma)
   Try "help" to get a list of possible commands.
+  --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file1.txt
+    smb:\> 
+    smb:\> mput file1.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file1.txt? (yes)
-    putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
+    putting file file1.txt as \file1.txt (2.0 kb/s) (average 2.0 kb/s)
     --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file2.txt
+    smb:\> 
+    smb:\> mput file2.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file2.txt? (yes)
-    putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
+    putting file file2.txt as \file2.txt (1.3 kb/s) (average 1.6 kb/s)
     --------------------------------------------------
     
-    smb: \> (Sambaクライアント終了)
-    smb: \>  exit
+    smb:\> 
+    smb:\> exit
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    OSプロンプトに戻る
-    
-  --------------------------------------------------
-  
-  # cd /home/samba
-  # ls -lh (共有フォルダの内容を確認)
+  $ cd $HOME
+  $ ls -lh /home/samba -> 共有フォルダの内容を確認
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file1.txt  // 所有者が「Guest Account」のユーザーになるのは何故？
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file2.txt  // 所有者が「Guest Account」のユーザーになるのは何故？
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:17 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:19 file2.txt
   --------------------------------------------------
   
-  # cd $HOME
-  # setenforce 1 (SELinuxの有効化)
+  $ cd $HOME
+  $ sudo setenforce 1
   
   コマンドの実行結果
   --------------------------------------------------
@@ -383,65 +395,62 @@
      Sambaクライアントで接続(Sambaユーザー未登録)
   ==================================================
   
-  # cd $HOME
-  # setenforce 0 (SELinuxの無効化)
+  $ cd $HOME
+  $ sudo setenforce 0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
   --------------------------------------------------
   
-  # cd $HOME
-  # smbclient -U AAAA //FS01/share (Sambaクライアントで共有フォルダに接続)
+  $ cd $HOME
+  $ smbclient -U AAAA //rock/share -> Sambaクライアントで共有フォルダに接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Enter WORKGROUP\AAAA's password: (AAAAと入力) -> 当然ながらOSユーザーにもSambaユーザーにも未登録
+  Enter WORKGROUP\AAAA's password: (AAAA) -> OSユーザーにもSambaユーザーにも未登録
   Try "help" to get a list of possible commands.
+  --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file3.txt
+    smb:\> 
+    smb:\> mput file3.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file3.txt? (yes)
-    putting file file3.txt as \file3.txt (1.2 kb/s) (average 1.2 kb/s)
+    putting file file3.txt as \file3.txt (0.6 kb/s) (average 0.6 kb/s)
     --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file4.txt
+    smb:\> 
+    smb:\> mput file4.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file4.txt? (yes)
-    putting file file4.txt as \file4.txt (2.9 kb/s) (average 1.7 kb/s)
+    putting file file4.txt as \file4.txt (1.3 kb/s) (average 0.8 kb/s)
     --------------------------------------------------
     
-    smb: \> (Sambaクライアント終了)
-    smb: \>  exit
+    smb:\> 
+    smb:\> exit
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    OSプロンプトに戻る
-    
-  --------------------------------------------------
-  
-  # cd /home/samba
-  # ls -lh (共有フォルダの内容を確認)
+  $ cd $HOME
+  $ ls -lh /home/samba -> 共有フォルダの内容を確認
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file1.txt
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file2.txt
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:21 file3.txt  // 所有者が「Guest Account」のユーザーになる
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:22 file4.txt  // 所有者が「Guest Account」のユーザーになる
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:17 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:19 file2.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:28 file3.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:29 file4.txt
   --------------------------------------------------
   
-  # cd $HOME
-  # setenforce 1 (SELinuxの有効化)
+  $ cd $HOME
+  $ sudo setenforce 1
   
   コマンドの実行結果
   --------------------------------------------------
@@ -452,59 +461,62 @@
        Windows側から接続(Sambaユーザー未登録)
   ==================================================
   
-  # cd $HOME
-  # setenforce 0 (SELinuxの無効化)
+  $ cd $HOME
+  $ sudo setenforce 0
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
   --------------------------------------------------
     
-    操作1
-    ==================================================
-    ネットワークパス「\\FS01\share」にアクセス -> トラブル発生
-    ==================================================
+    > Windows側の操作
+    > アクセス -> \\rock\share
+
+    コマンドの実行結果
+    --------------------------------------------------
+    ホスト(rock)がブラウずされない -> プロトコル(SMB1)を有効化
+    ホスト(rock)にアクセスできない -> ゲストログオンを許可
+    --------------------------------------------------
     
-    トラブル1
-    ==================================================
-    Windows側のエクスプローラに「FS01」がブラウズされない -> プロトコル「SMB1」を有効化で解決
-    ==================================================
+    > Windows側の操作
+    > ダウンロード
+
+    コマンドの実行結果
+    --------------------------------------------------
+    ( file[1-4].txt をダウンロード)
+    --------------------------------------------------
     
-    トラブル2
-    ==================================================
-    ブラウズされた「FS01」の共有フォルダにアクセス不可 -> ゲストログオンを許可で解決
-    ==================================================
+    > Windows側の操作
+    > ファイル作成
+
+    コマンドの実行結果
+    --------------------------------------------------
+    ( file[5-6].txt をファイル作成)
+    --------------------------------------------------
     
-    操作2
-    ==================================================
-    共有フォルダ中の「file[1-4].txt」をローカルにダウンロード
-    ==================================================
+    > Windows側の操作
+    > アップロード
+
+    コマンドの実行結果
+    --------------------------------------------------
+    (ファイル file[5-6].txt を共有フォルダにアップロード)
+    --------------------------------------------------
     
-    操作3
-    ==================================================
-    ローカルにコピーしたファイルを元に「file[5-6].txt」を作成
-    ==================================================
-    
-    操作4
-    ==================================================
-    ファイル「file[1-6].txt」を共有フォルダにアップロード
-    ==================================================
-    
-  # cd /home/samba
-  # ls -lh (共有フォルダの内容を確認)
+  $ cd $HOME
+  $ ls -lh /home/samba -> 共有フォルダの内容を確認
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file1.txt
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:18 file2.txt
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:21 file3.txt
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 09:22 file4.txt
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 12:39 file5.txt  // 所有者が「Guest Account」のユーザーになる
-  -rwxrw-rw-. 1 makoto makoto 12  1月 24 12:39 file6.txt  // 所有者が「Guest Account」のユーザーになる
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:17 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:19 file2.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:28 file3.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:29 file4.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 19:23 file5.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  1 19:24 file6.txt
   --------------------------------------------------
   
-  # cd $HOME
-  # setenforce 1 (SELinuxの有効化)
+  $ cd $HOME
+  $ sudo setenforce 1
   
   コマンドの実行結果
   --------------------------------------------------
