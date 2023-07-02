@@ -1,15 +1,15 @@
 ================================================================================
-[01] Samba - 01
-[02] Samba - 02 (共有フォルダ - 登録ユーザーのみアクセス可能)
-[03] Samba - 03 (ホームディレクトリ)
-[04] Samba - 04 (パスワード変更)
-[05] Samba - 05 (マスターブラウザの検索)
-[06] Samba - 06 (Windows側の共有フォルダをSambaクライアントからアクセス)
-[07] Samba - 07 (Windows側の共有フォルダをLinux側からマウント)
-[08] NFS - 01 (RPC)
-[09] NFS - 02 (NFS)
+[001] Samba - 01
+[002] Samba - 02 (共有フォルダ - 登録ユーザーのみアクセス可能)
+[003] Samba - 03 (ホームディレクトリ)
+[004] Samba - 04 (パスワード変更)
+[005] Samba - 05 (マスターブラウザの検索)
+[006] Samba - 06 (Windows側の共有フォルダをSambaクライアントからアクセス)
+[007] Samba - 07 (Windows側の共有フォルダをLinux側からマウント)
+[008] NFS - 01 (RPC)
+[009] NFS - 02 (NFS)
 ================================================================================
-[01]
+[001]
   Samba - 01
   
 [内容]
@@ -79,6 +79,38 @@
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 誰でも閲覧可能、変更可能にする
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo semanage fcontext -a -t samba_share_t /home/samba
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo setsebool -P samba_enable_home_dirs 1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo setsebool -P samba_export_all_ro 1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo setsebool -P samba_export_all_rw 1
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
   --------------------------------------------------
   
   $ cd $HOME
@@ -268,6 +300,30 @@
   --------------------------------------------------
   
   $ cd $HOME
+  $ sudo semodule -i my-sambadcerpcd.pp
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo ausearch -c 'samba-dcerpcd' --raw | audit2allow -M my-sambadcerpcd
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo semodule -X 300 -i my-sambadcerpcd.pp
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> コンテキスト修正
+  --------------------------------------------------
+  
+  $ cd $HOME
   $ ifconfig enp0s25 | grep inet
   
   コマンドの実行結果
@@ -327,33 +383,9 @@
   (省略) -> 出力なし
   --------------------------------------------------
   
-  $ cd $HOME
-  $ sudo semanage fcontext -a -t samba_share_t /home/samba
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> /home/samba 以下の SELinux コンテキスト修正
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo restorecon -R -v /home/samba
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> コンテキスト修正を反映
-  --------------------------------------------------
-  
   ==================================================
     Sambaクライアントで接続(Sambaユーザー登録済み)
   ==================================================
-  
-  //$ cd $HOME
-  //$ sudo setenforce 0
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  //--------------------------------------------------
   
   $ cd $HOME
   $ smbclient -U kate //rock/share -> Sambaクライアントで共有フォルダに接続
@@ -365,19 +397,12 @@
   --------------------------------------------------
     
     smb:\> 
-    smb:\> mput file1.txt -> ファイルを共有フォルダにアップロード
+    smb:\> mput file1.txt file2.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file1.txt? (yes)
     putting file file1.txt as \file1.txt (2.0 kb/s) (average 2.0 kb/s)
-    --------------------------------------------------
-    
-    smb:\> 
-    smb:\> mput file2.txt -> ファイルを共有フォルダにアップロード
-    
-    コマンドの実行結果
-    --------------------------------------------------
     Put file file2.txt? (yes)
     putting file file2.txt as \file2.txt (1.3 kb/s) (average 1.6 kb/s)
     --------------------------------------------------
@@ -395,29 +420,13 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:17 file1.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:19 file2.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:02 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:02 file2.txt
   --------------------------------------------------
-  
-  //$ cd $HOME
-  //$ sudo setenforce 1
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> 出力なし
-  //--------------------------------------------------
   
   ==================================================
      Sambaクライアントで接続(Sambaユーザー未登録)
   ==================================================
-  
-  //$ cd $HOME
-  //$ sudo setenforce 0
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  //--------------------------------------------------
   
   $ cd $HOME
   $ smbclient -U AAAA //rock/share -> Sambaクライアントで共有フォルダに接続
@@ -429,19 +438,12 @@
   --------------------------------------------------
     
     smb:\> 
-    smb:\> mput file3.txt -> ファイルを共有フォルダにアップロード
+    smb:\> mput file3.txt file4.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file3.txt? (yes)
     putting file file3.txt as \file3.txt (0.6 kb/s) (average 0.6 kb/s)
-    --------------------------------------------------
-    
-    smb:\> 
-    smb:\> mput file4.txt -> ファイルを共有フォルダにアップロード
-    
-    コマンドの実行結果
-    --------------------------------------------------
     Put file file4.txt? (yes)
     putting file file4.txt as \file4.txt (1.3 kb/s) (average 0.8 kb/s)
     --------------------------------------------------
@@ -459,31 +461,15 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:17 file1.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:19 file2.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:28 file3.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:29 file4.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:02 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:02 file2.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:04 file3.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:04 file4.txt
   --------------------------------------------------
-  
-  //$ cd $HOME
-  //$ sudo setenforce 1
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> 出力なし
-  //--------------------------------------------------
   
   ==================================================
        Windows側から接続(Sambaユーザー未登録)
   ==================================================
-  
-  //$ cd $HOME
-  //$ sudo setenforce 0
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  //--------------------------------------------------
     
     > Windows側の操作
     > アクセス -> \\rock\share
@@ -523,27 +509,19 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:17 file1.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:19 file2.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:28 file3.txt
-  -rwxrw-rw-. 1 makoto makoto 12  7月  1 13:29 file4.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:16 file1.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:16 file2.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:17 file3.txt
+  -rwxrw-rw-. 1 makoto makoto 12  7月  2 09:17 file4.txt
   -rwxrw-rw-. 1 makoto makoto 12  7月  1 19:23 file5.txt
   -rwxrw-rw-. 1 makoto makoto 12  7月  1 19:24 file6.txt
   --------------------------------------------------
   
-  //$ cd $HOME
-  //$ sudo setenforce 1
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> 出力なし
-  //--------------------------------------------------
-  
   以下の確認に続く
   
 ================================================================================
-[02]
-  Samba - 02 (共有フォルダ - 登録ユーザーのみアクセス可能)
+[002]
+  Samba - 02
   
 [内容]
   ## 作業内容
@@ -578,7 +556,7 @@
   [global]
     workgroup = WORKGROUP                         // This server is WORKGROUP
     server role = STANDALONE                      // This server is not Domain Controller
-    netbios name = FS01                           // NetBIOS
+    netbios name = rock                           // NetBIOS
     server string = File Server for Windows User  // Description
     hosts allow = 192.168.1. 127.                 // Accessible Hosts
     guest account = makoto                        // Guest behaves as makoto user in Linux
@@ -591,13 +569,13 @@
     smb passwd file = /etc/samba/smbpasswd        // Smbpasswd file
     create mask = 0777                            // File Permission
     directory mask = 0777                         // Directory Permission
-    local master = No                             // Master Browser is not me
-    preferred master = No                         // Master Browser is not me
-    domain master = No                            // Master Browser is not me
-    os level = 10                                 // Master Browser is not me
+    local master = No                             // Master Browser is not this Linux machine
+    preferred master = No                         // Master Browser is not this Linux machine
+    domain master = No                            // Master Browser is not this Linux machine
+    os level = 10                                 // Master Browser is not this Linux machine
     
   [share]
-    comment = share directory in FS01             // Description
+    comment = share directory in rock             // Description
     browseable = Yes                              // Windows User can browse this SHARE
     writable = Yes                                // Windows User can write in this SHARE
     path = /home/samba                            // Specify the directory path for this SHARE
@@ -612,39 +590,43 @@
   コマンドの実行結果
   --------------------------------------------------
   Load smb config files from /etc/samba/smb.conf
-  Loaded services file OK.      // 構文チェックに異常なし
-  Server role: ROLE_STANDALONE  // スタンドアロン
+  Loaded services file OK.
+  Weak crypto is allowed by GnuTLS (e.g. NTLM as a compatibility fallback)
   
-  // Enterキー押下で先に進む
+  // スタンドアロン
+  Server role: ROLE_STANDALONE
+  
+  // Enterで先に進む
   Press enter to see a dump of your service definitions
   
-  # Global parameters
+  // グローバル
   [global]
-    domain master = No
-    guest account = makoto
-    local master = No
-    log file = /var/log/samba/%m.log
-    max log size = 0
-    os level = 10
-    passdb backend = smbpasswd
-    preferred master = No
-    security = USER
-    server role = standalone server
-    server string = File Server for Windows User
-    smb passwd file = /etc/samba/smbpasswd
-    idmap config * : backend = tdb
-    create mask = 0777
-    directory mask = 0777
-    hosts allow = 192.168.1. 127.
+	  domain master = No
+	  guest account = makoto
+	  local master = No
+	  log file = /var/log/samba/%m.log
+	  max log size = 0
+	  os level = 10
+	  passdb backend = smbpasswd
+	  preferred master = No
+	  security = USER
+	  server role = standalone server
+	  server string = File Server for Windows User
+	  smb passwd file = /etc/samba/smbpasswd
+	  idmap config * : backend = tdb
+	  create mask = 0777
+	  directory mask = 0777
+	  hosts allow = 192.168.1. 127.
   
+  // 共有フォルダ
   [share]
-    comment = share directory in FS01
+    comment = share directory in rock
     path = /home/samba
     read only = No
   --------------------------------------------------
   
   $ cd $HOME
-  $ sudo systemctl start smb nmb
+  $ sudo systemctl restart smb nmb
   
   コマンドの実行結果
   --------------------------------------------------
@@ -654,14 +636,6 @@
   ==================================================
     Sambaクライアントで接続(Sambaユーザー登録済み)
   ==================================================
-  
-  //# cd $HOME
-  //# setenforce 0 (SELinuxの無効化)
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  //--------------------------------------------------
   
   $ cd $HOME
   $ smbclient -U kate //rock/share -> Sambaクライアントで共有フォルダに接続
@@ -673,21 +647,14 @@
   --------------------------------------------------
     
     smb:\> 
-    smb:\> mput file1.txt -> ファイルを共有フォルダにアップロード
+    smb:\> mput file1.txt file2.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
     Put file file1.txt? (yes)
     putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
-    --------------------------------------------------
-    
-    smb:\> 
-    smb:\> mput file2.txt -> ファイルを共有フォルダにアップロード
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Put file file2.txt? (yes)
-    putting file file2.txt as \file2.txt (1.0 kb/s) (average 0.7 kb/s)
+    Put file file2.txt? yes
+    putting file file2.txt as \file2.txt (2.9 kb/s) (average 1.8 kb/s)
     --------------------------------------------------
     
     smb:\> 
@@ -703,58 +670,26 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:29 file1.txt  // 所有者が「Sambaユーザー」通りに設定されている
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:29 file2.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  -rwxrw-rw-. 1 kate kate 12  7月  2 10:32 file1.txt
+  -rwxrw-rw-. 1 kate kate 12  7月  2 10:32 file2.txt
   --------------------------------------------------
-  
-  //# cd $HOME
-  //# setenforce 1 (SELinuxの有効化)
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> 出力なし
-  //--------------------------------------------------
   
   ==================================================
      Sambaクライアントで接続(Sambaユーザー未登録)
   ==================================================
-  
-  //# cd $HOME
-  //# setenforce 0 (SELinuxの無効化)
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  //--------------------------------------------------
   
   $ cd $HOME
   $ smbclient -U AAAA //rock/share -> Sambaクライアントで共有フォルダに接続
   
   コマンドの実行結果
   --------------------------------------------------
-  Enter WORKGROUP\AAAA's password: (AAAAと入力) -> 当然ながらOSユーザーにもSambaユーザーにも未登録
+  Enter WORKGROUP\AAAA's password: (AAAAと入力) -> OSユーザーにもSambaユーザーにも未登録
   session setup failed: NT_STATUS_LOGON_FAILURE -> Sambaサーバーと接続できなくなる
   --------------------------------------------------
-  
-  //# cd $HOME
-  //# setenforce 1 (SELinuxの有効化)
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> 出力なし
-  //--------------------------------------------------
   
   ==================================================
          Windows側から接続(Samba登録ユーザー)
   ==================================================
-  
-  //# cd $HOME
-  //# setenforce 0 (SELinuxの無効化)
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  //--------------------------------------------------
     
     > Windows側の操作
     > アクセス -> \\rock\share
@@ -793,25 +728,17 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:29 file1.txt
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:29 file2.txt
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:41 file3.txt  // 所有者が「Sambaユーザー」通りに設定されている
-  -rwxrw-rw-. 1 kate kate 12  1月 24 18:41 file4.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  -rwxrw-rw-. 1 kate kate 12  7月  2 10:32 file1.txt
+  -rwxrw-rw-. 1 kate kate 12  7月  2 10:32 file2.txt
+  -rwxrw-rw-. 1 kate kate 12  7月  2 10:33 file3.txt
+  -rwxrw-rw-. 1 kate kate 12  7月  2 10:34 file4.txt
   --------------------------------------------------
-  
-  //# cd $HOME
-  //# setenforce 1 (SELinuxの有効化)
-  
-  //コマンドの実行結果
-  //--------------------------------------------------
-  //(省略) -> 出力なし
-  //--------------------------------------------------
   
   以下の確認に続く
   
 ================================================================================
-[03]
-  Samba - 03 (ホームディレクトリ)
+[003]
+  Samba - 03
   
 [内容]
   ## 作業内容
@@ -859,10 +786,10 @@
     smb passwd file = /etc/samba/smbpasswd        // Smbpasswd file
     create mask = 0777                            // File Permission
     directory mask = 0777                         // Directory Permission
-    local master = No                             // Master Browser is not me
-    preferred master = No                         // Master Browser is not me
-    domain master = No                            // Master Browser is not me
-    os level = 10                                 // Master Browser is not me
+    local master = No                             // Master Browser is not this Linux machine
+    preferred master = No                         // Master Browser is not this Linux machine
+    domain master = No                            // Master Browser is not this Linux machine
+    os level = 10                                 // Master Browser is not this Linux machine
     
   [homes]
     comment = home directory in rock              // Description
@@ -885,13 +812,16 @@
   コマンドの実行結果
   --------------------------------------------------
   Load smb config files from /etc/samba/smb.conf
-  Loaded services file OK.      // 構文チェックに異常なし
-  Server role: ROLE_STANDALONE  // スタンドアロン
+  Loaded services file OK.
+  Weak crypto is allowed by GnuTLS (e.g. NTLM as a compatibility fallback)
   
-  // Enterキー押下で先に進む
+  // スタンドアロン
+  Server role: ROLE_STANDALONE
+  
+  // Enterで先に進む
   Press enter to see a dump of your service definitions
   
-  # Global parameters
+  // グローバル
   [global]
     domain master = No
     guest account = makoto
@@ -910,18 +840,20 @@
     directory mask = 0777
     hosts allow = 192.168.1. 127.
   
+  // ホームディレクトリ
   [homes]
-    comment = home directory in FS01
+    comment = home directory in rock
     read only = No
   
+  // 共有フォルダ
   [share]
-    comment = share directory in FS01
+    comment = share directory in rock
     path = /home/samba
     read only = No
   --------------------------------------------------
   
-  # cd $HOME
-  # systemctl start smb nmb (Sambaサービスの起動)
+  $ cd $HOME
+  $ sudo systemctl restart smb nmb
   
   コマンドの実行結果
   --------------------------------------------------
@@ -932,24 +864,17 @@
     Sambaクライアントで接続(Sambaユーザー登録済み)
   ==================================================
   
-  # cd $HOME
-  # setenforce 0 (SELinuxの無効化)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  --------------------------------------------------
-  
-  # cd $HOME
-  # smbclient -U kate //FS01/share (Sambaクライアントで共有フォルダに接続)
+  $ cd $HOME
+  $ smbclient -U kate //rock/share
   
   コマンドの実行結果
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122maと入力)
   Try "help" to get a list of possible commands.
+  --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file1.txt
+    smb:\> 
+    smb:\> mput file1.txt -> ファイルを共有フォルダにアップロード
     
     コマンドの実行結果
     --------------------------------------------------
@@ -957,28 +882,25 @@
     putting file file1.txt as \file1.txt (0.5 kb/s) (average 0.5 kb/s)
     --------------------------------------------------
     
-    smb: \> (Sambaクライアント終了)
-    smb: \>  exit
-
+    smb:\> 
+    smb:\> exit
+    
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    OSプロンプトに戻る
-    
-  --------------------------------------------------
-  
-  # cd $HOME
-  # smbclient -U kate //FS01/kate (Sambaクライアントでホームディレクトリに接続)
+  $ cd $HOME
+  $ smbclient -U kate //rock/kate
   
   コマンドの実行結果
   --------------------------------------------------
   Enter WORKGROUP\kate's password: (ka0122maと入力)
   Try "help" to get a list of possible commands.
+  --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file2.txt
+    smb:\> 
+    smb:\> mput file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -986,28 +908,25 @@
     putting file file2.txt as \file2.txt (0.5 kb/s) (average 0.5 kb/s)
     --------------------------------------------------
     
-    smb: \> (Sambaクライアント終了)
-    smb: \>  exit
+    smb:\> 
+    smb:\> exit
 
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    OSプロンプトに戻る
-    
-  --------------------------------------------------
-  
-  # cd $HOME
-  # smbclient -U mike //FS01/share (Sambaクライアントで共有フォルダに接続)
+  $ cd $HOME
+  $ smbclient -U mike //rock/share
   
   コマンドの実行結果
   --------------------------------------------------
   Enter WORKGROUP\mike's password: (mi0122maと入力)
   Try "help" to get a list of possible commands.
+  --------------------------------------------------
   
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file3.txt
+    smb:\> 
+    smb:\> mput file3.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1015,28 +934,25 @@
     putting file file3.txt as \file3.txt (0.5 kb/s) (average 0.5 kb/s)
     --------------------------------------------------
     
-    smb: \> (Sambaクライアント終了)
-    smb: \>  exit
+    smb:\> 
+    smb:\> exit
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    OSプロンプトに戻る
-    
-  --------------------------------------------------
-  
-  # cd $HOME
-  # smbclient -U mike //FS01/mike (Sambaクライアントでホームディレクトリに接続)
+  $ cd $HOME
+  $ smbclient -U mike //rock/mike
   
   コマンドの実行結果
   --------------------------------------------------
   Enter WORKGROUP\mike's password: (mi0122maと入力)
   Try "help" to get a list of possible commands.
+  --------------------------------------------------
     
-    smb: \> (ファイルを共有フォルダにアップロード)
-    smb: \>  mput file4.txt
+    smb:\> 
+    smb:\> mput file4.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1044,88 +960,59 @@
     putting file file4.txt as \file4.txt (0.5 kb/s) (average 0.5 kb/s)
     --------------------------------------------------
     
-    smb: \> (Sambaクライアント終了)
-    smb: \>  exit
+    smb:\> 
+    smb:\> exit
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
-    OSプロンプトに戻る
-    
-  --------------------------------------------------
-  
-  # cd /home/samba
-  # ls -lh (共有フォルダの内容を確認)
+  $ cd $HOME
+  $ ls -lh /home/samba
   
   コマンドの実行結果
   --------------------------------------------------
-  -rwxrw-rw-. 1 kate kate 12  1月 24 20:10 file1.txt  // 所有者が「Sambaユーザー」通りに設定されている
-  -rwxrw-rw-. 1 mike mike 12  1月 24 20:18 file3.txt  // 所有者が「Sambaユーザー」通りに設定されている
+  -rwxrw-rw-. 1 kate kate 12  7月  2 12:13 file1.txt
+  -rwxrw-rw-. 1 mike mike 12  7月  2 12:15 file3.txt
   --------------------------------------------------
   
-  # cd /home
-  # ls -lh kate mike | grep file (ホームディレクトリの内容を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -rwxrw-rw-. 1 kate kate 12  1月 24 20:12 file2.txt  // 所有者が「Sambaユーザー」通りに設定されている
-  -rwxrw-rw-. 1 mike mike 12  1月 24 20:20 file4.txt  // 所有者が「Sambaユーザー」通りに設定されている
-  --------------------------------------------------
-  
-  # cd $HOME
-  # setenforce 1 (SELinuxの有効化)
+  $ cd /home
+  $ sudo ls -lh /home/kate /home/mike
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  /home/kate:
+  -rwxrw-rw-. 1 kate kate 12  7月  2 12:14 file2.txt
+  
+  /home/mike:
+  -rwxrw-rw-. 1 mike mike 12  7月  2 12:15 file4.txt
   --------------------------------------------------
   
   ==================================================
          Windows側から接続(Samba登録ユーザー)
   ==================================================
-  
-  # cd $HOME
-  # setenforce 0 (SELinuxの無効化)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> コマンド実行時に権限不足のエラー出力されるのを回避
-  --------------------------------------------------
     
-    操作1
-    ==================================================
-    ネットワークパス「\\FS01」にアクセス -> 資格情報ダイアログ、Sambaユーザー(kate)のユーザーとパスワード入力
-    ==================================================
+    > Windows側の操作
+    > アクセス -> \\rock\share
     
-    操作2
-    ==================================================
-    フォルダ「homes & kate & share」が表示
-    ==================================================
+    コマンドの実行結果
+    --------------------------------------------------
+    ( file[1,3].txt を確認 )
+    --------------------------------------------------
     
-    操作3
-    ==================================================
-    フォルダ「homes & kate」の内容はファイル「file1.txt」-> homes = kate の認識でOK
-    ==================================================
+    > Windows側の操作
+    > アクセス -> \\rock\kate
     
-    操作4
-    ==================================================
-    フォルダ「share」の内容はファイル「file[2,4].txt」
-    ==================================================
+    コマンドの実行結果
+    --------------------------------------------------
+    ( file2.txt を確認 )
+    --------------------------------------------------
     
-  # cd $HOME
-  # setenforce 1 (SELinuxの有効化)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
   以下の確認に続く
   
 ================================================================================
-[04]
+[004]
   Samba - 04 (パスワード変更)
   
 [内容]
@@ -1429,7 +1316,7 @@
   以下の確認に続く
   
 ================================================================================
-[05]
+[005]
   Samba - 05 (マスターブラウザの検索)
   
 [内容]
@@ -1510,7 +1397,7 @@
   以下の確認に続く
   
 ================================================================================
-[06]
+[006]
   Samba - 06 (Windows側の共有フォルダをSambaクライアントからアクセス)
   
 [内容]
@@ -1603,7 +1490,7 @@
   以下の確認に続く
   
 ================================================================================
-[07]
+[007]
   Samba - 07 (Windows側の共有フォルダをLinux側からマウント)
   
 [内容]
@@ -1665,7 +1552,7 @@
   以下の確認に続く
   
 ================================================================================
-[08]
+[008]
   NFS - 01 (RPC)
   
 [内容]
@@ -1762,7 +1649,7 @@
   以下の確認に続く
   
 ================================================================================
-[09]
+[009]
   NFS - 02 (NFS)
   
 [内容]
