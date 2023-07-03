@@ -1416,7 +1416,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Fri Jun 30 20:09:33 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1470,7 +1470,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Fri Jun 30 20:11:53 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1535,7 +1535,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Mon Jul  3 08:43:34 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1592,12 +1592,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    [11760.181464] RPC: Registered named UNIX socket transport module.
-    [11760.183205] RPC: Registered udp transport module.
-    [11760.184513] RPC: Registered tcp transport module.
-    [11760.185794] RPC: Registered tcp NFSv4.1 backchannel transport module.
-    [11760.423968] Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
-    [11760.665947] NFSD: starting 90-second grace period (net ffffffff95315e40)
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1605,13 +1600,10 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    program  vers  proto  port  service
-    100003   3     tcp    2049  nfs
-    100003   4     tcp    2049  nfs
-    100227   3     tcp    2049  nfs_acl
-    100003   3     udp    2049  nfs
-    100003   4     udp    2049  nfs
-    100227   3     udp    2049  nfs_acl
+    program  vers  proto  port   service
+    100003   3     tcp    2049   nfs
+    100003   4     tcp    2049   nfs
+    100227   3     tcp    2049   nfs_acl
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1619,7 +1611,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (公開ディレクトリ無し)
+    (省略) -> 公開ディレクトリが無いため何も出力されない
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1651,11 +1643,11 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    /home/nfs 192.168.122.0/255.255.255.0 (async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
+    /home/nfs  192.168.122.0/255.255.255.0  (async,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo showmount -e vm12 -> ディレクトリの公開状況を確認
+    vm11$ sudo showmount -e vm11 -> ディレクトリの公開状況を確認
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1676,11 +1668,11 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Mon Jul  3 08:45:54 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ sudo yum -y install nfs-utils
+    vm12$ sudo dnf -y install nfs-utils
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1692,16 +1684,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    [10979.915209] FS-Cache: Loaded
-    [10979.984599] RPC: Registered named UNIX socket transport module.
-    [10979.986581] RPC: Registered udp transport module.
-    [10979.987976] RPC: Registered tcp transport module.
-    [10979.989459] RPC: Registered tcp NFSv4.1 backchannel transport module.
-    [10980.066437] FS-Cache: Netfs 'nfs' registered for caching
-    [10980.081501] Key type dns_resolver registered
-    [10980.119499] NFS: Registering the id_resolver key type
-    [10980.121972] Key type id_resolver registered
-    [10980.123139] Key type id_legacy registered
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1709,8 +1692,8 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-rw-r--. 1 makoto makoto 12  1月 26 11:28 file1.txt
-    -rw-rw-r--. 1 makoto makoto 12  1月 26 11:29 file2.txt
+    -rw-rw-r-- 1 makoto makoto 4  7月  3 08:48 file1.txt
+    -rw-rw-r-- 1 makoto makoto 4  7月  3 08:49 file2.txt
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1745,7 +1728,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Mon Jul  3 09:06:32 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1753,7 +1736,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    [34378.980197] nfsd: last server has exited, flushing export cache
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1761,7 +1744,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    [34378.980197] nfsd: last server has exited, flushing export cache
+    (省略) -> 出力なし
     --------------------------------------------------
     
     vm11$ cd $HOME
