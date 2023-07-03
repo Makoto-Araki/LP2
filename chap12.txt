@@ -329,214 +329,302 @@
   以下の確認に続く
   
 ================================================================================
-[001]
-  DHCP
+[002]
+  dhcp - 02
   
 [内容]
   ## 作業内容
-    DHCPサーバー構築とDHCPクライアントによるIPアドレス取得
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
-  ## コマンド(dhclient)
-    dhclient -d  // フォアグラウンド処理
-    dhclient -r  // 割当情報を開放
-    dhclient -H  // リクエスト送付先のホスト指定
+    DHCPサーバーによる固定IPアドレス割当
   
 [確認]
-  vm12# cd $HOME
-  vm12# yum -y install dhcp (パッケージ追加)
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  //
   --------------------------------------------------
-  
-  vm12# cd /etc/dhcp
-  vm12# cp -p dhcpd.conf dhcpd.conf.org (設定ファイルのバックアップ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /etc/dhcp
-  vm12# vi dhcpd.conf (設定ファイルの作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ネットワーク 192.168.122.0/24
-  subnet 192.168.122.0 netmask 255.255.255.0 {
-    option routers 192.168.122.1;              // ルーター
-    option subnet-mask 255.255.255.0;          // サブネットマスク
-    option domain-name "example.com";          // ドメイン名
-    option domain-name-servers 192.168.122.1;  // DNSサーバー
-    range 192.168.122.100 192.168.122.150;     // IPアドレス - リース範囲
-    default-lease-time 21600;                  // IPアドレス - リース期間(秒)
-    max-lease-time 43200;                      // IPアドレス - 最大期間(秒)
     
-    ## ホスト(vm13)
-    host vm13 {
-      hardware ethernet 52:54:00:05:4e:7c;  // MACアドレス
-      fixed-address 192.168.122.51;         // 固定IPアドレスを付与
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/dhcp/dhcpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## ネットワーク 192.168.122.0/24
+    subnet 192.168.122.0 netmask 255.255.255.0 {
+      option routers 192.168.122.1;
+      option subnet-mask 255.255.255.0;
+      option domain-name "avswa.com";
+      option domain-name-servers 192.168.122.1;
+      range 192.168.122.100 192.168.122.150;
+      default-lease-time 21600;
+      max-lease-time 43200;
+      
+      ## 特定ホストに固定IPアドレスを付与
+      host vm12 {
+        hardware ethernet 52:54:00:e5:eb:ba;  // MAC
+        fixed-address 192.168.122.114;        // 固定IP
+      }
     }
-  }
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl start dhcpd (サービスの起動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
+    --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ ip addr show eth0 (IPアドレスを確認)
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart dhcpd
     
     コマンドの実行結果
     --------------------------------------------------
-    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-      link/ether 52:54:00:05:4e:7c brd ff:ff:ff:ff:ff:ff
-      inet 192.168.122.13/24 brd 192.168.122.255 scope global noprefixroute eth0  // IPv4 = 192.168.122.13
-        valid_lft forever preferred_lft forever
-      inet6 fe80::5054:ff:fe05:4e7c/64 scope link 
-        valid_lft forever preferred_lft forever
+    (省略) -> 出力なし
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo vi /etc/hosts (設定ファイル修正)
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh console vm12 -> コンソール接続 (SSH接続ではプロファイル無効化で接続が切断されてしまう)
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ ifconfig
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 192.168.122.12  netmask 255.255.255.0  broadcast 192.168.122.255
+            inet6 fe80::5054:ff:fee5:ebba  prefixlen 64  scopeid 0x20<link>
+            ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
+            RX packets 299  bytes 25009 (24.4 KiB)
+            RX errors 0  dropped 198  overruns 0  frame 0
+            TX packets 46  bytes 7041 (6.8 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1000  (Local Loopback)
+            RX packets 0  bytes 0 (0.0 B)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 0  bytes 0 (0.0 B)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /etc/hosts
     
     コマンドの実行結果
     --------------------------------------------------
     127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
     ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-    192.168.122.11 vm11
-    192.168.122.12 vm12 vm12.example.com
-    192.168.122.13 vm13 (削除)
-    192.168.122.14 vm14
+    192.168.122.11 vm11 site1.avswa.com site2.avswa.com
+    192.168.122.12 vm12  // 削除
+    192.168.122.13 vm13
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ nmcli connection (ネットワーク接続プロファイル)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    NAME  UUID                                  TYPE      DEVICE 
-    eth0  db786b62-d32c-49b8-aa68-c3f8d11f218b  ethernet  eth0   
-    --------------------------------------------------
-    
-    vm13$ cd $HOME
-    vm13$ LANG=C nmcli -f ipv4 connection show eth0 (ネットワーク接続プロファイルからIPv4のみ抽出)
+    vm12$ cd $HOME
+    vm12$ nmcli connection -> プロファイルの一覧
     
     コマンドの実行結果
     --------------------------------------------------
-    ipv4.method             : manual
-    ipv4.dns                : 192.168.122.1
-    ipv4.dns-search         : --
-    ipv4.dns-options        : ""
-    ipv4.dns-priority       : 0
-    ipv4.addresses          : 192.168.122.13/24
-    ipv4.gateway            : 192.168.122.1
-    ipv4.routes             : --
-    ipv4.route-metric       : -1
-    ipv4.route-table        : 0 (unspec)
-    ipv4.routing-rules      : --
-    ipv4.ignore-auto-routes : no
-    ipv4.ignore-auto-dns    : no
-    ipv4.dhcp-client-id     : --
-    ipv4.dhcp-timeout       : 0 (default)
-    ipv4.dhcp-send-hostname : yes
-    ipv4.dhcp-hostname      : --
-    ipv4.dhcp-fqdn          : --
-    ipv4.never-default      : no
-    ipv4.may-fail           : yes
-    ipv4.dad-timeout        : -1 (default)
+    NAME    UUID                                  TYPE      DEVICE 
+    enp1s0  aa4b1fb9-3bdd-4e3b-8ce7-f67d2e585bce  ethernet  enp1s0 
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo nmcli connection down eth0 (ネットワーク接続プロファイルを無効化)
+    vm12$ cd $HOME
+    vm12$ LANG=C nmcli -f ipv4.addresses connection show enp1s0 -> プロファイルから情報抽出
     
     コマンドの実行結果
     --------------------------------------------------
-    接続 'eth0' が正常に非アクティブ化されました (D-Bus アクティブパス: /org/freedesktop/NetworkManager/ActiveConnection/1)
+    ipv4.addresses:  192.168.122.12/24
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ ip addr show eth0 (IPアドレスを確認)
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-      link/ether 52:54:00:05:4e:7c brd ff:ff:ff:ff:ff:ff
-      // IPv4 is not gone
-    --------------------------------------------------
-    
-    vm13$ cd $HOME
-    vm13$ sudo dhclient -d -H vm12 eth0 (フォアグラウンド処理、DHCPサーバー指定でIPアドレス取得)
+    vm12$ cd $HOME
+    vm12$ LANG=C sudo nmcli connection down enp1s0 -> プロファイル無効化
     
     コマンドの実行結果
     --------------------------------------------------
-    // 省略
-
-    Listening on LPF/eth0/52:54:00:05:4e:7c
-    Sending on   LPF/eth0/52:54:00:05:4e:7c
+    Connection 'enp1s0' successfully deactivated
+    (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/1)
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ ifconfig
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            // inet  が消える
+            // inet6 が消える
+            ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
+            RX packets 3300  bytes 16644513 (15.8 MiB)
+            RX errors 0  dropped 1088  overruns 0  frame 0
+            TX packets 1299  bytes 97528 (95.2 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1000  (Local Loopback)
+            RX packets 0  bytes 0 (0.0 B)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 0  bytes 0 (0.0 B)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo dhclient  // コマンド本体
+        > -d             // フォアグラウンド
+        > -H vm11        // サーバー指定
+        > enp1s0         // インターフェース
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Internet Systems Consortium DHCP Client 4.3.6
+    Copyright 2004-2017 Internet Systems Consortium.
+    All rights reserved.
+    For info, please visit https://www.isc.org/software/dhcp/
+    
+    Listening on LPF/enp1s0/52:54:00:e5:eb:ba
+    Sending on   LPF/enp1s0/52:54:00:e5:eb:ba
     Sending on   Socket/fallback
-    DHCPREQUEST on eth0 to 255.255.255.255 port 67 (xid=0x70672627)
-    DHCPACK from 192.168.122.12 (xid=0x70672627)
-    bound to 192.168.122.51 -- renewal in 10571 seconds.
+    Created duid "\000\004\236R\201\212F\233K\354\225\375\361[\312\304o\232".
 
-    // 終了(Ctrl + C)
+    DHCPDISCOVER on enp1s0 to 255.255.255.255 port 67 interval 3 (xid=0x4d358154)
+    DHCPREQUEST on enp1s0 to 255.255.255.255 port 67 (xid=0x4d358154)
+    DHCPOFFER from 192.168.122.11
+    DHCPACK from 192.168.122.11 (xid=0x4d358154)
+    bound to 192.168.122.100 -- renewal in 8688 seconds.  // 192.168.122.100 を割当
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ ip addr show eth0 (IPアドレスを確認)
+    vm12$ cd $HOME
+    vm12$ ifconfig
     
     コマンドの実行結果
     --------------------------------------------------
-    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-      link/ether 52:54:00:05:4e:7c brd ff:ff:ff:ff:ff:ff
-      inet 192.168.122.51/24 brd 192.168.122.255 scope global dynamic eth0  // IPv4 = 192.168.122.51
-        valid_lft 21554sec preferred_lft 21554sec
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 192.168.122.100  netmask 255.255.255.0  broadcast 192.168.122.255
+            // inet6 は無い
+            ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
+            RX packets 9272  bytes 51141109 (48.7 MiB)
+            RX errors 0  dropped 1506  overruns 0  frame 0
+            TX packets 4288  bytes 312346 (305.0 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1000  (Local Loopback)
+            RX packets 96  bytes 7872 (7.6 KiB)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 96  bytes 7872 (7.6 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo vi /etc/hosts (設定ファイル修正)
+    vm12$ cd $HOME
+    vm12$ sudo dhclient  // コマンド本体
+        > -d             // フォアグラウンド
+        > -r             // 割当を返還
+        > -H vm11        // サーバー指定
+        > enp1s0         // インターフェース
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Removed stale PID file
+    Internet Systems Consortium DHCP Client 4.3.6
+    Copyright 2004-2017 Internet Systems Consortium.
+    All rights reserved.
+    For info, please visit https://www.isc.org/software/dhcp/
+    
+    Listening on LPF/enp1s0/52:54:00:e5:eb:ba
+    Sending on   LPF/enp1s0/52:54:00:e5:eb:ba
+    Sending on   Socket/fallback
+    DHCPRELEASE on enp1s0 to 192.168.122.11 port 67 (xid=0x21442045)
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ ifconfig
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            // inet  が消える
+            // inet6 が消える
+            ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
+            RX packets 3300  bytes 16644513 (15.8 MiB)
+            RX errors 0  dropped 1088  overruns 0  frame 0
+            TX packets 1299  bytes 97528 (95.2 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1000  (Local Loopback)
+            RX packets 0  bytes 0 (0.0 B)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 0  bytes 0 (0.0 B)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo vi /etc/hosts
     
     コマンドの実行結果
     --------------------------------------------------
     127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
     ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-    192.168.122.11 vm11
-    192.168.122.12 vm12 vm12.example.com
-    192.168.122.13 vm13 (元に戻す)
-    192.168.122.14 vm14
+    192.168.122.11 vm11 site1.avswa.com site2.avswa.com
+    192.168.122.12 vm12  // 元に戻す
+    192.168.122.13 vm13
     --------------------------------------------------
     
-    vm13$ cd $HOME
-    vm13$ sudo systemctl poweroff (仮想マシンのシャットダウン)
+    vm12$ cd $HOME
+    vm12$ LANG=C sudo nmcli connection up enp1s0 -> プロファイル有効化
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略)
+    Connection successfully activated
+    (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/5)
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# systemctl stop dhcpd (サービスの停止)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    vm12$ cd $HOME
+    vm12$ ifconfig
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+            inet 192.168.122.12  netmask 255.255.255.0  broadcast 192.168.122.255
+            inet6 fe80::5054:ff:fee5:ebba  prefixlen 64  scopeid 0x20<link>
+            ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
+            RX packets 9687  bytes 51166591 (48.7 MiB)
+            RX errors 0  dropped 1896  overruns 0  frame 0
+            TX packets 4313  bytes 314364 (306.9 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    
+    lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+            inet 127.0.0.1  netmask 255.0.0.0
+            inet6 ::1  prefixlen 128  scopeid 0x10<host>
+            loop  txqueuelen 1000  (Local Loopback)
+            RX packets 96  bytes 7872 (7.6 KiB)
+            RX errors 0  dropped 0  overruns 0  frame 0
+            TX packets 96  bytes 7872 (7.6 KiB)
+            TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
