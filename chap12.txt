@@ -1,7 +1,8 @@
 ================================================================================
 [001] dhcp - 01
 [002] dhcp - 02
-[002] PAM - 01 (設定ファイルの一覧)
+[003] dhcp - 03
+[004] PAM - 01
 [003] PAM - 02 (設定ファイルの編集)
 [004] PAM - 03 (処理の流れを追跡)
 [005] LDAP - 01 (ディレクトリ作成)
@@ -342,7 +343,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Mon Jul  3 11:33:03 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
@@ -389,7 +390,7 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  前回のログイン: Mon Jul  3 12:26:43 端末: ttyS0
   --------------------------------------------------
     
     vm12$ cd $HOME
@@ -401,9 +402,9 @@
             inet 192.168.122.12  netmask 255.255.255.0  broadcast 192.168.122.255
             inet6 fe80::5054:ff:fee5:ebba  prefixlen 64  scopeid 0x20<link>
             ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
-            RX packets 299  bytes 25009 (24.4 KiB)
-            RX errors 0  dropped 198  overruns 0  frame 0
-            TX packets 46  bytes 7041 (6.8 KiB)
+            RX packets 211  bytes 15208 (14.8 KiB)
+            RX errors 0  dropped 146  overruns 0  frame 0
+            TX packets 14  bytes 992 (992.0 B)
             TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
     
     lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
@@ -494,13 +495,12 @@
     Listening on LPF/enp1s0/52:54:00:e5:eb:ba
     Sending on   LPF/enp1s0/52:54:00:e5:eb:ba
     Sending on   Socket/fallback
-    Created duid "\000\004\236R\201\212F\233K\354\225\375\361[\312\304o\232".
-
-    DHCPDISCOVER on enp1s0 to 255.255.255.255 port 67 interval 3 (xid=0x4d358154)
-    DHCPREQUEST on enp1s0 to 255.255.255.255 port 67 (xid=0x4d358154)
+    
+    DHCPDISCOVER on enp1s0 to 255.255.255.255 port 67 interval 7 (xid=0x2a8c681b)
+    DHCPREQUEST on enp1s0 to 255.255.255.255 port 67 (xid=0x2a8c681b)
     DHCPOFFER from 192.168.122.11
-    DHCPACK from 192.168.122.11 (xid=0x4d358154)
-    bound to 192.168.122.100 -- renewal in 8688 seconds.  // 192.168.122.100 を割当
+    DHCPACK from 192.168.122.11 (xid=0x2a8c681b)
+    bound to 192.168.122.114 -- renewal in 8368 seconds.  // 192.168.122.114 を割当
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -509,7 +509,7 @@
     コマンドの実行結果
     --------------------------------------------------
     enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-            inet 192.168.122.100  netmask 255.255.255.0  broadcast 192.168.122.255
+            inet 192.168.122.114  netmask 255.255.255.0  broadcast 192.168.122.255
             // inet6 は無い
             ether 52:54:00:e5:eb:ba  txqueuelen 1000  (Ethernet)
             RX packets 9272  bytes 51141109 (48.7 MiB)
@@ -545,7 +545,7 @@
     Listening on LPF/enp1s0/52:54:00:e5:eb:ba
     Sending on   LPF/enp1s0/52:54:00:e5:eb:ba
     Sending on   Socket/fallback
-    DHCPRELEASE on enp1s0 to 192.168.122.11 port 67 (xid=0x21442045)
+    DHCPRELEASE on enp1s0 to 192.168.122.11 port 67 (xid=0x6ce23746)
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -628,24 +628,70 @@
   以下の確認に続く
   
 ================================================================================
-[002]
-  PAM - 01 (設定ファイルの一覧)
+[003]
+  dhcp - 03
+  
+[内容]
+  ## 作業内容
+    ソフトウェア停止
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon Jul  3 17:06:30 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl stop dhcpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl disable dhcpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[004]
+  PAM - 01
   
 [内容]
   ## 作業内容
     Linuxの認証機構(PAM)で使用されるモジュールと設定ファイルを見て行く
   
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
 [確認]
-  vm12# cd /usr/lib64/security
-  vm12# ls (モジュール一覧)
+  $ cd $HOME
+  $ ssh vm11 -> 公開鍵認証でSSH接続
   
   コマンドの実行結果
   --------------------------------------------------
+  Last login: Mon Jul  3 17:06:30 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ls /usr/lib64/security -> モジュール一覧
+    
+    コマンドの実行結果
+    --------------------------------------------------
   pam_access.so          pam_ftp.so             pam_permit.so          pam_tally2.so
   pam_cap.so             pam_group.so           pam_postgresok.so      pam_time.so
   pam_chroot.so          pam_issue.so           pam_pwhistory.so       pam_timestamp.so
@@ -660,7 +706,7 @@
   pam_faillock.so        pam_motd.so            pam_stress.so          pam_warn.so
   pam_filter             pam_namespace.so       pam_succeed_if.so      pam_wheel.so
   pam_filter.so          pam_nologin.so         pam_systemd.so         pam_xauth.so
-  --------------------------------------------------
+    --------------------------------------------------
   
   vm12# cd /etc/pam.d
   vm12# ls (設定ファイル一覧)
