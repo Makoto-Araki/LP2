@@ -6,6 +6,7 @@
 [005] PAM - 02
 [006] PAM - 03
 [007] PAM - 04
+[008] PAM - 05
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -1088,6 +1089,150 @@
       ログアウト
       --------------------------------------------------
       
+  以下の確認に続く
+  
+================================================================================
+[008]
+  PAM - 05
+  
+[内容]
+  ## 作業内容
+    コマンド(su)で無条件に失敗または無条件に成功
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Wed Jul  5 17:33:29 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ whoami
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    makoto
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (パスワード入力無しに他ユーザーになれる)
+    --------------------------------------------------
+      
+      vm11$ cd $HOME
+      vm11$ exit
+      
+      コマンドの実行結果
+      --------------------------------------------------
+      ログアウト
+      --------------------------------------------------
+      
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    auth            required        pam_deny.so  // 追加 => 常に失敗を返す
+    auth            sufficient      pam_rootok.so
+    auth            sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    パスワード: (正しいパスワード入力)
+    su: 認証失敗
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    auth            required        pam_permit.so  // 修正 => 常に成功を返す
+    auth            sufficient      pam_rootok.so
+    auth            sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (パスワード入力無しに他ユーザーになれる)
+    --------------------------------------------------
+      
+      vm11$ cd $HOME
+      vm11$ exit
+      
+      コマンドの実行結果
+      --------------------------------------------------
+      ログアウト
+      --------------------------------------------------
+      
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    auth            required        pam_permit.so  // 削除
+    auth            sufficient      pam_rootok.so
+    auth            sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+      
+    vm11$ cd $HOME
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (パスワード入力無しに他ユーザーになれる)
+    --------------------------------------------------
+      
+      vm11$ cd $HOME
+      vm11$ exit
+      
+      コマンドの実行結果
+      --------------------------------------------------
+      ログアウト
+      --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
