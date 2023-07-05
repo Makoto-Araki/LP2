@@ -3,7 +3,7 @@
 [002] dhcp - 02
 [003] dhcp - 03
 [004] PAM - 01
-[003] PAM - 02 (設定ファイルの編集)
+[005] PAM - 02
 [004] PAM - 03 (処理の流れを追跡)
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
@@ -703,37 +703,15 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ cat /etc/pam.d/login | grep -vE '^#\s'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    #%PAM-1.0
-    auth       substack     system-auth
-    auth       include      postlogin
-    account    required     pam_nologin.so
-    account    include      system-auth
-    password   include      system-auth
-    session    required     pam_selinux.so close
-    session    required     pam_loginuid.so
-    session    optional     pam_console.so
-    session    required     pam_selinux.so open
-    session    required     pam_namespace.so
-    session    optional     pam_keyinit.so force revoke
-    session    include      system-auth
-    session    include      postlogin
-    -session   optional     pam_ck_connector.so
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
     vm11$ sudo vi /etc/pam.d/login
     
     コマンドの実行結果
     --------------------------------------------------
     #%PAM-1.0
-    auth       required     pam_echo.so 'This is PAM Test 01'  // 追加
+    auth       required     pam_echo.so 'This is PAM Test 01'  // 追加メッセージ
     auth       substack     system-auth
     auth       include      postlogin
-    auth       required     pam_echo.so 'This is PAM Test 02'  // 追加
+    auth       required     pam_echo.so 'This is PAM Test 02'  // 追加メッセージ
     account    required     pam_nologin.so
     account    include      system-auth
     password   include      system-auth
@@ -766,174 +744,149 @@
   Architecture is x86_64
   Host is vm11
   vm11 login: (makoto)
-  'This is PAM Test 01'  // 追加
+  'This is PAM Test 01'  // 追加メッセージ
   パスワード: (ma0122ma)
-  'This is PAM Test 02'  // 追加
+  'This is PAM Test 02'  // 追加メッセージ
   前回のログイン: Wed Jul  5 12:26:09 端末: ttyS0
   This machine is for LPIC.
   --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/login
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth       required     pam_echo.so 'This is PAM Test 01'  // 削除 -> 元に戻す
+    auth       substack     system-auth
+    auth       include      postlogin
+    auth       required     pam_echo.so 'This is PAM Test 02'  // 削除 -> 元に戻す
+    account    required     pam_nologin.so
+    account    include      system-auth
+    password   include      system-auth
+    session    required     pam_selinux.so close
+    session    required     pam_loginuid.so
+    session    optional     pam_console.so
+    session    required     pam_selinux.so open
+    session    required     pam_namespace.so
+    session    optional     pam_keyinit.so force revoke
+    session    include      system-auth
+    session    include      postlogin
+    -session   optional     pam_ck_connector.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[003]
-  PAM - 02 (設定ファイルの編集)
+[005]
+  PAM - 02
   
 [内容]
   ## 作業内容
-    設定ファイル(su)で管理者(root)であっても他ユーザーになる時にはパスワード入力
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    コマンド(su)で他ユーザーになる時は管理者(root)であってもパスワード入力
   
 [確認]
-  vm12# cd $HOME
-  vm12# su - makoto (他ユーザーになる)
+  $ cd $HOME
+  $ sudo virsh console vm11 -> コンソール接続
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> パスワード入力なしに他ユーザーになれる
+  System is Linux
+  Kernel is 4.20.1
+  Architecture is x86_64
+  Host is vm11
+  vm11 login: (root)
+  パスワード: (rt0122ma)
+  前回のログイン: Wed Jul  5 10:54:07 端末: ttyS0
+  This machine is for LPIC.
   --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ exit (管理者に戻る)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  vm12# cd /etc/pam.d
-  vm12# cat su | grep -vE '^#|^$' (設定ファイルの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  auth      sufficient  pam_rootok.so
-  auth      substack    system-auth
-  auth      include     postlogin
-  account   sufficient  pam_succeed_if.so uid = 0 use_uid quiet
-  account   include     system-auth
-  password  include     system-auth
-  session   include     system-auth
-  session   include     postlogin
-  session   optional    pam_xauth.so
-
-  // pam_rootok.so     : ユーザー「root」か否かをチェック
-  // system-auth       : ファイル「system-auth」のセクション「auth」を使用
-  // postlogin         : ファイル「postlogin」のセクション「auth」を使用
-  // pam_succeed_if.so : アカウント属性(例. UID)をチェック
-  // uid = 0           : UID=0 すなわち root
-  // use_uid           : コマンド「su」の実行ユーザーを対象
-  // quiet             : ログに記録しない
-  // system-auth       : ファイル「system-auth」のセクション「account」を使用
-  // system-auto       : ファイル「system-auth」のセクション「password」を使用
-  // system-auth       : ファイル「system-auth」のセクション「session」を使用
-  // postlogin         : ファイル「postlogin」のセクション「session」を使用
-  // pam_xauth.so      : おそらく「xauth」の認証関連
-  --------------------------------------------------
-  
-  vm12# cd /etc/pam.d
-  vm12# cat system-auth | grep -vE '^#|^$' (設定ファイルの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  auth        required      pam_env.so
-  auth        required      pam_faildelay.so delay=2000000
-  auth        sufficient    pam_unix.so nullok try_first_pass
-  auth        requisite     pam_succeed_if.so uid >= 1000 quiet_success
-  auth        required      pam_deny.so
-  account     required      pam_unix.so
-  account     sufficient    pam_localuser.so
-  account     sufficient    pam_succeed_if.so uid < 1000 quiet
-  account     required      pam_permit.so
-  password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
-  password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok
-  password    required      pam_deny.so
-  session     optional      pam_keyinit.so revoke
-  session     required      pam_limits.so
-  -session    optional      pam_systemd.so  // 冒頭の「-」でモジュールのロード失敗時でもログ出力しない
-  session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
-  session     required      pam_unix.so
-
-  // pam_env.so       : 設定ファイルを読み込み
-  // pam_faildelay.so : ログイン失敗後の待機時間を制御
-  // delay=2000000    : 待機時間を2000000マイクロ秒(2秒)に設定
-  // pam_unix.so      : 伝統的なパスワード認証
-  // nullok           : 空白パスワード許可
-  // try_first_pass   : 取得済パスワード再利用、未取得なら入力要求
-  // uid >= 1000      : UID>=1000 すなわち 一般ユーザー
-  // quiet_success    : 成功ログは記録しない
-  // pam_deny.so      : 常に失敗を返す
-  // pam_localuser.so : パスワードファイルのユーザー一覧
-  // uid < 1000       : UID<1000 すなわち 内部ユーザー
-  // pam_permit.so    : 常に成功を返す
-  // pam_pwquality.so : パスワード品質を制御
-  // local_users_only : パスワードファイル外のチェックを行わない
-  // retry=3          : 三回失敗したらエラー出力
-  // authtok_type=    : パスワード入力時のプロンプト文字
-  // sha512           : パスワードをアルゴリズム「sha512」で暗号化
-  // shadow           : パスワードをファイル「/etc/shadow」に保持
-  // use_authtok      : 以降のモジュールでパスワード入力要求をせず、入力パスワードを使用
-  // pam_keyinit.so   : 不明
-  // revoke           : 不明
-  // pam_limits.so    : リソース制限を制御
-  // pam_systemd.so   : 不明
-  // [success=1 default=ignore] : 成功時は1行スキップ(次の行を処理しない)、失敗時は無視して次の行を処理
-  // service in crond : サービス名が「crond」
-  --------------------------------------------------
-  
-  vm12# cd /etc/pam.d
-  vm12# cp -p su su.org (設定ファイルのバックアップ)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /etc/pam.d
-  vm12# vi su (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 1行目をコメントアウト
-  --------------------------------------------------
-  
-  vm12# cd /etc/pam.d
-  vm12# diff su.org su (修正箇所の確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  < auth    sufficient  pam_rootok.so
-  ---
-  > #auth   sufficient  pam_rootok.so
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# su - makoto (他ユーザーになる)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  パスワード: (パスワード入力)
-  --------------------------------------------------
-  
-  vm12$ cd $HOME
-  vm12$ exit (管理者に戻る)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ログアウト
-  --------------------------------------------------
-  
-  vm12# cd /etc/pam.d
-  vm12# vi su (設定ファイルの修正)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 1行目をコメントアウトを元に戻す
-  --------------------------------------------------
-  
+    
+    vm11# cd $HOME
+    vm11# su - makoto -> 他ユーザーになる
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> パスワード入力無しに他ユーザーになれる
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit -> 元ユーザーに戻る
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    #auth           sufficient      pam_rootok.so  // コメントアウト
+    #auth           sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# su - makoto -> 他ユーザーになる
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    パスワード: (ma0122ma)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit -> 元ユーザーに戻る
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    auth            sufficient      pam_rootok.so  // コメントアウトを元に戻す
+    #auth           sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
