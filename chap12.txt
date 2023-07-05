@@ -680,7 +680,7 @@
   
 [確認]
   $ cd $HOME
-  $ LANG=C sudo virsh console vm11 -> コンソール接続
+  $ LANG=C sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
@@ -735,7 +735,7 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ sudo virsh console vm11 -> コンソール接続
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
@@ -795,7 +795,7 @@
   
 [確認]
   $ cd $HOME
-  $ sudo virsh console vm11 -> コンソール接続
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
@@ -810,7 +810,7 @@
   --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# su - makoto -> 他ユーザーになる
+    vm11# su - makoto
     
     コマンドの実行結果
     --------------------------------------------------
@@ -818,7 +818,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ exit -> 元ユーザーに戻る
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
@@ -845,7 +845,7 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# su - makoto -> 他ユーザーになる
+    vm11# su - makoto
     
     コマンドの実行結果
     --------------------------------------------------
@@ -853,7 +853,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ exit -> 元ユーザーに戻る
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
@@ -867,7 +867,7 @@
     --------------------------------------------------
     #%PAM-1.0
     auth            required        pam_env.so
-    auth            sufficient      pam_rootok.so  // コメントアウトを元に戻す
+    auth            sufficient      pam_rootok.so  // 元に戻す
     #auth           sufficient      pam_wheel.so trust use_uid
     auth            substack        system-auth
     auth            include         postlogin
@@ -885,6 +885,112 @@
     コマンドの実行結果
     --------------------------------------------------
     ログアウト
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[006]
+  PAM - 03
+  
+[内容]
+  ## 作業内容
+    コマンド(su)で他ユーザー変更の認証失敗時の待ち時間を変更する
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Wed Jul  5 13:10:29 2023
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    auth            sufficient      pam_rootok.so
+    #auth           sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth  // 変更対象
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/system-auth
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth        required      pam_env.so
+    auth        required      pam_faildelay.so delay=20000000  // 追加 => 認証失敗時の待ち時間を20秒に設定
+    auth        sufficient    pam_unix.so try_first_pass nullok
+    auth        required      pam_deny.so
+    account     required      pam_unix.so
+    password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
+    password    sufficient    pam_unix.so try_first_pass use_authtok nullok sha512 shadow
+    password    required      pam_deny.so
+    session     optional      pam_keyinit.so revoke
+    session     required      pam_limits.so
+    -session    optional      pam_systemd.so
+    session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+    session     required      pam_unix.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    パスワード: (不正パスワード) => 20秒待機
+    su: 認証失敗
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/system-auth
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth        required      pam_env.so
+    auth        required      pam_faildelay.so delay=20000000  // 削除
+    auth        sufficient    pam_unix.so try_first_pass nullok
+    auth        required      pam_deny.so
+    account     required      pam_unix.so
+    password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
+    password    sufficient    pam_unix.so try_first_pass use_authtok nullok sha512 shadow
+    password    required      pam_deny.so
+    session     optional      pam_keyinit.so revoke
+    session     required      pam_limits.so
+    -session    optional      pam_systemd.so
+    session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+    session     required      pam_unix.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    パスワード: (不正パスワード) => 4-5秒待機
+    su: 認証失敗
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
     --------------------------------------------------
     
   以下の確認に続く
