@@ -8,6 +8,7 @@
 [007] PAM認証 - 04
 [008] PAM認証 - 05
 [009] PAM認証 - 06
+[010] PAM認証 - 07
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -1090,6 +1091,14 @@
       ログアウト
       --------------------------------------------------
       
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -1233,6 +1242,14 @@
       --------------------------------------------------
       ログアウト
       --------------------------------------------------
+      
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
     
   以下の確認に続く
   
@@ -1320,6 +1337,232 @@
       ログアウト
       --------------------------------------------------
       
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[010]
+  PAM認証 - 07
+  
+[内容]
+  ## 作業内容
+    コマンド(su)でパスワードの試行回数を変更する
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Wed Jul  5 19:01:11 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ whoami
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    makoto
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    vm11$ su - user1
+    vm11$ su - user1
+    vm11$ su - user1
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 1回目
+    パスワード: (不正パスワード)
+    su: 認証失敗
+    
+    // 2回目
+    パスワード: (不正パスワード)
+    su: 認証失敗
+    
+    // 3回目
+    パスワード: (不正パスワード)
+    su: 認証失敗
+    
+    // 4回目
+    パスワード: (不正パスワード)
+    su: 認証失敗
+    
+    // 5回目
+    パスワード: (正しいパスワード入力)
+    --------------------------------------------------
+      
+      vm11$ cd $HOME
+      vm11$ exit
+      
+      コマンドの実行結果
+      --------------------------------------------------
+      ログアウト
+      --------------------------------------------------
+      
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/su
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth            required        pam_env.so
+    # auth          sufficient      pam_rootok.so
+    # auth          sufficient      pam_wheel.so trust use_uid
+    auth            substack        system-auth  // 今回はここを修正
+    auth            include         postlogin
+    account         sufficient      pam_succeed_if.so uid = 0 use_uid quiet
+    account         include         system-auth
+    password        include         system-auth
+    session         include         system-auth
+    session         include         postlogin
+    session         optional        pam_xauth.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ man pam_faillock -> マニュアル参照
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) => auth … pam_faillock.so パラメータ値
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo find /usr/lib64 -name pam_faillock.so -> モジュール存在チェック
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /usr/lib64/security/pam_faillock.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/system-auth
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth        required      pam_env.so
+    auth        required      pam_faillock.so preauth silent audit deny=3 unlock_time=0  // 追加
+    auth        sufficient    pam_unix.so try_first_pass nullok
+    auth        [default=die] pam_faillock.so authfail audit deny=3 unlock_time=0  // 追加
+    auth        required      pam_deny.so
+    account     required      pam_unix.so
+    account     required      pam_faillock.so  // 追加
+    password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
+    password    sufficient    pam_unix.so try_first_pass use_authtok nullok sha512 shadow
+    password    required      pam_deny.so
+    session     optional      pam_keyinit.so revoke
+    session     required      pam_limits.so
+    -session    optional      pam_systemd.so
+    session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+    session     required      pam_unix.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ su - user1
+    vm11$ su - user1
+    vm11$ su - user1
+    vm11$ su - user1
+    vm11$ su - user1
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 1回目
+    パスワード: (不正パスワード)
+    su: 拒否されたパーミッション
+    
+    // 2回目
+    パスワード: (不正パスワード)
+    su: 拒否されたパーミッション
+    
+    // 3回目
+    パスワード: (不正パスワード)
+    su: 拒否されたパーミッション => この時点でロックされる模様
+    
+    // 4回目
+    パスワード: (不正パスワード)
+    su: 認証失敗
+    
+    // 5回目
+    パスワード: (正しいパスワード入力)
+    su: 認証失敗
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo faillock -> 認証失敗の情報確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    makoto:
+    When                 Type  Source  Valid
+    
+    user1:
+    When                 Type  Source  Valid
+    2023-07-05 21:17:55  TTY   pts/0       V  // 1回目
+    2023-07-05 21:18:16  TTY   pts/0       V  // 2回目
+    2023-07-05 21:18:31  TTY   pts/0       V  // 3回目
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo faillock --user user1 --reset -> アカウントロック解除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo faillock -> 認証失敗の情報確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    makoto:
+    When                 Type  Source  Valid
+    
+    user1:
+    When                 Type  Source  Valid
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/pam.d/system-auth
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    #%PAM-1.0
+    auth        required      pam_env.so
+    auth        required      pam_faillock.so preauth silent audit deny=3 unlock_time=0  // 削除
+    auth        sufficient    pam_unix.so try_first_pass nullok
+    auth        [default=die] pam_faillock.so authfail audit deny=3 unlock_time=0  // 削除
+    auth        required      pam_deny.so
+    account     required      pam_unix.so
+    account     required      pam_faillock.so  // 削除
+    password    requisite     pam_pwquality.so try_first_pass local_users_only retry=3 authtok_type=
+    password    sufficient    pam_unix.so try_first_pass use_authtok nullok sha512 shadow
+    password    required      pam_deny.so
+    session     optional      pam_keyinit.so revoke
+    session     required      pam_limits.so
+    -session    optional      pam_systemd.so
+    session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+    session     required      pam_unix.so
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
