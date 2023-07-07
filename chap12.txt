@@ -9,6 +9,8 @@
 [008] PAM認証 - 05
 [009] PAM認証 - 06
 [010] PAM認証 - 07
+[011] OpenLDAP - 01
+[012] OpenLDAP - 02
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -1287,6 +1289,14 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
+    vm11$ getent group | grep wheel
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    wheel:x:10:makoto -> グループ(wheel)のメンバー
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
     vm11$ su - user1
     
     コマンドの実行結果
@@ -1353,7 +1363,7 @@
   
 [内容]
   ## 作業内容
-    コマンド(su)でパスワードの試行回数を変更する
+    コマンド(su)で試行回数以上のパスワード入力でアカウントロック
   
 [確認]
   $ cd $HOME
@@ -1566,597 +1576,446 @@
   以下の確認に続く
   
 ================================================================================
-[005]
-  LDAP - 01 (ディレクトリ作成)
+[011]
+  OpenLDAP - 01
   
 [内容]
   ## 作業内容
-    ディレクトリを「LDAP」で作成する
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : LDAP Server
-  
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : LDAP Client
-  
-  ## ディレクトリ(階層構造)
-    dc=com
-      dc=AAA       // ベースDN (dc=AAA, dc=com)
-        cn=Manger  // 管理者DN (cn=Manager, dc=AAA, dc=com)
-        ou=OU1          // DN (ou=OU1, dc=AAA, dc=com)
-          cn=Group01    // DN (cn=Group01, ou=OU1, dc=AAA, dc=com)
-            uid=user01  // DN (uid=user01, cn=Group01, ou=OU1, dc=AAA, dc=com)
-            uid=user02  // DN (uid=user02, cn=Group01, ou=OU1, dc=AAA, dc=com)
-        ou=OU2          // DN (ou=OU2, dc=AAA, dc=com)
-          cn=Group02    // DN (cn=Group02, ou=OU2, dc=AAA, dc=com)
-            uid=user03  // DN (uid=user03, cn=Group02, ou=OU2, dc=AAA, dc=com)
-            uid=user04  // DN (uid=user04, cn=Group02, ou=OU2, dc=AAA, dc=com)
+    ディレクトリ作成
   
 [確認]
-  vm12# cd $HOME
-  vm12# firewall-cmd --add-service=ldap --permanent (ファイアーウォールの設定)
+  $ cd $HOME
+  $ ssh vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --reload (ファイアーウォールの設定を反映)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  success
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/hosts.allow (TCP-Wrapperで後述のサービスへのアクセス制御)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  slapd:192.168.122. -> 追加(内部LANからのみアクセス可)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# yum -y install openldap openldap-servers openldap-clients (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12# cd /usr/share/openldap-servers
-  vm12# cp -p DB_CONFIG.example /var/lib/ldap/DB_CONFIG (DB設定ファイルをコピー)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl start slapd (サービスの起動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (インストール直後のディレクトリ状況を確認)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b cn=config  // 検索開始DN
-    DN            // 検索対象
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 検索結果
-  dn: cn=config
-  dn: cn=schema,cn=config
-  dn: cn={0}core,cn=schema,cn=config
-  dn: olcDatabase={-1}frontend,cn=config
-  dn: olcDatabase={0}config,cn=config
-  dn: olcDatabase={1}monitor,cn=config
-  dn: olcDatabase={2}hdb,cn=config
-
-  // 検索結果を階層構造で表示してみる
-  cn=config
-    cn=schema
-      cn={0}core
-    olcDatabase={-1}frontend  // 不明
-    olcDatabase={0}config     // 設定データベース
-    olcDatabase={1}monitor    // モニタ機能
-    olcDatabase={2}hdb        // ディレクトリ作成
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (設定データベースの内容を確認)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={0}config,cn=config'  // 検索開始DN
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 検索結果
-  dn: olcDatabase={0}config,cn=config
-  objectClass: olcDatabaseConfig
-  olcDatabase: {0}config
-  olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none  // アクセス権？
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# slappasswd -s rt0122ma (設定データベースの管理者用パスワード生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  {SSHA}+DvhdMV71ZV8GIOT/+NMDN3/wIwcrWO8
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi file01.ldif (LDIFファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dn: olcDatabase={0}config,cn=config
-  changetype: modify
-  add: olcRootPW
-  olcRootPW: {SSHA}+DvhdMV71ZV8GIOT/+NMDN3/wIwcrWO8  // 設定データベースの管理者用パスワードの項目追加
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapmodify      // コマンド本体
-    -Y EXTERNAL     // パスワード無しでローカル接続
-    -H ldapi:///    // サーバー指定
-    -f file01.ldif  // LDIFファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 実行結果
-  modifying entry "olcDatabase={0}config,cn=config"
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (設定データベースの内容を確認)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={0}config,cn=config'  // 検索開始DN
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 検索結果
-  dn: olcDatabase={0}config,cn=config
-  objectClass: olcDatabaseConfig
-  olcDatabase: {0}config
-  olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none
-  olcRootPW: {SSHA}+DvhdMV71ZV8GIOT/+NMDN3/wIwcrWO8  // 項目追加
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (ディレクトリの構築予定場所)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={2}hdb,cn=config'  // 検索開始DN
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 検索結果
-  dn: olcDatabase={2}hdb,cn=config
-  objectClass: olcDatabaseConfig
-  objectClass: olcHdbConfig
-  olcDatabase: {2}hdb
-  olcDbDirectory: /var/lib/ldap
-  olcSuffix: dc=my-domain,dc=com             // ベースDN (dc=AAA, dc=com) に変更する必要がある
-  olcRootDN: cn=Manager,dc=my-domain,dc=com  // 管理者DN (cn=Manager, dc=AAA, dc=com) に変更する必要がある
-  olcDbIndex: objectClass eq,pres
-  olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# slappasswd -s Manager (AAA.comの管理者DNパスワード生成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  {SSHA}kzhDZvlLW14K+Sq9RA9i0vAUtke2wide
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi file02.ldif (LDIFファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dn: olcDatabase={2}hdb,cn=config
-  changetype: modify
-  replace: olcSuffix
-  olcSuffix: dc=AAA,dc=com
-  
-  dn: olcDatabase={2}hdb,cn=config
-  changetype: modify
-  replace: olcRootDN
-  olcRootDN: cn=Manager,dc=AAA,dc=com
-  
-  dn: olcDatabase={2}hdb,cn=config
-  changetype: modify
-  add: olcRootPW
-  olcRootPW: {SSHA}kzhDZvlLW14K+Sq9RA9i0vAUtke2wide
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapmodify      // コマンド本体
-    -Y EXTERNAL     // パスワード無しでローカル接続
-    -H ldapi:///    // サーバー指定
-    -f file02.ldif  // LDIFファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 実行結果
-  modifying entry "olcDatabase={2}hdb,cn=config"
-  modifying entry "olcDatabase={2}hdb,cn=config"
-  modifying entry "olcDatabase={2}hdb,cn=config"
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (ユーザー管理ディレクトリの構築予定場所)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={2}hdb,cn=config'  // 検索開始DN
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-  
-  // 検索結果
-  dn: olcDatabase={2}hdb,cn=config
-  objectClass: olcDatabaseConfig
-  objectClass: olcHdbConfig
-  olcDatabase: {2}hdb
-  olcDbDirectory: /var/lib/ldap
-  olcDbIndex: objectClass eq,pres
-  olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
-  olcSuffix: dc=AAA,dc=com                           // ベースDNの変更を確認
-  olcRootDN: cn=Manager,dc=AAA,dc=com                // 管理者DNの変更を確認
-  olcRootPW: {SSHA}kzhDZvlLW14K+Sq9RA9i0vAUtke2wide  // 管理者DNのパスワード
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi file03.ldif (LDIFファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dn: dc=AAA,dc=com
-  objectClass: dcObject
-  objectClass: organization
-  dc: AAA
-  o: AAA.com
-  
-  dn: ou=OU1,dc=AAA,dc=com
-  objectClass: organizationalUnit
-  ou: OU1
-  
-  dn: ou=OU2,dc=AAA,dc=com
-  objectClass: organizationalUnit
-  ou: OU2
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapadd                      // コマンド本体
-    -x                           // 簡易認証
-    -D cn=Manager,dc=AAA,dc=com  // AAA.comの管理者DN
-    -w Manager                   // AAA.comの管理者DNパスワード
-    -f file03.ldif               // LDIFファイル
-
-  コマンドの実行結果
-  --------------------------------------------------
-  adding new entry "dc=AAA,dc=com"
-  adding new entry "ou=OU1,dc=AAA,dc=com"
-  adding new entry "ou=OU2,dc=AAA,dc=com"
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (ディレクトリ状況を確認)
-    ldapsearch        // コマンド本体
-    -LLL              // バージョン情報やコメント非表示
-    -x                // 簡易認証
-    -b dc=AAA,dc=com  // 検索開始DN
-    DN                // 検索対象
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dn: dc=AAA,dc=com
-  dn: ou=OU1,dc=AAA,dc=com
-  dn: ou=OU2,dc=AAA,dc=com
-  --------------------------------------------------
-  
-  vm12# cd /etc/openldap/schema
-  vm12# ls -lh *.ldif | grep -E 'cosine|nis' (スキーマファイルの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  -r--r--r--. 1 root root  12K  8月 31 23:49 cosine.ldif
-  -r--r--r--. 1 root root 6.7K  8月 31 23:49 nis.ldif
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (スキーマ登録)
-    ldapadd                              // コマンド本体
-    -Y EXTERNAL                          // パスワード無しでローカル接続
-    -H ldapi:///                         // サーバー指定
-    -f /etc/openldap/schema/cosine.ldif  // LDIFファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-
-  // 実行結果
-  adding new entry "cn=cosine,cn=schema,cn=config"
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (スキーマ登録)
-    ldapadd                           // コマンド本体
-    -Y EXTERNAL                       // パスワード無しでローカル接続
-    -H ldapi:///                      // サーバー指定
-    -f /etc/openldap/schema/nis.ldif  // LDIFファイル
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // 認証状況
-  SASL/EXTERNAL authentication started
-  SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
-  SASL SSF: 0
-
-  // 実行結果
-  adding new entry "cn=nis,cn=schema,cn=config"
-  --------------------------------------------------
-  
-  #vm12# cd $HOME
-  #vm12# slappasswd -s user01 (user01のパスワード生成)
-  #vm12# slappasswd -s user02 (user02のパスワード生成)
-  #vm12# slappasswd -s user03 (user03のパスワード生成)
-  #vm12# slappasswd -s user04 (user04のパスワード生成)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #// user01
-  #{SSHA}RGi5eVRiUhzkaFkARCNPA8VG1rV4xqQ6
-  #
-  #// user02
-  #{SSHA}xgdLDP0wtpAG9DbTCKUAXWuJY78G4aaR
-  #
-  #// user03
-  #{SSHA}YwZA+Clngdjxr9ciobUBPdM2Qfw5R3vH
-  #
-  #// user04
-  #{SSHA}OtfrlSNDC0AftJnDQgkULw1wDzocvYbU
-  #--------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# getent passwd | grep -E '105[1-4]'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> システムに該当のUIDが存在しないことを確認
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# getent group | grep -E '104[1-2]'
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> システムに該当のGIDが存在しないことを確認
+  Last login: Wed Jul  5 21:40:36 2023 from 192.168.122.1
   --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# getent passwd | grep -E '105[1-4]'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> システムに該当のUIDが存在しないことを確認
-    --------------------------------------------------
-    
-    vm13# cd $HOME
-    vm13# getent group | grep -E '104[1-2]'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> システムに該当のGIDが存在しないことを確認
-    --------------------------------------------------
-    
-  vm12# cd $HOME
-  vm12# vi file04.ldif (LDIFファイル作成)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dn: cn=Group01,ou=OU1,dc=AAA,dc=com
-  objectClass: posixGroup
-  objectClass: top
-  cn: Group01
-  gidNumber: 1041  // システムで既に使用されていないか注意
-  
-  dn: cn=Group02,ou=OU2,dc=AAA,dc=com
-  objectClass: posixGroup
-  objectClass: top
-  cn: Group02
-  gidNumber: 1042  // システムで既に使用されていないか注意
-  
-  dn: uid=user01,cn=Group01,ou=OU1,dc=AAA,dc=com
-  uid: user01
-  cn: User01
-  objectClass: account
-  objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma01
-  loginShell: /bin/bash
-  uidNumber: 1051  // システムで既に使用されていないか注意
-  gidNumber: 1041  // システムで既に使用されていないか注意
-  homeDirectory: /home/user01
-  
-  dn: uid=user02,cn=Group01,ou=OU1,dc=AAA,dc=com
-  uid: user02
-  cn: User02
-  objectClass: account
-  objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma02
-  loginShell: /bin/bash
-  uidNumber: 1052  // システムで既に使用されていないか注意
-  gidNumber: 1041  // システムで既に使用されていないか注意
-  homeDirectory: /home/user02
-
-  dn: uid=user03,cn=Group02,ou=OU2,dc=AAA,dc=com
-  uid: user03
-  cn: User03
-  objectClass: account
-  objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma03
-  loginShell: /bin/bash
-  uidNumber: 1053  // システムで既に使用されていないか注意
-  gidNumber: 1042  // システムで既に使用されていないか注意
-  homeDirectory: /home/user03
-
-  dn: uid=user04,cn=Group02,ou=OU2,dc=AAA,dc=com
-  uid: user04
-  cn: User04
-  objectClass: account
-  objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma04
-  loginShell: /bin/bash
-  uidNumber: 1054  // システムで既に使用されていないか注意
-  gidNumber: 1042  // システムで既に使用されていないか注意
-  homeDirectory: /home/user04
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapadd                      // コマンド本体
-    -x                           // 簡易認証
-    -D cn=Manager,dc=AAA,dc=com  // AAA.comの管理者DN
-    -w Manager                   // AAA.comの管理者DNパスワード
-    -f file04.ldif               // LDIFファイル
-
-  コマンドの実行結果
-  --------------------------------------------------
-  adding new entry "cn=Group01,ou=OU1,dc=AAA,dc=com"
-  adding new entry "cn=Group02,ou=OU2,dc=AAA,dc=com"
-  adding new entry "uid=user01,cn=Group01,ou=OU1,dc=AAA,dc=com"
-  adding new entry "uid=user02,cn=Group01,ou=OU1,dc=AAA,dc=com"
-  adding new entry "uid=user03,cn=Group02,ou=OU2,dc=AAA,dc=com"
-  adding new entry "uid=user04,cn=Group02,ou=OU2,dc=AAA,dc=com"
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (ディレクトリ状況を確認)
-    ldapsearch        // コマンド本体
-    -LLL              // バージョン情報やコメント非表示
-    -x                // 簡易認証
-    -b dc=AAA,dc=com  // 検索開始DN
-    DN                // 検索対象
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  dn: dc=AAA,dc=com
-  dn: ou=OU1,dc=AAA,dc=com
-  dn: ou=OU2,dc=AAA,dc=com
-  dn: cn=Group01,ou=OU1,dc=AAA,dc=com
-  dn: cn=Group02,ou=OU2,dc=AAA,dc=com
-  dn: uid=user01,cn=Group01,ou=OU1,dc=AAA,dc=com
-  dn: uid=user02,cn=Group01,ou=OU1,dc=AAA,dc=com
-  dn: uid=user03,cn=Group02,ou=OU2,dc=AAA,dc=com
-  dn: uid=user04,cn=Group02,ou=OU2,dc=AAA,dc=com
-  --------------------------------------------------
-    
-    vm13# cd $HOME
-    vm13# yum -y install openldap openldap-clients (パッケージ追加)
+    vm11$ cd $HOME
+    vm11$ sudo dnf --enablerepo=powertools -y install openldap-servers openldap-clients
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# (ディレクトリ状況を確認)
-      ldapsearch        // コマンド本体
-      -LLL              // バージョン情報やコメント非表示
-      -H ldap://vm12/   // サーバー指定
-      -x                // 簡易認証
-      -b dc=AAA,dc=com  // 検索開始DN
-      DN                // 検索対象
+    vm11$ cd $HOME
+    vm11$ sudo cp -p /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG -> 基本設定ファイルをコピー
     
     コマンドの実行結果
     --------------------------------------------------
-    dn: dc=AAA,dc=com
-    dn: ou=OU1,dc=AAA,dc=com
-    dn: ou=OU2,dc=AAA,dc=com
-    dn: cn=Group01,ou=OU1,dc=AAA,dc=com
-    dn: cn=Group02,ou=OU2,dc=AAA,dc=com
-    dn: uid=user01,cn=Group01,ou=OU1,dc=AAA,dc=com
-    dn: uid=user02,cn=Group01,ou=OU1,dc=AAA,dc=com
-    dn: uid=user03,cn=Group02,ou=OU2,dc=AAA,dc=com
-    dn: uid=user04,cn=Group02,ou=OU2,dc=AAA,dc=com
+    (省略) -> 出力なし
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# systemctl stop slapd (サービスの停止)
+    vm11$ cd $HOME
+    vm11$ sudo firewall-cmd --add-service=ldap --permanent
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    success
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh destroy vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  Domain 'vm11' destroyed
   --------------------------------------------------
   
+  $ cd $HOME
+  $ sudo virsh start vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Domain 'vm11' started
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Thu Jul  6 09:52:30 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo firewall-cmd --list-all
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    public
+      target: default
+      icmp-block-inversion: no
+      interfaces: 
+      sources: 
+      services: cockpit dhcpv6-client dns http https iscsi-target ldap nfs squid ssh telnet  // ldap を確認
+      ports: 12865/tcp 12866/tcp
+      protocols: 
+      forward: no
+      masquerade: no
+      forward-ports: 
+      source-ports: 
+      icmp-blocks: 
+      rich rules: 
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl start slapd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch  // 内部データベース一覧
+        > -LLL             // バージョンやコメント非表示
+        > -Y external      // パスワード無しでローカル接続
+        > -H ldapi:///     // ローカルサーバー
+        > -b cn=config     // 検索開始DN
+        > DN               // 検索対象
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 検索結果(内部データベース一覧) => 接頭辞の「olc」はオンライン制御
+    dn: cn=config
+    dn: cn=schema,cn=config
+    dn: cn={0}core,cn=schema,cn=config
+    dn: olcDatabase={-1}frontend,cn=config  // 不明
+    dn: olcDatabase={0}config,cn=config     // 設定データベース
+    dn: olcDatabase={1}monitor,cn=config    // 不明
+    dn: olcDatabase={2}mdb,cn=config        // ディレクトリ場所
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={0}config,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 設定データベース
+    dn: olcDatabase={0}config,cn=config
+      objectClass: olcDatabaseConfig
+      olcDatabase: {0}config
+      olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo slappasswd -s rt0122ma -> 設定データベース用の管理者パスワード生成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    {SSHA}Yao2ZmJIvd+F+hRcXsqJZIJS3sdh5wjf
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ mkdir ldap
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file01.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: olcDatabase={0}config,cn=config                // 設定データベース用のDN
+    changetype: modify                                 // 変更タイプ
+    add: olcRootPW                                     // 追加項目名
+    olcRootPW: {SSHA}Yao2ZmJIvd+F+hRcXsqJZIJS3sdh5wjf  // 項目設定値
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapmodify
+        > -Y external
+        > -H ldapi:///
+        > -f ldap/file01.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    modifying entry "olcDatabase={0}config,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={0}config,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 設定データベース
+    dn: olcDatabase={0}config,cn=config
+      objectClass: olcDatabaseConfig
+      olcDatabase: {0}config
+      olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none
+      olcRootPW: {SSHA}Yao2ZmJIvd+F+hRcXsqJZIJS3sdh5wjf  // 追加
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ場所
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=my-domain,dc=com
+      olcRootDN: cn=Manager,dc=my-domain,dc=com
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ slappasswd -s avswa-master -> ドメインの管理者パスワード生成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file02.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    replace: olcSuffix
+    olcSuffix: dc=avswa,dc=com
+    
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    replace: olcRootDN
+    olcRootDN: cn=Manager,dc=avswa,dc=com
+    
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    add: olcRootPW
+    olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapmodify
+        > -Y external
+        > -H ldapi:///
+        > -f ldap/file02.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ場所
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcSuffix: dc=avswa,dc=com                         // ドメイン
+      olcRootDN: cn=Manager,dc=avswa,dc=com              // ドメイン管理者
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws  // 管理者パスワード
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[012]
+  OpenLDAP - 02
+  
+[内容]
+  ## 作業内容
+    ディレクトリにホワイトページ作成
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  //
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ ls -lh /etc/openldap/schema/*.ldif | grep inetorg -> ホワイトページ用のスキーマファイル確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -r--r--r--. 1 root root 3.4K 10月 12  2021 /etc/openldap/schema/inetorgperson.ldif
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ view /etc/openldap/schema/inetorgperson.ldif -> クラス確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // スキーマ(core, cosine)と依存関係にある旨のコメントが記述
+    
+    dn: cn=inetorgperson,cn=schema,cn=config
+      objectClass: olcSchemaConfig
+      cn: inetorgperson
+      …
+      olcObjectClasses: (
+        2.16.840.1.113730.3.2.2
+        NAME 'inetOrgPerson'
+        DESC 'RFC2798: Internet Organizational Person'
+        SUP organizationalPerson STRUCTURAL MAY (
+          audio $
+          businessCategory $
+          carLicense $
+          departmentNumber $
+          displayName $
+          employeeNumber $
+          employeeType $
+          givenName $
+          homePhone $
+          homePostalAddress $
+          initials $
+          jpegPhoto $
+          labeledURI $
+          mail $
+          manager $
+          mobile $
+          o $
+          pager $
+          photo $
+          roomNumber $
+          secretary $
+          uid $
+          userCertificate $
+          x500uniqueIdentifier $
+          preferredLanguage $
+          userSMIMECertificate $
+          userPKCS12
+        )
+      )
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapadd     // スキーマ登録
+        > -Y external      // パスワード無しでローカル接続
+        > -H ldapi:///     // サーバー指定
+        > -f /etc/openldap/schema/cosine.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    adding new entry "cn=cosine,cn=schema,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapadd     // スキーマ登録
+        > -Y external      // パスワード無しでローカル接続
+        > -H ldapi:///     // サーバー指定
+        > -f /etc/openldap/schema/nis.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    adding new entry "cn=nis,cn=schema,cn=config"
+    --------------------------------------------------
+    
+    //
+
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
