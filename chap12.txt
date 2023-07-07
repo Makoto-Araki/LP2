@@ -1999,6 +1999,146 @@
   以下の確認に続く
   
 ================================================================================
+[013]
+  OpenLDAP - 03
+  
+[内容]
+  ## 作業内容
+    ディレクトリにデータ登録(1)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jul  7 16:18:12 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file03.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## avswa.com
+    dn: dc=avswa,dc=com
+    objectClass: dcObject
+    objectClass: organization
+    dc: avswa
+    o: avswa.com
+    
+    ## Tokyo.avswa.com
+    dn: ou=Tokyo,dc=avswa,dc=com
+    objectClass: organizationalUnit
+    ou: Tokyo
+    
+    ## Group1.Tokyo.avswa.com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    objectClass: organizationalUnit
+    ou: Group1
+    
+    ## Group2.Tokyo.avswa.com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    objectClass: organizationalUnit
+    ou: Group2
+    
+    ## Osaka.avswa.com
+    dn: ou=Osaka,dc=avswa,dc=com
+    objectClass: organizationalUnit
+    ou: Osaka
+    
+    ## Group1.Osaka.avswa.com
+    dn: ou=Group1,ou=Osaka,dc=avswa,dc=com
+    objectClass: organizationalUnit
+    ou: Group1
+    
+    ## Group2.Osaka.avswa.com
+    dn: ou=Group2,ou=Osaka,dc=avswa,dc=com
+    objectClass: organizationalUnit
+    ou: Group2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapadd
+        > -x
+        > -D cn=Manager,dc=avswa,dc=com
+        > -w avswa-master
+        > -f ldap/file03.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    adding new entry "dc=avswa,dc=com"
+    adding new entry "ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "ou=Group1,ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "ou=Group2,ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "ou=Osaka,dc=avswa,dc=com"
+    adding new entry "ou=Group1,ou=Osaka,dc=avswa,dc=com"
+    adding new entry "ou=Group2,ou=Osaka,dc=avswa,dc=com"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'dc=avswa,dc=com'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // avswa.com
+    dn: dc=avswa,dc=com
+      objectClass: dcObject
+      objectClass: organization
+      dc: avswa
+      o: avswa.com
+    
+    // Tokyo.avswa.com
+    dn: ou=Tokyo,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Tokyo
+    
+    // Group1.Tokyo.avswa.com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group1
+    
+    // Group2.Tokyo.avswa.com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group2
+    
+    // Osaka.avswa.com
+    dn: ou=Osaka,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Osaka
+    
+    // Group1.Osaka.avswa.com
+    dn: ou=Group1,ou=Osaka,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group1
+    
+    // Group2.Osaka.avswa.com
+    dn: ou=Group2,ou=Osaka,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
 [006]
   LDAP - 02 (認証時にディレクトリ参照)
   
