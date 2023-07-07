@@ -2405,6 +2405,106 @@
   以下の確認に続く
   
 ================================================================================
+[015]
+  OpenLDAP - 05
+  
+[内容]
+  ## 作業内容
+    ディレクトリからデータ検索
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jul  7 17:54:36 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x  // 簡易認証に変更 : -Y external => -x
+        > -H ldapi:///
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > DN
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > cn
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    cn: makoto
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    cn: takesi
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    cn: eiko
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    cn: shuu
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: makoto@avswa.com
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: takesi@avswa.com
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: eiko@avswa.com
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: shuu@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
 [006]
   LDAP - 02 (認証時にディレクトリ参照)
   
