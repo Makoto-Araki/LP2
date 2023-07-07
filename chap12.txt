@@ -13,6 +13,8 @@
 [012] OpenLDAP - 02
 [013] OpenLDAP - 03
 [014] OpenLDAP - 04
+[015] OpenLDAP - 05
+[016] OpenLDAP - 06
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -2496,6 +2498,114 @@
     
     vm11$ cd $HOME
     vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[016]
+  OpenLDAP - 06
+  
+[内容]
+  ## 作業内容
+    別ホストからディレクトリからデータ検索
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm12
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon Jul  3 17:08:26 2023
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo dnf -y install openldap-clients
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldap://vm11/
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > DN
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldap://vm11/
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > cn
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    cn: makoto
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    cn: takesi
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    cn: eiko
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    cn: shuu
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldap://vm11/
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: makoto@avswa.com
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: takesi@avswa.com
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: eiko@avswa.com
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: shuu@avswa.com
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
     
     コマンドの実行結果
     --------------------------------------------------
