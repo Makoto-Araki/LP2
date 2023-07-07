@@ -11,6 +11,8 @@
 [010] PAM認証 - 07
 [011] OpenLDAP - 01
 [012] OpenLDAP - 02
+[013] OpenLDAP - 03
+[014] OpenLDAP - 04
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -2126,6 +2128,270 @@
     dn: ou=Group2,ou=Osaka,dc=avswa,dc=com
       objectClass: organizationalUnit
       ou: Group2
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[014]
+  OpenLDAP - 04
+  
+[内容]
+  ## 作業内容
+    ディレクトリにデータ登録(2)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jul  7 17:01:13 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file04.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## makoto.Group1.Tokyo.avswa.com
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: makoto
+    sn: araki
+    mail: makoto@avswa.com
+    
+    ## takesi.Group1.Tokyo.avswa.com
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: takesi
+    sn: araki
+    mail: takesi@avswa.com
+    
+    ## eiko.Group2.Tokyo.avswa.com
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: eiko
+    sn: araki
+    mail: eiko@avswa.com
+    
+    ## shuu.Group2.Tokyo.avswa.com
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: shuu
+    sn: araki
+    mail: shuu@avswa.com
+    
+    ## hirosi.Group1.Osaka.avswa.com
+    dn: cn=hirosi,ou=Group1,ou=Osaka,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: hirosi
+    sn: araki
+    mail: hirosi@avswa.com
+    
+    ## kaede.Group1.Osaka.avswa.com
+    dn: cn=kaede,ou=Group1,ou=Osaka,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: kaede
+    sn: araki
+    mail: kaede@avswa.com
+    
+    ## mami.Group2.Osaka.avswa.com
+    dn: cn=mami,ou=Group2,ou=Osaka,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: mami
+    sn: araki
+    mail: mami@avswa.com
+    
+    ## haruki.Group2.Osaka.avswa.com
+    dn: cn=haruki,ou=Group2,ou=Osaka,dc=avswa,dc=com
+    objectClass: top
+    objectClass: person
+    objectClass: organizationalPerson
+    objectClass: inetOrgPerson
+    cn: haruki
+    sn: araki
+    mail: haruki@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapadd
+        > -x
+        > -D cn=Manager,dc=avswa,dc=com
+        > -w avswa-master
+        > -f ldap/file04.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    adding new entry "cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com"
+    adding new entry "cn=hirosi,ou=Group1,ou=Osaka,dc=avswa,dc=com"
+    adding new entry "cn=kaede,ou=Group1,ou=Osaka,dc=avswa,dc=com"
+    adding new entry "cn=mami,ou=Group2,ou=Osaka,dc=avswa,dc=com"
+    adding new entry "cn=haruki,ou=Group2,ou=Osaka,dc=avswa,dc=com"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'dc=avswa,dc=com'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // avswa.com
+    dn: dc=avswa,dc=com
+      objectClass: dcObject
+      objectClass: organization
+      dc: avswa
+      o: avswa.com
+    
+    // Tokyo.avswa.com
+    dn: ou=Tokyo,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Tokyo
+    
+    // Group1.Tokyo.avswa.com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group1
+    
+    // Group2.Tokyo.avswa.com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group2
+    
+    // Osaka.avswa.com
+    dn: ou=Osaka,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Osaka
+    
+    // Group1.Osaka.avswa.com
+    dn: ou=Group1,ou=Osaka,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group1
+    
+    // Group2.Osaka.avswa.com
+    dn: ou=Group2,ou=Osaka,dc=avswa,dc=com
+      objectClass: organizationalUnit
+      ou: Group2
+    
+    // makoto.Group1.Tokyo.avswa.com
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: makoto
+      sn: araki
+      mail: makoto@avswa.com
+    
+    // takesi.Group1.Tokyo.avswa.com
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: takesi
+      sn: araki
+      mail: takesi@avswa.com
+    
+    // eiko.Group2.Tokyo.avswa.com
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: eiko
+      sn: araki
+      mail: eiko@avswa.com
+    
+    // shuu.Group2.Tokyo.avswa.com
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: shuu
+      sn: araki
+      mail: shuu@avswa.com
+    
+    // hirosi.Group1.Osaka.avswa.com
+    dn: cn=hirosi,ou=Group1,ou=Osaka,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: hirosi
+      sn: araki
+      mail: hirosi@avswa.com
+    
+    // kaede.Group1.Osaka.avswa.com
+    dn: cn=kaede,ou=Group1,ou=Osaka,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: kaede
+      sn: araki
+      mail: kaede@avswa.com
+    
+    // mami.Group2.Osaka.avswa.com
+    dn: cn=mami,ou=Group2,ou=Osaka,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: mami
+      sn: araki
+      mail: mami@avswa.com
+    
+    // haruki.Group2.Osaka.avswa.com
+    dn: cn=haruki,ou=Group2,ou=Osaka,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: haruki
+      sn: araki
+      mail: haruki@avswa.com
     --------------------------------------------------
     
     vm11$ cd $HOME
