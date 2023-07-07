@@ -1746,8 +1746,8 @@
     --------------------------------------------------
     dn: olcDatabase={0}config,cn=config                // 設定データベース用のDN
     changetype: modify                                 // 変更タイプ
-    add: olcRootPW                                     // 追加項目名
-    olcRootPW: {SSHA}Yao2ZmJIvd+F+hRcXsqJZIJS3sdh5wjf  // 項目設定値
+    add: olcRootPW                                     // 追加する項目名
+    olcRootPW: {SSHA}Yao2ZmJIvd+F+hRcXsqJZIJS3sdh5wjf  // 項目の設定値
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1906,7 +1906,7 @@
   
 [内容]
   ## 作業内容
-    ディレクトリにホワイトページ作成
+    スキーマ登録 => スキーマ(inetOrgPerson)を登録してみる
   
 [確認]
   $ cd $HOME
@@ -1914,68 +1914,33 @@
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  Last login: Thu Jul  6 12:32:19 2023 from 192.168.122.1
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ ls -lh /etc/openldap/schema/*.ldif | grep inetorg -> ホワイトページ用のスキーマファイル確認
+    vm11$ ls -lh /etc/openldap/schema/*.ldif -> スキーマ登録ファイル
     
     コマンドの実行結果
     --------------------------------------------------
-    -r--r--r--. 1 root root 3.4K 10月 12  2021 /etc/openldap/schema/inetorgperson.ldif
+    -r--r--r--. 1 root root 2.0K 10月 12  2021 /etc/openldap/schema/collective.ldif
+    -r--r--r--. 1 root root 1.9K 10月 12  2021 /etc/openldap/schema/corba.ldif
+    -r--r--r--. 1 root root  21K 10月 12  2021 /etc/openldap/schema/core.ldif           // 初期状態で登録済
+    -r--r--r--. 1 root root  12K 10月 12  2021 /etc/openldap/schema/cosine.ldif         // 登録予定
+    -r--r--r--. 1 root root 6.7K 10月 12  2021 /etc/openldap/schema/nis.ldif            // 登録予定
+    -r--r--r--. 1 root root 3.4K 10月 12  2021 /etc/openldap/schema/inetorgperson.ldif  // 登録予定
+    -r--r--r--. 1 root root 4.8K 10月 12  2021 /etc/openldap/schema/duaconf.ldif
+    -r--r--r--. 1 root root 3.3K 10月 12  2021 /etc/openldap/schema/dyngroup.ldif
+    -r--r--r--. 1 root root 3.0K 10月 12  2021 /etc/openldap/schema/java.ldif
+    -r--r--r--. 1 root root 2.1K 10月 12  2021 /etc/openldap/schema/misc.ldif
+    -r--r--r--. 1 root root 3.3K 10月 12  2021 /etc/openldap/schema/openldap.ldif
+    -r--r--r--. 1 root root 6.8K 10月 12  2021 /etc/openldap/schema/pmi.ldif
+    -r--r--r--. 1 root root 4.5K 10月 12  2021 /etc/openldap/schema/ppolicy.ldif
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ view /etc/openldap/schema/inetorgperson.ldif -> クラス確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // スキーマ(core, cosine)と依存関係にある旨のコメントが記述
-    
-    dn: cn=inetorgperson,cn=schema,cn=config
-      objectClass: olcSchemaConfig
-      cn: inetorgperson
-      …
-      olcObjectClasses: (
-        2.16.840.1.113730.3.2.2
-        NAME 'inetOrgPerson'
-        DESC 'RFC2798: Internet Organizational Person'
-        SUP organizationalPerson STRUCTURAL MAY (
-          audio $
-          businessCategory $
-          carLicense $
-          departmentNumber $
-          displayName $
-          employeeNumber $
-          employeeType $
-          givenName $
-          homePhone $
-          homePostalAddress $
-          initials $
-          jpegPhoto $
-          labeledURI $
-          mail $
-          manager $
-          mobile $
-          o $
-          pager $
-          photo $
-          roomNumber $
-          secretary $
-          uid $
-          userCertificate $
-          x500uniqueIdentifier $
-          preferredLanguage $
-          userSMIMECertificate $
-          userPKCS12
-        )
-      )
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo ldapadd     // スキーマ登録
-        > -Y external      // パスワード無しでローカル接続
-        > -H ldapi:///     // サーバー指定
+    vm11$ sudo ldapadd
+        > -Y external
+        > -H ldapi:///
         > -f /etc/openldap/schema/cosine.ldif
     
     コマンドの実行結果
@@ -1990,9 +1955,9 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ldapadd     // スキーマ登録
-        > -Y external      // パスワード無しでローカル接続
-        > -H ldapi:///     // サーバー指定
+    vm11$ sudo ldapadd
+        > -Y external
+        > -H ldapi:///
         > -f /etc/openldap/schema/nis.ldif
     
     コマンドの実行結果
@@ -2006,8 +1971,23 @@
     adding new entry "cn=nis,cn=schema,cn=config"
     --------------------------------------------------
     
-    //
-
+    vm11$ cd $HOME
+    vm11$ sudo ldapadd
+        > -Y external
+        > -H ldapi:///
+        > -f /etc/openldap/schema/inetorgperson.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    adding new entry "cn=inetorgperson,cn=schema,cn=config"
+    --------------------------------------------------
+    
     vm11$ cd $HOME
     vm11$ exit
     
