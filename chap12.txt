@@ -1674,6 +1674,15 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
+    vm11$ sudo systemctl enable slapd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Created symlink /etc/systemd/system/openldap.service → /usr/lib/systemd/system/slapd.service.
+    Created symlink /etc/systemd/system/multi-user.target.wants/slapd.service → /usr/lib/systemd/system/slapd.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
     vm11$ sudo systemctl start slapd
     
     コマンドの実行結果
@@ -1928,7 +1937,7 @@
     --------------------------------------------------
     -r--r--r--. 1 root root 2.0K 10月 12  2021 /etc/openldap/schema/collective.ldif
     -r--r--r--. 1 root root 1.9K 10月 12  2021 /etc/openldap/schema/corba.ldif
-    -r--r--r--. 1 root root  21K 10月 12  2021 /etc/openldap/schema/core.ldif           // 初期状態で登録済
+    -r--r--r--. 1 root root  21K 10月 12  2021 /etc/openldap/schema/core.ldif           // 登録済
     -r--r--r--. 1 root root  12K 10月 12  2021 /etc/openldap/schema/cosine.ldif         // 登録予定
     -r--r--r--. 1 root root 6.7K 10月 12  2021 /etc/openldap/schema/nis.ldif            // 登録予定
     -r--r--r--. 1 root root 3.4K 10月 12  2021 /etc/openldap/schema/inetorgperson.ldif  // 登録予定
@@ -2581,6 +2590,186 @@
     vm12$ sudo ldapsearch
         > -LLL
         > -x
+        > -H ldap://vm11/
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: makoto@avswa.com
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: takesi@avswa.com
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: eiko@avswa.com
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: shuu@avswa.com
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[017]
+  OpenLDAP - 07
+  
+[内容]
+  ## 作業内容
+    ディレクトリのアクセス権を設定(1)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm12
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jul  7 18:50:29 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ldapsearch
+        > -LLL
+        > -x -> 匿名認証
+        > -H ldap://vm11/
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: makoto@avswa.com
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: takesi@avswa.com
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: eiko@avswa.com
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: shuu@avswa.com
+    --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Fri Jul  7 20:07:34 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x -> 匿名認証
+        > -H ldapi:///
+        > -b 'ou=Tokyo,dc=avswa,dc=com'
+        > mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: makoto@avswa.com
+    
+    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+    mail: takesi@avswa.com
+    
+    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: eiko@avswa.com
+    
+    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
+    mail: shuu@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sat Jul  8 18:16:17 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ man 5 slapd.access
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 設定するアクセス権について調査
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/openldap/slapd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    access to * by * none  // エントリ(*)に全ユーザー(*)がアクセス不可(none)
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart slapd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ ssh vm12
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sat Jul  8 18:14:40 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm12$ cd $HOME
+    vm12$ sudo ldapsearch
+        > -LLL
+        > -x -> 匿名認証
         > -H ldap://vm11/
         > -b 'ou=Tokyo,dc=avswa,dc=com'
         > mail
