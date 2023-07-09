@@ -1712,7 +1712,7 @@
     dn: olcDatabase={-1}frontend,cn=config  // 不明
     dn: olcDatabase={0}config,cn=config     // 設定データベース
     dn: olcDatabase={1}monitor,cn=config    // 不明
-    dn: olcDatabase={2}mdb,cn=config        // ディレクトリ場所
+    dn: olcDatabase={2}mdb,cn=config        // ディレクトリ
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1816,7 +1816,7 @@
     SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
     SASL SSF: 0
     
-    // ディレクトリ場所
+    // ディレクトリ
     dn: olcDatabase={2}mdb,cn=config
       objectClass: olcDatabaseConfig
       objectClass: olcMdbConfig
@@ -1829,7 +1829,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ slappasswd -s avswa-master -> ドメインの管理者パスワード生成
+    vm11$ slappasswd -s avswa-master -> ディレクトリの管理者パスワード生成
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1890,7 +1890,7 @@
     SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
     SASL SSF: 0
     
-    // ディレクトリ場所
+    // ディレクトリ
     dn: olcDatabase={2}mdb,cn=config
       objectClass: olcDatabaseConfig
       objectClass: olcMdbConfig
@@ -1898,9 +1898,9 @@
       olcDbDirectory: /var/lib/ldap
       olcDbIndex: objectClass eq,pres
       olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
-      olcSuffix: dc=avswa,dc=com                         // ドメイン
-      olcRootDN: cn=Manager,dc=avswa,dc=com              // ドメイン管理者
-      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws  // 管理者パスワード
+      olcSuffix: dc=avswa,dc=com                         // ディレクトリのトップエントリ
+      olcRootDN: cn=Manager,dc=avswa,dc=com              // ディレクトリの管理者
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws  // ディレクトリの管理者パスワード
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -1919,7 +1919,7 @@
   
 [内容]
   ## 作業内容
-    スキーマ登録 => スキーマ(inetOrgPerson)を登録してみる
+    各種スキーマを登録する
   
 [確認]
   $ cd $HOME
@@ -1931,7 +1931,7 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ ls -lh /etc/openldap/schema/*.ldif -> スキーマ登録ファイル
+    vm11$ ls -lh /etc/openldap/schema/*.ldif -> スキーマファイル
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2074,8 +2074,8 @@
     vm11$ cd $HOME
     vm11$ sudo ldapadd
         > -x
-        > -D cn=Manager,dc=avswa,dc=com
-        > -w avswa-master
+        > -D cn=Manager,dc=avswa,dc=com  // ディレクトリの管理者
+        > -w avswa-master                // ディレクトリの管理者パスワード
         > -f ldap/file03.ldif
     
     コマンドの実行結果
@@ -2257,8 +2257,8 @@
     vm11$ cd $HOME
     vm11$ sudo ldapadd
         > -x
-        > -D cn=Manager,dc=avswa,dc=com
-        > -w avswa-master
+        > -D cn=Manager,dc=avswa,dc=com  // ディレクトリの管理者
+        > -w avswa-master                // ディレクトリの管理者パスワード
         > -f ldap/file04.ldif
     
     コマンドの実行結果
@@ -2435,74 +2435,29 @@
     vm11$ cd $HOME
     vm11$ sudo ldapsearch
         > -LLL
-        > -x  // 簡易認証に変更 : -Y external => -x
-        > -H ldapi:///
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > DN
+        > -x                             // 簡易認証に変更 : -Y external => -x
+        > -H ldapi:///                   // ホスト指定
+        > -b 'ou=Tokyo,dc=avswa,dc=com'  // 検索開始DN
+        > sn=araki                       // 検索フィルタ
+        > dn cn mail                     // 出力対象
     
     コマンドの実行結果
     --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
     dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo ldapsearch
-        > -LLL
-        > -x
-        > -H ldapi:///
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > cn
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    cn: makoto
+      cn: makoto
+      mail: makoto@avswa.com
     
     dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    cn: takesi
+      cn: takesi
+      mail: takesi@avswa.com
     
     dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    cn: eiko
+      cn: eiko
+      mail: eiko@avswa.com
     
     dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    cn: shuu
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo ldapsearch
-        > -LLL
-        > -x
-        > -H ldapi:///
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > mail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: makoto@avswa.com
-    
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: takesi@avswa.com
-    
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: eiko@avswa.com
-    
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: shuu@avswa.com
+      cn: shuu
+      mail: shuu@avswa.com
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2543,74 +2498,29 @@
     vm12$ cd $HOME
     vm12$ sudo ldapsearch
         > -LLL
-        > -x
-        > -H ldap://vm11/
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > DN
+        > -x                             // 簡易認証に変更 : -Y external => -x
+        > -H ldap://vm11/                // ホスト指定
+        > -b 'ou=Tokyo,dc=avswa,dc=com'  // 検索開始DN
+        > sn=araki                       // 検索フィルタ
+        > dn cn mail                     // 出力対象
     
     コマンドの実行結果
     --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
     dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo ldapsearch
-        > -LLL
-        > -x
-        > -H ldap://vm11/
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > cn
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    cn: makoto
+      cn: makoto
+      mail: makoto@avswa.com
     
     dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    cn: takesi
+      cn: takesi
+      mail: takesi@avswa.com
     
     dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    cn: eiko
+      cn: eiko
+      mail: eiko@avswa.com
     
     dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    cn: shuu
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo ldapsearch
-        > -LLL
-        > -x
-        > -H ldap://vm11/
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > mail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: makoto@avswa.com
-    
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: takesi@avswa.com
-    
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: eiko@avswa.com
-    
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: shuu@avswa.com
+      cn: shuu
+      mail: shuu@avswa.com
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -2618,7 +2528,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Connection to vm11 closed.
+    Connection to vm12 closed.
     --------------------------------------------------
     
   以下の確認に続く
@@ -2629,95 +2539,9 @@
   
 [内容]
   ## 作業内容
-    ディレクトリのアクセス権を設定(1)
+    ディレクトリのアクセス権を設定(1) => 属性(olcAccess)で設定
   
 [確認]
-  $ cd $HOME
-  $ ssh vm12
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Fri Jul  7 18:50:29 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo ldapsearch
-        > -LLL
-        > -x -> 匿名認証
-        > -H ldap://vm11/
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > mail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: makoto@avswa.com
-    
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: takesi@avswa.com
-    
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: eiko@avswa.com
-    
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: shuu@avswa.com
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm11 closed.
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ ssh vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Fri Jul  7 20:07:34 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo ldapsearch
-        > -LLL
-        > -x -> 匿名認証
-        > -H ldapi:///
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > mail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: makoto@avswa.com
-    
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: takesi@avswa.com
-    
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: eiko@avswa.com
-    
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: shuu@avswa.com
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm11 closed.
-    --------------------------------------------------
-    
   $ cd $HOME
   $ ssh vm11
   
@@ -2727,74 +2551,193 @@
   --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ man 5 slapd.access
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 設定するアクセス権について調査
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      // olcAccess がまだ存在しない
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/openldap/slapd.conf
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
     
     コマンドの実行結果
     --------------------------------------------------
-    access to * by * none  // エントリ(*)に全ユーザー(*)がアクセス不可(none)
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      cn: makoto
+      mail: makoto@avswa.com
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo systemctl restart slapd
+    vm11$ vi ldap/file05.ldif
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし
+    dn: olcDatabase={2}mdb,cn=config  // ディレクトリ
+    changetype: modify                // 変更タイプ
+    add: olcAccess                    // 追加する項目名
+    olcAccess: {0}to * by * none      // 項目の設定値
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapmodify
+        > -Y external
+        > -H ldapi:///
+        > -f ldap/file05.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcAccess: {0}to * by * none  // アクセス権を追加
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    No such object (32) -> アクセス不可になる
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file06.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: olcDatabase={2}mdb,cn=config  // ディレクトリ
+    changetype: modify                // 変更タイプ
+    replace: olcAccess                // 設定を変更する項目名
+    olcAccess: {0}to * by * read      // 項目の設定値
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapmodify
+        > -Y external
+        > -H ldapi:///
+        > -f ldap/file06.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcAccess: {0}to * by * read  // アクセス権を変更
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com  // アクセス可能になる
+      cn: makoto
+      mail: makoto@avswa.com
     --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Connection to vm11 closed.
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ ssh vm12
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Last login: Sat Jul  8 18:14:40 2023 from 192.168.122.1
-  --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ sudo ldapsearch
-        > -LLL
-        > -x -> 匿名認証
-        > -H ldap://vm11/
-        > -b 'ou=Tokyo,dc=avswa,dc=com'
-        > mail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    dn: ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    dn: ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: makoto@avswa.com
-    
-    dn: cn=takesi,ou=Group1,ou=Tokyo,dc=avswa,dc=com
-    mail: takesi@avswa.com
-    
-    dn: cn=eiko,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: eiko@avswa.com
-    
-    dn: cn=shuu,ou=Group2,ou=Tokyo,dc=avswa,dc=com
-    mail: shuu@avswa.com
-    --------------------------------------------------
-    
-    vm12$ cd $HOME
-    vm12$ exit
     
     コマンドの実行結果
     --------------------------------------------------
