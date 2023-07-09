@@ -2,13 +2,13 @@
 [001] dhcp - 01
 [002] dhcp - 02
 [003] dhcp - 03
-[004] PAM認証 - 01
-[005] PAM認証 - 02
-[006] PAM認証 - 03
-[007] PAM認証 - 04
-[008] PAM認証 - 05
-[009] PAM認証 - 06
-[010] PAM認証 - 07
+[004] PAM - 01
+[005] PAM - 02
+[006] PAM - 03
+[007] PAM - 04
+[008] PAM - 05
+[009] PAM - 06
+[010] PAM - 07
 [011] OpenLDAP - 01
 [012] OpenLDAP - 02
 [013] OpenLDAP - 03
@@ -17,6 +17,8 @@
 [016] OpenLDAP - 06
 [017] OpenLDAP - 07
 [018] OpenLDAP - 08
+[019] OpenLDAP - 09
+[020] OpenLDAP - 10
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -684,7 +686,7 @@
   
 ================================================================================
 [004]
-  PAM認証 - 01
+  PAM - 01
   
 [内容]
   ## 作業内容
@@ -799,7 +801,7 @@
   
 ================================================================================
 [005]
-  PAM認証 - 02
+  PAM - 02
   
 [内容]
   ## 作業内容
@@ -903,7 +905,7 @@
   
 ================================================================================
 [006]
-  PAM認証 - 03
+  PAM - 03
   
 [内容]
   ## 作業内容
@@ -1017,7 +1019,7 @@
   
 ================================================================================
 [007]
-  PAM認証 - 04
+  PAM - 04
   
 [内容]
   ## 作業内容
@@ -1111,7 +1113,7 @@
   
 ================================================================================
 [008]
-  PAM認証 - 05
+  PAM - 05
   
 [内容]
   ## 作業内容
@@ -1263,7 +1265,7 @@
   
 ================================================================================
 [009]
-  PAM認証 - 06
+  PAM - 06
   
 [内容]
   ## 作業内容
@@ -1365,7 +1367,7 @@
   
 ================================================================================
 [010]
-  PAM認証 - 07
+  PAM - 07
   
 [内容]
   ## 作業内容
@@ -2754,7 +2756,7 @@
   
 [内容]
   ## 作業内容
-    ディレクトリのアクセス権を設定(2)
+    ディレクトリのアクセス権を設定(2) => 匿名アクセスに認証が必要
   
 [確認]
   $ cd $HOME
@@ -2891,7 +2893,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Enter LDAP Password: (avswa-master)
+    Enter LDAP Password: (avswa-master)  // ディレクトリ管理者のパスワード入力
     
     dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
       cn: makoto
@@ -2899,21 +2901,77 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ cat ldap/file06.ldif
+    vm11$ exit
     
     コマンドの実行結果
     --------------------------------------------------
-    dn: olcDatabase={2}mdb,cn=config  // ディレクトリ
-    changetype: modify                // 変更タイプ
-    replace: olcAccess                // 設定を変更する項目名
-    olcAccess: {0}to * by * read      // 項目の設定値
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[019]
+  OpenLDAP - 09
+  
+[内容]
+  ## 作業内容
+    ディレクトリのアクセス権を設定(3) => メール属性のアクセス権を設定
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jul  9 12:19:12 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcAccess: {0}to * by anonymous auth  // 設定するアクセス権
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file08.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: olcDatabase={2}mdb,cn=config
+    changetype: modify
+    replace: olcAccess
+    olcAccess: {0}to attrs=mail by * none
+    olcAccess: {1}to * by * read
     --------------------------------------------------
     
     vm11$ cd $HOME
     vm11$ sudo ldapmodify
         > -Y external
         > -H ldapi:///
-        > -f ldap/file06.ldif
+        > -f ldap/file08.ldif
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2951,7 +3009,8 @@
       olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
       olcDbIndex: objectClass eq,pres
       olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
-      olcAccess: {0}to * by * read  // アクセス権を変更
+      olcAccess: {0}to attrs=mail by * none
+      olcAccess: {1}to * by * read
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2965,9 +3024,9 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com  // アクセス可能になる
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
       cn: makoto
-      mail: makoto@avswa.com
+      // mail が表示されない
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -2982,11 +3041,64 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    Enter LDAP Password: (avswa-master)  // 認証も可能
+    Enter LDAP Password: (avswa-master)  // ディレクトリ管理者のパスワード入力
     
     dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
       cn: makoto
       mail: makoto@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[020]
+  OpenLDAP - 10
+  
+[内容]
+  ## 作業内容
+    ディレクトリの内容をファイル出力
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jul  9 11:10:45 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo slapcat
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    64aa284d The first database does not allow slapcat; using the first available one (2)
+    
+    …
+    
+    dn: cn=haruki,ou=Group2,ou=Osaka,dc=avswa,dc=com
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      cn: haruki
+      sn: araki
+      mail: haruki@avswa.com
+      structuralObjectClass: inetOrgPerson
+      entryUUID: f6ce0430-b0ef-103d-80dd-fde0c4c246c6
+      creatorsName: cn=Manager,dc=avswa,dc=com
+      createTimestamp: 20230707085653Z
+      entryCSN: 20230707085653.871888Z#000000#000#000000
+      modifiersName: cn=Manager,dc=avswa,dc=com
+      modifyTimestamp: 20230707085653Z
     --------------------------------------------------
     
     vm11$ cd $HOME
