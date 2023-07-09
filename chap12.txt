@@ -15,6 +15,8 @@
 [014] OpenLDAP - 04
 [015] OpenLDAP - 05
 [016] OpenLDAP - 06
+[017] OpenLDAP - 07
+[018] OpenLDAP - 08
 [005] LDAP - 01 (ディレクトリ作成)
 [006] LDAP - 02 (認証時にディレクトリ参照)
 ================================================================================
@@ -2732,6 +2734,257 @@
     コマンドの実行結果
     --------------------------------------------------
     dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com  // アクセス可能になる
+      cn: makoto
+      mail: makoto@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[018]
+  OpenLDAP - 08
+  
+[内容]
+  ## 作業内容
+    ディレクトリのアクセス権を設定(2)
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Sun Jul  9 08:57:04 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcAccess: {0}to * by * read
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      cn: makoto
+      mail: makoto@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ vi ldap/file07.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: olcDatabase={2}mdb,cn=config      // ディレクトリ
+    changetype: modify                    // 変更タイプ
+    replace: olcAccess                    // 設定を変更する項目名
+    olcAccess: {0}to * by anonymous auth  // 項目の設定値
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapmodify
+        > -Y external
+        > -H ldapi:///
+        > -f ldap/file07.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcAccess: {0}to * by anonymous auth  // アクセス権を変更
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Insufficient access (50) -> アクセス不可になる
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -D 'cn=Manager,dc=avswa,dc=com'  // ディレクトリ管理者
+        > -W                               // ディレクトリ管理者のパスワードを実行時に入力
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Enter LDAP Password: (avswa-master)
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
+      cn: makoto
+      mail: makoto@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ cat ldap/file06.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: olcDatabase={2}mdb,cn=config  // ディレクトリ
+    changetype: modify                // 変更タイプ
+    replace: olcAccess                // 設定を変更する項目名
+    olcAccess: {0}to * by * read      // 項目の設定値
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapmodify
+        > -Y external
+        > -H ldapi:///
+        > -f ldap/file06.ldif
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // 実行結果
+    modifying entry "olcDatabase={2}mdb,cn=config"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -Y external
+        > -H ldapi:///
+        > -b 'olcDatabase={2}mdb,cn=config'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // 認証状況
+    SASL/EXTERNAL authentication started
+    SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
+    SASL SSF: 0
+    
+    // ディレクトリ
+    dn: olcDatabase={2}mdb,cn=config
+      objectClass: olcDatabaseConfig
+      objectClass: olcMdbConfig
+      olcDatabase: {2}mdb
+      olcDbDirectory: /var/lib/ldap
+      olcSuffix: dc=avswa,dc=com
+      olcRootDN: cn=Manager,dc=avswa,dc=com
+      olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
+      olcDbIndex: objectClass eq,pres
+      olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
+      olcAccess: {0}to * by * read  // アクセス権を変更
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -x
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com  // アクセス可能になる
+      cn: makoto
+      mail: makoto@avswa.com
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo ldapsearch
+        > -LLL
+        > -D 'cn=Manager,dc=avswa,dc=com'  // ディレクトリ管理者
+        > -W                               // ディレクトリ管理者のパスワードを実行時に入力
+        > -H ldapi:///
+        > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
+        > cn=makoto
+        > dn cn mail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Enter LDAP Password: (avswa-master)  // 認証も可能
+    
+    dn: cn=makoto,ou=Group1,ou=Tokyo,dc=avswa,dc=com
       cn: makoto
       mail: makoto@avswa.com
     --------------------------------------------------
