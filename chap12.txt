@@ -19,8 +19,9 @@
 [018] OpenLDAP - 08
 [019] OpenLDAP - 09
 [020] OpenLDAP - 10
-[021] LDAP - 01 (ディレクトリ作成)
-[022] LDAP - 02 (認証時にディレクトリ参照)
+[021] OpenLDAP - 11
+[X01] LDAP - 01
+[X02] LDAP - 02
 ================================================================================
 [001]
   dhcp - 01
@@ -93,7 +94,7 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ sudo virsh console vm12 -> コンソール接続 (SSH接続ではプロファイル無効化で接続が切断されてしまう)
+  $ sudo virsh console vm12 -> コンソール接続 (SSH接続ではプロファイル無効化時に接続が切断されてしまう)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -154,7 +155,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ LANG=C nmcli -f ipv4.addresses connection show enp1s0 -> プロファイルから情報抽出
+    vm12$ LANG=C nmcli -f ipv4.addresses connection show enp1s0
     
     コマンドの実行結果
     --------------------------------------------------
@@ -400,7 +401,7 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ sudo virsh console vm12 -> コンソール接続 (SSH接続ではプロファイル無効化で接続が切断されてしまう)
+  $ sudo virsh console vm12 -> コンソール接続 (SSH接続ではプロファイル無効化時に接続が切断されてしまう)
   
   コマンドの実行結果
   --------------------------------------------------
@@ -453,7 +454,7 @@
     --------------------------------------------------
     
     vm12$ cd $HOME
-    vm12$ LANG=C nmcli -f ipv4.addresses connection show enp1s0 -> プロファイルから情報抽出
+    vm12$ LANG=C nmcli -f ipv4.addresses connection show enp1s0
     
     コマンドの実行結果
     --------------------------------------------------
@@ -690,7 +691,7 @@
   
 [内容]
   ## 作業内容
-    ログイン処理時に追加メッセージを出力させてみる
+    ログイン処理時に追加メッセージを出力させる
   
 [確認]
   $ cd $HOME
@@ -1469,9 +1470,9 @@
     --------------------------------------------------
     #%PAM-1.0
     auth        required      pam_env.so
-    auth        required      pam_faillock.so preauth silent audit deny=3 unlock_time=0  // 追加
+    auth        required      pam_faillock.so preauth silent audit deny=3 unlock_time=0  // 追加 : 3回目失敗でアカウントロック
     auth        sufficient    pam_unix.so try_first_pass nullok
-    auth        [default=die] pam_faillock.so authfail audit deny=3 unlock_time=0  // 追加
+    auth        [default=die] pam_faillock.so authfail audit deny=3 unlock_time=0  // 追加 : 3回目失敗でアカウントロック
     auth        required      pam_deny.so
     account     required      pam_unix.so
     account     required      pam_faillock.so  // 追加
@@ -2885,7 +2886,7 @@
     vm11$ sudo ldapsearch
         > -LLL
         > -D 'cn=Manager,dc=avswa,dc=com'  // ディレクトリ管理者
-        > -W                               // ディレクトリ管理者のパスワードを実行時に入力
+        > -W                               // パスワードを実行時に入力
         > -H ldapi:///
         > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
         > cn=makoto
@@ -2916,7 +2917,7 @@
   
 [内容]
   ## 作業内容
-    ディレクトリのアクセス権を設定(3) => メール属性のアクセス権を設定
+    ディレクトリのアクセス権を設定(3) => 属性(mail)のアクセス権を設定
   
 [確認]
   $ cd $HOME
@@ -3009,8 +3010,8 @@
       olcRootPW: {SSHA}62rs6VrI/zGhWbgnqSfnVnAuRi8KWzws
       olcDbIndex: objectClass eq,pres
       olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
-      olcAccess: {0}to attrs=mail by * none
-      olcAccess: {1}to * by * read
+      olcAccess: {0}to attrs=mail by * none  // アクセス権を変更
+      olcAccess: {1}to * by * read           // アクセス権を変更
     --------------------------------------------------
     
     vm11$ cd $HOME
@@ -3033,7 +3034,7 @@
     vm11$ sudo ldapsearch
         > -LLL
         > -D 'cn=Manager,dc=avswa,dc=com'  // ディレクトリ管理者
-        > -W                               // ディレクトリ管理者のパスワードを実行時に入力
+        > -W                               // パスワードを実行時に入力
         > -H ldapi:///
         > -b 'ou=Group1,ou=Tokyo,dc=avswa,dc=com'
         > cn=makoto
@@ -3112,7 +3113,7 @@
   以下の確認に続く
   
 ================================================================================
-[021]
+[X01]
   LDAP - 01 (ディレクトリ作成)
   
 [内容]
@@ -3706,7 +3707,7 @@
   以下の確認に続く
   
 ================================================================================
-[022]
+[X02]
   LDAP - 02 (認証時にディレクトリ参照)
   
 [内容]
