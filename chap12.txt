@@ -32,7 +32,7 @@
   
   ## コマンド(dhclient)
     dhclient -d  // フォアグラウンド処理
-    dhclient -r  // 割当情報を開放
+    dhclient -r  // 割当を開放
     dhclient -H  // リクエスト送付先のホスト指定
   
 [確認]
@@ -378,8 +378,8 @@
       
       ## 特定ホストに固定IPアドレスを付与
       host vm12 {
-        hardware ethernet 52:54:00:e5:eb:ba;  // MAC
-        fixed-address 192.168.122.114;        // 固定IP
+        hardware ethernet 52:54:00:e5:eb:ba;  // MAC-Address
+        fixed-address 192.168.122.114;        // IPv4
       }
     }
     --------------------------------------------------
@@ -515,7 +515,7 @@
     DHCPREQUEST on enp1s0 to 255.255.255.255 port 67 (xid=0x2a8c681b)
     DHCPOFFER from 192.168.122.11
     DHCPACK from 192.168.122.11 (xid=0x2a8c681b)
-    bound to 192.168.122.114 -- renewal in 8368 seconds.  // 192.168.122.114 を割当
+    bound to 192.168.122.114 -- renewal in 8368 seconds.  // 192.168.122.114 が割当
     --------------------------------------------------
     
     vm12$ cd $HOME
@@ -1091,7 +1091,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (パスワード入力無しに他ユーザーになれる)
+    (省略) -> パスワード入力無しに他ユーザーになれる
     --------------------------------------------------
       
       vm11$ cd $HOME
@@ -1142,7 +1142,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (パスワード入力無しに他ユーザーになれる)
+    (省略) -> パスワード入力無しに他ユーザーになれる
     --------------------------------------------------
       
       vm11$ cd $HOME
@@ -1207,7 +1207,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (パスワード入力無しに他ユーザーになれる)
+    (省略) -> パスワード入力無しに他ユーザーになれる
     --------------------------------------------------
       
       vm11$ cd $HOME
@@ -1243,7 +1243,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (パスワード入力無しに他ユーザーになれる)
+    (省略) -> パスワード入力無しに他ユーザーになれる
     --------------------------------------------------
       
       vm11$ cd $HOME
@@ -1310,7 +1310,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    (パスワード入力無しに他ユーザーになれる)
+    (省略) -> パスワード入力無しに他ユーザーになれる
     --------------------------------------------------
       
       vm11$ cd $HOME
@@ -1470,9 +1470,9 @@
     --------------------------------------------------
     #%PAM-1.0
     auth        required      pam_env.so
-    auth        required      pam_faillock.so preauth silent audit deny=3 unlock_time=0  // 追加 : 3回目失敗でアカウントロック
+    auth        required      pam_faillock.so preauth silent audit deny=3 unlock_time=0  // 追加 : 3回目失敗でロック
     auth        sufficient    pam_unix.so try_first_pass nullok
-    auth        [default=die] pam_faillock.so authfail audit deny=3 unlock_time=0  // 追加 : 3回目失敗でアカウントロック
+    auth        [default=die] pam_faillock.so authfail audit deny=3 unlock_time=0  // 追加 : 3回目失敗でロック
     auth        required      pam_deny.so
     account     required      pam_unix.so
     account     required      pam_faillock.so  // 追加
@@ -1696,12 +1696,12 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo ldapsearch  // 内部データベース一覧
+    vm11$ sudo ldapsearch
         > -LLL             // バージョンやコメント非表示
         > -Y external      // パスワード無しでローカル接続
         > -H ldapi:///     // ローカルサーバー
         > -b cn=config     // 検索開始DN
-        > DN               // 検索対象
+        > DN               // 表示対象
     
     コマンドの実行結果
     --------------------------------------------------
@@ -2757,7 +2757,7 @@
   
 [内容]
   ## 作業内容
-    ディレクトリのアクセス権を設定(2) => 匿名アクセスに認証が必要
+    ディレクトリのアクセス権を設定(2) => 匿名アクセスには認証が必要
   
 [確認]
   $ cd $HOME
@@ -3113,12 +3113,56 @@
   以下の確認に続く
   
 ================================================================================
-[X01]
-  LDAP - 01 (ディレクトリ作成)
+[021]
+  OpenLDAP - 11
   
 [内容]
   ## 作業内容
-    旧版から引用 => ディレクトリを「LDAP」で作成する
+    ソフトウェア停止
+  
+[確認]
+  $ cd $HOME
+  $ ssh vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Last login: Mon Jul 10 19:09:33 2023 from 192.168.122.1
+  --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl stop slapd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl disable slapd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Removed /etc/systemd/system/multi-user.target.wants/slapd.service.
+    Removed /etc/systemd/system/openldap.service.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Connection to vm11 closed.
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[X01]
+  LDAP - 01
+  
+[内容]
+  ## 作業内容
+    旧版から引用 => ディレクトリ作成
   
   ## 使用マシン
     HOST : vm12
@@ -3131,21 +3175,20 @@
     MEMO : LDAP Client
   
   ## ディレクトリ(階層構造)
-    dc=com
-      dc=AAA            // ベースDN (dc=AAA, dc=com)
-        cn=Manger       // 管理者DN (cn=Manager, dc=AAA, dc=com)
-        ou=OU1          // DN (ou=OU1, dc=AAA, dc=com)
-          cn=Group01    // DN (cn=Group01, ou=OU1, dc=AAA, dc=com)
-            uid=user01  // DN (uid=user01, cn=Group01, ou=OU1, dc=AAA, dc=com)
-            uid=user02  // DN (uid=user02, cn=Group01, ou=OU1, dc=AAA, dc=com)
-        ou=OU2          // DN (ou=OU2, dc=AAA, dc=com)
-          cn=Group02    // DN (cn=Group02, ou=OU2, dc=AAA, dc=com)
-            uid=user03  // DN (uid=user03, cn=Group02, ou=OU2, dc=AAA, dc=com)
-            uid=user04  // DN (uid=user04, cn=Group02, ou=OU2, dc=AAA, dc=com)
+    DN (dc=AAA, dc=com)
+    DN (cn=Manager, dc=AAA, dc=com)
+    DN (ou=OU1, dc=AAA, dc=com)
+    DN (ou=OU2, dc=AAA, dc=com)
+    DN (cn=Group01, ou=OU1, dc=AAA, dc=com)
+    DN (cn=Group02, ou=OU2, dc=AAA, dc=com)
+    DN (uid=user01, cn=Group01, ou=OU1, dc=AAA, dc=com)
+    DN (uid=user02, cn=Group01, ou=OU1, dc=AAA, dc=com)
+    DN (uid=user03, cn=Group02, ou=OU2, dc=AAA, dc=com)
+    DN (uid=user04, cn=Group02, ou=OU2, dc=AAA, dc=com)
   
 [確認]
   vm12# cd $HOME
-  vm12# firewall-cmd --add-service=ldap --permanent (ファイアーウォールの設定)
+  vm12# firewall-cmd --add-service=ldap --permanent
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3153,7 +3196,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# firewall-cmd --reload (ファイアーウォールの設定を反映)
+  vm12# firewall-cmd --reload
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3161,7 +3204,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi /etc/hosts.allow (TCP-Wrapperで後述のサービスへのアクセス制御)
+  vm12# vi /etc/hosts.allow -> TCP-Wrapperでサービスへのアクセス制御
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3169,7 +3212,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# yum -y install openldap openldap-servers openldap-clients (パッケージ追加)
+  vm12# yum -y install openldap openldap-servers openldap-clients
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3177,7 +3220,7 @@
   --------------------------------------------------
   
   vm12# cd /usr/share/openldap-servers
-  vm12# cp -p DB_CONFIG.example /var/lib/ldap/DB_CONFIG (DB設定ファイルをコピー)
+  vm12# cp -p DB_CONFIG.example /var/lib/ldap/DB_CONFIG -> 設定ファイルをコピー
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3185,7 +3228,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl start slapd (サービスの起動)
+  vm12# systemctl start slapd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3193,13 +3236,12 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (インストール直後のディレクトリ状況を確認)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b cn=config  // 検索開始DN
-    DN            // 検索対象
+  vm12# ldapsearch
+      > -LLL          // バージョン情報やコメント非表示
+      > -Y external   // パスワード無しでローカル接続
+      > -H ldapi:///  // サーバー指定
+      > -b cn=config  // 検索開始DN
+      > DN            // 検索対象
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3216,24 +3258,14 @@
   dn: olcDatabase={0}config,cn=config
   dn: olcDatabase={1}monitor,cn=config
   dn: olcDatabase={2}hdb,cn=config
-
-  // 検索結果を階層構造で表示してみる
-  cn=config
-    cn=schema
-      cn={0}core
-    olcDatabase={-1}frontend  // 不明
-    olcDatabase={0}config     // 設定データベース
-    olcDatabase={1}monitor    // モニタ機能
-    olcDatabase={2}hdb        // ディレクトリ作成
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (設定データベースの内容を確認)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={0}config,cn=config'  // 検索開始DN
+  vm12# ldapsearch
+      > -LLL
+      > -Y external
+      > -H ldapi:///
+      > -b 'olcDatabase={0}config,cn=config'
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3246,11 +3278,11 @@
   dn: olcDatabase={0}config,cn=config
   objectClass: olcDatabaseConfig
   olcDatabase: {0}config
-  olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none  // アクセス権？
+  olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by * none
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# slappasswd -s rt0122ma (設定データベースの管理者用パスワード生成)
+  vm12# slappasswd -s rt0122ma -> 管理者用パスワード生成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3258,22 +3290,21 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi file01.ldif (LDIFファイル作成)
+  vm12# vi file01.ldif
   
   コマンドの実行結果
   --------------------------------------------------
   dn: olcDatabase={0}config,cn=config
   changetype: modify
   add: olcRootPW
-  olcRootPW: {SSHA}+DvhdMV71ZV8GIOT/+NMDN3/wIwcrWO8  // 設定データベースの管理者用パスワードの項目追加
+  olcRootPW: {SSHA}+DvhdMV71ZV8GIOT/+NMDN3/wIwcrWO8
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapmodify      // コマンド本体
-    -Y EXTERNAL     // パスワード無しでローカル接続
-    -H ldapi:///    // サーバー指定
-    -f file01.ldif  // LDIFファイル
+  vm12# ldapmodify
+      > -Y external
+      > -H ldapi:///
+      > -f file01.ldif
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3287,12 +3318,11 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (設定データベースの内容を確認)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={0}config,cn=config'  // 検索開始DN
+  vm12# ldapsearch
+      > -LLL
+      > -Y external
+      > -H ldapi:///
+      > -b 'olcDatabase={0}config,cn=config'
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3310,12 +3340,11 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (ディレクトリの構築予定場所)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={2}hdb,cn=config'  // 検索開始DN
+  vm12# ldapsearch
+      > -LLL
+      > -Y external
+      > -H ldapi:///
+      > -b 'olcDatabase={2}hdb,cn=config'
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3330,14 +3359,14 @@
   objectClass: olcHdbConfig
   olcDatabase: {2}hdb
   olcDbDirectory: /var/lib/ldap
-  olcSuffix: dc=my-domain,dc=com             // ベースDN (dc=AAA, dc=com) に変更する必要がある
-  olcRootDN: cn=Manager,dc=my-domain,dc=com  // 管理者DN (cn=Manager, dc=AAA, dc=com) に変更する必要がある
+  olcSuffix: dc=my-domain,dc=com             // ベースDN (dc=AAA, dc=com) に変更
+  olcRootDN: cn=Manager,dc=my-domain,dc=com  // 管理者DN (cn=Manager, dc=AAA, dc=com) に変更
   olcDbIndex: objectClass eq,pres
   olcDbIndex: ou,cn,mail,surname,givenname eq,pres,sub
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# slappasswd -s Manager (AAA.comの管理者DNパスワード生成)
+  vm12# slappasswd -s Manager -> 管理者パスワード生成
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3345,7 +3374,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi file02.ldif (LDIFファイル作成)
+  vm12# vi file02.ldif
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3366,11 +3395,10 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapmodify      // コマンド本体
-    -Y EXTERNAL     // パスワード無しでローカル接続
-    -H ldapi:///    // サーバー指定
-    -f file02.ldif  // LDIFファイル
+  vm12# ldapmodify
+      > -Y external
+      > -H ldapi:///
+      > -f file02.ldif
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3386,12 +3414,11 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (ユーザー管理ディレクトリの構築予定場所)
-    ldapsearch    // コマンド本体
-    -LLL          // バージョン情報やコメント非表示
-    -Y EXTERNAL   // パスワード無しでローカル接続
-    -H ldapi:///  // サーバー指定
-    -b 'olcDatabase={2}hdb,cn=config'  // 検索開始DN
+  vm12# ldapsearch
+      > -LLL
+      > -Y external
+      > -H ldapi:///
+      > -b 'olcDatabase={2}hdb,cn=config'
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3414,7 +3441,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi file03.ldif (LDIFファイル作成)
+  vm12# vi file03.ldif
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3434,13 +3461,12 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapadd                      // コマンド本体
-    -x                           // 簡易認証
-    -D cn=Manager,dc=AAA,dc=com  // AAA.comの管理者DN
-    -w Manager                   // AAA.comの管理者DNパスワード
-    -f file03.ldif               // LDIFファイル
-
+  vm12# ldapadd
+      > -x
+      > -D cn=Manager,dc=AAA,dc=com
+      > -w Manager
+      > -f file03.ldif
+  
   コマンドの実行結果
   --------------------------------------------------
   adding new entry "dc=AAA,dc=com"
@@ -3449,12 +3475,11 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (ディレクトリ状況を確認)
-    ldapsearch        // コマンド本体
-    -LLL              // バージョン情報やコメント非表示
-    -x                // 簡易認証
-    -b dc=AAA,dc=com  // 検索開始DN
-    DN                // 検索対象
+  vm12# ldapsearch
+      > -LLL
+      > -x
+      > -b dc=AAA,dc=com
+      > DN
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3464,7 +3489,7 @@
   --------------------------------------------------
   
   vm12# cd /etc/openldap/schema
-  vm12# ls -lh *.ldif | grep -E 'cosine|nis' (スキーマファイルの確認)
+  vm12# ls -lh *.ldif | grep -E 'cosine|nis' -> スキーマファイル確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3473,11 +3498,10 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (スキーマ登録)
-    ldapadd                              // コマンド本体
-    -Y EXTERNAL                          // パスワード無しでローカル接続
-    -H ldapi:///                         // サーバー指定
-    -f /etc/openldap/schema/cosine.ldif  // LDIFファイル
+  vm12# ldapadd
+      > -Y external
+      > -H ldapi:///
+      > -f /etc/openldap/schema/cosine.ldif
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3485,17 +3509,16 @@
   SASL/EXTERNAL authentication started
   SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
   SASL SSF: 0
-
+  
   // 実行結果
   adding new entry "cn=cosine,cn=schema,cn=config"
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (スキーマ登録)
-    ldapadd                           // コマンド本体
-    -Y EXTERNAL                       // パスワード無しでローカル接続
-    -H ldapi:///                      // サーバー指定
-    -f /etc/openldap/schema/nis.ldif  // LDIFファイル
+  vm12# ldapadd
+      > -Y external
+      > -H ldapi:///
+      > -f /etc/openldap/schema/nis.ldif
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3503,31 +3526,10 @@
   SASL/EXTERNAL authentication started
   SASL username: gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth
   SASL SSF: 0
-
+  
   // 実行結果
   adding new entry "cn=nis,cn=schema,cn=config"
   --------------------------------------------------
-  
-  #vm12# cd $HOME
-  #vm12# slappasswd -s user01 (user01のパスワード生成)
-  #vm12# slappasswd -s user02 (user02のパスワード生成)
-  #vm12# slappasswd -s user03 (user03のパスワード生成)
-  #vm12# slappasswd -s user04 (user04のパスワード生成)
-  #
-  #コマンドの実行結果
-  #--------------------------------------------------
-  #// user01
-  #{SSHA}RGi5eVRiUhzkaFkARCNPA8VG1rV4xqQ6
-  #
-  #// user02
-  #{SSHA}xgdLDP0wtpAG9DbTCKUAXWuJY78G4aaR
-  #
-  #// user03
-  #{SSHA}YwZA+Clngdjxr9ciobUBPdM2Qfw5R3vH
-  #
-  #// user04
-  #{SSHA}OtfrlSNDC0AftJnDQgkULw1wDzocvYbU
-  #--------------------------------------------------
   
   vm12# cd $HOME
   vm12# getent passwd | grep -E '105[1-4]'
@@ -3562,79 +3564,78 @@
     --------------------------------------------------
     
   vm12# cd $HOME
-  vm12# vi file04.ldif (LDIFファイル作成)
+  vm12# vi file04.ldif
   
   コマンドの実行結果
   --------------------------------------------------
   dn: cn=Group01,ou=OU1,dc=AAA,dc=com
-  objectClass: posixGroup
   objectClass: top
-  cn: Group01
+  objectClass: posixGroup
   gidNumber: 1041  // システムで既に使用されていないか注意
+  cn: Group01
   
   dn: cn=Group02,ou=OU2,dc=AAA,dc=com
-  objectClass: posixGroup
   objectClass: top
-  cn: Group02
+  objectClass: posixGroup
   gidNumber: 1042  // システムで既に使用されていないか注意
+  cn: Group02
   
   dn: uid=user01,cn=Group01,ou=OU1,dc=AAA,dc=com
-  uid: user01
-  cn: User01
+  objectClass: top
   objectClass: account
   objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma01
-  loginShell: /bin/bash
   uidNumber: 1051  // システムで既に使用されていないか注意
   gidNumber: 1041  // システムで既に使用されていないか注意
+  uid: user01
+  cn: User01
+  userPassword: ua0122ma01
+  loginShell: /bin/bash
   homeDirectory: /home/user01
   
   dn: uid=user02,cn=Group01,ou=OU1,dc=AAA,dc=com
-  uid: user02
-  cn: User02
+  objectClass: top
   objectClass: account
   objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma02
-  loginShell: /bin/bash
   uidNumber: 1052  // システムで既に使用されていないか注意
   gidNumber: 1041  // システムで既に使用されていないか注意
+  uid: user02
+  cn: User02
+  userPassword: ua0122ma02
+  loginShell: /bin/bash
   homeDirectory: /home/user02
-
+  
   dn: uid=user03,cn=Group02,ou=OU2,dc=AAA,dc=com
-  uid: user03
-  cn: User03
+  objectClass: top
   objectClass: account
   objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma03
-  loginShell: /bin/bash
   uidNumber: 1053  // システムで既に使用されていないか注意
   gidNumber: 1042  // システムで既に使用されていないか注意
+  uid: user03
+  cn: User03
+  userPassword: ua0122ma03
+  loginShell: /bin/bash
   homeDirectory: /home/user03
-
+  
   dn: uid=user04,cn=Group02,ou=OU2,dc=AAA,dc=com
-  uid: user04
-  cn: User04
+  objectClass: top
   objectClass: account
   objectClass: posixAccount
-  objectClass: top
-  userPassword: ua0122ma04
-  loginShell: /bin/bash
   uidNumber: 1054  // システムで既に使用されていないか注意
   gidNumber: 1042  // システムで既に使用されていないか注意
+  uid: user04
+  cn: User04
+  userPassword: ua0122ma04
+  loginShell: /bin/bash
   homeDirectory: /home/user04
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (LDIFファイル実行)
-    ldapadd                      // コマンド本体
-    -x                           // 簡易認証
-    -D cn=Manager,dc=AAA,dc=com  // AAA.comの管理者DN
-    -w Manager                   // AAA.comの管理者DNパスワード
-    -f file04.ldif               // LDIFファイル
-
+  vm12# ldapadd
+      > -x
+      > -D cn=Manager,dc=AAA,dc=com
+      > -w Manager
+      > -f file04.ldif
+  
   コマンドの実行結果
   --------------------------------------------------
   adding new entry "cn=Group01,ou=OU1,dc=AAA,dc=com"
@@ -3646,12 +3647,11 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (ディレクトリ状況を確認)
-    ldapsearch        // コマンド本体
-    -LLL              // バージョン情報やコメント非表示
-    -x                // 簡易認証
-    -b dc=AAA,dc=com  // 検索開始DN
-    DN                // 検索対象
+  vm12# ldapsearch
+      > -LLL
+      > -x
+      > -b dc=AAA,dc=com
+      > dn
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3667,7 +3667,7 @@
   --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# yum -y install openldap openldap-clients (パッケージ追加)
+    vm13# yum -y install openldap openldap-clients
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3675,13 +3675,12 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# (ディレクトリ状況を確認)
-      ldapsearch        // コマンド本体
-      -LLL              // バージョン情報やコメント非表示
-      -H ldap://vm12/   // サーバー指定
-      -x                // 簡易認証
-      -b dc=AAA,dc=com  // 検索開始DN
-      DN                // 検索対象
+    vm13# ldapsearch
+        > -LLL
+        > -H ldap://vm12/
+        > -x
+        > -b dc=AAA,dc=com
+        > dn
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3697,7 +3696,7 @@
     --------------------------------------------------
     
   vm12# cd $HOME
-  vm12# systemctl stop slapd (サービスの停止)
+  vm12# systemctl stop slapd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3708,11 +3707,11 @@
   
 ================================================================================
 [X02]
-  LDAP - 02 (認証時にディレクトリ参照)
+  LDAP - 02
   
 [内容]
   ## 作業内容
-    旧版から引用 => 認証時に「LDAP」のディレクトリを参照する
+    旧版から引用 => 認証時にディレクトリ参照
   
   ## 使用マシン
     HOST : vm12
@@ -3726,7 +3725,7 @@
   
 [確認]
   vm12# cd $HOME
-  vm12# systemctl start slapd (サービスの起動)
+  vm12# systemctl start slapd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3734,7 +3733,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap (パッケージ追加)
+  vm12# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3742,7 +3741,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# setenforce 0 (SELinuxを無効化)
+  vm12# setenforce 0 -> SELinuxを無効化
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3750,14 +3749,14 @@
   --------------------------------------------------
   
   vm12# cd /etc/sssd
-  vm12# vi sssd.conf (設定ファイルを作成)
+  vm12# vi sssd.conf
   
   コマンドの実行結果
   --------------------------------------------------
   [domain/default]
   autofs_provider = ldap
-  cache_credentials = True          // 認証情報のキャッシュ保存
-  ldap_uri = ldapi:///              // サーバーのURI
+  cache_credentials = True          // 認証情報をキャッシュ保存
+  ldap_uri = ldapi:///              // サーバーURI
   ldap_search_base = dc=AAA,dc=com  // ベースDN
   id_provider = ldap                // バックエンド
   auth_provider = ldap
@@ -3798,7 +3797,7 @@
   --------------------------------------------------
   
   vm12# cd /etc/sssd
-  vm12# chown root.root sssd.conf ; chmod 600 sssd.conf (設定ファイルの所有者と権限変更)
+  vm12# chown root.root sssd.conf ; chmod 600 sssd.conf -> 設定ファイルの所有者と権限変更
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3806,7 +3805,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl restart sssd (サービスの再起動)
+  vm12# systemctl restart sssd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3814,16 +3813,15 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# (認証メカニズムを変更)
-    authconfig
-    --enableldap                    // LDAPを有効化
-    --enableldapauth                // LDAP認証を有効化
-    --ldapserver=ldap://localhost/  // サーバーを指定
-    --ldapbasedn=dc=AAA,dc=com      // ベースDN
-    --enablemkhomedir               // 自動的にホームディレクトリ作成
-    --enablesssd                    // SSSDを有効化
-    --enablesssdauth                // SSSD認証を有効化
-    --update                        // 設定を反映
+  vm12# authconfig                      // 認証メカニズムを変更 => Rocky-Linux では authselect が推奨
+      > --enableldap                    // LDAP有効化
+      > --enableldapauth                // LDAP認証を有効化
+      > --ldapserver=ldap://localhost/  // サーバーを指定
+      > --ldapbasedn=dc=AAA,dc=com      // ベースDN
+      > --enablemkhomedir               // 自動的にホームディレクトリ作成
+      > --enablesssd                    // SSSDを有効化
+      > --enablesssdauth                // SSSD認証を有効化
+      > --update                        // 設定を反映
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3833,7 +3831,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi /etc/nsswitch.conf (ネットワーク設定ファイルを確認)
+  vm12# vi /etc/nsswitch.conf -> ネットワーク設定ファイルを編集
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3843,7 +3841,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# getent group | grep -E Group0[1-2] (システムにLDAPグループが存在することを確認)
+  vm12# getent group | grep -E Group0[1-2] -> システムにLDAPグループが存在することを確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3852,7 +3850,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# getent passwd | grep -E user0[1-4] (システムにLDAPユーザーが存在することを確認)
+  vm12# getent passwd | grep -E user0[1-4] -> システムにLDAPユーザーが存在することを確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3863,7 +3861,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# ls -lh /home (ホームディレクトリはまだ存在しないことを確認)
+  vm12# ls -lh /home -> ホームディレクトリはまだ存在しない
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3871,7 +3869,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# su - user01 (LDAPユーザーに変更)
+  vm12# su - user01 -> LDAPユーザーに変更
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3879,16 +3877,23 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ id $(whoami) ; pwd (ユーザー名とホームディレクトリを確認)
+  vm12$ id $(whoami) -> ユーザー確認
   
   コマンドの実行結果
   --------------------------------------------------
   uid=1051(user01) gid=1041(Group01) groups=1041(Group01)
+  --------------------------------------------------
+  
+  vm12$ cd $HOME
+  vm12$ pwd -> カレントディレクトリを確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
   /home/user01
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ ls -la (ホームディレクトリ内を確認)
+  vm12$ ls -la -> ホームディレクトリ内部を確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3901,7 +3906,7 @@
   --------------------------------------------------
   
   vm12$ cd $HOME
-  vm12$ exit (元のユーザーに戻る)
+  vm12$ exit
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3909,7 +3914,7 @@
   --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap (パッケージ追加)
+    vm13# yum -y install nss-pam-ldapd sssd sssd-client sssd-ldap
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3917,7 +3922,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# setenforce 0 (SELinuxを無効化)
+    vm13# setenforce 0 -> SELinuxを無効化
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3925,14 +3930,14 @@
     --------------------------------------------------
     
     vm13# cd /etc/sssd
-    vm13# vi sssd.conf (設定ファイルを作成)
+    vm13# vi sssd.conf -> 設定ファイルを作成
     
     コマンドの実行結果
     --------------------------------------------------
     [domain/default]
     autofs_provider = ldap
-    cache_credentials = True          // 認証情報のキャッシュ保存
-    ldap_uri = ldapi://vm12/          // サーバーのURI
+    cache_credentials = True          // 認証情報をキャッシュ保存
+    ldap_uri = ldapi://vm12/          // サーバーURI
     ldap_search_base = dc=AAA,dc=com  // ベースDN
     id_provider = ldap                // バックエンド
     auth_provider = ldap
@@ -3973,7 +3978,7 @@
     --------------------------------------------------
     
     vm13# cd /etc/sssd
-    vm13# chown root.root sssd.conf ; chmod 600 sssd.conf (設定ファイルの所有者と権限変更)
+    vm13# chown root.root sssd.conf ; chmod 600 sssd.conf -> 設定ファイルの所有者と権限変更
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3981,7 +3986,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# systemctl restart sssd (サービスの再起動)
+    vm13# systemctl restart sssd
     
     コマンドの実行結果
     --------------------------------------------------
@@ -3989,16 +3994,15 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# (認証メカニズムを変更)
-      authconfig
-      --enableldap                    // LDAPを有効化
-      --enableldapauth                // LDAP認証を有効化
-      --ldapserver=ldap://vm12/       // サーバーを指定
-      --ldapbasedn=dc=AAA,dc=com      // ベースDN
-      --enablemkhomedir               // 自動的にホームディレクトリ作成
-      --enablesssd                    // SSSDを有効化
-      --enablesssdauth                // SSSD認証を有効化
-      --update                        // 設定を反映
+    vm13# authconfig                  // 認証メカニズムを変更 => Rocky-Linux では authselect が推奨
+        > --enableldap                // LDAPを有効化
+        > --enableldapauth            // LDAP認証を有効化
+        > --ldapserver=ldap://vm12/   // サーバー指定
+        > --ldapbasedn=dc=AAA,dc=com  // ベースDN
+        > --enablemkhomedir           // 自動的にホームディレクトリ作成
+        > --enablesssd                // SSSDを有効化
+        > --enablesssdauth            // SSSD認証を有効化
+        > --update                    // 設定を反映
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4008,18 +4012,18 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# vi /etc/nsswitch.conf (ネットワーク設定ファイルを確認)
+    vm13# vi /etc/nsswitch.conf -> ネットワーク設定ファイルを編集
     
     コマンドの実行結果
     --------------------------------------------------
     // 確認する箇所
-    passwd: files sss
-    shadow: files sss
-    group:  files sss
+    passwd: files sss  // sss を確認
+    shadow: files sss  // sss を確認
+    group:  files sss  // sss を確認
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# getent group | grep -E Group0[1-2] (システムにLDAPグループが存在することを確認)
+    vm13# getent group | grep -E Group0[1-2] -> システムにLDAPグループが存在することを確認
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4028,7 +4032,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# getent passwd | grep -E user0[1-4] (システムにLDAPユーザーが存在することを確認)
+    vm13# getent passwd | grep -E user0[1-4] -> システムにLDAPユーザーが存在することを確認
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4039,7 +4043,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# ls -lh /home (ホームディレクトリはまだ存在しないことを確認)
+    vm13# ls -lh /home -> ホームディレクトリはまだ存在しないことを確認
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4047,7 +4051,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# su - user01 (LDAPユーザーに変更)
+    vm13# su - user01 -> LDAPユーザーに変更
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4055,16 +4059,23 @@
     --------------------------------------------------
     
     vm13$ cd $HOME
-    vm13$ id $(whoami) ; pwd (ユーザー名とホームディレクトリを確認)
+    vm13$ id $(whoami) -> ユーザー確認
     
     コマンドの実行結果
     --------------------------------------------------
     uid=1051(user01) gid=1041(Group01) groups=1041(Group01)
+    --------------------------------------------------
+    
+    vm13$ cd $HOME
+    vm13$ pwd -> カレントディレクトリを確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
     /home/user01
     --------------------------------------------------
     
     vm13$ cd $HOME
-    vm13$ ls -la (ホームディレクトリ内を確認)
+    vm13$ ls -la -> ホームディレクトリ内を確認
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4076,7 +4087,7 @@
     --------------------------------------------------
     
     vm13$ cd $HOME
-    vm13$ exit (元のユーザーに戻る)
+    vm13$ exit
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4084,7 +4095,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# setenforce 1 (SELinuxを有効化)
+    vm13# setenforce 1 -> SELinuxを有効化
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4092,7 +4103,7 @@
     --------------------------------------------------
     
     vm13# cd $HOME
-    vm13# systemctl stop sssd (サービスの停止)
+    vm13# systemctl stop sssd
     
     コマンドの実行結果
     --------------------------------------------------
@@ -4100,7 +4111,7 @@
     --------------------------------------------------
     
   vm12# cd $HOME
-  vm12# setenforce 1 (SELinuxを有効化)
+  vm12# setenforce 1 -> SELinuxを有効化
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4108,7 +4119,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl stop sssd (サービスの停止)
+  vm12# systemctl stop sssd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -4116,7 +4127,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl stop slapd (サービスの停止)
+  vm12# systemctl stop slapd
   
   コマンドの実行結果
   --------------------------------------------------
