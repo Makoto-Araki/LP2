@@ -134,7 +134,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/postfix/main.cf -> 設定ファイルを編集
+    vm11$ sudo vi /etc/postfix/main.cf
     
     コマンドの実行結果
     --------------------------------------------------
@@ -142,7 +142,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /etc/postfix/main.cf | grep -vE '^#|^$' -> 設定ファイルの確認
+    vm11$ sudo cat /etc/postfix/main.cf | grep -vE '^#|^$'
     
     コマンドの実行結果
     --------------------------------------------------
@@ -280,7 +280,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/dovecot.conf -> 設定ファイルの編集
+    vm11$ sudo vi /etc/dovecot/dovecot.conf
     
     コマンドの実行結果
     --------------------------------------------------
@@ -288,7 +288,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/dovecot.conf | grep -vE '^#|^$' -> 設定ファイルの確認
+    vm11$ sudo cat /etc/dovecot/dovecot.conf | grep -vE '^#|^$'
     
     コマンドの実行結果
     --------------------------------------------------
@@ -311,7 +311,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/10-mail.conf -> 設定ファイルの編集
+    vm11$ sudo vi /etc/dovecot/conf.d/10-mail.conf
     
     コマンドの実行結果
     --------------------------------------------------
@@ -319,7 +319,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/10-mail.conf | grep -vE '^#|^$|^.*#' -> 設定ファイルの確認
+    vm11$ sudo cat /etc/dovecot/conf.d/10-mail.conf | grep -vE '^#|^$|^.*#'
     
     コマンドの実行結果
     --------------------------------------------------
@@ -347,7 +347,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/10-auth.conf -> 設定ファイルの編集
+    vm11$ sudo vi /etc/dovecot/conf.d/10-auth.conf
     
     コマンドの実行結果
     --------------------------------------------------
@@ -355,7 +355,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/10-auth.conf | grep -vE '^#|^$|^.*#' -> 設定ファイルの確認
+    vm11$ sudo cat /etc/dovecot/conf.d/10-auth.conf | grep -vE '^#|^$|^.*#'
     
     コマンドの実行結果
     --------------------------------------------------
@@ -373,7 +373,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/10-ssl.conf -> 設定ファイルの編集
+    vm11$ sudo vi /etc/dovecot/conf.d/10-ssl.conf
     
     コマンドの実行結果
     --------------------------------------------------
@@ -381,7 +381,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/10-ssl.conf | grep -vE '^#|^$|^.*#' -> 設定ファイルの確認
+    vm11$ sudo cat /etc/dovecot/conf.d/10-ssl.conf | grep -vE '^#|^$|^.*#'
     
     コマンドの実行結果
     --------------------------------------------------
@@ -400,7 +400,7 @@
     --------------------------------------------------
     
     vm11$ cd $HOME
-    vm11$ sudo systemctl enable dovecot (サービスの自動起動)
+    vm11$ sudo systemctl enable dovecot
     
     コマンドの実行結果
     --------------------------------------------------
@@ -516,14 +516,14 @@
     // パスワードを入力
     pass ka0122ma
     +OK Logged in.
-
+    
     // メール一覧
     list
     +OK 2 messages:
     1 438
     2 438
     .
-
+    
     // メール閲覧
     retr 1
     +OK 438 octets
@@ -559,7 +559,7 @@
     
     I sent test2.
     .
-
+    
     // ログアウト
     quit
     +OK Logging out.
@@ -594,260 +594,268 @@
   ## 作業内容
     プラグイン(Sieve)を使用してメールフィルタリングを行う
   
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
 [確認]
-  vm12# cd $HOME
-  vm12# yum -y install dovecot-pigeonhole (パッケージ追加)
+  $ cd $HOME
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  前回のログイン: Wed Jul 12 12:32:40 端末: ttyS0
   --------------------------------------------------
-  
-  vm12# cd /etc/dovecot/conf.d
-  vm12# cp -p 15-lda.conf 15-lda.conf.org (設定ファイルの退避)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /etc/dovecot/conf.d
-  vm12# vi 15-lda.conf (設定ファイルにプラグイン追加を記述)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  protocol lda {
-    mail_plugins = $mail_plugins sieve (修正後)
-  }
-  --------------------------------------------------
-  
-  vm12# cd /etc/dovecot/conf.d
-  vm12# cp -p 20-lmtp.conf 20-lmtp.conf.org (設定ファイルの退避)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd /etc/dovecot/conf.d
-  vm12# vi 20-lmtp.conf (設定ファイルにプラグイン追加を記述)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  protocol lmtp {
-    mail_plugins = $mail_plugins sieve (修正後)
-  }
-  --------------------------------------------------
-  
-  vm12# cd /etc/dovecot/conf.d
-  vm12# systemctl restart dovecot (サービスの再起動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  ==================================================
-              フィルタリングルール記述
-  ==================================================
-  
-  vm12# cd /etc/dovecot/conf.d
-  vm12# cat 90-sieve.conf | grep -vE '^#|^$|^.*#' (フィルタリングルールの記述場所を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  plugin {
-    sieve = file:~/sieve;active=~/.dovecot.sieve  (ホーム配下の「.dovecot.sieve」ファイル)
-  }
-  --------------------------------------------------
-  
-  vm12# cd ~bbb
-  vm12# vi .dovecot.sieve (フィルタリングルールを記述)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  require ["reject"];
-  
-  ## 差出が「aaa@example.com」の場合
-  if address :is "from" "aaa@example.com"
-  {
-    ## メッセージを添えて拒否
-    reject "This Address is invalid.";
-  }
-  --------------------------------------------------
-  
-  vm12# cd ~bbb
-  vm12# chown bbb.bbb .dovecot.sieve (所有者変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  ==================================================
-                スクリプトでメール送受信
-  ==================================================
-  
-  vm12# cd $HOME
-  vm12# bash send_mail.sh aaa bbb 1 (AAAからBBBへ一通メール送信)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Trying ::1...
-  Connected to localhost.
-  Escape character is '^]'.
-  220 vm12.example.com ESMTP Postfix
-  250-vm12.example.com
-  250-PIPELINING
-  250-SIZE 10240000
-  250-VRFY
-  250-ETRN
-  250-ENHANCEDSTATUSCODES
-  250-8BITMIME
-  250 DSN
-  250 2.1.0 Ok
-  250 2.1.5 Ok
-  354 End data with <CR><LF>.<CR><LF>
-  250 2.0.0 Ok: queued as 6157B200AE09
-  Connection closed by foreign host.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // aaa
-  INBOX messages=1 -> 送付したメールが拒否されて送り返された
-
-  // bbb
-  INBOX messages=0
-  
-  // ccc
-  INBOX messages=0
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# telnet localhost 110 (メール受信を確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Trying ::1...
-  Connected to localhost.
-  Escape character is '^]'.
-  +OK Dovecot ready.
     
-    >> (ユーザー名)
-    >> user aaa
+    vm11$ cd $HOME
+    vm11$ sudo dnf -y install dovecot-pigeonhole
     
     コマンドの実行結果
     --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cp -p /etc/dovecot/conf.d/15-lda.conf /etc/dovecot/conf.d/15-lda.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/dovecot/conf.d/15-lda.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 変更内容は後述参照
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/dovecot/conf.d/15-lda.conf | grep -vE '^#|^$|^.*#'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    protocol lda {
+      mail_plugins = $mail_plugins sieve  // 追加
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cp -p /etc/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/20-lmtp.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/dovecot/conf.d/20-lmtp.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 変更内容は後述参照
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/dovecot/conf.d/20-lmtp.conf | grep -vE '^#|^$|^.*#'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    protocol lmtp {
+      mail_plugins = $mail_plugins sieve  // 追加
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart dovecot
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    ==================================================
+                フィルタリングルール記述
+    ==================================================
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat /etc/dovecot/conf.d/90-sieve.conf | grep -vE '^#|^$|^.*#' -> フィルタリングルールの記述場所
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    plugin {
+      sieve = file:~/sieve;active=~/.dovecot.sieve  // ホームディレクトリ配下のファイル(.dovecot.sieve)
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi ~kate/.dovecot.sieve -> フィルタリングルール記述
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    require ["reject"];
+    
+    ## sender john@avswa.com
+    if address :is "from" "john@avswa.com"
+    {
+      reject "this address is invalid.";
+    }
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chown kate.kate ~kate/.dovecot.sieve
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    ==================================================
+                  スクリプトでメール送受信
+    ==================================================
+    
+    vm11$ cd $HOME
+    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Trying ::1...
+    Connected to localhost.
+    Escape character is '^]'.
+    220 vm11.avswa.com ESMTP Postfix
+    250-vm11.avswa.com
+    250-PIPELINING
+    250-SIZE 10240000
+    250-VRFY
+    250-ETRN
+    250-STARTTLS
+    250-ENHANCEDSTATUSCODES
+    250-8BITMIME
+    250-DSN
+    250 SMTPUTF8
+    250 2.1.0 Ok
+    250 2.1.5 Ok
+    354 End data with <CR><LF>.<CR><LF>
+    250 2.0.0 Ok: queued as 856E333D62F0
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
+    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
+    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // john
+    INBOX messages=1 -> 送信メールが拒否されて送り返された
+    
+    // kate
+    INBOX messages=0
+    
+    // mike
+    INBOX messages=0
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ telnet localhost 110
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Trying ::1...
+    Connected to localhost.
+    Escape character is '^]'.
+    +OK Dovecot ready.
+    
+    // ユーザー名を入力
+    user john
     +OK
-    --------------------------------------------------
     
-    >> (パスワード)
-    >> pass aa0122ma
-    
-    コマンドの実行結果
-    --------------------------------------------------
+    // パスワードを入力
+    pass jo0122ma
     +OK Logged in.
-    --------------------------------------------------
     
-    >> (メール一覧)
-    >> list
-
-    コマンドの実行結果
-    --------------------------------------------------
+    // メール一覧
+    list
     +OK 1 messages:
-    1 1582
-    --------------------------------------------------
+    1 1554
+    .
     
-    >> (メール参照)
-    >> retr 1
-
-    コマンドの実行結果
-    --------------------------------------------------
-    +OK 1582 octets
+    // メール閲覧
+    retr 1
+    +OK 1554 octets
     Return-Path: <>
-    X-Original-To: aaa@example.com
-    Delivered-To: aaa@example.com
-    Received: by vm12.example.com (Postfix, from userid 1004)
-      id B4450200AE34; Wed,  2 Feb 2022 14:30:25 +0900 (JST)
-    Message-ID: <dovecot-1643779825-547995-0@vm12>
-    Date: Wed, 02 Feb 2022 14:30:25 +0900
-    From: Mail Delivery Subsystem <postmaster@>
-    To: <aaa@example.com>
+    X-Original-To: john@avswa.com
+    Delivered-To: john@avswa.com
+    Received: by vm11.avswa.com (Postfix, from userid 1005)
+      id C249B3408004; Fri, 14 Jul 2023 09:52:26 +0900 (JST)
+    Message-ID: <dovecot-1689295946-641359-0@vm11>
+    Date: Fri, 14 Jul 2023 09:52:26 +0900
+    From: Postmaster <postmaster@vm11>
+    To: <john@avswa.com>
     MIME-Version: 1.0
     Content-Type: multipart/report; report-type=disposition-notification;
-      boundary="1570/vm12"
-    Subject: Rejected: test1  // 拒否された旨「Rejected」と表示
-    Auto-Submitted: auto-replied (rejected)
+      boundary="1748/vm11"
+    Subject: Rejected: test1
+    Auto-Submitted: auto-replied (rejected)  // プラグインから自動送付された
     Precedence: bulk
     
     This is a MIME-encapsulated message
     
-    --1570/vm12
+    --1748/vm11
     Content-Type: text/plain; charset=utf-8
     Content-Disposition: inline
     Content-Transfer-Encoding: 8bit
     
-    Your message to <bbb@example.com> was automatically rejected:
-    This Address is invalid.  // プラグイン(Sieve)で設定されたメッセージ
-    
-    --1570/vm12
+    Your message to <kate@avswa.com> was automatically rejected:  // プラグインからのメッセージ
+    this address is invalid.                                      // プログインからのメッセージ
+    --1748/vm11
     Content-Type: message/disposition-notification
     
-    Reporting-UA: vm12; Dovecot Mail Delivery Agent
-    Final-Recipient: rfc822; bbb@example.com
-    Original-Message-ID: <20220202053019.6157B200AE09@vm12.example.com>
+    Reporting-UA: vm11; Dovecot Mail Delivery Agent
+    Final-Recipient: rfc822; kate@avswa.com
+    Original-Message-ID: <20230714005220.856E333D62F0@vm11.avswa.com>
     Disposition: automatic-action/MDN-sent-automatically; deleted
     
-    --1570/vm12
+    --1748/vm11
     Content-Type: message/rfc822
     
-    Return-Path: <aaa@example.com>
-    X-Original-To: bbb@example.com
-    Delivered-To: bbb@example.com
+    Return-Path: <john@avswa.com>
+    X-Original-To: kate@avswa.com
+    Delivered-To: kate@avswa.com
     Received: from localhost (localhost [IPv6:::1])
-      by vm12.example.com (Postfix) with ESMTP id 6157B200AE09
-      for <bbb@example.com>; Wed,  2 Feb 2022 14:30:18 +0900 (JST)
-    from: aaa@example.com
-    to: bbb@example.com
+      by vm11.avswa.com (Postfix) with ESMTP id 856E333D62F0
+      for <kate@avswa.com>; Fri, 14 Jul 2023 09:52:19 +0900 (JST)
+    from: john@avswa.com
+    to: kate@avswa.com
     Subject: test1
-    Message-Id: <20220202053019.6157B200AE09@vm12.example.com>
-    Date: Wed,  2 Feb 2022 14:30:18 +0900 (JST)
-    --------------------------------------------------
+    Message-Id: <20230714005220.856E333D62F0@vm11.avswa.com>
+    Date: Fri, 14 Jul 2023 09:52:19 +0900 (JST)
     
-    >> (ログアウト)
-    >> quit
+    --1748/vm11--
+    .
     
-    コマンドの実行結果
-    --------------------------------------------------
+    // ログアウト
+    quit
     +OK Logging out.
     Connection closed by foreign host.
     --------------------------------------------------
     
-  OSプロンプトに戻る
+    vm11$ cd $HOME
+    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
+    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
+    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
     
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
