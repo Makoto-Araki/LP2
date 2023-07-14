@@ -1495,155 +1495,168 @@
   
 ================================================================================
 [008]
-  Procmail - 01 (メール配送プログラムの変更)
+  Procmail - 01
   
 [内容]
   ## 作業内容
     メール配送プログラムを「Procmail」に変更する
-    参考資料 : http://linux.kororo.jp/cont/server/procmail.php
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    (http://linux.kororo.jp/cont/server/procmail.php)
   
 [確認]
-  vm12# cd $HOME
-  vm12# yum -y install procmail (パッケージ追加)
+  $ cd $HOME
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
+  前回のログイン: Fri Jul 14 16:05:22 端末: ttyS
   --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# which procmail (パスを調査)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /bin/procmail
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/postfix/main.cf (設定ファイル上のローカル配送プログラムを変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (修正前)
-  mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"
-  
-  (修正後)
-  mailbox_command = /bin/procmail
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi /etc/procmailrc (ローカル配送プログラムのシステム全体の設定)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## ログファイル名
-  LOGFILE=$HOME/.procmail.log
-  
-  ## メールの保存ディレクトリ
-  MAILDIR=$HOME/Maildir/
-  
-  ## デフォルト
-  DEFAULT=$MAILDIR
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl restart postfix (サービスの再起動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  /bin/procmail
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# vi ~aaa/.forward (設定ファイルを編集)
-  vm12# vi ~bbb/.forward (設定ファイルを編集)
-  vm12# vi ~ccc/.forward (設定ファイルを編集)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  "|IFS=' ' && exec /usr/bin/procmail -f- || exit 75 #~/Maildir/"
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# chown aaa.aaa ~aaa/.forward (所有者変更)
-  vm12# chown bbb.bbb ~bbb/.forward (所有者変更)
-  vm12# chown ccc.ccc ~ccc/.forward (所有者変更)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo dnf -y install procmail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ which procmail
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    /usr/bin/procmail
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/postfix/main.cf -> 設定ファイル上のローカル配送プログラムを変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (修正前)
+    mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"
+    
+    (修正後)
+    mailbox_command = /usr/bin/procmail
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi /etc/procmailrc -> ローカル配送プログラムの作成
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## ログファイル名
+    LOGFILE=$HOME/.procmail.log
+    
+    ## メールの保存ディレクトリ
+    MAILDIR=$HOME/Maildir/
+    
+    ## デフォルト
+    DEFAULT=$MAILDIR
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl restart postfix
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi ~john/.forward -> 設定ファイルを編集
+    vm11$ sudo vi ~kate/.forward -> 設定ファイルを編集
+    vm11$ sudo vi ~mike/.forward -> 設定ファイルを編集
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    "|/bin/procmail -f-"
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo chown john.john ~john/.forward -> 所有者変更
+    vm11$ sudo chown kate.kate ~kate/.forward -> 所有者変更
+    vm11$ sudo chown mike.mike ~mike/.forward -> 所有者変更
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
     ==================================================
                 スクリプトでメール送受信
     ==================================================
-  
-  vm12# cd $HOME
-  vm12# bash send_mail.sh aaa bbb 1 (AAAからBBBへメール送信)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Trying ::1...
-  Connected to localhost.
-  Escape character is '^]'.
-  220 vm12.example.com ESMTP Postfix
-  250-vm12.example.com
-  250-PIPELINING
-  250-SIZE 10240000
-  250-VRFY
-  250-ETRN
-  250-ENHANCEDSTATUSCODES
-  250-8BITMIME
-  250 DSN
-  250 2.1.0 Ok
-  250 2.1.5 Ok
-  354 End data with <CR><LF>.<CR><LF>
-  250 2.0.0 Ok: queued as 6C9C6200AE33
-  Connection closed by foreign host.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // aaa
-  INBOX messages=0
-  
-  // bbb
-  INBOX messages=1 -> メール送信された
-  
-  // ccc
-  INBOX messages=0
-  --------------------------------------------------
-  
-  vm12# cd ~bbb
-  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  From aaa@example.com  Thu Feb  3 11:05:00 2022
-    Subject: test1
-      Folder: /home/bbb/Maildir/new/1643853900.1690_0.vm12
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Trying ::1...
+    Connected to localhost.
+    Escape character is '^]'.
+    220 vm11.avswa.com ESMTP Postfix
+    250-vm11.avswa.com
+    250-PIPELINING
+    250-SIZE 10240000
+    250-VRFY
+    250-ETRN
+    250-STARTTLS
+    250-ENHANCEDSTATUSCODES
+    250-8BITMIME
+    250-DSN
+    250 SMTPUTF8
+    250 2.1.0 Ok
+    250 2.1.5 Ok
+    354 End data with <CR><LF>.<CR><LF>
+    250 2.0.0 Ok: queued as B60F533E3DF6
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
+    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
+    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // john
+    INBOX messages=0
+    
+    // kate
+    INBOX messages=1 -> メール送信された
+    
+    // mike
+    INBOX messages=0
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat ~kate/.procmail.log -> ローカル配送プログラムのログ確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    From john@avswa.com  Fri Jul 14 17:34:34 2023
+      Subject: test1
+        Folder: /home/kate/Maildir/new/1689323674.2001_0.vm11			    
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
+    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
+    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
