@@ -2043,106 +2043,134 @@
   
 ================================================================================
 [011]
-  Procmail - 04 (特定アドレスからのメールを指定アドレス転送)
+  Procmail - 04
   
 [内容]
   ## 作業内容
-    メール配送プログラム(Procmail)を使用してメールフィルタリングを行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    特定メールアドレスからのメールを指定メールアドレスへ転送する
   
 [確認]
-  vm12# cd $HOME
-  vm12# systemctl is-active postfix (サービスの確認)
+  $ cd $HOME
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  active
+  前回のログイン: Sat Jul 15 11:14:18 端末: ttyS0
   --------------------------------------------------
-  
-  ==================================================
-              フィルタリングルール記述
-  ==================================================
-  
-  vm12# cd ~bbb
-  vm12# vi .procmailrc (フィルタリングルールを記述)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  ## 差出が「aaa@example.com」の場合、アドレス「ccc@example.com」に転送
-  :0
-  * ^From:.*aaa@example\.com.*
-  !ccc@example.com
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ sudo systemctl is-active postfix
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+    ==================================================
+                フィルタリングルール記述
+    ==================================================
+    
+    vm11$ cd $HOME
+    vm11$ sudo vi ~kate/.procmailrc -> フィルタリングルール記述
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## sender john@avswa.com
+    :0
+    * ^From:.*john@avswa\.com.*
+    !mike@avswa.com  // kateからmikeへ転送
+    --------------------------------------------------
+    
     ==================================================
                 スクリプトでメール送受信
     ==================================================
-  
-  vm12# cd $HOME
-  vm12# bash send_mail.sh aaa bbb 1 (AAAからBBBへ一通メール送信)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Trying ::1...
-  Connected to localhost.
-  Escape character is '^]'.
-  220 vm12.example.com ESMTP Postfix
-  250-vm12.example.com
-  250-PIPELINING
-  250-SIZE 10240000
-  250-VRFY
-  250-ETRN
-  250-ENHANCEDSTATUSCODES
-  250-8BITMIME
-  250 DSN
-  250 2.1.0 Ok
-  250 2.1.5 Ok
-  354 End data with <CR><LF>.<CR><LF>
-  250 2.0.0 Ok: queued as B82E5200AE3E
-  Connection closed by foreign host.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // aaa
-  INBOX messages=0
-  
-  // bbb
-  INBOX messages=0
-  
-  // ccc
-  INBOX messages=1 -> メール転送された
-  --------------------------------------------------
-  
-  vm12# cd ~bbb
-  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  From aaa@example.com  Thu Feb  3 13:37:39 2022
-    Subject: test1
-      Folder: /usr/sbin/sendmail -oi ccc@example.com    436
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
+    
+    vm11$ cd $HOME
+    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Trying ::1...
+    Connected to localhost.
+    Escape character is '^]'.
+    220 vm11.avswa.com ESMTP Postfix
+    250-vm11.avswa.com
+    250-PIPELINING
+    250-SIZE 10240000
+    250-VRFY
+    250-ETRN
+    250-STARTTLS
+    250-ENHANCEDSTATUSCODES
+    250-8BITMIME
+    250-DSN
+    250 SMTPUTF8
+    250 2.1.0 Ok
+    250 2.1.5 Ok
+    354 End data with <CR><LF>.<CR><LF>
+    250 2.0.0 Ok: queued as 8187D33E3DF6
+    Connection closed by foreign host.
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
+    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
+    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    // john
+    INBOX messages=0
+    
+    // kate
+    INBOX messages=0
+    
+    // mike
+    INBOX messages=1 -> メール転送された
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo cat ~kate/.procmail.log -> ローカル配送プログラムのログ確認
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    From john@avswa.com  Fri Jul 14 17:34:34 2023
+      Subject: test1
+        Folder: /home/kate/Maildir/new/1689323674.2001_0.vm11  425
+    From john@avswa.com  Fri Jul 14 20:28:04 2023
+      Subject: test1
+        Folder: /dev/null  471
+    From john@avswa.com  Sat Jul 15 11:18:18 2023
+      Subject: test1
+        Folder: JOHN/1  472
+    From john@avswa.com  Sat Jul 15 11:18:27 2023
+      Subject: test2
+        Folder: JOHN/2  472
+    From john@avswa.com  Sat Jul 15 11:18:36 2023
+      Subject: test3
+        Folder: JOHN/3  472
+    From john@avswa.com  Sat Jul 15 16:00:27 2023
+      Subject: test1
+        Folder: /usr/sbin/sendmail -oi mike@avswa.com  426  // 他ユーザーに転送
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
+    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
+    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11$ cd $HOME
+    vm11$ exit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ログアウト
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
@@ -2151,12 +2179,7 @@
   
 [内容]
   ## 作業内容
-    認証機能の無いSMTPサーバー(Postfix)に認証プログラム(Saslauthd)を導入して「SASL認証」を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
+    認証機能の無いSMTPサーバーに認証プログラム(Saslauthd)を導入して「SASL認証」を行う
   
 [確認]
   vm12# cd $HOME
