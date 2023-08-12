@@ -1,16 +1,16 @@
 ================================================================================
-[001] ProFTPD - 01
-[002] ProFTPD - 02
-[003] ProFTPD - 03
-[004] VsFTPD
-[005] PureFTPD
+[001] ProFTPD
+[002] VsFTPD
+[003] PureFTPD
 ================================================================================
 [001]
-  ProFTPD - 01
+  ProFTPD
   
 [内容]
   ## 作業内容
     セットアップ
+    ログイン禁止ユーザーにユーザー(kate)を追加 -> /etc/ftpfile
+    ログインと操作権限をユーザー(mike)のみ許可
   
   ## 使用マシン
     HOST : vm11
@@ -41,430 +41,6 @@
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# vi /etc/proftpd.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Include /etc/proftpd/modules.conf
-    
-    ## サーバー名とバージョン情報
-    ServerName  "ftp.avswa.com"  ## アクセス時に表示されるサーバー名
-    ServerIdent  no              ## ソフトウェアバージョンを隠す
-    ServerAdmin  root@localhost
-    DefaultServer  on
-    
-    ## 上位階層への移動禁止(chroot)
-    DefaultRoot  ~
-    
-    ## 認証機構(PAM)
-    AuthPAMConfig  proftpd
-    AuthOrder  mod_auth_pam.c* mod_auth_unix.c
-    
-    ## 逆引き(DNS)
-    UseReverseDNS  off
-    
-    ## 実行ユーザーと実行グループ
-    User  nobody
-    Group  nobody
-    
-    ## DOS攻撃対処
-    MaxInstances  20
-    
-    ## SendFile機能を無効化
-    UseSendfile  off
-    
-    ## ログフォーマット定義
-    LogFormat  default  "%h %l %u %t \"%r\" %s %b"
-    LogFormat  auth  "%v [%P] %h %t \"%r\" %s"
-    
-    ## ログオプション
-    LogOptions  -Timestamp -Hostname +RoleBasedProcessLabels
-    
-    ## 基本設定(制御プロセス)
-    ControlsEngine  on
-    ControlsACLs  all allow user root
-    ControlsSocketACL  allow user *
-    ControlsLog  /var/log/proftpd/controls.log
-    
-    ## 追加設定(制御プロセス)
-    <IfModule mod_ctrls_admin.c>
-      AdminControlsEngine  on
-      AdminControlsACLs  all allow user root
-    </IfModule>
-    
-    ## 追加設定(制御プロセス)
-    <IfModule mod_vroot.c>
-      VRootEngine  on
-    </IfModule>
-    
-    ## SSL/TLS関連
-    <IfDefine TLS>
-      Include /etc/proftpd/mod_tls.conf
-    </IfDefine>
-    
-    ## BAN関連
-    <IfModule mod_ban.c>
-      Include /etc/proftpd/mod_ban.conf
-    </IfModule>
-    
-    ## QOS関連
-    <IfModule mod_qos.c>
-      Include /etc/proftpd/mod_qos.conf
-    </IfModule>
-    
-    ## 操作権限
-    <Global>
-      Umask  022
-      AllowOverwrite  yes
-      <Limit ALL SITE_CHMOD>
-        AllowAll
-      </Limit>
-    </Global>
-    
-    ## Anonymous接続
-    <IfDefine ANONYMOUS_FTP>
-      Include /etc/proftpd/anonftp.conf
-    </IfDefine>
-    
-    ## 追加設定ファイル
-    Include /etc/proftpd/conf.d/*.conf
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# firewall-cmd --add-service=ftp
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    success
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# firewall-cmd --runtime-to-permanent
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    success
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# setsebool -P ftpd_full_access on
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    [  460.274280] SELinux:  policy capability network_peer_controls=1
-    [  460.276463] SELinux:  policy capability open_perms=1
-    [  460.278206] SELinux:  policy capability extended_socket_class=1
-    [  460.280145] SELinux:  policy capability always_check_network=0
-    [  460.281973] SELinux:  policy capability cgroup_seclabel=1
-    [  460.283319] SELinux:  policy capability nnp_nosuid_transition=1
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl disable proftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl start proftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl is-active proftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ sudo dnf -y install lftp
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (エラー出力が無ければOK)
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo vi /etc/hosts
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-  
-  192.168.122.11 vm11 vm11.avswa.com ftp.avswa.com  // 追加
-  192.168.122.12 vm12 vm12.avswa.com
-  192.168.122.13 vm13 vm13.avswa.com
-  
-  192.168.1.2 pc01
-  192.168.1.4 rock
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ lftp -u makoto ftp.avswa.com
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (プロンプト変化)
-  --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
-    lftp makoto@ftp.avswa.com:~> pwd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ftp://makoto@ftp.avswa.com/
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:~> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
-    ...
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
-    lftp makoto@ftp.avswa.com:~> !ls -l
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
-    ...
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (上位階層への移動禁止)
-    lftp makoto@ftp.avswa.com:~> cd ../
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (出力なし) -> プロンプトに変化なし
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
-    lftp makoto@ftp.avswa.com:~> mkdir dirD
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    mkdir 成功、`dirD' を作成しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
-    lftp makoto@ftp.avswa.com:~> cd dirD
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    cd 成功、cwd=/dirD
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    5 bytes transferred
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    5 bytes transferred
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rm 成功、`file1.txt' を削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rm 成功、`file2.txt' を削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    10 bytes transferred                                                        
-    計 2 ファイル転送済
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rm 成功、2 ファイルを削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
-    lftp makoto@ftp.avswa.com:/dirD> cd ../
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    cd 成功、cwd=/
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
-    lftp makoto@ftp.avswa.com:/> rmdir dirD
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rmdir 成功、`dirD' を削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/> (サーバー退出)
-    lftp makoto@ftp.avswa.com:/> quit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (出力なし) -> プロンプトが元に戻る
-    --------------------------------------------------
-    
-  以下の確認に続く
-  
-================================================================================
-[002]
-  ProFTPD - 02
-  
-[内容]
-  ## 作業内容
-    ログイン禁止ファイル -> /etc/ftpusers
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-[確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (rootでログイン)
-  --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# getent passwd | grep -E 'kate|mike'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    kate:x:1005:1005::/home/kate:/bin/bash
-    mike:x:1006:1006::/home/mike:/bin/bash
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# vi /etc/ftpusers
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ...
-    kate  // 追加
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl restart proftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ lftp -u kate ftp.avswa.com
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (プロンプト変化)
-  --------------------------------------------------
-    
-    lftp kate@ftp.avswa.com:~> (現在のディレクトリ)
-    lftp kate@ftp.avswa.com:~> pwd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ftp://kate@ftp.avswa.com
-    --------------------------------------------------
-    
-    lftp kate@ftp.avswa.com:~> (リモートファイル一覧)
-    lftp kate@ftp.avswa.com:~> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ls: ログインに失敗しました: 530 間違ったログインです
-    --------------------------------------------------
-    
-    lftp kate@ftp.avswa.com:~> (サーバー退出)
-    lftp kate@ftp.avswa.com:~> quit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (出力なし) -> プロンプトが元に戻る
-    --------------------------------------------------
-    
-  以下の確認に続く
-  
-================================================================================
-[003]
-  ProFTPD - 03
-  
-[内容]
-  ## 作業内容
-    アクセス権限を編集 -> makoto のみログイン可
-  
-  ## 使用マシン
-    HOST : vm11
-    IPV4 : 192.168.122.11
-    MEMO : 仮想マシン
-  
-[確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (rootでログイン)
-  --------------------------------------------------
     
     vm11# cd $HOME
     vm11# vi /etc/proftpd.conf
@@ -538,7 +114,7 @@
       Include /etc/proftpd/mod_qos.conf
     </IfModule>
     
-    ## 操作権限(デフォルト)
+    ## 権限(デフォルト)
     <Global>
       Umask  022
       AllowOverwrite  yes
@@ -550,14 +126,14 @@
     ## ログイン制限(追加)
     <Limit LOGIN>
       Order Allow,deny
-      AllowUser makoto
+      AllowUser mike
       DenyAll
     </Limit>
     
-    ## 操作権限(追加)
+    ## 権限(追加)
     <Limit ALL>
       Order Allow,deny
-      AllowUser makoto
+      AllowUser mike
       DenyAll
     </Limit>
     
@@ -571,13 +147,131 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# systemctl restart proftpd
+    vm11# firewall-cmd --add-service=ftp
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    success
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# firewall-cmd --runtime-to-permanent
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    success
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# setsebool -P ftpd_full_access on
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [  460.274280] SELinux:  policy capability network_peer_controls=1
+    [  460.276463] SELinux:  policy capability open_perms=1
+    [  460.278206] SELinux:  policy capability extended_socket_class=1
+    [  460.280145] SELinux:  policy capability always_check_network=0
+    [  460.281973] SELinux:  policy capability cgroup_seclabel=1
+    [  460.283319] SELinux:  policy capability nnp_nosuid_transition=1
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# getent passwd | grep -E 'kate|mike'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    kate:x:1005:1005::/home/kate:/bin/bash
+    mike:x:1006:1006::/home/mike:/bin/bash
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/ftpusers
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    kate  // 追加
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl disable proftpd
     
     コマンドの実行結果
     --------------------------------------------------
     (省略) -> 出力なし
     --------------------------------------------------
     
+    vm11# cd $HOME
+    vm11# systemctl start proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl is-active proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo dnf -y install lftp
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (エラー出力が無ければOK)
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo vi /etc/hosts
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  
+  192.168.122.11 vm11 vm11.avswa.com ftp.avswa.com  // 追加
+  192.168.122.12 vm12 vm12.avswa.com
+  192.168.122.13 vm13 vm13.avswa.com
+  
+  192.168.1.2 pc01
+  192.168.1.4 rock
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ lftp -u kate ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp kate@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp kate@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://kate@ftp.avswa.com
+    --------------------------------------------------
+    
+    lftp kate@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp kate@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ls: ログインに失敗しました: 530 間違ったログインです
+    --------------------------------------------------
+    
+    lftp kate@ftp.avswa.com:~> (サーバー退出)
+    lftp kate@ftp.avswa.com:~> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+  
   $ cd $HOME
   $ lftp -u mike ftp.avswa.com
   
@@ -591,7 +285,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ftp://mike@ftp.avswa.com
+    ftp://mike@ftp.avswa.com/
     --------------------------------------------------
     
     lftp mike@ftp.avswa.com:~> (リモートファイル一覧)
@@ -599,7 +293,126 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ls: ログインに失敗しました: 530 間違ったログインです
+    drwxr-xr-x   5 mike     mike          207 Jul 15 07:09 Maildir
+    drwxr-xr-x   2 mike     mike            6 Jun 20 10:03 public_html
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp mike@ftp.avswa.com:~> !ls -l | grep -E file.*.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file2.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file3.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:11 file4.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (上位階層への移動禁止)
+    lftp mike@ftp.avswa.com:~> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトに変化なし
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp mike@ftp.avswa.com:~> mkdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mkdir 成功、`dirD' を作成しました
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (下位階層へ移動)
+    lftp mike@ftp.avswa.com:~> cd dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/dirD
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (アップロード)
+    lftp mike@ftp.avswa.com:/dirD> put -a file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (アップロード)
+    lftp mike@ftp.avswa.com:/dirD> put -a file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 mike     mike            4 Aug 12 20:22 file1.txt
+    -rw-r--r--   1 mike     mike            4 Aug 12 20:22 file2.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> rm file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file1.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> rm file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file2.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp mike@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10 bytes transferred                                                        
+    計 2 ファイル転送済
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 mike     mike            4 Aug 12 20:24 file1.txt
+    -rw-r--r--   1 mike     mike            4 Aug 12 20:24 file2.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、2 ファイルを削除しました
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp mike@ftp.avswa.com:/dirD> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ディレクトリ削除)
+    lftp mike@ftp.avswa.com:~> rmdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rmdir 成功、`dirD' を削除しました
     --------------------------------------------------
     
     lftp mike@ftp.avswa.com:~> (サーバー退出)
@@ -623,7 +436,7 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    ftp://makoto@ftp.avswa.com/
+    ftp://makoto@ftp.avswa.com
     --------------------------------------------------
     
     lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
@@ -631,161 +444,27 @@
     
     コマンドの実行結果
     --------------------------------------------------
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
-    ...
+    ls: ログインに失敗しました: 530 間違ったログインです
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
-    lftp makoto@ftp.avswa.com:~> !ls -l
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
-    ...
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (上位階層への移動禁止)
-    lftp makoto@ftp.avswa.com:~> cd ../
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (出力なし) -> プロンプトに変化なし
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
-    lftp makoto@ftp.avswa.com:~> mkdir dirD
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    mkdir 成功、`dirD' を作成しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
-    lftp makoto@ftp.avswa.com:~> cd dirD
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    cd 成功、cwd=/dirD
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    5 bytes transferred
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    5 bytes transferred
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rm 成功、`file1.txt' を削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rm 成功、`file2.txt' を削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    10 bytes transferred                                                        
-    計 2 ファイル転送済
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rm 成功、2 ファイルを削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
-    lftp makoto@ftp.avswa.com:/dirD> cd ../
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    cd 成功、cwd=/
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
-    lftp makoto@ftp.avswa.com:/> rmdir dirD
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    rmdir 成功、`dirD' を削除しました
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/> (サーバー退出)
-    lftp makoto@ftp.avswa.com:/> quit
+    lftp makoto@ftp.avswa.com:~> (サーバー退出)
+    lftp makoto@ftp.avswa.com:~> quit
     
     コマンドの実行結果
     --------------------------------------------------
     (出力なし) -> プロンプトが元に戻る
     --------------------------------------------------
     
-  $ cd $HOME
-  $ sudo virsh console vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (rootでログイン)
-  --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl stop proftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
   以下の確認に続く
   
 ================================================================================
-[004]
+[002]
   VsFTPD
   
 [内容]
   ## 作業内容
     セットアップ
+    ログイン禁止ユーザーにユーザー(kate)を追加 -> /etc/vsftpd/ftpfile
   
   ## 使用マシン
     HOST : vm11
@@ -847,9 +526,10 @@
     xferlog_std_format=YES
     
     ## 上位階層への移動禁止(chroot)
-    #chroot_local_user=YES
-    #chroot_list_enable=YES
-    #chroot_list_file=/etc/vsftpd/chroot_list -> 上位階層に移動可能なユーザーのリスト
+    chroot_local_user=YES
+    
+    ## エラー回避用
+    allow_writeable_chroot=YES
 
     ## IPv4, IPv6 を両方使用
     listen=NO
@@ -863,11 +543,20 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# touch /etc/vsftpd/chroot_list
+    vm11# getent passwd | grep -E 'kate|mike'
     
     コマンドの実行結果
     --------------------------------------------------
-    (省略) -> 出力なし
+    kate:x:1005:1005::/home/kate:/bin/bash
+    mike:x:1006:1006::/home/mike:/bin/bash
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/vsftpd/ftpusers
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    kate  // 追加
     --------------------------------------------------
     
     vm11# cd $HOME
@@ -895,100 +584,140 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ lftp -u makoto ftp.avswa.com
+  $ lftp -u kate ftp.avswa.com
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化)
   --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
-    lftp makoto@ftp.avswa.com:~> pwd
+    lftp kate@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp kate@ftp.avswa.com:~> pwd
     
     コマンドの実行結果
     --------------------------------------------------
-    ftp://makoto@ftp.avswa.com/
+    ftp://kate@ftp.avswa.com
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:~> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
-    ...
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
-    lftp makoto@ftp.avswa.com:~> !ls -l
+    lftp kate@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp kate@ftp.avswa.com:~> ls
     
     コマンドの実行結果
     --------------------------------------------------
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
-    ...
+    ls: ログインに失敗しました: 530 Login incorrect.
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
-    lftp makoto@ftp.avswa.com:~> mkdir dirD
+    lftp kate@ftp.avswa.com:~> (サーバー退出)
+    lftp kate@ftp.avswa.com:~> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+  
+  $ cd $HOME
+  $ lftp -u mike ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp mike@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://mike@ftp.avswa.com/
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxr-xr-x   5 mike     mike          207 Jul 15 07:09 Maildir
+    drwxr-xr-x   2 mike     mike            6 Jun 20 10:03 public_html
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp mike@ftp.avswa.com:~> !ls -l | grep -E file.*.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file2.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file3.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:11 file4.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (上位階層への移動禁止)
+    lftp mike@ftp.avswa.com:~> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトに変化なし
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp mike@ftp.avswa.com:~> mkdir dirD
     
     コマンドの実行結果
     --------------------------------------------------
     mkdir 成功、`dirD' を作成しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
-    lftp makoto@ftp.avswa.com:~> cd dirD
+    lftp mike@ftp.avswa.com:~> (下位階層へ移動)
+    lftp mike@ftp.avswa.com:~> cd dirD
     
     コマンドの実行結果
     --------------------------------------------------
-    cd 成功、cwd=/home/makoto/dirD
+    cd 成功、cwd=/dirD
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    5 bytes transferred
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (アップロード)
+    lftp mike@ftp.avswa.com:/dirD> put -a file1.txt
     
     コマンドの実行結果
     --------------------------------------------------
     5 bytes transferred
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
+    lftp mike@ftp.avswa.com:/dirD> (アップロード)
+    lftp mike@ftp.avswa.com:/dirD> put -a file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    5 bytes transferred
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
+    lftp mike@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--    1 1006     1006            5 Aug 12 20:56 file1.txt
+    -rw-r--r--    1 1006     1006            5 Aug 12 20:56 file2.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> rm file1.txt
     
     コマンドの実行結果
     --------------------------------------------------
     rm 成功、`file1.txt' を削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> rm file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
     rm 成功、`file2.txt' を削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp mike@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -996,67 +725,51 @@
     計 2 ファイル転送済
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
+    lftp mike@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:/dirD> ls
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    -rw-r--r--    1 1006     1006            5 Aug 12 20:57 file1.txt
+    -rw-r--r--    1 1006     1006            5 Aug 12 20:57 file2.txt
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
     rm 成功、2 ファイルを削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
-    lftp makoto@ftp.avswa.com:/dirD> cd ../
+    lftp mike@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp mike@ftp.avswa.com:/dirD> cd ../
     
     コマンドの実行結果
     --------------------------------------------------
     cd 成功、cwd=/
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
-    lftp makoto@ftp.avswa.com:/> rmdir dirD
+    lftp mike@ftp.avswa.com:~> (ディレクトリ削除)
+    lftp mike@ftp.avswa.com:~> rmdir dirD
     
     コマンドの実行結果
     --------------------------------------------------
     rmdir 成功、`dirD' を削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/> (サーバー退出)
-    lftp makoto@ftp.avswa.com:/> quit
+    lftp mike@ftp.avswa.com:~> (サーバー退出)
+    lftp mike@ftp.avswa.com:~> quit
     
     コマンドの実行結果
     --------------------------------------------------
     (出力なし) -> プロンプトが元に戻る
     --------------------------------------------------
     
-  $ cd $HOME
-  $ sudo virsh console vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (rootでログイン)
-  --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl stop vsftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-  
   以下の確認に続く
   
 ================================================================================
-[005]
+[003]
   PureFTPD
   
 [内容]
@@ -1086,7 +799,7 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# cp -p /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.org
+    vm11# cp -p /etc/pure-ftpd/pure-ftpd.conf /etc/pure-ftpd/pure-ftpd.conf.org
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1094,52 +807,114 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# vi /etc/vsftpd/vsftpd.conf
+    vm11# vi /etc/pure-ftpd/pure-ftpd.conf
     
     コマンドの実行結果
     --------------------------------------------------
-    ## Anonymous接続
-    anonymous_enable=NO
-    
-    ## 各ユーザーログイン
-    local_enable=YES
-    
-    ## 書込コマンド有効化
-    write_enable=YES
-    
-    ## マスク値
-    local_umask=022
-    
-    ## ログイン時のメッセージ表示
-    dirmessage_enable=YES
-    
-    ## アップロードとダウンロード時にログ記録
-    xferlog_enable=YES
-    
-    ## アクティブモード
-    connect_from_port_20=YES
-    
-    ## ログ出力形式を標準に設定 -> /var/log/xferlog
-    xferlog_std_format=YES
-    
     ## 上位階層への移動禁止(chroot)
-    #chroot_local_user=YES
-    #chroot_list_enable=YES
-    #chroot_list_file=/etc/vsftpd/chroot_list -> 上位階層に移動可能なユーザーのリスト
-
-    ## IPv4, IPv6 を両方使用
-    listen=NO
-    listen_ipv6=YES
-    
-    ## PAM 設定ファイル名
-    pam_service_name=vsftpd
+    ChrootEveryone               yes
     
     ## 不明
-    userlist_enable=YES
+    BrokenClientsCompatibility   no
+    
+    ## 想定最大ユーザー数
+    MaxClientsNumber             50
+    
+    ## サービス運用
+    Daemonize                    yes
+    
+    ## IP 毎の想定最大ユーザー数
+    MaxClientsPerIP              8
+    
+    ## クライアントからの実行コマンドに対して詳細ログを残さない
+    VerboseLog                   no
+    
+    ## 隠しファイルをリスト表示
+    DisplayDotFiles              yes
+    
+    ## 認証されたユーザーを禁止
+    AnonymousOnly                no
+    
+    ## 認証されたユーザーのみ接続
+    NoAnonymous                  yes
+    
+    ## ファシリティ
+    SyslogFacility               ftp
+    
+    ## DNS 名前解決を行わない
+    DontResolve                  yes
+    
+    ## 最大待機時間(15分)
+    MaxIdleTime                  15
+    
+    ## PAM認証
+    PAMAuthentication            yes
+    
+    ## ls コマンド時の表示設定
+    LimitRecursion               10000 8
+    
+    ## 匿名ユーザーのディレクトリ作成
+    AnonymousCanCreateDirs       no
+    
+    ## 匿名ユーザーに許可された最大ダウンロード時間
+    MaxLoad                      4
+    
+    ## FTP システムユーザー所有ファイルのダウンロード禁止
+    AntiWarez                    yes
+    
+    ## マスク値
+    Umask                        133:022
+    
+    ## UID 1000 以降のユーザーがログイン可能
+    MinUID                       1000
+    
+    ## 不明
+    AllowUserFXP                 no
+    
+    ## 不明
+    AllowAnonymousFXP            no
+    
+    ## 隠しファイルの書込禁止
+    ProhibitDotFilesWrite        no
+    
+    ## 隠しファイルの読込禁止
+    ProhibitDotFilesRead         no
+    
+    ## 更新時にファイル上書き
+    AutoRename                   no
+    
+    ## 匿名ユーザーのアップロード禁止
+    AnonymousCantUpload          yes
+    
+    ## 不明
+    AltLog                       clf:/var/log/pureftpd.log
+    
+    ## 匿名ユーザーのアップロードが許されている場合のディスク使用量
+    MaxDiskUsage                 99
+    
+    ## 不明
+    CustomerProof                yes
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# touch /etc/vsftpd/chroot_list
+    vm11# getent passwd | grep -E 'kate|mike'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    kate:x:1005:1005::/home/kate:/bin/bash
+    mike:x:1006:1006::/home/mike:/bin/bash
+    --------------------------------------------------
+    
+    //vm11# cd $HOME
+    //vm11# vi /etc/vsftpd/ftpusers
+    //
+    //コマンドの実行結果
+    //--------------------------------------------------
+    //kate  // 追加
+    //--------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl disable pure-ftpd
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1147,7 +922,7 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# systemctl disable vsftpd
+    vm11# systemctl start pure-ftpd
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1155,15 +930,7 @@
     --------------------------------------------------
     
     vm11# cd $HOME
-    vm11# systemctl start vsftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl is-active vsftpd
+    vm11# systemctl is-active pure-ftpd
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1171,100 +938,149 @@
     --------------------------------------------------
     
   $ cd $HOME
-  $ lftp -u makoto ftp.avswa.com
+  $ lftp -u kate ftp.avswa.com
   
   コマンドの実行結果
   --------------------------------------------------
   (プロンプト変化)
   --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
-    lftp makoto@ftp.avswa.com:~> pwd
+    lftp kate@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp kate@ftp.avswa.com:~> pwd
     
     コマンドの実行結果
     --------------------------------------------------
-    ftp://makoto@ftp.avswa.com/
+    ftp://kate@ftp.avswa.com
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:~> ls
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
-    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
-    ...
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
-    lftp makoto@ftp.avswa.com:~> !ls -l
+    lftp kate@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp kate@ftp.avswa.com:~> ls
     
     コマンドの実行結果
     --------------------------------------------------
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
-    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
-    ...
+    ls: ログインに失敗しました: 530 Login authentication failed
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
-    lftp makoto@ftp.avswa.com:~> mkdir dirD
+    lftp kate@ftp.avswa.com:~> (サーバー退出)
+    lftp kate@ftp.avswa.com:~> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+  
+  $ cd $HOME
+  $ lftp -u mike ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp mike@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://mike@ftp.avswa.com/
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwx------    4 mike       mike              133 Aug 13 05:58 .
+    drwx------    4 mike       mike              133 Aug 13 05:58 ..
+    -rw-r--r--    1 mike       mike               18 Aug  2  2022 .bash_logout
+    -rw-r--r--    1 mike       mike              141 Aug  2  2022 .bash_profile
+    -rw-r--r--    1 mike       mike              376 Aug  2  2022 .bashrc
+    -rw-r--r--    1 mike       mike               21 Jul 14 17:30 .forward
+    -rw-------    1 mike       mike              128 Jul 15 16:00 .procmail.log
+    drwxr-xr-x    5 mike       mike              207 Jul 15 16:09 Maildir
+    drwxr-xr-x    2 mike       mike                6 Jun 20 19:03 public_html
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp mike@ftp.avswa.com:~> !ls -l | grep -E file.*.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file2.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:10 file3.txt
+    -rwxrwxrwx. 1 makoto makoto         4  7月  2 15:11 file4.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (上位階層への移動禁止)
+    lftp mike@ftp.avswa.com:~> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトに変化なし
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp mike@ftp.avswa.com:~> mkdir dirD
     
     コマンドの実行結果
     --------------------------------------------------
     mkdir 成功、`dirD' を作成しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
-    lftp makoto@ftp.avswa.com:~> cd dirD
+    lftp mike@ftp.avswa.com:~> (下位階層へ移動)
+    lftp mike@ftp.avswa.com:~> cd dirD
     
     コマンドの実行結果
     --------------------------------------------------
-    cd 成功、cwd=/home/makoto/dirD
+    cd 成功、cwd=/dirD
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    5 bytes transferred
-    --------------------------------------------------
-    
-    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (アップロード)
+    lftp mike@ftp.avswa.com:/dirD> put -a file1.txt
     
     コマンドの実行結果
     --------------------------------------------------
     5 bytes transferred
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
+    lftp mike@ftp.avswa.com:/dirD> (アップロード)
+    lftp mike@ftp.avswa.com:/dirD> put -a file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    5 bytes transferred
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
+    lftp mike@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxr-xr-x    2 mike       mike               40 Aug 13 06:56 .
+    drwx------    5 mike       mike              145 Aug 13 06:56 ..
+    -rw-r--r--    1 mike       mike                4 Aug 13 06:56 file1.txt
+    -rw-r--r--    1 mike       mike                4 Aug 13 06:56 file2.txt
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> rm file1.txt
     
     コマンドの実行結果
     --------------------------------------------------
     rm 成功、`file1.txt' を削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> rm file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
     rm 成功、`file2.txt' を削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
-    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp mike@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
@@ -1272,61 +1088,47 @@
     計 2 ファイル転送済
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
-    lftp makoto@ftp.avswa.com:/dirD> ls
+    lftp mike@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:/dirD> ls
     
     コマンドの実行結果
     --------------------------------------------------
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
-    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    drwxr-xr-x    2 mike       mike               40 Aug 13 06:58 .
+    drwx------    5 mike       mike              145 Aug 13 06:56 ..
+    -rw-r--r--    1 mike       mike                4 Aug 13 06:58 file1.txt
+    -rw-r--r--    1 mike       mike                4 Aug 13 06:58 file2.txt
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
-    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    lftp mike@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp mike@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
     
     コマンドの実行結果
     --------------------------------------------------
     rm 成功、2 ファイルを削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
-    lftp makoto@ftp.avswa.com:/dirD> cd ../
+    lftp mike@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp mike@ftp.avswa.com:/dirD> cd ../
     
     コマンドの実行結果
     --------------------------------------------------
     cd 成功、cwd=/
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
-    lftp makoto@ftp.avswa.com:/> rmdir dirD
+    lftp mike@ftp.avswa.com:~> (ディレクトリ削除)
+    lftp mike@ftp.avswa.com:~> rmdir dirD
     
     コマンドの実行結果
     --------------------------------------------------
     rmdir 成功、`dirD' を削除しました
     --------------------------------------------------
     
-    lftp makoto@ftp.avswa.com:/> (サーバー退出)
-    lftp makoto@ftp.avswa.com:/> quit
+    lftp mike@ftp.avswa.com:~> (サーバー退出)
+    lftp mike@ftp.avswa.com:~> quit
     
     コマンドの実行結果
     --------------------------------------------------
     (出力なし) -> プロンプトが元に戻る
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ sudo virsh console vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (rootでログイン)
-  --------------------------------------------------
-    
-    vm11# cd $HOME
-    vm11# systemctl stop vsftpd
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
     --------------------------------------------------
     
   以下の確認に続く
