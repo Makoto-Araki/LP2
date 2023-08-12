@@ -18,572 +18,402 @@
   
 [内容]
   ## 作業内容
-    メールサーバー構築(練習板)を行う
-    (セキュリティ設定なし、DNS参照よりファイル(/etc/hosts)優先、と本番運用向きではないので注意)
+    旧版から引用 => メールサーバー(練習板)の構築を行う。
+    ただしセキュリティ設定なし、DNS参照よりHOSTS優先、と本番運用向きではないので注意。
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# firewall-cmd --add-service={smtp,pop3} --permanent
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Wed Jul 12 08:29:25 接続元: 192.168.122.1
+  success
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo dnf -y install postfix dovecot telnet
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo firewall-cmd --add-service={smtp,pop3} --permanent
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    success
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
-  $ cd $HOME
-  $ sudo virsh destroy vm11
+  
+  vm12# cd $HOME
+  vm12# firewall-cmd --reload
   
   コマンドの実行結果
   --------------------------------------------------
-  Domain 'vm11' destroyed
+  success
   --------------------------------------------------
   
-  $ cd $HOME
-  $ sudo virsh start vm11
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Domain 'vm11' started
-  --------------------------------------------------
-  
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# yum -y install postfix dovecot telnet
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Wed Jul 12 12:19:15 端末: ttyS0
+  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo firewall-cmd --list-all
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    public
-      target: default
-      icmp-block-inversion: no
-      interfaces: 
-      sources: 
-      services: cockpit dhcpv6-client dns http https iscsi-target ldap nfs pop3 smtp squid ssh telnet  // smtp と pop3 を確認
-      ports: 12865/tcp 12866/tcp
-      protocols: 
-      forward: no
-      masquerade: no
-      forward-ports: 
-      source-ports: 
-      icmp-blocks: 
-      rich rules: 
-    --------------------------------------------------
-    
-    ==================================================
-                      SMTP(Postfix)
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ ls -lh /etc/postfix -> 設定ファイルの一覧
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-r--r--. 1 root root  21K  9月  8  2019 access
-    -rw-r--r--. 1 root root  13K  6月  4  2018 canonical
-    -rw-r--r--. 1 root root   60  4月 13  2022 dynamicmaps.cf
-    drwxr-xr-x. 2 root root    6  4月 13  2022 dynamicmaps.cf.d
-    -rw-r--r--. 1 root root  10K  9月 17  2016 generic
-    -rw-r--r--. 1 root root  24K 10月  9  2016 header_checks
-    -rw-r--r--. 1 root root  29K  4月 13  2022 main.cf  // メイン設定ファイル
-    -rw-r--r--. 1 root root  29K  4月 13  2022 main.cf.proto
-    -rw-r--r--. 1 root root 6.3K  4月 13  2022 master.cf
-    -rw-r--r--. 1 root root 6.3K  4月 13  2022 master.cf.proto
-    -rw-r--r--. 1 root root  20K  4月 13  2022 postfix-files
-    drwxr-xr-x. 2 root root    6  4月 13  2022 postfix-files.d
-    -rw-r--r--. 1 root root 6.8K  2月 14  2016 relocated
-    -rw-r--r--. 1 root root  14K  1月 11  2020 transport
-    -rw-r--r--. 1 root root  14K  6月  4  2018 virtual
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/postfix/main.cf /etc/postfix/main.cf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/postfix/main.cf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/postfix/main.cf | grep -vE '^#|^$'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    compatibility_level = 2
-    queue_directory = /var/spool/postfix
-    command_directory = /usr/sbin
-    daemon_directory = /usr/libexec/postfix
-    data_directory = /var/lib/postfix
-    mail_owner = postfix
-    inet_interfaces = all                                                        // 修正 => all に修正
-    inet_protocols = all
-    mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain       // 修正 => $mydomain を追加
-    local_recipient_maps = (空白)                                                // 追加
-    unknown_local_recipient_reject_code = 550
-    mynetworks = 192.168.122.0/24, 127.0.0.0/8                                   // 修正 => 受付ネットワーク
-    alias_maps = hash:/etc/aliases
-    alias_database = hash:/etc/aliases
-    home_mailbox = Maildir/                                                      // 追加 => メールボックス方式
-    mail_spool_directory = /var/spool/mail                                       // 追加 => メールスプール場所
-    mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"  // 追加 => ローカル配送プログラム
-    debug_peer_level = 2
-    debugger_command =
-	    PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-	    ddd $daemon_directory/$process_name $process_id & sleep 5
-    sendmail_path = /usr/sbin/sendmail.postfix
-    newaliases_path = /usr/bin/newaliases.postfix
-    mailq_path = /usr/bin/mailq.postfix
-    setgid_group = postdrop
-    html_directory = no
-    manpage_directory = /usr/share/man
-    sample_directory = /usr/share/doc/postfix/samples
-    readme_directory = /usr/share/doc/postfix/README_FILES
-    smtpd_tls_cert_file = /etc/pki/tls/certs/postfix.pem
-    smtpd_tls_key_file = /etc/pki/tls/private/postfix.key
-    smtpd_tls_security_level = may
-    smtp_tls_CApath = /etc/pki/tls/certs
-    smtp_tls_CAfile = /etc/pki/tls/certs/ca-bundle.crt
-    smtp_tls_security_level = may
-    meta_directory = /etc/postfix
-    shlib_directory = /usr/lib64/postfix
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo mkdir /etc/skel/Maildir -> スケルトンファイルにディレクトリ追加
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/hosts
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-    ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-    192.168.122.11 vm11 site1.avswa.com site2.avswa.com avswa.com  // 追加 => avswa.com
-    192.168.122.12 vm12
-    192.168.122.13 vm13
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo useradd john
-    vm11$ sudo useradd kate
-    vm11$ sudo useradd mike
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    (省略) -> 出力なし
+  
+  ==================================================
+                    SMTP(Postfix)
+  ==================================================
 
-    // kate
-    (省略) -> 出力なし
+  vm12# cd /etc/postfix
+  vm12# ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-r--r--. 1 root root  21K 11月  4  2010 access
+  -rw-r--r--. 1 root root  12K  4月  1  2020 canonical
+  -rw-r--r--. 1 root root 9.9K  4月  1  2020 generic
+  -rw-r--r--. 1 root root  22K  9月  4  2012 header_checks
+  -rw-r--r--. 1 root root  27K  4月  1  2020 main.cf    // メイン設定ファイル
+  -rw-r--r--. 1 root root 6.0K  4月  1  2020 master.cf  // マスタープロセス設定ファイル
+  -rw-r--r--. 1 root root 6.7K  3月 27  2007 relocated
+  -rw-r--r--. 1 root root  13K 11月 22  2009 transport
+  -rw-r--r--. 1 root root  13K  4月  1  2020 virtual
+  --------------------------------------------------
+  
+  vm12# cd /etc/postfix
+  vm12# cp -p main.cf main.cf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/postfix
+  vm12# vi main.cf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 変更部分のみ抜粋
+  myhostname = vm12.example.com                                           // 自ホスト名
+  mydomain = example.com                                                  // ドメイン名
+  myorigin = $mydomain                                                    // メールアドレスの「@」以降のドメイン名
+  inet_interfaces = all                                                   // SMTP接続可能なNIC
+  inet_protocols = all                                                    // IPv4とIPv6の両方可
+  mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカル配送の受付ドメイン
+  local_recipient_maps = (空白)
+  unknown_local_recipient_reject_code = 550
+  mynetworks = 192.168.122.0/24, 127.0.0.0/8                                   // 受付許可ネットワーク
+  home_mailbox = Maildir/                                                      // メールボックス形式
+  mail_spool_directory = /var/spool/mail                                       // メールスプール場所
+  mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"  // ローカル配送プログラム
+  smtp_host_lookup = native                                                    // DNS参照よりHOSTSが優先
+  --------------------------------------------------
+  
+  vm12# cd /etc/skel
+  vm12# mkdir Maildir -> スケルトンファイルにディレクトリ追加
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/hosts -> ネットワーク設定ファイルを修正
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  192.168.122.11 vm11
+  192.168.122.12 vm12 example.com(追加)
+  192.168.122.13 vm13
+  192.168.122.14 vm14
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# useradd aaa -> ユーザー追加
+  vm12# useradd bbb -> ユーザー追加
+  vm12# useradd ccc -> ユーザー追加
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# echo aa0122ma | passwd --stdin aaa -> パスワード設定
+  vm12# echo bb0122ma | passwd --stdin bbb -> パスワード設定
+  vm12# echo cc0122ma | passwd --stdin ccc -> パスワード設定
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  ユーザー aaa のパスワードを変更。
+  passwd: すべての認証トークンが正しく更新できました。
+  
+  // bbb
+  ユーザー bbb のパスワードを変更。
+  passwd: すべての認証トークンが正しく更新できました。
 
-    // mike
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ echo jo0122ma | LANG=C sudo passwd --stdin john
-    vm11$ echo ka0122ma | LANG=C sudo passwd --stdin kate
-    vm11$ echo mi0122ma | LANG=C sudo passwd --stdin mike
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    Changing password for user john.
-    passwd: all authentication tokens updated successfully.
-    
-    // kate
-    Changing password for user kate.
-    passwd: all authentication tokens updated successfully.
-    
-    // mike
-    Changing password for user mike.
-    passwd: all authentication tokens updated successfully.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl restart postfix
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl enable postfix
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Created symlink /etc/systemd/system/multi-user.target.wants/postfix.service → /usr/lib/systemd/system/postfix.service.
-    --------------------------------------------------
-    
-    ==================================================
-                      POP3(Dovecot)
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ ls -lh /etc/dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    drwxr-xr-x. 2 root root 4.0K  7月 12 12:22 conf.d        // 追加設定ファイル群
-    -rw-r--r--. 1 root root 4.3K  8月  6  2021 dovecot.conf  // メイン設定ファイル
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/dovecot.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/dovecot.conf | grep -vE '^#|^$'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    protocols = imap pop3 lmtp submission  // 追加 => 使用プロトコル
-    
-    dict {
-      #quota = mysql:/etc/dovecot/dovecot-dict-sql.conf.ext
-    }
-    
-    !include conf.d/*.conf
-    !include_try local.conf
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/10-mail.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/10-mail.conf | grep -vE '^#|^$|^.*#'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    mail_location = maildir:~/Maildir  // 追加
-    
-    namespace inbox {
-      inbox = yes
-    }
-    
-    first_valid_uid = 1000
-    
-    protocol !indexer-worker {
-      // 何も記述なし
-    }
-    
-    mbox_write_locks = fcntl
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/10-auth.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/10-auth.conf | grep -vE '^#|^$|^.*#'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    disable_plaintext_auth = no  // 平文認証を無効化しない -> 本来は危険!!
-    auth_mechanisms = plain
-    !include auth-system.conf.ext
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/10-ssl.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/10-ssl.conf | grep -vE '^#|^$|^.*#'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ssl = no  // 修正 => 本来は危険
-    ssl_cert = </etc/pki/dovecot/certs/dovecot.pem
-    ssl_key = </etc/pki/dovecot/private/dovecot.pem
-    ssl_cipher_list = PROFILE=SYSTEM
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl start dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl enable dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Created symlink /etc/systemd/system/multi-user.target.wants/dovecot.service → /usr/lib/systemd/system/dovecot.service.
-    --------------------------------------------------
-    
-    ==================================================
-              メール送信用のスクリプト作成
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ vi send_mail.sh
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    #!/bin/bash
-    
-    ## 関数定義
-    function send_mail () {
-      echo "ehlo localhost"
-      sleep 1
-      echo "mail from: $1@avswa.com"
-      sleep 1
-      echo "rcpt to: $2@avswa.com"
-      sleep 1
-      echo "data"
-      sleep 1
-      echo "from: $1@avswa.com"
-      sleep 1
-      echo "to: $2@avswa.com"
-      sleep 1
-      echo "Subject: test$3"
-      sleep 1
-      echo "I sent test$3."
-      sleep 1
-      echo "."
-      sleep 1
-      echo "quit"
-    }
-    
-    ## サーバーにコマンド送信
-    for i in $(seq 1 $3) ; do
-      send_mail $1 $2 $i | telnet localhost 25;
-    done
-    --------------------------------------------------
-    
-    ==================================================
+  // ccc
+  ユーザー ccc のパスワードを変更。
+  passwd: すべての認証トークンが正しく更新できました。
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl restart postfix
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+                    POP3(Dovecot)
+  ==================================================
+  
+  vm12# cd /etc/dovecot
+  vm12# ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  drwxr-xr-x. 2 root root 4.0K  1月 31 17:52 conf.d        // 追加設定ファイル群
+  -rw-r--r--. 1 root root 4.3K  4月 30  2018 dovecot.conf  // メイン設定ファイル
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot
+  vm12# cp -p dovecot.conf dovecot.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot
+  vm12# vi dovecot.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  protocols = imap pop3 lmtp  // 対応プロトコル
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cp -p 10-mail.conf 10-mail.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# vi 10-mail.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  mail_location = maildir:~/Maildir  // メールの場所
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cp -p 10-auth.conf 10-auth.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# vi 10-auth.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  disable_plaintext_auth = no  // 平文認証を無効化しない -> 本来は危険!!
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cp -p 10-ssl.conf 10-ssl.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# vi 10-ssl.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ssl = no  // SSL/TLSを使用しない -> 本来は危険!!
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl enable dovecot
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl start dovecot
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+                    スクリプト作成
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi send_mail.sh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  #!/bin/bash
+  
+  ## 関数定義
+  function send_mail () {
+    echo "ehlo localhost"
+    sleep 1
+    echo "mail from: $1@example.com"
+    sleep 1
+    echo "rcpt to: $2@example.com"
+    sleep 1
+    echo "data"
+    sleep 1
+    echo "from: $1@example.com"
+    sleep 1
+    echo "to: $2@example.com"
+    sleep 1
+    echo "Subject: test$3"
+    sleep 1
+    echo "I sent test$3."
+    sleep 1
+    echo "."
+    sleep 1
+    echo "quit"
+  }
+  
+  ## サーバーにコマンド送信
+  for i in $(seq 1 $3) ; do
+    send_mail $1 $2 $i | telnet localhost 25;
+  done
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 2 -> johnからkateへ二通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // 1通目
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as E498533E3DFC
-    Connection closed by foreign host.
-    
-    // 2通目
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as E900533E3DFC
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ telnet localhost 110 -> メール受信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    +OK Dovecot ready.
-    
-    // ユーザー名を入力
-    user kate
-    +OK
-    
-    // パスワードを入力
-    pass ka0122ma
-    +OK Logged in.
-    
-    // メール一覧
-    list
-    +OK 2 messages:
-    1 438
-    2 438
-    .
-    
-    // メール閲覧
-    retr 1
-    +OK 438 octets
-    Return-Path: <john@avswa.com>
-    X-Original-To: kate@avswa.com
-    Delivered-To: kate@avswa.com
-    Received: from localhost (localhost [IPv6:::1])
-	    by vm11.avswa.com (Postfix) with ESMTP id E498533E3DFC
-	    for <kate@avswa.com>; Wed, 12 Jul 2023 19:34:31 +0900 (JST)
-    from: john@avswa.com
-    to: kate@avswa.com
-    Subject: test1
-    Message-Id: <20230712103432.E498533E3DFC@vm11.avswa.com>
-    Date: Wed, 12 Jul 2023 19:34:31 +0900 (JST)
-    
-    I sent test1.
-    .
-    
-    // メール閲覧
-    retr 2
-    +OK 438 octets
-    Return-Path: <john@avswa.com>
-    X-Original-To: kate@avswa.com
-    Delivered-To: kate@avswa.com
-    Received: from localhost (localhost [IPv6:::1])
-	    by vm11.avswa.com (Postfix) with ESMTP id E900533E3DFC
-	    for <kate@avswa.com>; Wed, 12 Jul 2023 19:34:40 +0900 (JST)
-    from: john@avswa.com
-    to: kate@avswa.com
-    Subject: test2
-    Message-Id: <20230712103441.E900533E3DFC@vm11.avswa.com>
-    Date: Wed, 12 Jul 2023 19:34:40 +0900 (JST)
-    
-    I sent test2.
-    .
-    
-    // ログアウト
-    quit
-    +OK Logging out.
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 2 -> AAAからBBBへ二通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 1通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as E450F200AE0E
+  Connection closed by foreign host.
+  
+  // 2通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as EA575200AE11
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# telnet localhost 110 -> メール受信を確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  +OK Dovecot ready.
+  
+  // ユーザー名
+  user bbb
+  +OK
+  
+  // パスワード
+  pass bb0122ma
+  +OK Logged in.
+  
+  // メール一覧
+  list
+  +OK 2 messages:
+  1 448
+  2 448
+  
+  // 一番目のメール参照
+  retr 1
+  +OK 448 octets
+  Return-Path: <aaa@example.com>
+  X-Original-To: bbb@example.com
+  Delivered-To: bbb@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTP id BB38F200AE13
+    for <bbb@example.com>; Tue,  1 Feb 2022 15:10:10 +0900 (JST)
+  from: aaa@example.com
+  to: bbb@example.com
+  Subject: test1
+  Message-Id: <20220201061011.BB38F200AE13@vm12.example.com>
+  Date: Tue,  1 Feb 2022 15:10:10 +0900 (JST)
+  
+  I sent test1.
+
+  // 二番目のメール参照
+  retr 2
+  +OK 448 octets
+  Return-Path: <aaa@example.com>
+  X-Original-To: bbb@example.com
+  Delivered-To: bbb@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTP id C1061200AE01
+    for <bbb@example.com>; Tue,  1 Feb 2022 15:10:19 +0900 (JST)
+  from: aaa@example.com
+  to: bbb@example.com
+  Subject: test2
+  Message-Id: <20220201061020.C1061200AE01@vm12.example.com>
+  Date: Tue,  1 Feb 2022 15:10:19 +0900 (JST)
+  
+  I sent test2.
+
+  // ログアウト
+  quit
+  +OK Logging out.
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -592,270 +422,239 @@
   
 [内容]
   ## 作業内容
-    特定メールアドレスからのメールを受取拒否する
+    旧版から引用 => プラグイン(Sieve)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# yum -y install dovecot-pigeonhole
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Wed Jul 12 12:32:40 端末: ttyS0
+  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo dnf -y install dovecot-pigeonhole
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/dovecot/conf.d/15-lda.conf /etc/dovecot/conf.d/15-lda.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/15-lda.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/15-lda.conf | grep -vE '^#|^$|^.*#'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    protocol lda {
-      mail_plugins = $mail_plugins sieve  // 追加
-    }
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cp -p /etc/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/20-lmtp.conf.org
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/dovecot/conf.d/20-lmtp.conf
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 変更内容は後述参照
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/20-lmtp.conf | grep -vE '^#|^$|^.*#'
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    protocol lmtp {
-      mail_plugins = $mail_plugins sieve  // 追加
-    }
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl restart dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat /etc/dovecot/conf.d/90-sieve.conf | grep -vE '^#|^$|^.*#' -> フィルタリングルールの記述場所
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    plugin {
-      sieve = file:~/sieve;active=~/.dovecot.sieve  // ホームディレクトリ配下のファイル(.dovecot.sieve)
-    }
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.dovecot.sieve -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    require ["reject"];
-    
-    ## sender john@avswa.com
-    if address :is "from" "john@avswa.com"
-    {
-      reject "this address is invalid.";
-    }
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo chown kate.kate ~kate/.dovecot.sieve
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cp -p 15-lda.conf 15-lda.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# vi 15-lda.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  protocol lda {
+    mail_plugins = $mail_plugins sieve (修正後)
+  }
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cp -p 20-lmtp.conf 20-lmtp.conf.org
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# vi 20-lmtp.conf
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  protocol lmtp {
+    mail_plugins = $mail_plugins sieve (修正後)
+  }
+  --------------------------------------------------
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# systemctl restart dovecot
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd /etc/dovecot/conf.d
+  vm12# cat 90-sieve.conf | grep -vE '^#|^$|^.*#' -> フィルタリングルールの記述場所を確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  plugin {
+    sieve = file:~/sieve;active=~/.dovecot.sieve  (ホーム配下の「.dovecot.sieve」ファイル)
+  }
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# vi .dovecot.sieve
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  require ["reject"];
+  
+  ## 差出が「aaa@example.com」の場合
+  if address :is "from" "aaa@example.com"
+  {
+    ## メッセージを添えて拒否
+    reject "This Address is invalid.";
+  }
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# chown bbb.bbb .dovecot.sieve
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 6157B200AE09
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=1 -> 送付したメールが拒否されて送り返された
+
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=0
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# telnet localhost 110 -> メール受信を確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  +OK Dovecot ready.
+  
+  // ユーザー名
+  user aaa
+  +OK
+  
+  // パスワード
+  pass aa0122ma
+  +OK Logged in.
+  
+  // メール一覧
+  list
+  +OK 1 messages:
+  1 1582
+  
+  // メール参照
+  retr 1
+  +OK 1582 octets
+  Return-Path: <>
+  X-Original-To: aaa@example.com
+  Delivered-To: aaa@example.com
+  Received: by vm12.example.com (Postfix, from userid 1004)
+    id B4450200AE34; Wed,  2 Feb 2022 14:30:25 +0900 (JST)
+  Message-ID: <dovecot-1643779825-547995-0@vm12>
+  Date: Wed, 02 Feb 2022 14:30:25 +0900
+  From: Mail Delivery Subsystem <postmaster@>
+  To: <aaa@example.com>
+  MIME-Version: 1.0
+  Content-Type: multipart/report; report-type=disposition-notification;
+    boundary="1570/vm12"
+  Subject: Rejected: test1  // 拒否された旨「Rejected」と表示
+  Auto-Submitted: auto-replied (rejected)
+  Precedence: bulk
+  
+  This is a MIME-encapsulated message
+  
+  --1570/vm12
+  Content-Type: text/plain; charset=utf-8
+  Content-Disposition: inline
+  Content-Transfer-Encoding: 8bit
+  
+  Your message to <bbb@example.com> was automatically rejected:
+  This Address is invalid.  // プラグイン(Sieve)で設定されたメッセージ
+  
+  --1570/vm12
+  Content-Type: message/disposition-notification
+  
+  Reporting-UA: vm12; Dovecot Mail Delivery Agent
+  Final-Recipient: rfc822; bbb@example.com
+  Original-Message-ID: <20220202053019.6157B200AE09@vm12.example.com>
+  Disposition: automatic-action/MDN-sent-automatically; deleted
+  
+  --1570/vm12
+  Content-Type: message/rfc822
+  
+  Return-Path: <aaa@example.com>
+  X-Original-To: bbb@example.com
+  Delivered-To: bbb@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTP id 6157B200AE09
+    for <bbb@example.com>; Wed,  2 Feb 2022 14:30:18 +0900 (JST)
+  from: aaa@example.com
+  to: bbb@example.com
+  Subject: test1
+  Message-Id: <20220202053019.6157B200AE09@vm12.example.com>
+  Date: Wed,  2 Feb 2022 14:30:18 +0900 (JST)
     
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as 856E333D62F0
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=1 -> 送信メールが拒否されて送り返された
-    
-    // kate
-    INBOX messages=0
-    
-    // mike
-    INBOX messages=0
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ telnet localhost 110
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    +OK Dovecot ready.
-    
-    // ユーザー名を入力
-    user john
-    +OK
-    
-    // パスワードを入力
-    pass jo0122ma
-    +OK Logged in.
-    
-    // メール一覧
-    list
-    +OK 1 messages:
-    1 1554
-    .
-    
-    // メール閲覧
-    retr 1
-    +OK 1554 octets
-    Return-Path: <>
-    X-Original-To: john@avswa.com
-    Delivered-To: john@avswa.com
-    Received: by vm11.avswa.com (Postfix, from userid 1005)
-      id C249B3408004; Fri, 14 Jul 2023 09:52:26 +0900 (JST)
-    Message-ID: <dovecot-1689295946-641359-0@vm11>
-    Date: Fri, 14 Jul 2023 09:52:26 +0900
-    From: Postmaster <postmaster@vm11>
-    To: <john@avswa.com>
-    MIME-Version: 1.0
-    Content-Type: multipart/report; report-type=disposition-notification;
-      boundary="1748/vm11"
-    Subject: Rejected: test1
-    Auto-Submitted: auto-replied (rejected)  // プラグインから自動送付された
-    Precedence: bulk
-    
-    This is a MIME-encapsulated message
-    
-    --1748/vm11
-    Content-Type: text/plain; charset=utf-8
-    Content-Disposition: inline
-    Content-Transfer-Encoding: 8bit
-    
-    Your message to <kate@avswa.com> was automatically rejected:  // プラグインからのメッセージ
-    this address is invalid.                                      // プログインからのメッセージ
-    --1748/vm11
-    Content-Type: message/disposition-notification
-    
-    Reporting-UA: vm11; Dovecot Mail Delivery Agent
-    Final-Recipient: rfc822; kate@avswa.com
-    Original-Message-ID: <20230714005220.856E333D62F0@vm11.avswa.com>
-    Disposition: automatic-action/MDN-sent-automatically; deleted
-    
-    --1748/vm11
-    Content-Type: message/rfc822
-    
-    Return-Path: <john@avswa.com>
-    X-Original-To: kate@avswa.com
-    Delivered-To: kate@avswa.com
-    Received: from localhost (localhost [IPv6:::1])
-      by vm11.avswa.com (Postfix) with ESMTP id 856E333D62F0
-      for <kate@avswa.com>; Fri, 14 Jul 2023 09:52:19 +0900 (JST)
-    from: john@avswa.com
-    to: kate@avswa.com
-    Subject: test1
-    Message-Id: <20230714005220.856E333D62F0@vm11.avswa.com>
-    Date: Fri, 14 Jul 2023 09:52:19 +0900 (JST)
-    
-    --1748/vm11--
-    .
-    
-    // ログアウト
-    quit
-    +OK Logging out.
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  // ログアウト
+  quit
+  +OK Logging out.
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -864,138 +663,125 @@
   
 [内容]
   ## 作業内容
-    特定メールアドレスからのメールを指定フォルダに移動する
+    旧版から引用 => プラグイン(Sieve)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active dovecot
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 09:12:24 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.dovecot.sieve -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    require ["fileinto"];
-    
-    ## sender john@avswa.com
-    if address :is "from" "john@avswa.com"
-    {
-      ## move to folder
-      fileinto "JOHN";
-    }
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox create -u kate JOHN -> 指定フォルダ作成
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox list -u kate -> 指定フォルダ確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    JOHN
-    INBOX
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .dovecot.sieve
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  require ["fileinto"];
+  
+  ## 差出が「aaa@example.com」の場合
+  if address :is "from" "aaa@example.com"
+  {
+    ## 指定フォルダ移動
+    fileinto "AAA";
+  }
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox create -u bbb AAA -> フォルダ作成
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox list -u bbb -> フォルダ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  AAA
+  INBOX
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as 3DFCC33E3DEC
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages JOHN  -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0
-    
-    // mike
-    INBOX messages=0
-    
-    // JOHN
-    JOHN messages=1 -> 送付したメールが指定フォルダ移動
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox delete -u kate JOHN -> 指定フォルダ削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (出力なし)
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as EA921200AE12
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages AAA   -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=1
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=0
+  
+  // bbb(AAA)
+  AAA messages=1 -> 送付したメールが指定フォルダ移動
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox delete -u bbb AAA -> フォルダ削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (出力なし)
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1004,115 +790,103 @@
   
 [内容]
   ## 作業内容
-    特定メールアドレスからのメールを指定メールアドレスへ転送する
+    旧版から引用 => プラグイン(Sieve)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active dovecot
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 11:11:00 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.dovecot.sieve -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## sender john@avswa.com
-    if address :is "from" "john@avswa.com"
-    {
-      ## mail redirect
-      redirect "mike@avswa.com";
-    }
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .dovecot.sieve
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## 差出が「aaa@example.com」の場合
+  if address :is "from" "aaa@example.com"
+  {
+    ## メール転送
+    redirect "ccc@example.com";
+  }
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as BABF333E3DEC
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0
-    
-    // mike
-    INBOX messages=1 -> メール転送された
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo rm -f ~kate/.dovecot.sieve -> フィルタリングルールをクリア
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 0B9B7200AE12
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール転送された
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# rm -f .dovecot.sieve
+  vm12# touch .dovecot.sieve
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1121,110 +895,97 @@
   
 [内容]
   ## 作業内容
-    メール転送をファイル(.forward)で行う
+    旧版から引用 => メール転送をファイル(.forward)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active dovecot
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 12:24:07 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.forward -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    mike@avswa.com
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .forward
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ccc@example.com
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as DC3C733E3DEC
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0
-    
-    // mike
-    INBOX messages=1 -> メール転送された
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo rm -f ~kate/.forward -> フィルタリングルールをクリア
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 641FC200AE12
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール転送された
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# rm -f .forward
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1233,126 +994,113 @@
   
 [内容]
   ## 作業内容
-    メール転送をコマンド(newaliases)で行う
+    旧版から引用 => メール転送をコマンド(newaliases)で行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active dovecot
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 12:43:07 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/aliases -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    kate: mike  // 末尾に追加
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo newaliases -> フィルタリングルール反映
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi /etc/aliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  bbb: ccc -> 末尾に追加
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# newaliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as 8FFEF33E3DEC
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0
-    
-    // mike
-    INBOX messages=1 -> メール転送された
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/aliases -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    kate: mike  // 削除
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo newaliases -> フィルタリングルール反映
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 2D58B200AE33
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール転送された
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/aliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  bbb: ccc -> 削除
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# newaliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1361,136 +1109,123 @@
   
 [内容]
   ## 作業内容
-    簡易メーリングリストを作成する
+    旧版から引用 => 簡易メーリングリストを作成する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active dovecot
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 13:08:39 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active dovecot
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/MLIST -> ファイル内にメーリングリストの所属アドレスを記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    john@avswa.com
-    kate@avswa.com
-    mike@avswa.com
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/aliases -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    MLIST: :include: /etc/MLIST  // 末尾に追加
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo newaliases -> フィルタリングルール反映
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# vi /etc/MLIST -> ファイル内に所属アドレスを記述
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  aaa@example.com
+  bbb@example.com
+  ccc@example.com
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/aliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  MLIST: :include: /etc/MLIST -> 末尾に追加
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# newaliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john MLIST 1 -> johnからメーリングリストへメール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as 5F65D33E3DF7
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=1 -> メール転送された
-    
-    // kate
-    INBOX messages=1 -> メール転送された
-    
-    // mike
-    INBOX messages=1 -> メール転送された
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/aliases -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    MLIST: :include: /etc/MLIST  // 削除
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo newaliases -> フィルタリングルール反映
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa MLIST 1 -> AAAからメーリングリストへメール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as C0C20200AE12
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=1 -> メール転送された
+  
+  // bbb
+  INBOX messages=1 -> メール転送された
+  
+  // ccc
+  INBOX messages=1 -> メール転送された
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/aliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  MLIST: :include: /etc/MLIST -> 削除
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# newaliases
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1499,164 +1234,151 @@
   
 [内容]
   ## 作業内容
-    メール配送プログラムを「Procmail」に変更する
+    旧版から引用 => メール配送プログラムを「Procmail」に変更する
     (http://linux.kororo.jp/cont/server/procmail.php)
   
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
+  
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# yum -y install procmail
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 16:05:22 端末: ttyS
+  (省略) -> エラー出力が無ければOK
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo dnf -y install procmail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> エラー出力が無ければOK
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ which procmail
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    /usr/bin/procmail
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/postfix/main.cf -> 設定ファイル上のローカル配送プログラムを変更
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (修正前)
-    mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"
-    
-    (修正後)
-    mailbox_command = /usr/bin/procmail
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi /etc/procmailrc -> ローカル配送プログラムの作成
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## ログファイル名
-    LOGFILE=$HOME/.procmail.log
-    
-    ## メールの保存ディレクトリ
-    MAILDIR=$HOME/Maildir/
-    
-    ## デフォルト
-    DEFAULT=$MAILDIR
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl restart postfix
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~john/.forward -> 設定ファイルを編集
-    vm11$ sudo vi ~kate/.forward -> 設定ファイルを編集
-    vm11$ sudo vi ~mike/.forward -> 設定ファイルを編集
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    "|/bin/procmail -f-"
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo chown john.john ~john/.forward -> 所有者変更
-    vm11$ sudo chown kate.kate ~kate/.forward -> 所有者変更
-    vm11$ sudo chown mike.mike ~mike/.forward -> 所有者変更
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
+  
+  vm12# cd $HOME
+  vm12# which procmail
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /bin/procmail
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/postfix/main.cf -> ローカル配送プログラムを変更
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (修正前)
+  mailbox_command = /usr/libexec/dovecot/deliver -f "$SENDER" -a "$RECIPIENT"
+  
+  (修正後)
+  mailbox_command = /bin/procmail
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi /etc/procmailrc
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## ログファイル名
+  LOGFILE=$HOME/.procmail.log
+  
+  ## メールの保存ディレクトリ
+  MAILDIR=$HOME/Maildir/
+  
+  ## デフォルト
+  DEFAULT=$MAILDIR
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# systemctl restart postfix
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  /bin/procmail
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# vi ~aaa/.forward
+  vm12# vi ~bbb/.forward
+  vm12# vi ~ccc/.forward
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  "|IFS=' ' && exec /usr/bin/procmail -f- || exit 75 #~/Maildir/"
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# chown aaa.aaa ~aaa/.forward
+  vm12# chown bbb.bbb ~bbb/.forward
+  vm12# chown ccc.ccc ~ccc/.forward
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as B60F533E3DF6
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=1 -> メール送信された
-    
-    // mike
-    INBOX messages=0
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat ~kate/.procmail.log -> ローカル配送プログラムのログ確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    From john@avswa.com  Fri Jul 14 17:34:34 2023
-      Subject: test1
-        Folder: /home/kate/Maildir/new/1689323674.2001_0.vm11			    
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへメール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 6C9C6200AE33
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=1 -> メール送信された
+  
+  // ccc
+  INBOX messages=0
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# cat .procmail.log -> ローカル配送プログラムのログ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Thu Feb  3 11:05:00 2022
+    Subject: test1
+      Folder: /home/bbb/Maildir/new/1643853900.1690_0.vm12
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1665,126 +1387,110 @@
   
 [内容]
   ## 作業内容
-    特定メールアドレスからのメールを廃棄する
+    旧版から引用 => メール配送プログラム(Procmail)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active postfix
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 17:24:26 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active postfix
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.procmailrc -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## sender john@avswa.com
-    :0
-    * ^From:.*john@avswa\.com.*
-    /dev/null  // メール廃棄
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo chown kate.kate ~kate/.procmailrc
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .procmailrc
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## 差出が「aaa@example.com」の場合はメール破棄
+  :0
+  * ^From:.*aaa@example\.com.*
+  /dev/null
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# chown bbb.bbb .procmailrc
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as 9BAEF33E3DF6
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0 -> 送付したメールは廃棄された
-    
-    // mike
-    INBOX messages=0
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat ~kate/.procmail.log -> ローカル配送プログラムのログ確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    From john@avswa.com  Fri Jul 14 17:34:34 2023
-      Subject: test1
-        Folder: /home/kate/Maildir/new/1689323674.2001_0.vm11 425
-    From john@avswa.com  Fri Jul 14 20:28:04 2023
-      Subject: test1
-        Folder: /dev/null	471
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 92025200AE3E
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+
+  // bbb
+  INBOX messages=0 -> 送付したメールは廃棄された
+  
+  // ccc
+  INBOX messages=0
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# cat .procmail.log -> ローカル配送プログラムのログ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Thu Feb  3 12:27:49 2022
+    Subject: test1
+      Folder: /dev/null 482
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -1793,252 +1499,219 @@
   
 [内容]
   ## 作業内容
-    特定メールアドレスからのメールを指定フォルダに移動する
+    旧版から引用 => メール配送プログラム(Procmail)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active postfix
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Fri Jul 14 20:26:02 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active postfix
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.procmailrc -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## sender john@avswa.com
-    :0
-    * ^From:.*john@avswa\.com.*
-    JOHN/.(ディレクトリ内にメールを連番で格納)
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo mkdir ~kate/Maildir/JOHN
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo chown kate.kate ~kate/Maildir/JOHN
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .procmailrc
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## 差出が「aaa@example.com」の場合は指定フォルダ「AAA」に格納
+  :0
+  * ^From:.*aaa@example\.com.*
+  AAA/.(ディレクトリ内にメールを連番で格納)
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# mkdir AAA ; chown bbb.bbb AAA -> 指定フォルダ作成と所有者変更
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 3 -> johnからkateへ三通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // 一通目
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as AF6C933E3DF6
-    Connection closed by foreign host.
-    
-    // 二通目
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as B84AD33E3DF6
-    Connection closed by foreign host.
-    
-    // 三通目
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as C64D133E3DF6
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0 -> 指定フォルダ「JOHN」内のメール件数を取得する方法が見つからなかった…
-    
-    // mike
-    INBOX messages=0
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat ~kate/.procmail.log -> ローカル配送プログラムのログ確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    From john@avswa.com  Fri Jul 14 17:34:34 2023
-      Subject: test1
-        Folder: /home/kate/Maildir/new/1689323674.2001_0.vm11  425
-    From john@avswa.com  Fri Jul 14 20:28:04 2023
-      Subject: test1
-        Folder: /dev/null  471
-    From john@avswa.com  Sat Jul 15 11:18:18 2023  // 一通目
-      Subject: test1
-        Folder: JOHN/1  472
-    From john@avswa.com  Sat Jul 15 11:18:27 2023  // 二通目
-      Subject: test2
-        Folder: JOHN/2  472
-    From john@avswa.com  Sat Jul 15 11:18:36 2023  // 三通目
-      Subject: test3
-        Folder: JOHN/3  472
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo ls -lh ~kate/Maildir/JOHN -> メール一覧
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    -rw-------. 1 kate kate 472  7月 15 11:18 1
-    -rw-------. 1 kate kate 472  7月 15 11:18 2
-    -rw-------. 1 kate kate 472  7月 15 11:18 3
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat ~kate/Maildir/JOHN/1 -> メール出力
-    vm11$ sudo cat ~kate/Maildir/JOHN/2 -> メール出力
-    vm11$ sudo cat ~kate/Maildir/JOHN/3 -> メール出力
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // 一通目
-    From john@avswa.com  Sat Jul 15 11:18:18 2023
-    Return-Path: <john@avswa.com>
-    X-Original-To: kate@avswa.com
-    Delivered-To: kate@avswa.com
-    Received: from localhost (localhost [IPv6:::1])
-      by vm11.avswa.com (Postfix) with ESMTP id AF6C933E3DF6
-      for <kate@avswa.com>; Sat, 15 Jul 2023 11:18:11 +0900 (JST)
-    from: john@avswa.com
-    to: kate@avswa.com
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 3 -> AAAからBBBへ三通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 一通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as ED9C3200AE3E
+  Connection closed by foreign host.
+
+  // 二通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as F3E60200AE3E
+  Connection closed by foreign host.
+
+  // 三通目
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as 0D9BA200AE3F
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0 -> 指定フォルダ「AAA」内のメール件数を取得する方法が見つからなかった…
+  
+  // ccc
+  INBOX messages=0
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# cat .procmail.log -> ローカル配送プログラムのログ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Thu Feb  3 12:55:33 2022
     Subject: test1
-    Message-Id: <20230715021812.AF6C933E3DF6@vm11.avswa.com>
-    Date: Sat, 15 Jul 2023 11:18:11 +0900 (JST)
-    
-    I sent test1.
-    
-    // 二通目
-    From john@avswa.com  Sat Jul 15 11:18:27 2023
-    Return-Path: <john@avswa.com>
-    X-Original-To: kate@avswa.com
-    Delivered-To: kate@avswa.com
-    Received: from localhost (localhost [IPv6:::1])
-      by vm11.avswa.com (Postfix) with ESMTP id B84AD33E3DF6
-      for <kate@avswa.com>; Sat, 15 Jul 2023 11:18:20 +0900 (JST)
-    from: john@avswa.com
-    to: kate@avswa.com
+      Folder: AAA/1    483
+  From aaa@example.com  Thu Feb  3 12:55:42 2022
     Subject: test2
-    Message-Id: <20230715021821.B84AD33E3DF6@vm11.avswa.com>
-    Date: Sat, 15 Jul 2023 11:18:20 +0900 (JST)
-    
-    I sent test2.
-    
-    // 三通目
-    From john@avswa.com  Sat Jul 15 11:18:36 2023
-    Return-Path: <john@avswa.com>
-    X-Original-To: kate@avswa.com
-    Delivered-To: kate@avswa.com
-    Received: from localhost (localhost [IPv6:::1])
-      by vm11.avswa.com (Postfix) with ESMTP id C64D133E3DF6
-      for <kate@avswa.com>; Sat, 15 Jul 2023 11:18:29 +0900 (JST)
-    from: john@avswa.com
-    to: kate@avswa.com
+      Folder: AAA/2    483
+  From aaa@example.com  Thu Feb  3 12:55:51 2022
     Subject: test3
-    Message-Id: <20230715021830.C64D133E3DF6@vm11.avswa.com>
-    Date: Sat, 15 Jul 2023 11:18:29 +0900 (JST)
-    
-    I sent test3.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+      Folder: AAA/3    483
+  --------------------------------------------------
+  
+  vm12# cd ~bbb/Maildir/AAA
+  vm12# ls -lh
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  -rw-------. 1 bbb bbb 483  2月  3 12:55 1
+  -rw-------. 1 bbb bbb 483  2月  3 12:55 2
+  -rw-------. 1 bbb bbb 483  2月  3 12:55 3
+  --------------------------------------------------
+  
+  vm12# cd ~bbb/Maildir/AAA
+  vm12# cat 1 2 3
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // 一通目
+  From aaa@example.com  Thu Feb  3 12:55:33 2022
+  Return-Path: <aaa@example.com>
+  X-Original-To: bbb@example.com
+  Delivered-To: bbb@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTP id ED9C3200AE3E
+    for <bbb@example.com>; Thu,  3 Feb 2022 12:55:25 +0900 (JST)
+  from: aaa@example.com
+  to: bbb@example.com
+  Subject: test1
+  Message-Id: <20220203035526.ED9C3200AE3E@vm12.example.com>
+  Date: Thu,  3 Feb 2022 12:55:25 +0900 (JST)
+  
+  I sent test1.
+  
+  // 二通目
+  From aaa@example.com  Thu Feb  3 12:55:42 2022
+  Return-Path: <aaa@example.com>
+  X-Original-To: bbb@example.com
+  Delivered-To: bbb@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTP id F3E60200AE3E
+    for <bbb@example.com>; Thu,  3 Feb 2022 12:55:34 +0900 (JST)
+  from: aaa@example.com
+  to: bbb@example.com
+  Subject: test2
+  Message-Id: <20220203035535.F3E60200AE3E@vm12.example.com>
+  Date: Thu,  3 Feb 2022 12:55:34 +0900 (JST)
+  
+  I sent test2.
+  
+  // 三通目
+  From aaa@example.com  Thu Feb  3 12:55:51 2022
+  Return-Path: <aaa@example.com>
+  X-Original-To: bbb@example.com
+  Delivered-To: bbb@example.com
+  Received: from localhost (localhost [IPv6:::1])
+    by vm12.example.com (Postfix) with ESMTP id 0D9BA200AE3F
+    for <bbb@example.com>; Thu,  3 Feb 2022 12:55:44 +0900 (JST)
+  from: aaa@example.com
+  to: bbb@example.com
+  Subject: test3
+  Message-Id: <20220203035545.0D9BA200AE3F@vm12.example.com>
+  Date: Thu,  3 Feb 2022 12:55:44 +0900 (JST)
+  
+  I sent test3.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -2047,130 +1720,102 @@
   
 [内容]
   ## 作業内容
-    特定メールアドレスからのメールを指定メールアドレスへ転送する
+    旧版から引用 => メール配送プログラム(Procmail)を使用してメールフィルタリングを行う
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
-  $ cd $HOME
-  $ sudo virsh console vm11
+  vm12# cd $HOME
+  vm12# systemctl is-active postfix
   
   コマンドの実行結果
   --------------------------------------------------
-  前回のログイン: Sat Jul 15 11:14:18 端末: ttyS0
+  active
   --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo systemctl is-active postfix
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    active
-    --------------------------------------------------
-    
-    ==================================================
-                フィルタリングルール記述
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ sudo vi ~kate/.procmailrc -> フィルタリングルール記述
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ## sender john@avswa.com
-    :0
-    * ^From:.*john@avswa\.com.*
-    !mike@avswa.com  // kateからmikeへ転送
-    --------------------------------------------------
-    
-    ==================================================
+  
+  ==================================================
+              フィルタリングルール記述
+  ==================================================
+  
+  vm12# cd ~bbb
+  vm12# vi .procmailrc
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  ## 差出が「aaa@example.com」の場合、アドレス「ccc@example.com」に転送
+  :0
+  * ^From:.*aaa@example\.com.*
+  !ccc@example.com
+  --------------------------------------------------
+  
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
-    
-    vm11$ cd $HOME
-    vm11$ bash send_mail.sh john kate 1 -> johnからkateへ一通メール送信
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    Trying ::1...
-    Connected to localhost.
-    Escape character is '^]'.
-    220 vm11.avswa.com ESMTP Postfix
-    250-vm11.avswa.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-STARTTLS
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250-DSN
-    250 SMTPUTF8
-    250 2.1.0 Ok
-    250 2.1.5 Ok
-    354 End data with <CR><LF>.<CR><LF>
-    250 2.0.0 Ok: queued as 8187D33E3DF6
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm mailbox status -u john messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u kate messages inbox -> メールボックス内のメール確認
-    vm11$ sudo doveadm mailbox status -u mike messages inbox -> メールボックス内のメール確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // john
-    INBOX messages=0
-    
-    // kate
-    INBOX messages=0
-    
-    // mike
-    INBOX messages=1 -> メール転送された
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo cat ~kate/.procmail.log -> ローカル配送プログラムのログ確認
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    From john@avswa.com  Fri Jul 14 17:34:34 2023
-      Subject: test1
-        Folder: /home/kate/Maildir/new/1689323674.2001_0.vm11  425
-    From john@avswa.com  Fri Jul 14 20:28:04 2023
-      Subject: test1
-        Folder: /dev/null  471
-    From john@avswa.com  Sat Jul 15 11:18:18 2023
-      Subject: test1
-        Folder: JOHN/1  472
-    From john@avswa.com  Sat Jul 15 11:18:27 2023
-      Subject: test2
-        Folder: JOHN/2  472
-    From john@avswa.com  Sat Jul 15 11:18:36 2023
-      Subject: test3
-        Folder: JOHN/3  472
-    From john@avswa.com  Sat Jul 15 16:00:27 2023
-      Subject: test1
-        Folder: /usr/sbin/sendmail -oi mike@avswa.com  426  // 他ユーザーに転送
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ sudo doveadm expunge mailbox -u john inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u kate inbox all -> メールボックス内のメール削除
-    vm11$ sudo doveadm expunge mailbox -u mike inbox all -> メールボックス内のメール削除
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    (省略) -> 出力なし
-    --------------------------------------------------
-    
-    vm11$ cd $HOME
-    vm11$ exit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    ログアウト
-    --------------------------------------------------
-    
+  ==================================================
+  
+  vm12# cd $HOME
+  vm12# bash send_mail.sh aaa bbb 1 -> AAAからBBBへ一通メール送信
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  Trying ::1...
+  Connected to localhost.
+  Escape character is '^]'.
+  220 vm12.example.com ESMTP Postfix
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  250 2.1.0 Ok
+  250 2.1.5 Ok
+  354 End data with <CR><LF>.<CR><LF>
+  250 2.0.0 Ok: queued as B82E5200AE3E
+  Connection closed by foreign host.
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  // aaa
+  INBOX messages=0
+  
+  // bbb
+  INBOX messages=0
+  
+  // ccc
+  INBOX messages=1 -> メール転送された
+  --------------------------------------------------
+  
+  vm12# cd ~bbb
+  vm12# cat .procmail.log -> ローカル配送プログラムのログ確認
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  From aaa@example.com  Thu Feb  3 13:37:39 2022
+    Subject: test1
+      Folder: /usr/sbin/sendmail -oi ccc@example.com  436
+  --------------------------------------------------
+  
+  vm12# cd $HOME
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (省略) -> 出力なし
+  --------------------------------------------------
+  
   以下の確認に続く
   
 ================================================================================
@@ -2179,11 +1824,16 @@
   
 [内容]
   ## 作業内容
-    認証機能の無いSMTPサーバーに認証プログラム(Saslauthd)を導入して「SASL認証」を行う
+    旧版から引用 => 認証機能の無いSMTPサーバー(Postfix)に認証プログラム(Saslauthd)を導入する
+  
+  ## 使用マシン
+    HOST : vm12
+    IPV4 : 192.168.122.12
+    MEMO : 仮想マシン
   
 [確認]
   vm12# cd $HOME
-  vm12# firewall-cmd --add-port=587/tcp --permanent (ファイアーウォールの設定変更)
+  vm12# firewall-cmd --add-port=587/tcp --permanent
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2191,7 +1841,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# firewall-cmd --reload (ファイアーウォールの設定反映)
+  vm12# firewall-cmd --reload
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2199,7 +1849,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# yum -y install cyrus-sasl cyrus-sasl-plain (パッケージ追加)
+  vm12# yum -y install cyrus-sasl cyrus-sasl-plain
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2211,16 +1861,16 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# saslauthd -v (認証プログラムで使用可能な認証タイプを出力)
+  vm12# saslauthd -v -> 使用可能な認証タイプを出力
   
   コマンドの実行結果
   --------------------------------------------------
-  saslauthd 2.1.26  // shadow -> /etc/shadow
-  authentication mechanisms: getpwent kerberos5 pam rimap shadow ldap httpform
+  saslauthd 2.1.26
+  authentication mechanisms: getpwent kerberos5 pam rimap shadow ldap httpform  // shadow -> /etc/shadow
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# vi /etc/sysconfig/saslauthd (設定ファイルの修正)
+  vm12# vi /etc/sysconfig/saslauthd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2232,7 +1882,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl enable saslauthd (サービスの自動起動)
+  vm12# systemctl enable saslauthd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2240,7 +1890,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl start saslauthd (サービスの起動)
+  vm12# systemctl start saslauthd
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2252,7 +1902,7 @@
   ==================================================
   
   vm12# cd /etc/postfix
-  vm12# vi main.cf (設定ファイルの修正)
+  vm12# vi main.cf
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2262,7 +1912,7 @@
   --------------------------------------------------
   
   vm12# cd /etc/postfix
-  vm12# cp -p master.cf master.cf.org (設定ファイルの退避)
+  vm12# cp -p master.cf master.cf.org
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2270,7 +1920,7 @@
   --------------------------------------------------
   
   vm12# cd /etc/postfix
-  vm12# vi master.cf (設定ファイルの修正)
+  vm12# vi master.cf
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2285,7 +1935,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl restart postfix (サービスの再起動)
+  vm12# systemctl restart postfix
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2297,9 +1947,9 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# testsaslauthd -u aaa -p aa0122ma (SASL認証のテスト)
-  vm12# testsaslauthd -u bbb -p bb0122ma (SASL認証のテスト)
-  vm12# testsaslauthd -u ccc -p cc0122ma (SASL認証のテスト)
+  vm12# testsaslauthd -u aaa -p aa0122ma -> SASL認証のテスト
+  vm12# testsaslauthd -u bbb -p bb0122ma -> SASL認証のテスト
+  vm12# testsaslauthd -u ccc -p cc0122ma -> SASL認証のテスト
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2314,7 +1964,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# less /var/log/messages (SASL認証のログ確認)
+  vm12# less /var/log/messages -> SASL認証のログ確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2332,7 +1982,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# getenforce (SELinuxの確認)
+  vm12# getenforce -> SELinuxの確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2340,7 +1990,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# setsebool saslauthd_read_shadow on (認証プログラム「Saslauthd」にファイル「/etc/shadow」へのアクセス許可を付与)
+  vm12# setsebool saslauthd_read_shadow on -> 認証プログラム「Saslauthd」にファイル「/etc/shadow」へアクセス許可
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2348,9 +1998,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# testsaslauthd -u aaa -p aa0122ma (SASL認証のテスト)
-  vm12# testsaslauthd -u bbb -p bb0122ma (SASL認証のテスト)
-  vm12# testsaslauthd -u ccc -p cc0122ma (SASL認証のテスト)
+  vm12# testsaslauthd -u aaa -p aa0122ma -> SASL認証のテスト
+  vm12# testsaslauthd -u bbb -p bb0122ma -> SASL認証のテスト
+  vm12# testsaslauthd -u ccc -p cc0122ma -> SASL認証のテスト
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2368,7 +2018,7 @@
                 SASL認証(AUTH-PLAIN方式)
   ==================================================
   
-  vm12# cd $HOME (AUTH-PLAIN時の認証文字列を出力)
+  vm12# cd $HOME -> AUTH-PLAIN時の認証文字列を出力
   vm12# printf "%s\0%s\0%s" aaa@example.jp aaa@example.jp aa0122ma | openssl base64 -e | tr -d '\n'; echo
   vm12# printf "%s\0%s\0%s" bbb@example.jp bbb@example.jp bb0122ma | openssl base64 -e | tr -d '\n'; echo
   vm12# printf "%s\0%s\0%s" ccc@example.jp ccc@example.jp cc0122ma | openssl base64 -e | tr -d '\n'; echo
@@ -2386,7 +2036,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# telnet localhost 587 (認証プログラム経由でSMTPサーバーに接続)
+  vm12# telnet localhost 587 -> 認証プログラム経由でSMTPサーバーに接続
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2395,50 +2045,34 @@
   Escape character is '^]'.
   220 vm12.example.com ESMTP Postfix
     
-    >> (接続準備)
-    >> ehlo localhost
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    250-vm12.example.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-AUTH PLAIN LOGIN  // 確認する
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250 DSN
-    --------------------------------------------------
-    
-    >> (AUTH-PLAIN方式で認証)
-    >> auth plain YWFhQGV4YW1wbGUuanAAYWFhQGV4YW1wbGUuanAAYWEwMTIybWE=  // aaa
-    >> auth plain YmJiQGV4YW1wbGUuanAAYmJiQGV4YW1wbGUuanAAYmIwMTIybWE=  // bbb
-    >> auth plain Y2NjQGV4YW1wbGUuanAAY2NjQGV4YW1wbGUuanAAY2MwMTIybWE=  // ccc
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // aaa
-    235 2.7.0 Authentication successful
-
-    // bbb
-    235 2.7.0 Authentication successful
-
-    // ccc
-    235 2.7.0 Authentication successful
-    --------------------------------------------------
-    
-    >> (ログアウト)
-    >> quit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    221 2.0.0 Bye
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-  OSプロンプトに戻る
+  // 接続準備
+  ehlo localhost
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-AUTH PLAIN LOGIN  // AUTH-PLAIN, AUTH-LOGIN を確認
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
   
+  // AUTH-PLAIN方式で認証
+  auth plain YWFhQGV4YW1wbGUuanAAYWFhQGV4YW1wbGUuanAAYWEwMTIybWE=  // aaa@example.jp aaa@example.jp aa0122ma
+  235 2.7.0 Authentication successful
+  
+  // AUTH-PLAIN方式で認証
+  auth plain YmJiQGV4YW1wbGUuanAAYmJiQGV4YW1wbGUuanAAYmIwMTIybWE=  // bbb@example.jp bbb@example.jp bb0122ma
+  235 2.7.0 Authentication successful
+  
+  // AUTH-PLAIN方式で認証
+  auth plain Y2NjQGV4YW1wbGUuanAAY2NjQGV4YW1wbGUuanAAY2MwMTIybWE=  // ccc@example.jp ccc@example.jp cc0122ma
+  235 2.7.0 Authentication successful
+
+  // ログアウト
+  quit
+  221 2.0.0 Bye
+  Connection closed by foreign host.
   --------------------------------------------------
   
   ==================================================
@@ -2446,9 +2080,9 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# echo -n aaa | base64 (ユーザー名のエンコード)
-  vm12# echo -n bbb | base64 (ユーザー名のエンコード)
-  vm12# echo -n ccc | base64 (ユーザー名のエンコード)
+  vm12# echo -n aaa | base64 -> ユーザー名のエンコード
+  vm12# echo -n bbb | base64 -> ユーザー名のエンコード
+  vm12# echo -n ccc | base64 -> ユーザー名のエンコード
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2458,9 +2092,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# echo -n aa0122ma | base64 (パスワードのエンコード)
-  vm12# echo -n bb0122ma | base64 (パスワードのエンコード)
-  vm12# echo -n cc0122ma | base64 (パスワードのエンコード)
+  vm12# echo -n aa0122ma | base64 -> パスワードのエンコード
+  vm12# echo -n bb0122ma | base64 -> パスワードのエンコード
+  vm12# echo -n cc0122ma | base64 -> パスワードのエンコード
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2470,7 +2104,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# telnet localhost 587 (認証プログラム経由でSMTPサーバーに接続)
+  vm12# telnet localhost 587 -> 認証プログラム経由でSMTPサーバーに接続
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2478,76 +2112,51 @@
   Connected to localhost.
   Escape character is '^]'.
   220 vm12.example.com ESMTP Postfix
-    
-    >> (接続準備)
-    >> ehlo localhost
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    250-vm12.example.com
-    250-PIPELINING
-    250-SIZE 10240000
-    250-VRFY
-    250-ETRN
-    250-AUTH PLAIN LOGIN  // 確認する
-    250-ENHANCEDSTATUSCODES
-    250-8BITMIME
-    250 DSN
-    --------------------------------------------------
-    
-    >> (AUTH-LOGIN方式で認証)
-    >> auth login
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    334 VXNlcm5hbWU6
-    --------------------------------------------------
-    
-    >> (ユーザー名をエンコード状態で入力)
-    >> YWFh  // aaa
-    >> YmJi  // bbb
-    >> Y2Nj  // ccc
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // aaa
-    334 UGFzc3dvcmQ6
-    
-    // bbb
-    334 UGFzc3dvcmQ6
-    
-    // ccc
-    334 UGFzc3dvcmQ6
-    --------------------------------------------------
-    
-    >> (パスワードをエンコード状態で入力)
-    >> YWEwMTIybWE=  // aaa
-    >> YmIwMTIybWE=  // bbb
-    >> Y2MwMTIybWE=  // ccc
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    // aaa
-    235 2.7.0 Authentication successful
-    
-    // bbb
-    235 2.7.0 Authentication successful
-    
-    // ccc
-    235 2.7.0 Authentication successful
-    --------------------------------------------------
-    
-    >> (ログアウト)
-    >> quit
-    
-    コマンドの実行結果
-    --------------------------------------------------
-    221 2.0.0 Bye
-    Connection closed by foreign host.
-    --------------------------------------------------
-    
-  OSプロンプトに戻る
   
+  // 接続準備
+  ehlo localhost
+  250-vm12.example.com
+  250-PIPELINING
+  250-SIZE 10240000
+  250-VRFY
+  250-ETRN
+  250-AUTH PLAIN LOGIN  // AUTH-PLAIN, AUTH-LOGIN を確認
+  250-ENHANCEDSTATUSCODES
+  250-8BITMIME
+  250 DSN
+  
+  // AUTH-LOGIN方式で認証
+  auth login
+  334 VXNlcm5hbWU6
+  
+  // ユーザー名をエンコード状態で入力 - aaa
+  YWFh
+  334 UGFzc3dvcmQ6
+  
+  // パスワードをエンコード状態で入力 - aa0122ma
+  YWEwMTIybWE=
+  235 2.7.0 Authentication successful
+  
+  // ユーザー名をエンコード状態で入力 - bbb
+  YmJi
+  334 UGFzc3dvcmQ6
+  
+  // パスワードをエンコード状態で入力 - bb0122ma
+  YmIwMTIybWE=
+  235 2.7.0 Authentication successful
+
+  // ユーザー名をエンコード状態で入力 - ccc
+  Y2Nj
+  334 UGFzc3dvcmQ6
+  
+  // パスワードをエンコード状態で入力 - cc0122ma
+  Y2MwMTIybWE=
+  235 2.7.0 Authentication successful
+    
+  // ログアウト
+  quit
+  221 2.0.0 Bye
+  Connection closed by foreign host.
   --------------------------------------------------
   
   ==================================================
@@ -2555,7 +2164,7 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# vi send_mail.sh (スクリプト修正)
+  vm12# vi send_mail.sh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2596,12 +2205,12 @@
   done
   --------------------------------------------------
   
-    ==================================================
+  ==================================================
                 スクリプトでメール送受信
-    ==================================================
+  ==================================================
   
   vm12# cd $HOME
-  vm12# bash send_mail.sh aaa aa0122ma aaa bbb 1 (AAAからBBBへ一通メール送信)
+  vm12# bash send_mail.sh aaa aa0122ma aaa bbb 1 -> AAAからBBBへ一通メール送信
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2629,9 +2238,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2646,9 +2255,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2663,10 +2272,11 @@
   
 [内容]
   ## 作業内容
-    スパムフィルタリングを行う
-    参考史料1 : https://centossrv.com/postfix-spamass-milter.shtml
+    旧版から引用 => スパムフィルタリングを行う
+
+    参考資料1 : https://centossrv.com/postfix-spamass-milter.shtml
     参考資料2 : https://www.bigbang.mydns.jp/spamassassin-x.htm
-    参考史料3 : https://korodes.com/rocky/rocky_08/
+    参考資料3 : https://korodes.com/rocky/rocky_08/
   
   ## 使用マシン
     HOST : vm12
@@ -2675,7 +2285,7 @@
   
 [確認]
   vm12# cd $HOME
-  vm12# yum -y install epel-release (パッケージ追加)
+  vm12# yum -y install epel-release
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2683,7 +2293,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# yum -y install wget unzip zip (パッケージ追加)
+  vm12# yum -y install wget unzip zip
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2691,7 +2301,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# yum -y install spamassassin spamass-milter-postfix (パッケージ追加)
+  vm12# yum -y install spamassassin spamass-milter-postfix
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2699,7 +2309,7 @@
   --------------------------------------------------
   
   ##vm12# cd $HOME
-  ##vm12# curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | bash (パッケージ追加)
+  ##vm12# curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | bash
   ##
   ##コマンドの実行結果
   ##--------------------------------------------------
@@ -2707,7 +2317,7 @@
   ##--------------------------------------------------
   
   ##vm12# cd $HOME
-  ##vm12# yum -y --skip-broken install milter-manager (パッケージ追加)
+  ##vm12# yum -y --skip-broken install milter-manager
   ##
   ##コマンドの実行結果
   ##--------------------------------------------------
@@ -2719,7 +2329,7 @@
   ==================================================
   
   vm12# cd /etc/mail/spamassassin
-  vm12# vi v310.pre (設定ファイルの修正)
+  vm12# vi v310.pre
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2735,14 +2345,14 @@
   --------------------------------------------------
   
   vm12# cd /etc/mail/spamassassin
-  vm12# cp -p local.cf local.cf.org (設定ファイルの退避)
+  vm12# cp -p local.cf local.cf.org
   
   コマンドの実行結果
   --------------------------------------------------
   (省略) -> 出力なし
   --------------------------------------------------
   
-  vm12# cd $HOME (最新の設定ファイルのダウンロード)
+  vm12# cd $HOME -> 最新の設定ファイルのダウンロード
   vm12# wget -q https://github.com/kittyfreak/spamassassin_user_prefs/archive/refs/heads/main.zip
   
   コマンドの実行結果
@@ -2751,7 +2361,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# unzip -q main.zip (最新の設定ファイルの解凍)
+  vm12# unzip -q main.zip
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2759,7 +2369,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# ls -lh (解凍ファイルの確認)
+  vm12# ls -lh
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2767,7 +2377,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME/spamassassin_user_prefs-main
-  vm12# cp -f user_prefs /etc/mail/spamassassin/local.cf (設定ファイルを上書き)
+  vm12# cp -f user_prefs /etc/mail/spamassassin/local.cf
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2775,7 +2385,7 @@
   --------------------------------------------------
   
   vm12# cd /etc/mail/spamassassin
-  vm12# vi local.cf (設定ファイルの修正)
+  vm12# vi local.cf
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2785,7 +2395,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl enable spamassassin (サービスの自動起動)
+  vm12# systemctl enable spamassassin
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2793,7 +2403,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl start spamassassin (サービスの起動)
+  vm12# systemctl start spamassassin
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2805,7 +2415,7 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# systemctl enable spamass-milter (サービスの自動起動)
+  vm12# systemctl enable spamass-milter
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2813,7 +2423,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# systemctl start spamass-milter (サービスの起動)
+  vm12# systemctl start spamass-milter
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2825,7 +2435,7 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# vi /etc/procmailrc (設定ファイルの修正)
+  vm12# vi /etc/procmailrc
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2848,7 +2458,7 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# bash send_mail.sh aaa aa0122ma aaa ccc 1 (AAAからCCCへ一通メール送信)
+  vm12# bash send_mail.sh aaa aa0122ma aaa ccc 1 -> AAAからCCCへ一通メール送信
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2876,9 +2486,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2893,17 +2503,17 @@
   --------------------------------------------------
   
   vm12# cd ~ccc
-  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
+  vm12# cat .procmail.log -> ローカル配送プログラムのログ確認
   
   コマンドの実行結果
   --------------------------------------------------
   From aaa@example.com  Fri Feb  4 23:00:19 2022
     Subject: test1
-      Folder: /home/ccc/Maildir/new/1643983219.2754_0.vm12    665
+      Folder: /home/ccc/Maildir/new/1643983219.2754_0.vm12  665
   --------------------------------------------------
   
   vm12# cd ~ccc
-  vm12# cat Maildir/new/1643983219.2754_0.vm12 (メール確認)
+  vm12# cat Maildir/new/1643983219.2754_0.vm12
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2929,9 +2539,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2943,7 +2553,7 @@
   ==================================================
   
   vm12# cd $HOME
-  vm12# vi send_mail.sh (スクリプト修正)
+  vm12# vi send_mail.sh -> スクリプト修正
   
   コマンドの実行結果
   --------------------------------------------------
@@ -2985,7 +2595,7 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# bash send_mail.sh aaa aa0122ma aaa ccc 1 (AAAからCCCへ一通メール送信)
+  vm12# bash send_mail.sh aaa aa0122ma aaa ccc 1 -> AAAからCCCへ一通メール送信
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3013,9 +2623,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm mailbox status -u aaa messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u bbb messages inbox (メールボックス内のメール確認)
-  vm12# doveadm mailbox status -u ccc messages inbox (メールボックス内のメール確認)
+  vm12# doveadm mailbox status -u aaa messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u bbb messages inbox -> メールボックス内のメール確認
+  vm12# doveadm mailbox status -u ccc messages inbox -> メールボックス内のメール確認
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3030,17 +2640,17 @@
   --------------------------------------------------
   
   vm12# cd ~ccc
-  vm12# cat .procmail.log (ローカル配送プログラムのログ確認)
+  vm12# cat .procmail.log -> ローカル配送プログラムのログ確認
   
   コマンドの実行結果
   --------------------------------------------------
   From aaa@example.com  Fri Feb  4 23:07:45 2022
     Subject: ***SPAM*** test1
-      Folder: /home/ccc/Maildir/new/1643983665.2811_0.vm12    1160
+      Folder: /home/ccc/Maildir/new/1643983665.2811_0.vm12  1160
   --------------------------------------------------
   
   vm12# cd ~ccc
-  vm12# cat Maildir/new/1643983665.2811_0.vm12 (メール確認)
+  vm12# cat Maildir/new/1643983665.2811_0.vm12
   
   コマンドの実行結果
   --------------------------------------------------
@@ -3075,9 +2685,9 @@
   --------------------------------------------------
   
   vm12# cd $HOME
-  vm12# doveadm expunge mailbox -u aaa inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u bbb inbox all (メールボックス内のメール削除)
-  vm12# doveadm expunge mailbox -u ccc inbox all (メールボックス内のメール削除)
+  vm12# doveadm expunge mailbox -u aaa inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u bbb inbox all -> メールボックス内のメール削除
+  vm12# doveadm expunge mailbox -u ccc inbox all -> メールボックス内のメール削除
   
   コマンドの実行結果
   --------------------------------------------------

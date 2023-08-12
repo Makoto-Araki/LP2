@@ -1,472 +1,1335 @@
 ================================================================================
-[01] カーネル機能「Netfilter」 - 01 (各チェイン)
-[02] カーネル機能「Netfilter」 - 02 (各OSの操作インターフェース)
-[03] カーネル機能「Netfilter」 - 03 (初期設定)
-[04] カーネル機能「Netfilter」 - 04 (ルールの削除と追加)
-[05] //
+[001] ProFTPD - 01
+[002] ProFTPD - 02
+[003] ProFTPD - 03
+[004] VsFTPD
+[005] PureFTPD
 ================================================================================
-[01]
-  カーネル機能「Netfilter」 - 01 (各チェイン)
-  
-[内容]
-  ## カーネル機能「Netfilter」の各チェインを図解
-  
-                            |
-                            |
-                            |
-  ==========================================================
-                       入力パケット
-  ==========================================================
-                            |
-                            |
-                            |
-  ==========================================================
-                        PREROUTING
-  ==========================================================
-                            |
-                            |
-                            |
-  ==========================================================
-                       ルーティング
-  ==========================================================
-            |                                    |
-            |                                    |
-            |                                    |
-  ======================                         |
-          INPUT                                  |
-  ======================                         |
-            |                                    |
-            |                                    |
-            |                                    |
-  ======================              ======================
-         プロセス                            FORWARD
-  ======================              ======================
-            |                                    |
-            |                                    |
-            |                                    |
-  ======================                         |
-          OUTPUT                                 |
-  ======================                         |
-            |                                    |
-            |                                    |
-            |                                    |
-  ==========================================================
-                        POSTROUTING
-  ==========================================================
-                            |
-                            |
-                            |
-  ==========================================================
-                       出力パケット
-  ==========================================================
-                            |
-                            |
-                            |
-  
-[確認]
-  実機での確認なし
-  
-================================================================================
-[02]
-  カーネル機能「Netfilter」 - 02 (各OSの操作インターフェース)
+[001]
+  ProFTPD - 01
   
 [内容]
   ## 作業内容
-    コマンド「firewall-cmd」ではなくコマンド「iptables」を使用可能にする
-
+    セットアップ
+  
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12# cd $HOME
-  vm12# firewall-cmd --state (サービスの確認)
+  $ cd $HOME
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  running
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl stop firewalld (サービスの停止)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [  420.090153] Ebtables v2.0 unregistered
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl disable firewalld (サービスの自動起動を無効化)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.
-  Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# firewall-cmd --state (サービスの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  not running
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# yum -y install iptables-services (パッケージ追加)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> エラー出力が無ければOK
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl start iptables (サービスの起動)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  [  521.376810] ip_tables: (C) 2000-2006 Netfilter Core Team
-  [  521.446576] nf_conntrack version 0.5.0 (7928 buckets, 31712 max)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# systemctl enable iptables (サービスの自動起動の有効化)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  Created symlink from /etc/systemd/system/basic.target.wants/iptables.service to /usr/lib/systemd/system/iptables.service.
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[03]
-  カーネル機能「Netfilter」 - 03 (初期設定)
-  
-[内容]
-  ## 作業内容
-    各チェインの初期設定を確認する
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール確認)
-    iptables        // コマンド本体
-    --table nat     // テーブル指定
-    --list          // ルール一覧表示
-    --line-numbers  // 番号付与
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // PREROUTING チェイン
-  Chain PREROUTING (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-
-  // INPUT チェイン
-  Chain INPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-  
-  // OUTPUT チェイン
-  Chain OUTPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-  
-  // POSTROUTING チェイン
-  Chain POSTROUTING (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール確認)
-    iptables        // コマンド本体
-    --table filter  // テーブル指定
-    --list          // ルール一覧表示
-    --line-numbers  // 番号付与
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // INPUT チェイン
-  Chain INPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
-  2    ACCEPT  icmp  --   anywhere  anywhere                                       // None
-  3    ACCEPT  all   --   anywhere  anywhere                                       // None
-  4    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
-  5    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
-  
-  // FORWARD チェイン
-  Chain FORWARD (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
-  
-  // OUTPUT チェイン
-  Chain OUTPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
-[04]
-  カーネル機能「Netfilter」 - 04 (ルールの削除と追加)
-  
-[内容]
-  ## 作業内容
-    ルールの削除と追加を行う
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-  ## 使用マシン
-    HOST : vm13
-    IPV4 : 192.168.122.13
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12# cd $HOME
-  vm12# systemctl is-active iptables (サービスの確認)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  active
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール確認)
-    iptables        // コマンド本体
-    --table filter  // テーブル指定
-    --list          // ルール一覧表示
-    --line-numbers  // 番号付与
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // INPUT チェイン
-  Chain INPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
-  2    ACCEPT  icmp  --   anywhere  anywhere                                       // None
-  3    ACCEPT  all   --   anywhere  anywhere                                       // None
-  4    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
-  5    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
-  
-  // FORWARD チェイン
-  Chain FORWARD (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
-  
-  // OUTPUT チェイン
-  Chain OUTPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
+  (rootでログイン)
   --------------------------------------------------
     
-    vm13# cd $HOME
-    vm13# ping -c 3 -i 1 vm12 (ICMPパケット送信)
+    vm11# cd $HOME
+    vm11# dnf -y install proftpd
     
     コマンドの実行結果
     --------------------------------------------------
-    PING vm12 (192.168.122.12) 56(84) bytes of data.
-    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=0.495 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.627 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.554 ms
-    
-    --- vm12 ping statistics ---
-    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-    rtt min/avg/max/mdev = 0.495/0.558/0.627/0.060 ms
+    (省略) -> エラー出力が無ければOK
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール削除)
-    iptables          // コマンド本体
-    --table filter    // テーブル指定
-    --delete INPUT 2  // 番号指定でルール削除
+    vm11# cd $HOME
+    vm11# cp -p /etc/proftpd.conf /etc/proftpd.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/proftpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Include /etc/proftpd/modules.conf
+    
+    ## サーバー名とバージョン情報
+    ServerName  "ftp.avswa.com"  ## アクセス時に表示されるサーバー名
+    ServerIdent  no              ## ソフトウェアバージョンを隠す
+    ServerAdmin  root@localhost
+    DefaultServer  on
+    
+    ## 上位階層への移動禁止(chroot)
+    DefaultRoot  ~
+    
+    ## 認証機構(PAM)
+    AuthPAMConfig  proftpd
+    AuthOrder  mod_auth_pam.c* mod_auth_unix.c
+    
+    ## 逆引き(DNS)
+    UseReverseDNS  off
+    
+    ## 実行ユーザーと実行グループ
+    User  nobody
+    Group  nobody
+    
+    ## DOS攻撃対処
+    MaxInstances  20
+    
+    ## SendFile機能を無効化
+    UseSendfile  off
+    
+    ## ログフォーマット定義
+    LogFormat  default  "%h %l %u %t \"%r\" %s %b"
+    LogFormat  auth  "%v [%P] %h %t \"%r\" %s"
+    
+    ## ログオプション
+    LogOptions  -Timestamp -Hostname +RoleBasedProcessLabels
+    
+    ## 基本設定(制御プロセス)
+    ControlsEngine  on
+    ControlsACLs  all allow user root
+    ControlsSocketACL  allow user *
+    ControlsLog  /var/log/proftpd/controls.log
+    
+    ## 追加設定(制御プロセス)
+    <IfModule mod_ctrls_admin.c>
+      AdminControlsEngine  on
+      AdminControlsACLs  all allow user root
+    </IfModule>
+    
+    ## 追加設定(制御プロセス)
+    <IfModule mod_vroot.c>
+      VRootEngine  on
+    </IfModule>
+    
+    ## SSL/TLS関連
+    <IfDefine TLS>
+      Include /etc/proftpd/mod_tls.conf
+    </IfDefine>
+    
+    ## BAN関連
+    <IfModule mod_ban.c>
+      Include /etc/proftpd/mod_ban.conf
+    </IfModule>
+    
+    ## QOS関連
+    <IfModule mod_qos.c>
+      Include /etc/proftpd/mod_qos.conf
+    </IfModule>
+    
+    ## 操作権限
+    <Global>
+      Umask  022
+      AllowOverwrite  yes
+      <Limit ALL SITE_CHMOD>
+        AllowAll
+      </Limit>
+    </Global>
+    
+    ## Anonymous接続
+    <IfDefine ANONYMOUS_FTP>
+      Include /etc/proftpd/anonftp.conf
+    </IfDefine>
+    
+    ## 追加設定ファイル
+    Include /etc/proftpd/conf.d/*.conf
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# firewall-cmd --add-service=ftp
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    success
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# firewall-cmd --runtime-to-permanent
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    success
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# setsebool -P ftpd_full_access on
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    [  460.274280] SELinux:  policy capability network_peer_controls=1
+    [  460.276463] SELinux:  policy capability open_perms=1
+    [  460.278206] SELinux:  policy capability extended_socket_class=1
+    [  460.280145] SELinux:  policy capability always_check_network=0
+    [  460.281973] SELinux:  policy capability cgroup_seclabel=1
+    [  460.283319] SELinux:  policy capability nnp_nosuid_transition=1
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl disable proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl start proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl is-active proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo dnf -y install lftp
   
   コマンドの実行結果
   --------------------------------------------------
-  (省略) -> 出力なし
+  (エラー出力が無ければOK)
   --------------------------------------------------
+  
+  $ cd $HOME
+  $ sudo vi /etc/hosts
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+  ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+  
+  192.168.122.11 vm11 vm11.avswa.com ftp.avswa.com  // 追加
+  192.168.122.12 vm12 vm12.avswa.com
+  192.168.122.13 vm13 vm13.avswa.com
+  
+  192.168.1.2 pc01
+  192.168.1.4 rock
+  --------------------------------------------------
+  
+  $ cd $HOME
+  $ lftp -u makoto ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp makoto@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://makoto@ftp.avswa.com/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp makoto@ftp.avswa.com:~> !ls -l
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (上位階層への移動禁止)
+    lftp makoto@ftp.avswa.com:~> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトに変化なし
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp makoto@ftp.avswa.com:~> mkdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mkdir 成功、`dirD' を作成しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
+    lftp makoto@ftp.avswa.com:~> cd dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/dirD
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file1.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file2.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10 bytes transferred                                                        
+    計 2 ファイル転送済
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、2 ファイルを削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp makoto@ftp.avswa.com:/dirD> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
+    lftp makoto@ftp.avswa.com:/> rmdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rmdir 成功、`dirD' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (サーバー退出)
+    lftp makoto@ftp.avswa.com:/> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[002]
+  ProFTPD - 02
+  
+[内容]
+  ## 作業内容
+    ログイン禁止ファイル -> /etc/ftpusers
+  
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh console vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (rootでログイン)
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# getent passwd | grep -E 'kate|mike'
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    kate:x:1005:1005::/home/kate:/bin/bash
+    mike:x:1006:1006::/home/mike:/bin/bash
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/ftpusers
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ...
+    kate  // 追加
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl restart proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ lftp -u kate ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp kate@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp kate@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://kate@ftp.avswa.com
+    --------------------------------------------------
+    
+    lftp kate@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp kate@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ls: ログインに失敗しました: 530 間違ったログインです
+    --------------------------------------------------
+    
+    lftp kate@ftp.avswa.com:~> (サーバー退出)
+    lftp kate@ftp.avswa.com:~> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[003]
+  ProFTPD - 03
+  
+[内容]
+  ## 作業内容
+    アクセス権限を編集 -> makoto のみログイン可
+  
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh console vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (rootでログイン)
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/proftpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    Include /etc/proftpd/modules.conf
+    
+    ## サーバー名とバージョン情報
+    ServerName  "ftp.avswa.com"
+    ServerIdent  no
+    ServerAdmin  root@localhost
+    DefaultServer  on
+    
+    ## 上位階層への移動禁止(chroot)
+    DefaultRoot  ~
+    
+    ## 認証機構(PAM)
+    AuthPAMConfig  proftpd
+    AuthOrder  mod_auth_pam.c* mod_auth_unix.c
+    
+    ## 逆引き(DNS)
+    UseReverseDNS  off
+    
+    ## 実行ユーザーと実行グループ
+    User  nobody
+    Group  nobody
+    
+    ## DOS攻撃対処
+    MaxInstances  20
+    
+    ## SendFile機能を無効化
+    UseSendfile  off
+    
+    ## ログフォーマット定義
+    LogFormat  default  "%h %l %u %t \"%r\" %s %b"
+    LogFormat  auth  "%v [%P] %h %t \"%r\" %s"
+    
+    ## ログオプション
+    LogOptions  -Timestamp -Hostname +RoleBasedProcessLabels
+    
+    ## 基本設定(制御プロセス)
+    ControlsEngine  on
+    ControlsACLs  all allow user root
+    ControlsSocketACL  allow user *
+    ControlsLog  /var/log/proftpd/controls.log
+    
+    ## 追加設定(制御プロセス)
+    <IfModule mod_ctrls_admin.c>
+      AdminControlsEngine  on
+      AdminControlsACLs  all allow user root
+    </IfModule>
+    
+    ## 追加設定(制御プロセス)
+    <IfModule mod_vroot.c>
+      VRootEngine  on
+    </IfModule>
+    
+    ## SSL/TLS関連
+    <IfDefine TLS>
+      Include /etc/proftpd/mod_tls.conf
+    </IfDefine>
+    
+    ## BAN関連
+    <IfModule mod_ban.c>
+      Include /etc/proftpd/mod_ban.conf
+    </IfModule>
+    
+    ## QOS関連
+    <IfModule mod_qos.c>
+      Include /etc/proftpd/mod_qos.conf
+    </IfModule>
+    
+    ## 操作権限(デフォルト)
+    <Global>
+      Umask  022
+      AllowOverwrite  yes
+      <Limit ALL SITE_CHMOD>
+        AllowAll
+      </Limit>
+    </Global>
+    
+    ## ログイン制限(追加)
+    <Limit LOGIN>
+      Order Allow,deny
+      AllowUser makoto
+      DenyAll
+    </Limit>
+    
+    ## 操作権限(追加)
+    <Limit ALL>
+      Order Allow,deny
+      AllowUser makoto
+      DenyAll
+    </Limit>
+    
+    ## Anonymous接続
+    <IfDefine ANONYMOUS_FTP>
+      Include /etc/proftpd/anonftp.conf
+    </IfDefine>
+    
+    ## 追加設定ファイル
+    Include /etc/proftpd/conf.d/*.conf
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl restart proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ lftp -u mike ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp mike@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://mike@ftp.avswa.com
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp mike@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ls: ログインに失敗しました: 530 間違ったログインです
+    --------------------------------------------------
+    
+    lftp mike@ftp.avswa.com:~> (サーバー退出)
+    lftp mike@ftp.avswa.com:~> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ lftp -u makoto ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp makoto@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://makoto@ftp.avswa.com/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp makoto@ftp.avswa.com:~> !ls -l
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (上位階層への移動禁止)
+    lftp makoto@ftp.avswa.com:~> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトに変化なし
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp makoto@ftp.avswa.com:~> mkdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mkdir 成功、`dirD' を作成しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
+    lftp makoto@ftp.avswa.com:~> cd dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/dirD
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file1.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file2.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10 bytes transferred                                                        
+    計 2 ファイル転送済
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、2 ファイルを削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp makoto@ftp.avswa.com:/dirD> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
+    lftp makoto@ftp.avswa.com:/> rmdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rmdir 成功、`dirD' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (サーバー退出)
+    lftp makoto@ftp.avswa.com:/> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh console vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (rootでログイン)
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl stop proftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+  以下の確認に続く
+  
+================================================================================
+[004]
+  VsFTPD
+  
+[内容]
+  ## 作業内容
+    セットアップ
+  
+  ## 使用マシン
+    HOST : vm11
+    IPV4 : 192.168.122.11
+    MEMO : 仮想マシン
+  
+[確認]
+  $ cd $HOME
+  $ sudo virsh console vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (rootでログイン)
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# dnf -y install vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# cp -p /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/vsftpd/vsftpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## Anonymous接続
+    anonymous_enable=NO
+    
+    ## 各ユーザーログイン
+    local_enable=YES
+    
+    ## 書込コマンド有効化
+    write_enable=YES
+    
+    ## マスク値
+    local_umask=022
+    
+    ## ログイン時のメッセージ表示
+    dirmessage_enable=YES
+    
+    ## アップロードとダウンロード時にログ記録
+    xferlog_enable=YES
+    
+    ## アクティブモード
+    connect_from_port_20=YES
+    
+    ## ログ出力形式を標準に設定 -> /var/log/xferlog
+    xferlog_std_format=YES
+    
+    ## 上位階層への移動禁止(chroot)
+    #chroot_local_user=YES
+    #chroot_list_enable=YES
+    #chroot_list_file=/etc/vsftpd/chroot_list -> 上位階層に移動可能なユーザーのリスト
 
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール確認)
-    iptables        // コマンド本体
-    --table filter  // テーブル指定
-    --list          // ルール一覧表示
-    --line-numbers  // 番号付与
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // INPUT チェイン
-  Chain INPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
-  2    ACCEPT  all   --   anywhere  anywhere                                       // None
-  3    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
-  4    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
-  
-  // FORWARD チェイン
-  Chain FORWARD (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
-  
-  // OUTPUT チェイン
-  Chain OUTPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-  --------------------------------------------------
+    ## IPv4, IPv6 を両方使用
+    listen=NO
+    listen_ipv6=YES
     
-    vm13# cd $HOME
-    vm13# ping -c 3 -i 1 vm12 (ICMPパケット送信)
+    ## PAM 設定ファイル名
+    pam_service_name=vsftpd
+    
+    ## 不明
+    userlist_enable=YES
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# touch /etc/vsftpd/chroot_list
     
     コマンドの実行結果
     --------------------------------------------------
-    PING vm12 (192.168.122.12) 56(84) bytes of data.
-    From vm12 (192.168.122.12) icmp_seq=1 Destination Host Prohibited
-    From vm12 (192.168.122.12) icmp_seq=2 Destination Host Prohibited
-    From vm12 (192.168.122.12) icmp_seq=3 Destination Host Prohibited
-    
-    --- vm12 ping statistics ---
-    3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2004ms
+    (省略) -> 出力なし
     --------------------------------------------------
     
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール追加)
-    iptables           // コマンド本体
-    --table filter     // テーブル指定
-    --insert INPUT 2   // チェイン内の番号指定
-    -p icmp -j ACCEPT  // 追加ルール
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# (パケットフィルタリングルール確認)
-    iptables        // コマンド本体
-    --table filter  // テーブル指定
-    --list          // ルール一覧表示
-    --line-numbers  // 番号付与
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  // INPUT チェイン
-  Chain INPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    ACCEPT  all   --   anywhere  anywhere     state RELATED,ESTABLISHED         // 関連パケット、接続済の接続
-  2    ACCEPT  icmp  --   anywhere  anywhere                                       // None
-  3    ACCEPT  all   --   anywhere  anywhere                                       // None
-  4    ACCEPT  tcp   --   anywhere  anywhere     state NEW tcp dpt:ssh             // 宛先(SSH)の新規接続
-  5    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited  // メッセージ「icmp-host-prohibited」
-  
-  // FORWARD チェイン
-  Chain FORWARD (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  1    REJECT  all   --   anywhere  anywhere     reject-with icmp-host-prohibited
-  
-  // OUTPUT チェイン
-  Chain OUTPUT (policy ACCEPT)
-  num  target  prot  opt  source    destination  備考
-  (No Rule)
-  --------------------------------------------------
-    
-    vm13# cd $HOME
-    vm13# ping -c 3 -i 1 vm12 (ICMPパケット送信)
+    vm11# cd $HOME
+    vm11# systemctl disable vsftpd
     
     コマンドの実行結果
     --------------------------------------------------
-    PING vm12 (192.168.122.12) 56(84) bytes of data.
-    64 bytes from vm12 (192.168.122.12): icmp_seq=1 ttl=64 time=0.581 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=2 ttl=64 time=0.528 ms
-    64 bytes from vm12 (192.168.122.12): icmp_seq=3 ttl=64 time=0.525 ms
+    (省略) -> 出力なし
+    --------------------------------------------------
     
-    --- vm12 ping statistics ---
-    3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-    rtt min/avg/max/mdev = 0.525/0.544/0.581/0.037 ms
+    vm11# cd $HOME
+    vm11# systemctl start vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl is-active vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ lftp -u makoto ftp.avswa.com
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (プロンプト変化)
+  --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp makoto@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://makoto@ftp.avswa.com/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp makoto@ftp.avswa.com:~> !ls -l
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp makoto@ftp.avswa.com:~> mkdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mkdir 成功、`dirD' を作成しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
+    lftp makoto@ftp.avswa.com:~> cd dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/home/makoto/dirD
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file1.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file2.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10 bytes transferred                                                        
+    計 2 ファイル転送済
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、2 ファイルを削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp makoto@ftp.avswa.com:/dirD> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
+    lftp makoto@ftp.avswa.com:/> rmdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rmdir 成功、`dirD' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (サーバー退出)
+    lftp makoto@ftp.avswa.com:/> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh console vm11
+  
+  コマンドの実行結果
+  --------------------------------------------------
+  (rootでログイン)
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl stop vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
     --------------------------------------------------
   
-  vm12# cd $HOME
-  vm12# iptables-save > /etc/sysconfig/iptables  (設定の保存)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  (省略) -> 出力なし
-  --------------------------------------------------
-  
   以下の確認に続く
   
 ================================================================================
-[XX]
-  //
+[005]
+  PureFTPD
   
 [内容]
   ## 作業内容
-    //
+    セットアップ
   
   ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
+    HOST : vm11
+    IPV4 : 192.168.122.11
     MEMO : 仮想マシン
   
 [確認]
-  vm12# cd $HOME
-  vm12# // (//)
+  $ cd $HOME
+  $ sudo virsh console vm11
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (rootでログイン)
   --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# // (//)
+    
+    vm11# cd $HOME
+    vm11# dnf -y install pure-ftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> エラー出力が無ければOK
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# cp -p /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf.org
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# vi /etc/vsftpd/vsftpd.conf
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ## Anonymous接続
+    anonymous_enable=NO
+    
+    ## 各ユーザーログイン
+    local_enable=YES
+    
+    ## 書込コマンド有効化
+    write_enable=YES
+    
+    ## マスク値
+    local_umask=022
+    
+    ## ログイン時のメッセージ表示
+    dirmessage_enable=YES
+    
+    ## アップロードとダウンロード時にログ記録
+    xferlog_enable=YES
+    
+    ## アクティブモード
+    connect_from_port_20=YES
+    
+    ## ログ出力形式を標準に設定 -> /var/log/xferlog
+    xferlog_std_format=YES
+    
+    ## 上位階層への移動禁止(chroot)
+    #chroot_local_user=YES
+    #chroot_list_enable=YES
+    #chroot_list_file=/etc/vsftpd/chroot_list -> 上位階層に移動可能なユーザーのリスト
+
+    ## IPv4, IPv6 を両方使用
+    listen=NO
+    listen_ipv6=YES
+    
+    ## PAM 設定ファイル名
+    pam_service_name=vsftpd
+    
+    ## 不明
+    userlist_enable=YES
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# touch /etc/vsftpd/chroot_list
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl disable vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl start vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl is-active vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    active
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ lftp -u makoto ftp.avswa.com
   
   コマンドの実行結果
   --------------------------------------------------
-  //
+  (プロンプト変化)
   --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (現在のディレクトリ)
+    lftp makoto@ftp.avswa.com:~> pwd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    ftp://makoto@ftp.avswa.com/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:~> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirA
+    drwxrwxr-x  2 makoto makoto        44 Jun 11 09:07 dirB
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ローカルファイル一覧)
+    lftp makoto@ftp.avswa.com:~> !ls -l
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file1.txt
+    -rwxrwxrwx. 1 makoto makoto         4 7月  2 15:10 file2.txt
+    ...
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (ディレクトリ作成)
+    lftp makoto@ftp.avswa.com:~> mkdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    mkdir 成功、`dirD' を作成しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:~> (下位階層へ移動)
+    lftp makoto@ftp.avswa.com:~> cd dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/home/makoto/dirD
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> put -a file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    5 bytes transferred
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file1.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file1.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> rm file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、`file2.txt' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括アップロード)
+    lftp makoto@ftp.avswa.com:/dirD> mput -a file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    10 bytes transferred                                                        
+    計 2 ファイル転送済
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (リモートファイル一覧)
+    lftp makoto@ftp.avswa.com:/dirD> ls
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:39 file1.txt
+    -rw-r--r--   1 makoto   makoto          4 Aug 12 10:40 file2.txt
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (一括ファイル削除)
+    lftp makoto@ftp.avswa.com:/dirD> mrm file1.txt file2.txt
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rm 成功、2 ファイルを削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/dirD> (上位階層に移動)
+    lftp makoto@ftp.avswa.com:/dirD> cd ../
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    cd 成功、cwd=/
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (ディレクトリ削除)
+    lftp makoto@ftp.avswa.com:/> rmdir dirD
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    rmdir 成功、`dirD' を削除しました
+    --------------------------------------------------
+    
+    lftp makoto@ftp.avswa.com:/> (サーバー退出)
+    lftp makoto@ftp.avswa.com:/> quit
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (出力なし) -> プロンプトが元に戻る
+    --------------------------------------------------
+    
+  $ cd $HOME
+  $ sudo virsh console vm11
   
+  コマンドの実行結果
+  --------------------------------------------------
+  (rootでログイン)
+  --------------------------------------------------
+    
+    vm11# cd $HOME
+    vm11# systemctl stop vsftpd
+    
+    コマンドの実行結果
+    --------------------------------------------------
+    (省略) -> 出力なし
+    --------------------------------------------------
+    
   以下の確認に続く
   
 ================================================================================
-[XX]
-  //
-  
-[内容]
-  ## 作業内容
-    //
-  
-  ## 使用マシン
-    HOST : vm12
-    IPV4 : 192.168.122.12
-    MEMO : 仮想マシン
-  
-[確認]
-  vm12# cd $HOME
-  vm12# // (//)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  //
-  --------------------------------------------------
-  
-  vm12# cd $HOME
-  vm12# // (//)
-  
-  コマンドの実行結果
-  --------------------------------------------------
-  //
-  --------------------------------------------------
-  
-  以下の確認に続く
-  
-================================================================================
+
